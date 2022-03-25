@@ -13,10 +13,6 @@
  * limitations under the License.
  */
 
-#include <fcntl.h>
-#include <fstream>
-#include <future>
-#include <gtest/gtest.h>
 #include <benchmark/benchmark.h>
 
 #include "bundle_constants.h"
@@ -25,23 +21,15 @@
 #include "clean_cache_callback_host.h"
 #include "common_tool.h"
 #include "iservice_registry.h"
-#include "nlohmann/json.hpp"
 #include "status_receiver_host.h"
 #include "system_ability_definition.h"
-#include "testConfigParser.h"
 
 using OHOS::AAFwk::Want;
-using namespace testing::ext;
 using namespace std::chrono_literals;
 using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 
 namespace {
-const std::string ERROR_INSTALL_FAILED = "install failed!";
-const std::string ERROR_UNINSTALL_FAILED = "uninstall failed!";
-const std::string MSG_SUCCESS = "[SUCCESS]";
-const std::string OPERATION_FAILED = "Failure";
-const std::string OPERATION_SUCCESS = "Success";
 const std::string SYSTEM_SETTINGS_BUNDLE_NAME = "com.ohos.settings";
 const std::string bundleName = "com.ohos.contactsdataability";
 const std::string abilityName = "com.ohos.contactsdataability.MainAbility";
@@ -51,8 +39,8 @@ const std::string COMMON_EVENT_EVENT = "usual.event.PACKAGE_ADDED";
 const int32_t DEFAULT_USERID = 100;
 class BundleStatusCallbackImpl : public BundleStatusCallbackHost {
 public:
-    BundleStatusCallbackImpl();
-    virtual ~BundleStatusCallbackImpl() override;
+    BundleStatusCallbackImpl() = default;
+    virtual ~BundleStatusCallbackImpl() override {};
     virtual void OnBundleStateChanged(const uint8_t installType, const int32_t resultCode, const std::string &resultMsg,
         const std::string &bundleName) override;
     virtual void OnBundleAdded(const std::string &bundleName, const int userId) override {};
@@ -63,176 +51,35 @@ private:
     DISALLOW_COPY_AND_MOVE(BundleStatusCallbackImpl);
 };
 
-BundleStatusCallbackImpl::BundleStatusCallbackImpl()
-{}
-
-BundleStatusCallbackImpl::~BundleStatusCallbackImpl()
-{}
-
 void BundleStatusCallbackImpl::OnBundleStateChanged(
     const uint8_t installType, const int32_t resultCode, const std::string &resultMsg, const std::string &bundleName)
 {}
 
 class CleanCacheCallBackImpl : public CleanCacheCallbackHost {
 public:
-    CleanCacheCallBackImpl();
-    virtual ~CleanCacheCallBackImpl() override;
-
-    virtual void OnCleanCacheFinished(bool succeeded) override;
-    bool GetSucceededResult() const;
+    CleanCacheCallBackImpl() = default;
+    virtual ~CleanCacheCallBackImpl() override {};
+    virtual void OnCleanCacheFinished(bool succeeded) override {};
 
 private:
-    mutable std::promise<bool> resultSucceededSignal_;
     DISALLOW_COPY_AND_MOVE(CleanCacheCallBackImpl);
 };
 
-CleanCacheCallBackImpl::CleanCacheCallBackImpl()
-{}
-
-CleanCacheCallBackImpl::~CleanCacheCallBackImpl()
-{}
-
-void CleanCacheCallBackImpl::OnCleanCacheFinished(bool succeeded)
-{
-    resultSucceededSignal_.set_value(!succeeded);
-}
-
-bool CleanCacheCallBackImpl::GetSucceededResult() const
-{
-    auto future = resultSucceededSignal_.get_future();
-    future.wait();
-    return future.get();
-}
-
 class StatusReceiverImpl : public StatusReceiverHost {
 public:
-    StatusReceiverImpl();
-    virtual ~StatusReceiverImpl();
-    virtual void OnStatusNotify(const int progress) override;
-    virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override;
-    std::string GetResultMsg() const;
+    StatusReceiverImpl() = default;
+    virtual ~StatusReceiverImpl() {};
+    virtual void OnStatusNotify(const int progress) override {};
+    virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override {};
 
 private:
-    mutable std::promise<std::string> resultMsgSignal_;
-    int iProgress_ = 0;
-
     DISALLOW_COPY_AND_MOVE(StatusReceiverImpl);
 };
 
-StatusReceiverImpl::StatusReceiverImpl()
-{}
-
-StatusReceiverImpl::~StatusReceiverImpl()
-{}
-
-void StatusReceiverImpl::OnFinished(const int32_t resultCode, const std::string &resultMsg)
-{
-    resultMsgSignal_.set_value(resultMsg);
-}
-void StatusReceiverImpl::OnStatusNotify(const int progress)
-{
-    iProgress_ = progress;
-}
-
-std::string StatusReceiverImpl::GetResultMsg() const
-{
-    auto future = resultMsgSignal_.get_future();
-    future.wait();
-    std::string resultMsg = future.get();
-    if (resultMsg == MSG_SUCCESS) {
-        return OPERATION_SUCCESS;
-    } else {
-        return OPERATION_FAILED + resultMsg;
-    }
-}
-
-class BundleMgrProxyTest : public testing::Test {
+class BundleMgrProxyTest {
 public:
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-    static void Install(
-        const std::string &bundleFilePath, const InstallFlag installFlag, std::vector<std::string> &resvec);
-    static void Uninstall(const std::string &bundleName, std::vector<std::string> &resvec);
-    static void HapUninstall(
-        const std::string &bundleName, const std::string &modulePackage, std::vector<std::string> &resvec);
     static sptr<IBundleMgr> GetBundleMgrProxy();
-    static sptr<IBundleInstaller> GetInstallerProxy();
-    void CheckBundleInfo(const uint32_t index, BundleInfo &bundleInfo) const;
-    void CreateDir(const std::string &path) const;
-    void CheckFileExist(const std::string &bundleName) const;
-    void CheckFileExist(const std::string &bundleName, const std::string &modulePackage) const;
-    void CheckFileNonExist(const std::string &bundleName) const;
-    void CheckFileNonExist(const std::string &bundleName, const std::string &modulePackage) const;
 };
-
-void BundleMgrProxyTest::SetUpTestCase()
-{}
-
-void BundleMgrProxyTest::TearDownTestCase()
-{}
-
-void BundleMgrProxyTest::SetUp()
-{}
-
-void BundleMgrProxyTest::TearDown()
-{}
-
-void BundleMgrProxyTest::Install(
-    const std::string &bundleFilePath, const InstallFlag installFlag, std::vector<std::string> &resvec)
-{
-    sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
-    if (!installerProxy) {
-        resvec.push_back(ERROR_INSTALL_FAILED);
-        return;
-    }
-    InstallParam installParam;
-    installParam.installFlag = installFlag;
-    installParam.userId = Constants::DEFAULT_USERID;
-    sptr<StatusReceiverImpl> statusReceiver = (new (std::nothrow) StatusReceiverImpl());
-    installerProxy->Install(bundleFilePath, installParam, statusReceiver);
-    resvec.push_back(statusReceiver->GetResultMsg());
-}
-
-void BundleMgrProxyTest::Uninstall(const std::string &bundleName, std::vector<std::string> &resvec)
-{
-    sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
-    if (!installerProxy) {
-        resvec.push_back(ERROR_UNINSTALL_FAILED);
-        return;
-    }
-
-    if (bundleName.empty()) {
-        resvec.push_back(ERROR_UNINSTALL_FAILED);
-    } else {
-        InstallParam installParam;
-        installParam.userId = Constants::DEFAULT_USERID;
-        sptr<StatusReceiverImpl> statusReceiver = (new (std::nothrow) StatusReceiverImpl());
-        installerProxy->Uninstall(bundleName, installParam, statusReceiver);
-        resvec.push_back(statusReceiver->GetResultMsg());
-    }
-}
-
-void BundleMgrProxyTest::HapUninstall(
-    const std::string &bundleName, const std::string &modulePackage, std::vector<std::string> &resvec)
-{
-    sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
-    if (!installerProxy) {
-        resvec.push_back(ERROR_UNINSTALL_FAILED);
-        return;
-    }
-
-    if (bundleName.empty()) {
-        resvec.push_back(ERROR_UNINSTALL_FAILED);
-    } else {
-        InstallParam installParam;
-        installParam.userId = Constants::DEFAULT_USERID;
-        sptr<StatusReceiverImpl> statusReceiver = (new (std::nothrow) StatusReceiverImpl());
-        installerProxy->Uninstall(bundleName, modulePackage, installParam, statusReceiver);
-        resvec.push_back(statusReceiver->GetResultMsg());
-    }
-}
 
 sptr<IBundleMgr> BundleMgrProxyTest::GetBundleMgrProxy()
 {
@@ -249,39 +96,6 @@ sptr<IBundleMgr> BundleMgrProxyTest::GetBundleMgrProxy()
 
     return iface_cast<IBundleMgr>(remoteObject);
 }
-
-sptr<IBundleInstaller> BundleMgrProxyTest::GetInstallerProxy()
-{
-    sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-    if (!bundleMgrProxy) {
-        return nullptr;
-    }
-
-    sptr<IBundleInstaller> installerProxy = bundleMgrProxy->GetBundleInstaller();
-    if (!installerProxy) {
-        return nullptr;
-    }
-
-    return installerProxy;
-}
-
-void BundleMgrProxyTest::CheckFileExist(const std::string &bundleName) const
-{}
-
-void BundleMgrProxyTest::CheckFileExist(const std::string &bundleName, const std::string &modulePackage) const
-{}
-
-void BundleMgrProxyTest::CheckFileNonExist(const std::string &bundleName) const
-{}
-
-void BundleMgrProxyTest::CheckFileNonExist(const std::string &bundleName, const std::string &modulePackage) const
-{}
-
-void BundleMgrProxyTest::CheckBundleInfo(const uint32_t index, BundleInfo &bundleInfo) const
-{}
-
-void BundleMgrProxyTest::CreateDir(const std::string &path) const
-{}
 
 /**
  * @tc.name: BenchmarkTestGetApplicationInfo
@@ -426,7 +240,8 @@ static void BenchmarkTestGetBundleInfoByBundleFlag(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -465,7 +280,8 @@ static void BenchmarkTestGetBundleInfoByFlags(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -504,7 +320,8 @@ static void BenchmarkTestGetBundleInfosByBundleFlag(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -545,7 +362,8 @@ static void BenchmarkTestGetBundleInfosByFlags(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -706,7 +524,8 @@ static void BenchmarkTestGetBundleInfosByMetaData(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -761,7 +580,8 @@ static void BenchmarkTestQueryAbilityInfo(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -804,7 +624,8 @@ static void BenchmarkTestQueryAbilityInfoByFlags(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -848,7 +669,8 @@ static void BenchmarkTestQueryAbilityInfos(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -893,7 +715,8 @@ static void BenchmarkTestQueryAbilityInfosByFlags(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -938,7 +761,8 @@ static void BenchmarkTestQueryAbilityInfosForClone(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -983,7 +807,8 @@ static void BenchmarkTestQueryAbilityInfosById(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -1022,7 +847,8 @@ static void BenchmarkTestQueryAbilityInfoByUri(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -1060,7 +886,8 @@ static void BenchmarkTestQueryAbilityInfoByUriAndId(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -1099,7 +926,8 @@ static void BenchmarkTestQueryAbilityInfosByUri(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -1130,7 +958,8 @@ static void BenchmarkTestQueryKeepAliveBundleInfos(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -1185,7 +1014,8 @@ static void BenchmarkTestGetBundleArchiveInfo(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -1223,7 +1053,8 @@ static void BenchmarkTestGetBundleArchiveInfoByFlag(benchmark::State &state)
     info.releaseType = "Release";
     info.mainEntry = "com.ohos.contactsdataability";
     info.entryModuleName = "entry";
-    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     info.cpuAbi = "armeabi";
     info.description = "dataability_description";
     info.applicationInfo.name = "com.ohos.contactsdataability";
@@ -1530,7 +1361,8 @@ static void BenchmarkTestIsAbilityEnabled(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -1567,7 +1399,8 @@ static void BenchmarkTestSetAbilityEnabled(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -1919,7 +1752,8 @@ static void BenchmarkTestGetDistributedBundleInfo(benchmark::State &state)
     std::string networkId;
     DistributedBundleInfo distributedBundleInfo;
     distributedBundleInfo.name = "com.ohos.contactsdataability";
-    distributedBundleInfo.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
+    distributedBundleInfo.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
+        "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     for (auto _ : state) {
         /* @tc.steps: step1.call ReadFromParcel in loop */
         bundleMgrProxy->GetDistributedBundleInfo(networkId, DEFAULT_USERID, bundleName, distributedBundleInfo);
@@ -1967,7 +1801,8 @@ static void BenchmarkTestQueryExtensionAbilityInfosByWant(benchmark::State &stat
     info.readPermission = "ohos.permission.READ_CALL_LOG";
     info.writePermission = "ohos.permission.WRITE_CALL_LOG";
     info.uri = "dataability://com.ohos.callogability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.bundleName = "com.ohos.contactsdataability";
     info.applicationInfo.versionName = "1.0";
@@ -2006,7 +1841,8 @@ static void BenchmarkTestQueryExtensionAbilityInfosByType(benchmark::State &stat
     info.readPermission = "ohos.permission.READ_CALL_LOG";
     info.writePermission = "ohos.permission.WRITE_CALL_LOG";
     info.uri = "dataability://com.ohos.callogability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.bundleName = "com.ohos.contactsdataability";
     info.applicationInfo.versionName = "1.0";
@@ -2051,7 +1887,8 @@ static void BenchmarkTestQueryExtensionAbilityInfos(benchmark::State &state)
     info.readPermission = "ohos.permission.READ_CALL_LOG";
     info.writePermission = "ohos.permission.WRITE_CALL_LOG";
     info.uri = "dataability://com.ohos.callogability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.bundleName = "com.ohos.contactsdataability";
     info.applicationInfo.versionName = "1.0";
@@ -2122,7 +1959,8 @@ static void BenchmarkTestQueryExtensionAbilityInfoByUri(benchmark::State &state)
     info.readPermission = "ohos.permission.READ_CALL_LOG";
     info.writePermission = "ohos.permission.WRITE_CALL_LOG";
     info.uri = "dataability://com.ohos.callogability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.bundleName = "com.ohos.contactsdataability";
     info.applicationInfo.versionName = "1.0";
@@ -2139,22 +1977,6 @@ static void BenchmarkTestQueryExtensionAbilityInfoByUri(benchmark::State &state)
     for (auto _ : state) {
         /* @tc.steps: step1.call ReadFromParcel in loop */
         bundleMgrProxy->QueryExtensionAbilityInfoByUri(URI, DEFAULT_USERID, info);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestGetAbilityPixelMapIcon
- * @tc.desc: Testcase for testing GetAbilityPixelMapIcon.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestGetAbilityPixelMapIcon(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->GetAbilityPixelMapIcon(bundleName, abilityName);
     }
 }
 
@@ -2184,7 +2006,8 @@ static void BenchmarkTestGetAbilityInfo(benchmark::State &state)
     info.bundleName = "com.ohos.contactsdataability";
     info.moduleName = "entry";
     info.applicationName = "com.ohos.contactsdataability";
-    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability/com.ohos.contactsdataability/assets/entry/resources.index";
+    info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
+        "/com.ohos.contactsdataability/assets/entry/resources.index";
     info.versionName = "1.0";
     info.applicationInfo.name = "com.ohos.contactsdataability";
     info.applicationInfo.description = "dataability_description";
@@ -2266,7 +2089,6 @@ BENCHMARK(BenchmarkTestQueryExtensionAbilityInfosByType)->Iterations(1000);
 BENCHMARK(BenchmarkTestVerifyCallingPermission)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetAccessibleAppCodePaths)->Iterations(1000);
 BENCHMARK(BenchmarkTestQueryExtensionAbilityInfoByUri)->Iterations(1000);
-BENCHMARK(BenchmarkTestGetAbilityPixelMapIcon)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetAbilityInfo)->Iterations(1000);
 }  // namespace
 

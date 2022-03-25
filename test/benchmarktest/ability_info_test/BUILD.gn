@@ -16,7 +16,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "bundle_framework/benchmark/bundle_framework"
 
-ohos_unittest("BenchmarkTestForAbilityInfo") {
+ohos_benchmarktest("BenchmarkTestForAbilityInfo") {
   module_out_path = module_output_path
   sources = [ "ability_info_test.cpp" ]
 
@@ -39,7 +39,7 @@ ohos_unittest("BenchmarkTestForAbilityInfo") {
   ]
 }
 
-group("unittest") {
+group("benchmarktest") {
   testonly = true
   deps = []
 

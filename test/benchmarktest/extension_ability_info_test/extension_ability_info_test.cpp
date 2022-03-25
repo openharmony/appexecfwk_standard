@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "ability_info.h"
+#include "extension_ability_info.h"
 
 #include <benchmark/benchmark.h>
 
@@ -30,28 +30,28 @@ namespace {
      */
     static void BenchmarkTestForReadFromParcel(benchmark::State &state)
     {
-        AbilityInfo info;
-        info.name = "allLogAbility";
-        info.description = "dataability_description";
-        info.iconPath = "$media:icon";
-        info.labelId = 0;
-        info.descriptionId = 0;
-        info.iconId = 0;
-        info.kind = "data";
-        info.deviceTypes = {"smartVision"};
-        info.uri = "dataability://com.ohos.callogability";
-        info.readPermission = "ohos.permission.READ_CALL_LOG";
-        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
-        info.package = "com.ohos.contactsdataability";
+        ExtensionAbilityInfo info;
         info.bundleName = "com.ohos.contactsdataability";
         info.moduleName = "entry";
-        info.applicationName = "com.ohos.contactsdataability";
+        info.name = "com.ohos.contactsdataability";
+        info.description = "dataability_description";
+        info.readPermission = "ohos.permission.READ_CALL_LOG";
+        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
+        info.uri = "dataability://com.ohos.callogability";
         info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
             "/com.ohos.contactsdataability/assets/entry/resources.index";
-        info.versionName = "1.0";
         info.applicationInfo.name = "com.ohos.contactsdataability";
+        info.applicationInfo.bundleName = "com.ohos.contactsdataability";
+        info.applicationInfo.versionName = "1.0";
+        info.applicationInfo.iconPath = "$media:icon";
         info.applicationInfo.description = "dataability_description";
-        info.applicationInfo.cpuAbi = "armeabi";
+        info.applicationInfo.codePath = "/data/app/el1/budle/public/com.ohos.contactsdataability";
+        info.applicationInfo.dataBaseDir = "/data/app/el2/database/com.ohos.contactsdataability";
+        info.applicationInfo.apiReleaseType = "Release";
+        info.applicationInfo.deviceId = "PHONE-001";
+        info.applicationInfo.entityType = "unsppecified";
+        info.applicationInfo.vendor = "ohos";
+        info.applicationInfo.nativeLibraryPath = "libs/arm";
         Parcel parcel;
         info.Marshalling(parcel);
         for (auto _ : state) {
@@ -68,28 +68,28 @@ namespace {
      */
     static void BenchmarkTestForMarshalling(benchmark::State &state)
     {
-        AbilityInfo info;
-        info.name = "allLogAbility";
-        info.description = "dataability_description";
-        info.iconPath = "$media:icon";
-        info.labelId = 0;
-        info.descriptionId = 0;
-        info.iconId = 0;
-        info.kind = "data";
-        info.deviceTypes = {"smartVision"};
-        info.uri = "dataability://com.ohos.callogability";
-        info.readPermission = "ohos.permission.READ_CALL_LOG";
-        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
-        info.package = "com.ohos.contactsdataability";
+        ExtensionAbilityInfo info;
         info.bundleName = "com.ohos.contactsdataability";
         info.moduleName = "entry";
-        info.applicationName = "com.ohos.contactsdataability";
+        info.name = "com.ohos.contactsdataability";
+        info.description = "dataability_description";
+        info.readPermission = "ohos.permission.READ_CALL_LOG";
+        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
+        info.uri = "dataability://com.ohos.callogability";
         info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
             "/com.ohos.contactsdataability/assets/entry/resources.index";
-        info.versionName = "1.0";
         info.applicationInfo.name = "com.ohos.contactsdataability";
+        info.applicationInfo.bundleName = "com.ohos.contactsdataability";
+        info.applicationInfo.versionName = "1.0";
+        info.applicationInfo.iconPath = "$media:icon";
         info.applicationInfo.description = "dataability_description";
-        info.applicationInfo.cpuAbi = "armeabi";
+        info.applicationInfo.codePath = "/data/app/el1/budle/public/com.ohos.contactsdataability";
+        info.applicationInfo.dataBaseDir = "/data/app/el2/database/com.ohos.contactsdataability";
+        info.applicationInfo.apiReleaseType = "Release";
+        info.applicationInfo.deviceId = "PHONE-001";
+        info.applicationInfo.entityType = "unsppecified";
+        info.applicationInfo.vendor = "ohos";
+        info.applicationInfo.nativeLibraryPath = "libs/arm";
         Parcel parcel;
         for (auto _ : state) {
             /* @tc.steps: step1.call Marshalling in loop */
@@ -105,28 +105,28 @@ namespace {
      */
     static void BenchmarkTestForUnmarshalling(benchmark::State &state)
     {
-        AbilityInfo info;
-        info.name = "allLogAbility";
-        info.description = "dataability_description";
-        info.iconPath = "$media:icon";
-        info.labelId = 0;
-        info.descriptionId = 0;
-        info.iconId = 0;
-        info.kind = "data";
-        info.deviceTypes = {"smartVision"};
-        info.uri = "dataability://com.ohos.callogability";
-        info.readPermission = "ohos.permission.READ_CALL_LOG";
-        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
-        info.package = "com.ohos.contactsdataability";
+        ExtensionAbilityInfo info;
         info.bundleName = "com.ohos.contactsdataability";
         info.moduleName = "entry";
-        info.applicationName = "com.ohos.contactsdataability";
+        info.name = "com.ohos.contactsdataability";
+        info.description = "dataability_description";
+        info.readPermission = "ohos.permission.READ_CALL_LOG";
+        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
+        info.uri = "dataability://com.ohos.callogability";
         info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
             "/com.ohos.contactsdataability/assets/entry/resources.index";
-        info.versionName = "1.0";
         info.applicationInfo.name = "com.ohos.contactsdataability";
+        info.applicationInfo.bundleName = "com.ohos.contactsdataability";
+        info.applicationInfo.versionName = "1.0";
+        info.applicationInfo.iconPath = "$media:icon";
         info.applicationInfo.description = "dataability_description";
-        info.applicationInfo.cpuAbi = "armeabi";
+        info.applicationInfo.codePath = "/data/app/el1/budle/public/com.ohos.contactsdataability";
+        info.applicationInfo.dataBaseDir = "/data/app/el2/database/com.ohos.contactsdataability";
+        info.applicationInfo.apiReleaseType = "Release";
+        info.applicationInfo.deviceId = "PHONE-001";
+        info.applicationInfo.entityType = "unsppecified";
+        info.applicationInfo.vendor = "ohos";
+        info.applicationInfo.nativeLibraryPath = "libs/arm";
         Parcel parcel;
         info.Marshalling(parcel);
         for (auto _ : state) {
