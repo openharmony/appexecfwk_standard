@@ -1379,7 +1379,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
         InnerBundleInfo newInfo;
         newInfo.SetAppType(appType);
         Security::Verify::ProvisionInfo provisionInfo;
-        if (installParam.noCheckSignature == false) {
+        if (!installParam.noCheckSignature) {
             provisionInfo = hapVerifyRes[i].GetProvisionInfo();
             bool isSystemApp = (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
                 provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP);
@@ -1404,7 +1404,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
             }
         }
 
-        if (installParam.noCheckSignature == false) {
+        if (!installParam.noCheckSignature) {
             newInfo.SetProvisionId(provisionInfo.appId);
             newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
             newInfo.SetAppPrivilegeLevel(provisionInfo.bundleInfo.apl);
