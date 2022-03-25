@@ -262,6 +262,60 @@ bool BundleDataMgr::RemoveModuleInfo(
     return true;
 }
 
+bool BundleDataMgr::AddInnerBundleUserInfo(
+    const std::string &bundleName, const InnerBundleUserInfo& newUserInfo)
+{
+    APP_LOGD("AddInnerBundleUserInfo:%{public}s", bundleName.c_str());
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        APP_LOGE("bundle info not exist");
+        return false;
+    }
+
+    std::lock_guard<std::mutex> stateLock(stateMutex_);
+    auto& info = bundleInfos_.at(bundleName).at(Constants::CURRENT_DEVICE_ID);
+    info.AddInnerBundleUserInfo(newUserInfo);
+    info.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
+    if (!dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info)) {
+        APP_LOGE("update storage failed bundle:%{public}s", bundleName.c_str());
+        return false;
+    }
+
+    DistributedBundleInfo DistributedBundleInfo;
+    info.GetDistributedBundleInfo(DistributedBundleInfo);
+    bool ret = distributedDataStorage_->SaveStorageDistributeInfo(DistributedBundleInfo);
+    APP_LOGD("write DistributedBundleInfo bundle:%{public}s result:%{public}d", bundleName.c_str(), ret);
+    return true;
+}
+
+bool BundleDataMgr::RemoveInnerBundleUserInfo(
+    const std::string &bundleName, int32_t userId)
+{
+    APP_LOGD("RemoveInnerBundleUserInfo:%{public}s", bundleName.c_str());
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        APP_LOGE("bundle info not exist");
+        return false;
+    }
+
+    std::lock_guard<std::mutex> stateLock(stateMutex_);
+    auto& info = bundleInfos_.at(bundleName).at(Constants::CURRENT_DEVICE_ID);
+    info.RemoveInnerBundleUserInfo(userId);
+    info.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
+    if (!dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info)) {
+        APP_LOGE("update storage failed bundle:%{public}s", bundleName.c_str());
+        return false;
+    }
+
+    DistributedBundleInfo DistributedBundleInfo;
+    info.GetDistributedBundleInfo(DistributedBundleInfo);
+    bool ret = distributedDataStorage_->SaveStorageDistributeInfo(DistributedBundleInfo);
+    APP_LOGD("write DistributedBundleInfo bundle:%{public}s result:%{public}d", bundleName.c_str(), ret);
+    return true;
+}
+
 bool BundleDataMgr::UpdateInnerBundleInfo(
     const std::string &bundleName, const InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo)
 {
