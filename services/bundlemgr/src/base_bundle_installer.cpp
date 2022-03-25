@@ -1700,7 +1700,31 @@ ErrCode BaseBundleInstaller::CreateBundleUserData(
     }
 
     innerBundleInfo.SetBundleInstallTime(BundleUtil::GetCurrentTime(), userId_);
-    return UpdateUserInfoToDb(innerBundleInfo, needResetInstallState);
+    if (!dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::USER_CHANGE)) {
+        APP_LOGE("update bundleinfo when user change failed.");
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    ScopeGuard stateGuard([&] {
+        dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::INSTALL_SUCCESS);
+    });
+    InnerBundleUserInfo innerBundleUserInfo;
+    if (!innerBundleInfo.GetInnerBundleUserInfo(userId_, innerBundleUserInfo)) {
+        APP_LOGE("oldInfo do not have user");
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
+    if (!dataMgr_->AddInnerBundleUserInfo(innerBundleInfo.GetBundleName(), innerBundleUserInfo)) {
+        APP_LOGE("update bundle user info to db failed %{public}s when createNewUser",
+            innerBundleInfo.GetBundleName().c_str());
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    if (!needResetInstallState) {
+        stateGuard.Dismiss();
+    }
+
+    return ERR_OK;
 }
 
 ErrCode BaseBundleInstaller::UpdateUserInfoToDb(
@@ -1752,7 +1776,19 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     }
 
     innerBundleInfo.RemoveInnerBundleUserInfo(userId_);
-    return UpdateUserInfoToDb(innerBundleInfo, true);
+    if (!dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::USER_CHANGE)) {
+        APP_LOGE("update bundleinfo when user change failed.");
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    if (!dataMgr_->RemoveInnerBundleUserInfo(innerBundleInfo.GetBundleName(), userId_)) {
+        APP_LOGE("update bundle user info to db failed %{public}s when remove user",
+            innerBundleInfo.GetBundleName().c_str());
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::INSTALL_SUCCESS);
+    return ERR_OK;
 }
 
 bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate) const
