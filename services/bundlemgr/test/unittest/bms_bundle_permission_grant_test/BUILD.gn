@@ -25,6 +25,7 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
   ]
   sources = [
+    "${services_path}/bundlemgr/src/account_helper.cpp",
     "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
