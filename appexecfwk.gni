@@ -23,12 +23,19 @@ tools_path = "${appexecfwk_path}/tools"
 declare_args() {
   bundle_framework_graphics = true
 
+  account_enable = true
+  configpolicy_enable = true
   device_manager_enable = true
   hicollie_enable = true
 
   if (defined(global_parts_info) &&
-      !defined(global_parts_info.hiviewdfx_hicollie_native)) {
-    hicollie_enable = false
+      !defined(global_parts_info.account_os_account_standard)) {
+    account_enable = false
+  }
+
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.customization_config_policy)) {
+    configpolicy_enable = false
   }
 
   if (defined(global_parts_info) &&
@@ -36,14 +43,15 @@ declare_args() {
     device_manager_enable = false
   }
 
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.hiviewdfx_hicollie_native)) {
+    hicollie_enable = false
+  }
+
   print("bundle_framework_graphics = " + "$bundle_framework_graphics")
+  print("account_enable = " + "$account_enable")
+  print("configpolicy_enable = " + "$configpolicy_enable")
   print("device_manager_enable = " + "$device_manager_enable")
   print("hicollie_enable = " + "$hicollie_enable")
   print("support_jsapi = " + "$support_jsapi")
-}
-
-configpolicy_enable = true
-if (defined(global_parts_info) &&
-    !defined(global_parts_info.customization_config_policy)) {
-  configpolicy_enable = false
 }

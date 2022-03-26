@@ -30,6 +30,7 @@ ohos_unittest("BmsDataMgrTest") {
     "//third_party/jsoncpp/include",
   ]
   sources = [
+    "${services_path}/bundlemgr/src/account_helper.cpp",
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",

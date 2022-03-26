@@ -15,10 +15,10 @@
 
 #include "bundle_mgr_service.h"
 
+#include "account_helper.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "datetime_ex.h"
-#include "os_account_manager.h"
 #include "perf_profile.h"
 #include "system_ability_definition.h"
 #include "system_ability_helper.h"
@@ -245,7 +245,7 @@ void BundleMgrService::CheckAllUser()
     std::set<int32_t> userIds = dataMgr_->GetAllUser();
     for (auto userId : userIds) {
         bool isExists = false;
-        if (AccountSA::OsAccountManager::IsOsAccountExists(userId, isExists) != ERR_OK) {
+        if (AccountHelper::IsOsAccountExists(userId, isExists) != ERR_OK) {
             APP_LOGE("Failed to query whether the user(%{public}d) exists.", userId);
             continue;
         }
