@@ -55,5 +55,3 @@ declare_args() {
   print("hicollie_enable = " + "$hicollie_enable")
   print("support_jsapi = " + "$support_jsapi")
 }
-
-
