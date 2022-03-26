@@ -1751,7 +1751,7 @@ static void BenchmarkTestGetDistributedBundleInfo(benchmark::State &state)
     sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
     std::string networkId;
     DistributedBundleInfo distributedBundleInfo;
-    distributedBundleInfo.name = "com.ohos.contactsdataability";
+    distributedBundleInfo.bundleName = "com.ohos.contactsdataability";
     distributedBundleInfo.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
         "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     for (auto _ : state) {

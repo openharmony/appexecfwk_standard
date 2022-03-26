@@ -16,11 +16,15 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_ACCOUNT_HELPER_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_ACCOUNT_HELPER_H
 
+#include <string>
+
 namespace OHOS {
 namespace AppExecFwk {
 class AccountHelper {
 public:
     static int IsOsAccountExists(const int id, bool &isOsAccountExists);
+
+    static int32_t GetCurrentActiveUserId();
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
