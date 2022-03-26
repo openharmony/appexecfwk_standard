@@ -374,6 +374,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     moduleInfo.moduleName = moduleName;
     moduleInfo.description = BUNDLE_DESCRIPTION;
     moduleInfo.colorMode = COLOR_MODE;
+    moduleInfo.label = LABEL;
 
     AppExecFwk::CustomizeData customizeData {"name", "value", "extra"};
     MetaData metaData {{customizeData}};
