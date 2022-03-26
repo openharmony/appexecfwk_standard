@@ -18,22 +18,21 @@
 
 #include <string>
 
+#include "distributed_module_info.h"
 #include "parcel.h"
-#include "bundle_user_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 struct DistributedBundleInfo : public Parcelable {
     uint32_t version = 1;
-    std::string name;
+    std::string bundleName;
     uint32_t versionCode = 0;
     std::string versionName;
     uint32_t minCompatibleVersion = 0;
     uint32_t targetVersionCode = 0;
     uint32_t compatibleVersionCode = 0;
     std::string appId;
-    std::string mainAbility;
-    std::vector<BundleUserInfo> bundleUserInfos;
+    std::vector<DistributedModuleInfo> moduleInfos;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

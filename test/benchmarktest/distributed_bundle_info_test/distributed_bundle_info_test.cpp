@@ -31,7 +31,7 @@ namespace {
     static void BenchmarkTestForReadFromParcel(benchmark::State &state)
     {
         DistributedBundleInfo info;
-        info.name = "com.ohos.contactsdataability";
+        info.bundleName = "com.ohos.contactsdataability";
         info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
             "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
         Parcel parcel;
@@ -51,7 +51,7 @@ namespace {
     static void BenchmarkTestForMarshalling(benchmark::State &state)
     {
         DistributedBundleInfo info;
-        info.name = "com.ohos.contactsdataability";
+        info.bundleName = "com.ohos.contactsdataability";
         info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
             "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
         Parcel parcel;
@@ -70,7 +70,7 @@ namespace {
     static void BenchmarkTestForUnmarshalling(benchmark::State &state)
     {
         DistributedBundleInfo info;
-        info.name = "com.ohos.contactsdataability";
+        info.bundleName = "com.ohos.contactsdataability";
         info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
             "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
         Parcel parcel;
@@ -90,7 +90,7 @@ namespace {
     static void BenchmarkTestForToString(benchmark::State &state)
     {
         DistributedBundleInfo info;
-        info.name = "com.ohos.contactsdataability";
+        info.bundleName = "com.ohos.contactsdataability";
         info.appId = "com.ohos.contactsdataability_BNtg4JBClbl92Rgc3jm"\
             "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
         for (auto _ : state) {
@@ -110,18 +110,19 @@ namespace {
         DistributedBundleInfo info;
         const std::string jsonString = R"({"appId": "ohos.global.systemres_BNtg4JBClbl92Rgc3jm/
             RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
-            "bundleUserInfos": [
-                {
-                    "abilities": [],
-                    "disabledAbilities": [],
-                    "enabled": true,
-                    "userId": 0
-                }
-            ],
+            "moduleInfos": [{
+                "moduleName":"ohos.global.systemres",
+                "abilities": [{
+                    "abilityName":"",
+                    "permissions":[],
+                    "type":"page",
+                    "enabled":true,
+                }]
+            }],
             "compatibleVersionCode": 3,
             "mainAbility": "",
             "minCompatibleVersion": 1,
-            "name": "ohos.global.systemres",
+            "bundleName": "ohos.global.systemres",
             "targetVersionCode": 3,
             "version": 1,
             "versionCode": 1,
