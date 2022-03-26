@@ -27,6 +27,7 @@ ohos_unittest("BmsBundleCloneTest") {
     "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/compatible_ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/compatible_application_info.cpp",
+    "${services_path}/bundlemgr/src/account_helper.cpp",
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
