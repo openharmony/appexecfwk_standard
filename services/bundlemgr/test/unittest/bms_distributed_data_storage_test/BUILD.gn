@@ -74,12 +74,15 @@ ohos_unittest("BmsDistributedDataStorageTest") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
     "samgr_standard:samgr_proxy",
   ]
-
+  defines = []
   if (bundle_framework_graphics) {
     external_deps += [ "resmgr_standard:global_resmgr" ]
+  }
+  if (account_enable) {
+    external_deps += [ "os_account_standard:os_account_innerkits" ]
+    defines += [ "ACCOUNT_ENABLE" ]
   }
 
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
