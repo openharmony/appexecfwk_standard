@@ -103,7 +103,6 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
     "resmgr_standard:global_resmgr",
   ]
   defines = []
@@ -114,6 +113,10 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
   if (build_selinux) {
     external_deps += [ "selinux:libhap_restorecon" ]
     cflags += [ "-DWITH_SELINUX" ]
+  }
+  if (account_enable) {
+    external_deps += [ "os_account_standard:os_account_innerkits" ]
+    defines += [ "ACCOUNT_ENABLE" ]
   }
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
