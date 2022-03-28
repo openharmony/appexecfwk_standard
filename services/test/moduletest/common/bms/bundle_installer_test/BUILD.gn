@@ -40,7 +40,6 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
 
   sources = [
     "${services_path}/bundlemgr/src/account_helper.cpp",
-    "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
@@ -98,8 +97,6 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
     "access_token:libaccesstoken_sdk",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
-    "device_manager_base:devicemanagersdk",
-    "hicollie_native:libhicollie",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
@@ -114,6 +111,15 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
   if (build_selinux) {
     external_deps += [ "selinux:libhap_restorecon" ]
     cflags += [ "-DWITH_SELINUX" ]
+  }
+  if (device_manager_enable) {
+    sources += [ "${services_path}/bundlemgr/src/bms_device_manager.cpp" ]
+    external_deps += [ "device_manager_base:devicemanagersdk" ]
+    defines += [ "DEVICE_MANAGER_ENABLE" ]
+  }
+  if (hicollie_enable) {
+    external_deps += [ "hicollie_native:libhicollie" ]
+    defines += [ "HICOLLIE_ENABLE" ]
   }
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
