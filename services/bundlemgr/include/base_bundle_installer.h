@@ -367,9 +367,10 @@ private:
     /**
      * @brief Remove bundle user data.
      * @param innerBundleInfo Indicates the innerBundleInfo of the bundle.
+     * @param needRemoveData Indicates need remove data or not.
      * @return Returns BundleUserMgr.
      */
-    ErrCode RemoveBundleUserData(InnerBundleInfo &innerBundleInfo);
+    ErrCode RemoveBundleUserData(InnerBundleInfo &innerBundleInfo, bool needRemoveData = true);
     /**
      * @brief Create bundle user data.
      * @param innerBundleInfo Indicates the bundle type of the application.
@@ -436,6 +437,12 @@ private:
 
 #define CHECK_RESULT_WITH_ROLLBACK(errcode, errmsg, newInfos, oldInfo)             \
     do {                                                                           \
+        if ((errcode) == ERR_APPEXECFWK_INSTALL_SINGLETON_NOT_SAME ||              \
+            (errcode) == ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON) {     \
+            APP_LOGE(errmsg, errcode);                                             \
+            return errcode;                                                        \
+        }                                                                          \
+                                                                                   \
         if (errcode != ERR_OK) {                                                   \
             APP_LOGE(errmsg, errcode);                                             \
             RollBack(newInfos, oldInfo);                                           \

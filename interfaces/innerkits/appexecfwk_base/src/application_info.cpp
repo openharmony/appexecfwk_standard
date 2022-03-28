@@ -47,7 +47,7 @@ const std::string APPLICATION_DESCRIPTION = "description";
 const std::string APPLICATION_DESCRIPTION_ID = "descriptionId";
 const std::string APPLICATION_KEEP_ALIVE = "keepAlive";
 const std::string APPLICATION_REMOVABLE = "removable";
-const std::string APPLICATION_SINGLE_USER = "singleUser";
+const std::string APPLICATION_SINGLETON = "singleton";
 const std::string APPLICATION_USER_DATA_CLEARABLE = "userDataClearable";
 const std::string APPLICATION_IS_SYSTEM_APP = "isSystemApp";
 const std::string APPLICATION_IS_LAUNCHER_APP = "isLauncherApp";
@@ -270,7 +270,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_DESCRIPTION_ID, applicationInfo.descriptionId},
         {APPLICATION_KEEP_ALIVE, applicationInfo.keepAlive},
         {APPLICATION_REMOVABLE, applicationInfo.removable},
-        {APPLICATION_SINGLE_USER, applicationInfo.singleUser},
+        {APPLICATION_SINGLETON, applicationInfo.singleton},
         {APPLICATION_USER_DATA_CLEARABLE, applicationInfo.userDataClearable},
         {APPLICATION_ACCESSIBLE, applicationInfo.accessible},
         {APPLICATION_IS_SYSTEM_APP, applicationInfo.isSystemApp},
@@ -434,8 +434,8 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        APPLICATION_SINGLE_USER,
-        applicationInfo.singleUser,
+        APPLICATION_SINGLETON,
+        applicationInfo.singleton,
         JsonType::BOOLEAN,
         false,
         parseResult,
