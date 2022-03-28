@@ -21,6 +21,7 @@
 #include "distributed_bundle_info.h"
 
 #include "bundle_constants.h"
+#include "bundle_info.h"
 #include "distributed_kv_data_manager.h"
 
 namespace OHOS {
@@ -29,23 +30,28 @@ class DistributedDataStorage {
 public:
     DistributedDataStorage();
     ~DistributedDataStorage();
+    static std::shared_ptr<DistributedDataStorage> GetInstance();
 
-    bool SaveStorageDistributeInfo(const DistributedBundleInfo &info);
+    bool SaveStorageDistributeInfo(const BundleInfo &info);
     bool DeleteStorageDistributeInfo(const std::string &bundleName);
     bool QueryStroageDistributeInfo(
         const std::string &bundleName, int32_t userId, const std::string &networkId,
         DistributedBundleInfo &info);
     bool QueryAllDeviceIds(std::vector<std::string> &deviceIds);
+    void SyncDistributedData(const std::vector<std::string> &deviceList);
 
 private:
     void DeviceAndNameToKey(const std::string &udid, const std::string &bundleName, std::string &key) const;
     void TryTwice(const std::function<DistributedKv::Status()> &func) const;
     bool CheckKvStore();
     DistributedKv::Status GetKvStore();
-    bool GetDistributeInfoByUserId(
-        int32_t userId, const DistributedKv::Key &key, const DistributedKv::Value &value, DistributedBundleInfo &info);
     bool GetLocalUdid(std::string &udid);
+    DistributedBundleInfo ConvertToDistributedBundleInfo(const BundleInfo &bundleInfo);
+    int32_t GetUdidByNetworkId(const std::string &networkId, std::string &udid);
 private:
+    static std::recursive_mutex mutex_;
+    static std::shared_ptr<DistributedDataStorage> instance_;
+
     const DistributedKv::AppId appId_ {Constants::APP_ID};
     const DistributedKv::StoreId storeId_ {Constants::DISTRIBUTE_DATA_STORE_ID};
     DistributedKv::DistributedKvDataManager dataManager_;
