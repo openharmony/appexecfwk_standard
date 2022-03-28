@@ -714,7 +714,6 @@ protected:
             "moduleSourceDir": ""
         }
     )"_json;
-    const std::string deviceId_ = Constants::CURRENT_DEVICE_ID;
     const std::string BASE_ABILITY_INFO = "baseAbilityInfos";
     // need modify with innerBundleInfoJson_
     const std::string abilityName = "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility";
