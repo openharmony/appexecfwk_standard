@@ -197,10 +197,10 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     }
 
     // singleton app can only be installed in U0 and U0 can only install singleton app.
-    bool isSingleton = newInfos.begin()->second.IsSingleUser();
+    bool isSingleton = newInfos.begin()->second.IsSingleton();
     if ((isSingleton && (userId_ != Constants::DEFAULT_USERID)) ||
         (!isSingleton && (userId_ == Constants::DEFAULT_USERID))) {
-        APP_LOGI("singleton(%{public}d) app(%{public}s) and user(%{public}d) are not matched.",
+        APP_LOGW("singleton(%{public}d) app(%{public}s) and user(%{public}d) are not matched.",
             isSingleton, bundleName_.c_str(), userId_);
         return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
@@ -235,16 +235,20 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
             newInnerBundleUserInfo.bundleUserInfo.userId = userId_;
             newInnerBundleUserInfo.bundleName = bundleName_;
             oldInfo.AddInnerBundleUserInfo(newInnerBundleUserInfo);
+            ScopeGuard userGuard([&] { RemoveBundleUserData(oldInfo, false); });
             uint32_t tokenId = CreateAccessTokenId(oldInfo);
             oldInfo.SetAccessTokenId(tokenId, userId_);
             result = GrantRequestPermissions(oldInfo, tokenId);
             if (result != ERR_OK) {
                 return result;
             }
+
             result = CreateBundleUserData(oldInfo, false);
             if (result != ERR_OK) {
                 return result;
             }
+
+            userGuard.Dismiss();
         }
 
         for (auto &info : newInfos) {
@@ -259,11 +263,6 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     if (!isAppExist_) {
         APP_LOGI("app is not exist");
         InnerBundleInfo &newInfo = it->second;
-        if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
-            APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
-            return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
-        }
-
         modulePath_ = it->first;
         InnerBundleUserInfo newInnerBundleUserInfo;
         newInnerBundleUserInfo.bundleUserInfo.userId = userId_;
@@ -915,11 +914,6 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
 
-    if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
-        APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
-        return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
-    }
-
     if (newInfo.HasEntry() && oldInfo.HasEntry()) {
         APP_LOGE("install more than one entry module");
         return ERR_APPEXECFWK_INSTALL_ENTRY_ALREADY_EXIST;
@@ -987,11 +981,6 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     if (!verifyUriPrefix(newInfo, userId_, true)) {
         APP_LOGE("verifyUriPrefix failed");
         return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
-    }
-
-    if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
-        APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
-        return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
 
     if (!isReplace && versionCode_ == oldInfo.GetVersionCode()) {
@@ -1447,7 +1436,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
     std::string versionName = (infos.begin()->second).GetVersionName();
     uint32_t target = (infos.begin()->second).GetTargetVersion();
     uint32_t compatible = (infos.begin()->second).GetCompatibleVersion();
-    bool singleUser = (infos.begin()->second).IsSingleUser();
+    bool singleton = (infos.begin()->second).IsSingleton();
     Constants::AppType appType = (infos.begin()->second).GetAppType();
 
     for (const auto &info :infos) {
@@ -1473,7 +1462,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
         if (compatible != info.second.GetCompatibleVersion()) {
             return ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME;
         }
-        if (singleUser != info.second.IsSingleUser()) {
+        if (singleton != info.second.IsSingleton()) {
             return ERR_APPEXECFWK_INSTALL_SINGLETON_NOT_SAME;
         }
         if (appType != info.second.GetAppType()) {
@@ -1679,7 +1668,7 @@ ErrCode BaseBundleInstaller::UpdateUserInfoToDb(
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleInfo)
+ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleInfo, bool needRemoveData)
 {
     auto bundleName = innerBundleInfo.GetBundleName();
     APP_LOGD("remove user(%{public}d) in bundle(%{public}s).", userId_, bundleName.c_str());
@@ -1687,11 +1676,14 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
         return ERR_APPEXECFWK_USER_NOT_EXIST;
     }
 
-    ErrCode result = RemoveBundleDataDir(innerBundleInfo);
-    if (result != ERR_OK) {
-        APP_LOGE("remove user data directory failed.");
-        return result;
+    if (needRemoveData) {
+        ErrCode result = RemoveBundleDataDir(innerBundleInfo);
+        if (result != ERR_OK) {
+            APP_LOGE("remove user data directory failed.");
+            return result;
+        }
     }
+
     // delete accessTokenId
     if (BundlePermissionMgr::DeleteAccessTokenId(innerBundleInfo.GetAccessTokenId(userId_)) !=
         AccessToken::AccessTokenKitRet::RET_SUCCESS) {
@@ -1699,18 +1691,18 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     }
 
     innerBundleInfo.RemoveInnerBundleUserInfo(userId_);
-    if (!dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::USER_CHANGE)) {
+    if (!dataMgr_->UpdateBundleInstallState(bundleName, InstallState::USER_CHANGE)) {
         APP_LOGE("update bundleinfo when user change failed.");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    if (!dataMgr_->RemoveInnerBundleUserInfo(innerBundleInfo.GetBundleName(), userId_)) {
+    if (!dataMgr_->RemoveInnerBundleUserInfo(bundleName, userId_)) {
         APP_LOGE("update bundle user info to db failed %{public}s when remove user",
-            innerBundleInfo.GetBundleName().c_str());
+            bundleName.c_str());
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::INSTALL_SUCCESS);
+    dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
     return ERR_OK;
 }
 

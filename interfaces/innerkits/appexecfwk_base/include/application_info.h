@@ -114,7 +114,7 @@ struct ApplicationInfo : public Parcelable {
 
     bool keepAlive = false;
     bool removable = true;
-    bool singleUser = false;
+    bool singleton = false;
     bool userDataClearable = true;
     bool accessible = false;
 

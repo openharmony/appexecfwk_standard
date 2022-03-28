@@ -1104,7 +1104,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
 
     if (applicationInfo.isSystemApp && isPreInstallApp) {
         applicationInfo.keepAlive = app.keepAlive;
-        applicationInfo.singleUser = app.singleton;
+        applicationInfo.singleton = app.singleton;
         applicationInfo.userDataClearable = app.userDataClearable;
         if (app.removable.first) {
             applicationInfo.removable = app.removable.second;
@@ -1141,7 +1141,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
                 applicationInfo.keepAlive = deviceConfig.keepAlive.second;
             }
             if (deviceConfig.singleton.first) {
-                applicationInfo.singleUser = deviceConfig.singleton.second;
+                applicationInfo.singleton = deviceConfig.singleton.second;
             }
             if (deviceConfig.userDataClearable.first) {
                 applicationInfo.userDataClearable = deviceConfig.userDataClearable.second;
@@ -1215,7 +1215,7 @@ bool ToBundleInfo(const ApplicationInfo &applicationInfo,
     bundleInfo.targetVersion = static_cast<uint32_t>(applicationInfo.apiTargetVersion);
 
     bundleInfo.isKeepAlive = applicationInfo.keepAlive;
-    bundleInfo.singleUser = applicationInfo.singleUser;
+    bundleInfo.singleton = applicationInfo.singleton;
     bundleInfo.isPreInstallApp = isPreInstallApp;
 
     bundleInfo.vendor = applicationInfo.vendor;

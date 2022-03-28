@@ -1395,7 +1395,7 @@ void InnerBundleInfo::UpdateBaseBundleInfo(const BundleInfo &bundleInfo, bool is
     baseBundleInfo_.targetVersion = bundleInfo.targetVersion;
 
     baseBundleInfo_.isKeepAlive = bundleInfo.isKeepAlive;
-    baseBundleInfo_.singleUser = bundleInfo.singleUser;
+    baseBundleInfo_.singleton = bundleInfo.singleton;
     baseBundleInfo_.isPreInstallApp = bundleInfo.isPreInstallApp;
 
     baseBundleInfo_.vendor = bundleInfo.vendor;
@@ -1432,7 +1432,7 @@ void InnerBundleInfo::UpdateBaseApplicationInfo(const ApplicationInfo &applicati
 
     baseApplicationInfo_.keepAlive = applicationInfo.keepAlive;
     baseApplicationInfo_.removable = applicationInfo.removable;
-    baseApplicationInfo_.singleUser = applicationInfo.singleUser;
+    baseApplicationInfo_.singleton = applicationInfo.singleton;
     baseApplicationInfo_.userDataClearable = applicationInfo.userDataClearable;
     baseApplicationInfo_.accessible = applicationInfo.accessible;
 
