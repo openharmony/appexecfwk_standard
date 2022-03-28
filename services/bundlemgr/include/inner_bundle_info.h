@@ -1319,6 +1319,7 @@ public:
 
     void SetAllowedAcls(const std::vector<std::string> &allowedAcls)
     {
+        allowedAcls_.clear();
         for (const auto &acl : allowedAcls) {
             allowedAcls_.emplace_back(acl);
         }
