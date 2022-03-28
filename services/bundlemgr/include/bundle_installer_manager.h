@@ -51,6 +51,15 @@ public:
         const sptr<IStatusReceiver> &statusReceiver);
     /**
      * @brief Create a bundle installer object for installing a bundle by bundleName.
+     * @param bundleName Indicates the bundleName.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return
+     */
+    void CreateInstallByBundleNameTask(const std::string &bundleName, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver);
+    /**
+     * @brief Create a bundle installer object for installing a bundle by bundleName.
      * @param bundleFilePath Indicates the path for storing the HAP of the bundle to install or update.
      * @param installParam Indicates the install parameters.
      * @param statusReceiver Indicates the callback object that using for notifing the install result.

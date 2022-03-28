@@ -95,6 +95,13 @@ void BundleInstaller::Install(const std::vector<std::string> &bundleFilePaths, c
     SendRemoveEvent();
 }
 
+void BundleInstaller::InstallByBundleName(const std::string &bundleName, const InstallParam &installParam)
+{
+    ErrCode resultCode = InstallBundleByBundleName(bundleName, installParam);
+    statusReceiver_->OnFinished(resultCode, "");
+    SendRemoveEvent();
+}
+
 void BundleInstaller::Uninstall(const std::string &bundleName, const InstallParam &installParam)
 {
     ErrCode resultCode = ERR_OK;

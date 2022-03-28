@@ -63,6 +63,13 @@ public:
      */
     void Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam);
     /**
+     * @brief Install a bundle by bundleName.
+     * @param bundleName Indicates the bundleName of the bundle to install.
+     * @param installParam Indicates the install parameters.
+     * @return
+     */
+    void InstallByBundleName(const std::string &bundleName, const InstallParam &installParam);
+    /**
      * @brief Uninstall a bundle using this installer object.
      * @param bundleName Indicates the bundle name of the application to uninstall.
      * @param installParam Indicates the uninstall parameters.

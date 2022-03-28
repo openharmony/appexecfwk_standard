@@ -85,6 +85,15 @@ public:
      */
     virtual bool Uninstall(const std::string &bundleName, const std::string &modulePackage,
         const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver) override;
+    /**
+     * @brief Installs an app by bundleName, only used in preInstall app.
+     * @param bundleName Indicates the bundleName of the application to install.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool InstallByBundleName(const std::string &bundleName, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) override;
 
 private:
     /**
