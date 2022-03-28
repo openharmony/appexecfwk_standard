@@ -182,12 +182,7 @@ bool BMSEventHandler::LoadAllPreInstallBundleInfos()
         return false;
     }
 
-    std::vector<PreInstallBundleInfo> preInstallBundleInfos;
-    if (!dataMgr->LoadAllPreInstallBundleInfos(preInstallBundleInfos)) {
-        APP_LOGE("LoadAllPreInstallBundleInfos failed.");
-        return false;
-    }
-
+    std::vector<PreInstallBundleInfo> preInstallBundleInfos = dataMgr->GetAllPreInstallBundleInfos();
     for (auto &iter : preInstallBundleInfos) {
         APP_LOGD("preInstallBundleInfos: %{public}s ", iter.GetBundleName().c_str());
         loadExistData_.emplace(iter.GetBundleName(), iter);

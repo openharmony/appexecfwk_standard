@@ -120,6 +120,13 @@ protected:
      */
     ErrCode Recover(const std::string &bundleName, const InstallParam &installParam);
     /**
+     * @brief The main function for bundle install by bundleName.
+     * @param bundleName Indicates the bundleName of the application to install.
+     * @param installParam Indicates the install parameters.
+     * @return Returns ERR_OK if the application install successfully; returns error code otherwise.
+     */
+    ErrCode InstallBundleByBundleName(const std::string &bundleName, const InstallParam &installParam);
+    /**
      * @brief Reset install properties.
      */
     void ResetInstallProperties();
@@ -269,6 +276,25 @@ private:
     ErrCode ProcessRecover(
         const std::string &bundleName, const InstallParam &installParam, int32_t &uid);
     /**
+     * @brief The real procedure for bundle install by bundleName.
+     * @param bundleName Indicates the bundleName the application to install.
+     * @param installParam Indicates the install parameters.
+     * @param uid Indicates the uid of the application.
+     * @return Returns ERR_OK if the bundle install successfully; returns error code otherwise.
+     */
+    ErrCode ProcessInstallBundleByBundleName(
+        const std::string &bundleName, const InstallParam &installParam, int32_t &uid);
+    /**
+     * @brief The real procedure for bundle install by bundleName.
+     * @param bundleName Indicates the bundleName the application to install.
+     * @param installParam Indicates the install parameters.
+     * @param uid Indicates the uid of the application.
+     * @param recoverMode Indicates the recoverMode or not.
+     * @return Returns ERR_OK if the bundle install successfully; returns error code otherwise.
+     */
+    ErrCode InnerProcessInstallByPreInstallInfo(
+        const std::string &bundleName, const InstallParam &installParam, int32_t &uid, bool recoverMode);
+    /**
      * @brief Check syscap.
      * @param bundlePaths Indicates the file paths of all HAP packages.
      * @return Returns ERR_OK if the syscap satisfy; returns error code otherwise.
@@ -374,22 +400,10 @@ private:
     /**
      * @brief Create bundle user data.
      * @param innerBundleInfo Indicates the bundle type of the application.
-     * @param needResetInstallState Indicates need update InstallState or not.
      * @return Returns ERR_OK if result is ok; returns error code otherwise.
      */
-    ErrCode CreateBundleUserData(
-        InnerBundleInfo &innerBundleInfo, bool needResetInstallState = true);
-    /**
-     * @brief Update UserInfo to Db.
-     * @param innerBundleInfo Indicates the bundle type of the application.
-     * @param needResetInstallState Indicates need update InstallState or not.
-     * @return Returns ERR_OK if result is ok; returns error code otherwise.
-     */
-    ErrCode UpdateUserInfoToDb(
-        InnerBundleInfo &innerBundleInfo, bool needResetInstallState = true);
-
+    ErrCode CreateBundleUserData(InnerBundleInfo &innerBundleInfo);
     bool verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate = false) const;
-
     void SaveStorageDistributeInfo();
     void DeleteStorageDistributeInfo(const std::string &bundleName);
 private:

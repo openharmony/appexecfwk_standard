@@ -684,6 +684,11 @@ public:
      */
     bool QueryExtensionAbilityInfos(const Want &want, int32_t flags, int32_t userId,
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;
+    /**
+     * @brief Obtains the PreInstallBundleInfo objects in Cache.
+     * @return Returns PreInstallBundleInfos.
+     */
+    const std::vector<PreInstallBundleInfo>& GetAllPreInstallBundleInfos();
 
     bool QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;

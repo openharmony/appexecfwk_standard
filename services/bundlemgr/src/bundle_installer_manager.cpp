@@ -105,6 +105,23 @@ void BundleInstallerManager::CreateInstallTask(const std::vector<std::string> &b
     installersPool_.AddTask(task);
 }
 
+void BundleInstallerManager::CreateInstallByBundleNameTask(const std::string &bundleName,
+    const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    auto installer = CreateInstaller(statusReceiver);
+    if (!installer) {
+        APP_LOGE("create installer failed");
+        return;
+    }
+
+    auto task = [installer, bundleName, installParam] {
+        int timerId = XCollieHelper::SetTimer(INSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
+        installer->InstallByBundleName(bundleName, installParam);
+        XCollieHelper::CancelTimer(timerId);
+    };
+    installersPool_.AddTask(task);
+}
+
 void BundleInstallerManager::CreateUninstallTask(
     const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {

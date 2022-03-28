@@ -81,18 +81,12 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
 
     dataMgr->AddUserId(userId);
     // Scan preset applications and parse package information.
-    std::vector<PreInstallBundleInfo> preInstallBundleInfos;
-    if (!dataMgr->LoadAllPreInstallBundleInfos(preInstallBundleInfos)) {
-        APP_LOGE("LoadAllPreInstallBundleInfos failed.");
-        return;
-    }
-
+    std::vector<PreInstallBundleInfo> preInstallBundleInfos = dataMgr->GetAllPreInstallBundleInfos();
     g_installedHapNum = 0;
     std::shared_ptr<BundlePromise> bundlePromise = std::make_shared<BundlePromise>();
     int32_t totalHapNum = static_cast<int32_t>(preInstallBundleInfos.size());
     // Read apps installed by other users that are visible to all users
     for (const auto &info : preInstallBundleInfos) {
-        std::vector<std::string> pathVec { info.GetBundlePaths() };
         InstallParam installParam;
         installParam.userId = userId;
         installParam.isPreInstallApp = true;
@@ -100,7 +94,7 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
         sptr<UserReceiverImpl> userReceiverImpl(new (std::nothrow) UserReceiverImpl());
         userReceiverImpl->SetBundlePromise(bundlePromise);
         userReceiverImpl->SetTotalHapNum(totalHapNum);
-        installer->Install(pathVec, installParam, userReceiverImpl);
+        installer->InstallByBundleName(info.GetBundleName(), installParam, userReceiverImpl);
     }
 
     if (static_cast<int32_t>(g_installedHapNum) < totalHapNum) {
