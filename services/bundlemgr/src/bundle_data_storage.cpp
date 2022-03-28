@@ -25,33 +25,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-bool BundleDataStorage::KeyToDeviceAndName(const std::string &key, std::string &deviceId, std::string &bundleName) const
-{
-    bool ret = false;
-    std::vector<std::string> splitStrs;
-    const std::string::size_type EXPECT_SPLIT_SIZE = 2;
-    OHOS::SplitStr(key, Constants::FILE_UNDERLINE, splitStrs);
-    // the expect split size should be 2.
-    // key rule is <deviceId>_<bundleName>
-    if (splitStrs.size() == EXPECT_SPLIT_SIZE) {
-        deviceId = splitStrs[0];
-        bundleName = splitStrs[1];
-        ret = true;
-    }
-    APP_LOGD("bundleName = %{public}s", bundleName.c_str());
-    return ret;
-}
-
-void BundleDataStorage::DeviceAndNameToKey(
-    const std::string &deviceId, const std::string &bundleName, std::string &key) const
-{
-    key.append(deviceId);
-    key.append(Constants::FILE_UNDERLINE);
-    key.append(bundleName);
-    APP_LOGD("bundleName = %{public}s", bundleName.c_str());
-}
-
-bool BundleDataStorage::LoadAllData(std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos)
+bool BundleDataStorage::LoadAllData(std::map<std::string, InnerBundleInfo> &infos)
 {
     APP_LOGI("load all installed bundle data to map");
     std::fstream i(Constants::BUNDLE_DATA_BASE_FILE);
@@ -74,22 +48,18 @@ bool BundleDataStorage::LoadAllData(std::map<std::string, std::map<std::string, 
             i.close();
             return false;
         }
-        for (auto &app : jParse.items()) {
-            std::map<std::string, InnerBundleInfo> deviceMap;
-            for (auto &device : app.value().items()) {
-                InnerBundleInfo innerBundleInfo;
-                if (!innerBundleInfo.FromJson(device.value())) {
-                    deviceMap.try_emplace(device.key(), innerBundleInfo);
-                }
+        for (auto &item : jParse.items()) {
+            InnerBundleInfo innerBundleInfo;
+            if (!innerBundleInfo.FromJson(item.value())) {
+                infos.try_emplace(item.key(), innerBundleInfo);
             }
-            infos.try_emplace(app.key(), deviceMap);
         }
     }
     i.close();
     return true;
 }
 
-bool BundleDataStorage::SaveStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo)
+bool BundleDataStorage::SaveStorageBundleInfo(const InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGI("save bundle data");
     bool ret = true;
@@ -103,31 +73,15 @@ bool BundleDataStorage::SaveStorageBundleInfo(const std::string &deviceId, const
         int len = static_cast<int>(f.tellg());
         if (len == 0) {
             nlohmann::json appRoot;
-            nlohmann::json app;
-            app[deviceId] = innerInfo;
-            appRoot[appName] = app;
+            appRoot[appName] = innerInfo;
             f << std::setw(Constants::DUMP_INDENT) << appRoot << std::endl;
         } else {
             f.seekg(0, std::ios::beg);
             nlohmann::json jsonFile;
             f >> jsonFile;
-            if (jsonFile.find(appName) != jsonFile.end()) {
-                if (jsonFile[appName].find(deviceId) != jsonFile[appName].end()) {
-                    // appName and device id is exist
-                    APP_LOGE("appName = %{public}s is exist", appName.c_str());
-                    ret = false;
-                } else {
-                    jsonFile[appName][deviceId] = innerInfo;
-                    f.seekp(0, std::ios::beg);
-                    f << std::setw(Constants::DUMP_INDENT) << jsonFile << std::endl;
-                }
-            } else {
-                nlohmann::json app;
-                app[deviceId] = innerInfo;
-                jsonFile[appName] = app;
-                f.seekp(0, std::ios::beg);
-                f << std::setw(Constants::DUMP_INDENT) << jsonFile << std::endl;
-            }
+            jsonFile[appName] = innerInfo;
+            f.seekp(0, std::ios::beg);
+            f << std::setw(Constants::DUMP_INDENT) << jsonFile << std::endl;
         }
     } else {
         APP_LOGI("bundle database file not exist");
@@ -137,7 +91,7 @@ bool BundleDataStorage::SaveStorageBundleInfo(const std::string &deviceId, const
     return ret;
 }
 
-bool BundleDataStorage::DeleteStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo)
+bool BundleDataStorage::DeleteStorageBundleInfo(const InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGI("delete bundle data");
     bool ret = false;
@@ -155,17 +109,9 @@ bool BundleDataStorage::DeleteStorageBundleInfo(const std::string &deviceId, con
             i.seekg(0, std::ios::beg);
             i >> jParse;
             if (jParse.find(appName) != jParse.end()) {
-                auto it = jParse[appName].find(deviceId);
-                if (it != jParse[appName].end()) {
-                    jParse[appName].erase(it);
-                    if (jParse[appName].size() == 0) {
-                        jParse.erase(appName);
-                        if (jParse.size() == 0) {
-                            isEmpty = true;
-                        }
-                    }
-                    ret = true;
-                }
+                jParse.erase(appName);
+                isEmpty = (jParse.size() == 0) ? true : false;
+                ret = true;
             } else {
                 APP_LOGE("not find appName = %{public}s", appName.c_str());
             }

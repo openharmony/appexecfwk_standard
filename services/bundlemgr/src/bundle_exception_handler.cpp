@@ -120,7 +120,7 @@ void BundleExceptionHandler::DeleteBundleInfoFromStorage(const InnerBundleInfo &
     auto storage = dataStorage_.lock();
     if (storage) {
         APP_LOGD("remove bundle info of %{public}s from the storage", info.GetBundleName().c_str());
-        storage->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info);
+        storage->DeleteStorageBundleInfo(info);
     } else {
         APP_LOGE(" fail to remove bundle info of %{public}s from the storage", info.GetBundleName().c_str());
     }

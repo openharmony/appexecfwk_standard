@@ -536,7 +536,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
     std::lock_guard lock {mtx};
     InnerBundleInfo oldInfo;
-    if (!dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, oldInfo)) {
+    if (!dataMgr_->GetInnerBundleInfo(bundleName, oldInfo)) {
         APP_LOGE("uninstall bundle info missing");
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
@@ -630,7 +630,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
     std::lock_guard lock {mtx};
     InnerBundleInfo oldInfo;
-    if (!dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, oldInfo)) {
+    if (!dataMgr_->GetInnerBundleInfo(bundleName, oldInfo)) {
         APP_LOGE("uninstall bundle info missing");
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
@@ -744,7 +744,7 @@ ErrCode BaseBundleInstaller::ProcessRecover(
         auto &mtx = dataMgr_->GetBundleMutex(bundleName);
         std::lock_guard lock {mtx};
         InnerBundleInfo oldInfo;
-        bool isAppExist = dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, oldInfo);
+        bool isAppExist = dataMgr_->GetInnerBundleInfo(bundleName, oldInfo);
         if (isAppExist) {
             dataMgr_->EnableBundle(bundleName);
             if (oldInfo.HasInnerBundleUserInfo(userId_)) {
@@ -1495,7 +1495,7 @@ bool BaseBundleInstaller::GetInnerBundleInfo(InnerBundleInfo &info, bool &isAppE
     }
     auto &mtx = dataMgr_->GetBundleMutex(bundleName_);
     std::lock_guard lock { mtx };
-    isAppExist = dataMgr_->GetInnerBundleInfo(bundleName_, Constants::CURRENT_DEVICE_ID, info);
+    isAppExist = dataMgr_->GetInnerBundleInfo(bundleName_, info);
     return true;
 }
 

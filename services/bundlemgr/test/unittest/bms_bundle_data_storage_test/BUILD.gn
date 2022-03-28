@@ -26,50 +26,6 @@ config("private_config") {
 
 module_output_path = "bundle_framework/bundlemgrservice"
 
-ohos_unittest("BmsBundleDataStorageTest") {
-  use_exceptions = true
-  module_out_path = module_output_path
-
-  sources = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_user_info.cpp",
-    "${services_path}/bundlemgr/src/bundle_data_storage.cpp",
-    "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
-    "${services_path}/bundlemgr/src/inner_bundle_user_info.cpp",
-    "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
-  ]
-
-  sources += [ "bms_bundle_data_storage_test.cpp" ]
-
-  configs = [
-    ":private_config",
-    "${services_path}/bundlemgr/test:bundlemgr_test_config",
-    "${services_path}/bundlemgr:bundlemgr_common_config",
-  ]
-  cflags = []
-  if (target_cpu == "arm") {
-    cflags += [ "-DBINDER_IPC_32BIT" ]
-  }
-  deps = [
-    "${services_path}/bundlemgr:bundle_parser",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//third_party/googletest:gtest_main",
-  ]
-
-  external_deps = [
-    "ability_runtime:app_manager",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-  ]
-
-  if (bundle_framework_graphics) {
-    external_deps += [ "resmgr_standard:global_resmgr" ]
-  }
-}
-
 ohos_unittest("BmsBundleDataStorageDatabaseTest") {
   use_exceptions = true
   module_out_path = module_output_path
@@ -112,8 +68,5 @@ ohos_unittest("BmsBundleDataStorageDatabaseTest") {
 
 group("unittest") {
   testonly = true
-  deps = [
-    #":BmsBundleDataStorageTest",
-    ":BmsBundleDataStorageDatabaseTest",
-  ]
+  deps = [ ":BmsBundleDataStorageDatabaseTest" ]
 }

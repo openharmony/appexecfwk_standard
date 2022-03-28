@@ -36,7 +36,6 @@ const std::string ILLEGAL_PATH_FIELD = "../";
 const char DOT_SUFFIX = '.';
 const char FILE_SEPARATOR_CHAR = '/';
 const std::string CURRENT_DEVICE_ID = "PHONE-001";
-const std::string PRE_INSTALL_DEVICE_ID = "PRE-" + CURRENT_DEVICE_ID;
 const std::string BUNDLE_DATA_BASE_DIR = "/data/bundlemgr";
 const std::string BUNDLE_DATA_BASE_FILE = BUNDLE_DATA_BASE_DIR + "/bmsdb.json";
 const std::string SYSTEM_APP_SCAN_PATH = "/system/app";
