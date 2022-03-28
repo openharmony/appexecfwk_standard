@@ -291,7 +291,7 @@ void BmsBundleKitServiceTest::AddBundleInfo(const std::string &bundleName, Bundl
     bundleInfo.isKeepAlive = true;
     bundleInfo.isDifferentName = true;
     bundleInfo.jointUserId = BUNDLE_JOINT_USERID;
-    bundleInfo.singleUser = true;
+    bundleInfo.singleton = true;
 }
 
 void BmsBundleKitServiceTest::AddApplicationInfo(const std::string &bundleName, ApplicationInfo &appInfo) const
@@ -564,7 +564,7 @@ void BmsBundleKitServiceTest::CheckBundleInfo(const std::string &bundleName, con
     EXPECT_EQ(true, bundleInfo.isDifferentName);
     EXPECT_EQ(BUNDLE_JOINT_USERID, bundleInfo.jointUserId);
     EXPECT_TRUE(bundleInfo.isKeepAlive);
-    EXPECT_TRUE(bundleInfo.singleUser);
+    EXPECT_TRUE(bundleInfo.singleton);
 }
 
 void BmsBundleKitServiceTest::CheckBundleArchiveInfo(const std::string &bundleName, const std::string &moduleName,
