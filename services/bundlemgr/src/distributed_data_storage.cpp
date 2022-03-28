@@ -18,7 +18,9 @@
 #include <unistd.h>
 
 #include "app_log_wrapper.h"
+#ifdef DEVICE_MANAGER_ENABLE
 #include "bms_device_manager.h"
+#endif
 #include "bundle_util.h"
 #include "parameter.h"
 
@@ -32,6 +34,20 @@ const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
 const uint32_t DEVICE_UDID_LENGTH = 65;
 }  // namespace
 
+std::shared_ptr<DistributedDataStorage> DistributedDataStorage::instance_ = nullptr;
+std::recursive_mutex DistributedDataStorage::mutex_;
+
+std::shared_ptr<DistributedDataStorage> DistributedDataStorage::GetInstance()
+{
+    if (instance_ == nullptr) {
+        std::lock_guard<std::recursive_mutex> lock_l(mutex_);
+        if (instance_ == nullptr) {
+            instance_ = std::make_shared<DistributedDataStorage>();
+        }
+    }
+    return instance_;
+}
+
 DistributedDataStorage::DistributedDataStorage()
 {
     APP_LOGI("instance is created");
@@ -44,7 +60,7 @@ DistributedDataStorage::~DistributedDataStorage()
     dataManager_.CloseKvStore(appId_, storeId_);
 }
 
-bool DistributedDataStorage::SaveStorageDistributeInfo(const DistributedBundleInfo &info)
+bool DistributedDataStorage::SaveStorageDistributeInfo(const BundleInfo &info)
 {
     APP_LOGI("save DistributedBundleInfo data");
     {
@@ -63,7 +79,7 @@ bool DistributedDataStorage::SaveStorageDistributeInfo(const DistributedBundleIn
     std::string keyOfData;
     DeviceAndNameToKey(udid, info.name, keyOfData);
     Key key(keyOfData);
-    Value value(info.ToString());
+    Value value(ConvertToDistributedBundleInfo(info).ToString());
     Status status;
     {
         std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
@@ -119,40 +135,13 @@ bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bund
     return true;
 }
 
-bool DistributedDataStorage::GetDistributeInfoByUserId(
-    int32_t userId, const DistributedKv::Key &key, const Value &value, DistributedBundleInfo &info)
-{
-    if (!info.FromJsonString(value.ToString())) {
-        APP_LOGE("it's an error value");
-        kvStorePtr_->Delete(key);
-        return false;
-    }
-    if (userId == Constants::ALL_USERID) {
-        return true;
-    }
-    if (userId >= Constants::DEFAULT_USERID) {
-        for (auto it = info.bundleUserInfos.begin(); it != info.bundleUserInfos.end();) {
-            if (it->userId != userId) {
-                it = info.bundleUserInfos.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    }
-    if (info.bundleUserInfos.empty()) {
-        APP_LOGE("GetDistributeInfoByUserId: the user %{public}d does not exists", userId);
-        return false;
-    }
-    return true;
-}
-
 bool DistributedDataStorage::QueryStroageDistributeInfo(
     const std::string &bundleName, int32_t userId, const std::string &networkId,
     DistributedBundleInfo &info)
 {
     APP_LOGI("query DistributedBundleInfo");
     std::string udid;
-    int32_t ret = BmsDeviceManager::GetUdidByNetworkId(networkId, udid);
+    int32_t ret = GetUdidByNetworkId(networkId, udid);
     if (ret != 0) {
         APP_LOGI("can not get udid by networkId error:%{public}d", ret);
         return false;
@@ -176,7 +165,9 @@ bool DistributedDataStorage::QueryStroageDistributeInfo(
         std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
         status = kvStorePtr_->Get(key, value);
         if (status == Status::SUCCESS) {
-            if (!GetDistributeInfoByUserId(userId, key, value, info)) {
+            if (!info.FromJsonString(value.ToString())) {
+                APP_LOGE("it's an error value");
+                kvStorePtr_->Delete(key);
                 return false;
             }
             return true;
@@ -186,7 +177,9 @@ bool DistributedDataStorage::QueryStroageDistributeInfo(
             status = kvStorePtr_->Get(key, value);
             APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
             if (status == Status::SUCCESS) {
-                if (!GetDistributeInfoByUserId(userId, key, value, info)) {
+                if (!info.FromJsonString(value.ToString())) {
+                    APP_LOGE("it's an error value");
+                    kvStorePtr_->Delete(key);
                     return false;
                 }
                 return true;
@@ -229,7 +222,7 @@ Status DistributedDataStorage::GetKvStore()
     Options options = {
         .createIfMissing = true,
         .encrypt = false,
-        .autoSync = true,
+        .autoSync = false,
         .kvStoreType = KvStoreType::SINGLE_VERSION
         };
     Status status = dataManager_.GetSingleKvStore(options, appId_, storeId_, kvStorePtr_);
@@ -262,6 +255,42 @@ bool DistributedDataStorage::GetLocalUdid(std::string &udid)
     return true;
 }
 
+int32_t DistributedDataStorage::GetUdidByNetworkId(const std::string &networkId, std::string &udid)
+{
+#ifdef DEVICE_MANAGER_ENABLE
+    return BmsDeviceManager::GetUdidByNetworkId(networkId, udid);
+#else
+    APP_LOGW("DEVICE_MANAGER_ENABLE is false");
+    return -1;
+#endif
+}
+
+DistributedBundleInfo DistributedDataStorage::ConvertToDistributedBundleInfo(const BundleInfo &bundleInfo)
+{
+    DistributedBundleInfo distributedBundleInfo;
+    distributedBundleInfo.bundleName = bundleInfo.name;
+    distributedBundleInfo.versionCode = bundleInfo.versionCode;
+    distributedBundleInfo.compatibleVersionCode = bundleInfo.compatibleVersion;
+    distributedBundleInfo.versionName = bundleInfo.versionName;
+    distributedBundleInfo.minCompatibleVersion = bundleInfo.minCompatibleVersionCode;
+    distributedBundleInfo.targetVersionCode = bundleInfo.targetVersion;
+    distributedBundleInfo.appId = bundleInfo.appId;
+    for (const auto &hapModuleInfo : bundleInfo.hapModuleInfos) {
+        DistributedModuleInfo distributedModuleInfo;
+        distributedModuleInfo.moduleName = hapModuleInfo.moduleName;
+        for (const auto &abilityInfo : hapModuleInfo.abilityInfos) {
+            DistributedAbilityInfo distributedAbilityInfo;
+            distributedAbilityInfo.abilityName = abilityInfo.name;
+            distributedAbilityInfo.permissions = abilityInfo.permissions;
+            distributedAbilityInfo.type = abilityInfo.type;
+            distributedAbilityInfo.enabled = abilityInfo.enabled;
+            distributedModuleInfo.abilities.emplace_back(distributedAbilityInfo);
+        }
+        distributedBundleInfo.moduleInfos.emplace_back(distributedModuleInfo);
+    }
+    return distributedBundleInfo;
+}
+
 bool DistributedDataStorage::QueryAllDeviceIds(std::vector<std::string> &deviceIds)
 {
     std::vector<DeviceInfo> deviceInfoList;
@@ -284,6 +313,23 @@ bool DistributedDataStorage::QueryAllDeviceIds(std::vector<std::string> &deviceI
     }
 
     return !deviceIds.empty();
+}
+
+void DistributedDataStorage::SyncDistributedData(const std::vector<std::string> &deviceList)
+{
+    APP_LOGD("syncDistributedData");
+    if (kvStorePtr_ == nullptr) {
+        APP_LOGE("kvStorePtr_ is null");
+        return;
+    }
+    if (deviceList.size() == 0) {
+        APP_LOGE("deviceList parameter is invalid");
+        return;
+    }
+    Status status = kvStorePtr_->Sync(deviceList, SyncMode::PUSH);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("kvStorePtr_ Sync error: %{public}d", status);
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

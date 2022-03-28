@@ -1315,8 +1315,6 @@ public:
         return isNewVersion_;
     }
 
-    void GetDistributedBundleInfo(DistributedBundleInfo &distributedBundleInfo) const;
-
     void SetAllowedAcls(const std::vector<std::string> &allowedAcls)
     {
         allowedAcls_.clear();
