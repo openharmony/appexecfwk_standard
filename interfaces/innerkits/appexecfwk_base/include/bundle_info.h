@@ -71,7 +71,7 @@ struct BundleInfo : public Parcelable {
     uint32_t targetVersion = 0;
 
     bool isKeepAlive = false;
-    bool singleUser = false;
+    bool singleton = false;
     bool isPreInstallApp = false;
 
     std::string vendor;

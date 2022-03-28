@@ -1907,7 +1907,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
 
     if (applicationInfo.isSystemApp && isPreInstallApp) {
         applicationInfo.keepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
-        applicationInfo.singleUser = configJson.app.singleton;
+        applicationInfo.singleton = configJson.app.singleton;
         applicationInfo.userDataClearable = configJson.app.userDataClearable;
         if (configJson.app.removable.first) {
             applicationInfo.removable = configJson.app.removable.second;
@@ -1996,7 +1996,7 @@ bool ToBundleInfo(const ProfileReader::ConfigJson &configJson, const Application
     bundleInfo.targetVersion = static_cast<uint32_t>(applicationInfo.apiTargetVersion);
 
     bundleInfo.isKeepAlive = applicationInfo.keepAlive;
-    bundleInfo.singleUser = applicationInfo.singleUser;
+    bundleInfo.singleton = applicationInfo.singleton;
     bundleInfo.isPreInstallApp = isPreInstallApp;
 
     bundleInfo.vendor = applicationInfo.vendor;

@@ -1271,12 +1271,12 @@ public:
         onlyCreateBundleUser_ = onlyCreateBundleUser;
     }
     /**
-     * @brief Check whether isSingleUser.
-     * @return Return isSingleUser.
+     * @brief Check whether isSingleton.
+     * @return Return isSingleton.
      */
-    bool IsSingleUser() const
+    bool IsSingleton() const
     {
-        return baseApplicationInfo_.singleUser;
+        return baseApplicationInfo_.singleton;
     }
     /**
      * @brief Get response userId.

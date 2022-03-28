@@ -1127,14 +1127,14 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetDebug_0300, Function | MediumTest | Lev
 }
 
 /**
- * @tc.number: BMS_GetIsKeepAliveAndSingleUser_0100
- * @tc.name: Get the isKeepAlive and singleUser information of the system application
- * @tc.desc: Get the isKeepAlive and singleUser information of the system application, KeepAlive is configured to true,
- *              SingleUser is configured to false
+ * @tc.number: BMS_GetIsKeepAliveAndSingleton_0100
+ * @tc.name: Get the isKeepAlive and singleton information of the system application
+ * @tc.desc: Get the isKeepAlive and singleton information of the system application, KeepAlive is configured to true,
+ *              Singleton is configured to false
  */
-HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0100, Function | MediumTest | Level1)
+HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleton_0100, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleUser_0100";
+    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleton_0100";
     std::string bundleFilePath = SYSTEM_BUNDLE_PATH + "bmsSystemBundle2.hap";
     std::string bundleName = SYSTEM_BASE_BUNDLE_NAME + '2';
     std::string message;
@@ -1148,20 +1148,20 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0100, Function
     BundleInfo bundleInfo;
     EXPECT_TRUE(bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo));
     EXPECT_TRUE(bundleInfo.isKeepAlive);
-    EXPECT_FALSE(bundleInfo.singleUser);
+    EXPECT_FALSE(bundleInfo.singleton);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
-    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleUser_0100";
+    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleton_0100";
 }
 
 /**
- * @tc.number: BMS_GetIsKeepAliveAndSingleUser_0200
- * @tc.name: Get the isKeepAlive and singleUser information of the third-party application
- * @tc.desc: Get the isKeepAlive and singleUser information of the third-party application by getBundleInfo
+ * @tc.number: BMS_GetIsKeepAliveAndSingleton_0200
+ * @tc.name: Get the isKeepAlive and singleton information of the third-party application
+ * @tc.desc: Get the isKeepAlive and singleton information of the third-party application by getBundleInfo
  */
-HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0200, Function | MediumTest | Level1)
+HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleton_0200, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleUser_0100";
+    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleton_0100";
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle2.hap";
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + '2';
     std::string message;
@@ -1175,21 +1175,21 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0200, Function
     BundleInfo bundleInfo;
     EXPECT_TRUE(bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo));
     EXPECT_FALSE(bundleInfo.isKeepAlive);
-    EXPECT_FALSE(bundleInfo.singleUser);
+    EXPECT_FALSE(bundleInfo.singleton);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
-    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleUser_0200";
+    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleton_0200";
 }
 
 /**
- * @tc.number: BMS_GetIsKeepAliveAndSingleUser_0300
- * @tc.name: Get the isKeepAlive and singleUser information of the application which doesn't config those fields
- * @tc.desc: Get the isKeepAlive and singleUser information of the application which doesn't config those fields
+ * @tc.number: BMS_GetIsKeepAliveAndSingleton_0300
+ * @tc.name: Get the isKeepAlive and singleton information of the application which doesn't config those fields
+ * @tc.desc: Get the isKeepAlive and singleton information of the application which doesn't config those fields
  *               by getBundleInfo(application is system)
  */
-HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0300, Function | MediumTest | Level1)
+HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleton_0300, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleUser_0300";
+    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleton_0300";
     std::string bundleFilePath = SYSTEM_BUNDLE_PATH + "bmsSystemBundle3.hap";
     std::string bundleName = SYSTEM_BASE_BUNDLE_NAME + '3';
     std::string message;
@@ -1203,21 +1203,21 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0300, Function
     BundleInfo bundleInfo;
     EXPECT_TRUE(bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo));
     EXPECT_FALSE(bundleInfo.isKeepAlive);
-    EXPECT_FALSE(bundleInfo.singleUser);
+    EXPECT_FALSE(bundleInfo.singleton);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
-    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleUser_0300";
+    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleton_0300";
 }
 
 /**
- * @tc.number: BMS_GetIsKeepAliveAndSingleUser_0400
- * @tc.name: Get the isKeepAlive and singleUser information of the application includes two haps
+ * @tc.number: BMS_GetIsKeepAliveAndSingleton_0400
+ * @tc.name: Get the isKeepAlive and singleton information of the application includes two haps
  * @tc.desc: Install two hap packages of the application at the different time, and the configuration properties in the
  *              two haps are different (application is system)
  */
-HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0400, Function | MediumTest | Level1)
+HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleton_0400, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleUser_0400";
+    GTEST_LOG_(INFO) << "START BMS_GetIsKeepAliveAndSingleton_0400";
     std::string bundleFilePath1 = SYSTEM_BUNDLE_PATH + "bmsSystemBundle2.hap";
     std::string bundleFilePath2 = SYSTEM_BUNDLE_PATH + "bmsSystemBundle2Feature2.hap";
     std::string bundleName = SYSTEM_BASE_BUNDLE_NAME + '2';
@@ -1232,15 +1232,15 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0400, Function
     BundleInfo bundleInfo;
     EXPECT_TRUE(bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo));
     EXPECT_TRUE(bundleInfo.isKeepAlive);
-    EXPECT_FALSE(bundleInfo.singleUser);
+    EXPECT_FALSE(bundleInfo.singleton);
     Install(bundleFilePath2, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     EXPECT_TRUE(bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo));
     EXPECT_TRUE(bundleInfo.isKeepAlive);
-    EXPECT_FALSE(bundleInfo.singleUser);
+    EXPECT_FALSE(bundleInfo.singleton);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
-    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleUser_0400";
+    GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleton_0400";
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

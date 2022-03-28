@@ -502,7 +502,7 @@ ErrCode BMSEventHandler::CheckAppLabelInfo(
     std::string versionName = (infos.begin()->second).GetVersionName();
     uint32_t target = (infos.begin()->second).GetTargetVersion();
     uint32_t compatible = (infos.begin()->second).GetCompatibleVersion();
-    bool singleUser = (infos.begin()->second).IsSingleUser();
+    bool singleton = (infos.begin()->second).IsSingleton();
     Constants::AppType appType = (infos.begin()->second).GetAppType();
 
     for (const auto &info :infos) {
@@ -528,7 +528,7 @@ ErrCode BMSEventHandler::CheckAppLabelInfo(
         if (compatible != info.second.GetCompatibleVersion()) {
             return ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME;
         }
-        if (singleUser != info.second.IsSingleUser()) {
+        if (singleton != info.second.IsSingleton()) {
             return ERR_APPEXECFWK_INSTALL_SINGLETON_NOT_SAME;
         }
         if (appType != info.second.GetAppType()) {
