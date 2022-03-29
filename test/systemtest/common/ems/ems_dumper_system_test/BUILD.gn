@@ -21,18 +21,13 @@ module_output_path = "appexecfwk_standard/eventhandlermgrsst"
 ohos_systemtest("EmsDumperSystemTest") {
   module_out_path = module_output_path
 
-  include_dirs = [
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
-    "//utils/native/base/include",
-    "//base/hiviewdfx/interfaces/innerkits/libhilog/include",
-    "//base/hiviewdfx/interfaces/innerkits/libhitrace/include",
-  ]
-
   sources = [ "ems_dumper_system_test.cpp" ]
 
-  deps = [
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
-    "//third_party/googletest:gtest_main",
+  deps = [ "//third_party/googletest:gtest_main" ]
+
+  external_deps = [
+    "eventhandler:libeventhandler",
+    "utils_base:utils",
   ]
 }
 
