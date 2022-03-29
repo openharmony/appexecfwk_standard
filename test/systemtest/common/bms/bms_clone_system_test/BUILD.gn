@@ -18,10 +18,7 @@ module_output_path = "bundle_framework/bundlemgrsst"
 ohos_systemtest("BmsCloneSystemTest") {
   module_out_path = module_output_path
 
-  include_dirs = [
-    "//foundation/aafwk/standard/services/abilitymgr/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
-  ]
+  include_dirs = [ "//foundation/aafwk/standard/services/abilitymgr/include" ]
 
   sources = [ "bms_clone_system_test.cpp" ]
   cflags = []
@@ -30,23 +27,21 @@ ohos_systemtest("BmsCloneSystemTest") {
   }
   deps = [
     "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
-    "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/aafwk/standard/services/abilitymgr:abilityms",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
   ]
 
   defines = [ "APP_LOG_TAG = \"BundleMgrTool\"" ]
 
   external_deps = [
+    "ability_base:want",
+    "ability_runtime:app_manager",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
   ]
 }
 
