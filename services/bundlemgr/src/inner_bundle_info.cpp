@@ -19,6 +19,8 @@
 #include "bundle_mgr_client.h"
 #include "bundle_permission_mgr.h"
 #include "common_profile.h"
+#include "distributed_module_info.h"
+#include "distributed_ability_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -1393,7 +1395,7 @@ void InnerBundleInfo::UpdateBaseBundleInfo(const BundleInfo &bundleInfo, bool is
     baseBundleInfo_.targetVersion = bundleInfo.targetVersion;
 
     baseBundleInfo_.isKeepAlive = bundleInfo.isKeepAlive;
-    baseBundleInfo_.singleUser = bundleInfo.singleUser;
+    baseBundleInfo_.singleton = bundleInfo.singleton;
     baseBundleInfo_.isPreInstallApp = bundleInfo.isPreInstallApp;
 
     baseBundleInfo_.vendor = bundleInfo.vendor;
@@ -1430,7 +1432,7 @@ void InnerBundleInfo::UpdateBaseApplicationInfo(const ApplicationInfo &applicati
 
     baseApplicationInfo_.keepAlive = applicationInfo.keepAlive;
     baseApplicationInfo_.removable = applicationInfo.removable;
-    baseApplicationInfo_.singleUser = applicationInfo.singleUser;
+    baseApplicationInfo_.singleton = applicationInfo.singleton;
     baseApplicationInfo_.userDataClearable = applicationInfo.userDataClearable;
     baseApplicationInfo_.accessible = applicationInfo.accessible;
 
@@ -1735,12 +1737,14 @@ void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleIn
     APP_LOGD("bundleName:%{public}s userid:%{public}d", bundleInfo.name.c_str(), userId);
     if (static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_ABILITIES) {
         for (auto &ability : baseAbilityInfos_) {
+            bool isEnabled = IsAbilityEnabled(ability.second, userId);
             if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)
-                && !IsAbilityEnabled(ability.second, userId)) {
+                && !isEnabled) {
                 APP_LOGW("%{public}s is disabled,", ability.second.name.c_str());
                 continue;
             }
             AbilityInfo abilityInfo = ability.second;
+            abilityInfo.enabled = isEnabled;
             bundleInfo.abilityInfos.emplace_back(abilityInfo);
         }
     }
@@ -2127,31 +2131,6 @@ int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
 
     APP_LOGD("requestUserId(%{public}d) and responseUserId(%{public}d).", requestUserId, responseUserId);
     return responseUserId;
-}
-
-void InnerBundleInfo::GetDistributedBundleInfo(DistributedBundleInfo &distributedBundleInfo) const
-{
-    distributedBundleInfo.name = baseBundleInfo_.name;
-    distributedBundleInfo.versionCode = baseBundleInfo_.versionCode;
-    distributedBundleInfo.compatibleVersionCode = baseBundleInfo_.compatibleVersion;
-    distributedBundleInfo.versionName = baseBundleInfo_.versionName;
-    distributedBundleInfo.minCompatibleVersion = baseBundleInfo_.minCompatibleVersionCode;
-    distributedBundleInfo.targetVersionCode = baseBundleInfo_.targetVersion;
-    distributedBundleInfo.appId = baseBundleInfo_.appId;
-
-    for (const auto &innerModuleInfo : innerModuleInfos_) {
-        if (innerModuleInfo.second.isEntry) {
-            distributedBundleInfo.mainAbility = innerModuleInfo.second.mainAbility;
-        }
-    }
-
-    for (const auto &innerBundleUserInfo : innerBundleUserInfos_) {
-        BundleUserInfo bundleUserInfo = innerBundleUserInfo.second.bundleUserInfo;
-        for (const auto &item : baseAbilityInfos_) {
-            bundleUserInfo.abilities.emplace_back(item.second.name);
-        }
-        distributedBundleInfo.bundleUserInfos.emplace_back(bundleUserInfo);
-    }
 }
 
 void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList,

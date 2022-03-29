@@ -34,7 +34,6 @@ ohos_unittest("BmsBundleUpdaterTest") {
   ]
   sources = [
     "${services_path}/bundlemgr/src/account_helper.cpp",
-    "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
@@ -104,8 +103,6 @@ ohos_unittest("BmsBundleUpdaterTest") {
     "access_token:libaccesstoken_sdk",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
-    "device_manager_base:devicemanagersdk",
-    "hicollie_native:libhicollie",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
@@ -124,6 +121,15 @@ ohos_unittest("BmsBundleUpdaterTest") {
   if (account_enable) {
     external_deps += [ "os_account_standard:os_account_innerkits" ]
     defines += [ "ACCOUNT_ENABLE" ]
+  }
+  if (device_manager_enable) {
+    sources += [ "${services_path}/bundlemgr/src/bms_device_manager.cpp" ]
+    external_deps += [ "device_manager_base:devicemanagersdk" ]
+    defines += [ "DEVICE_MANAGER_ENABLE" ]
+  }
+  if (hicollie_enable) {
+    external_deps += [ "hicollie_native:libhicollie" ]
+    defines += [ "HICOLLIE_ENABLE" ]
   }
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }

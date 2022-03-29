@@ -19,6 +19,8 @@
 #include "nlohmann/json.hpp"
 #include "bundle_info.h"
 #include "bundle_user_info.h"
+#include "distributed_ability_info.h"
+#include "distributed_module_info.h"
 #include "form_info.h"
 #include "shortcut_info.h"
 #include "common_event_info.h"
@@ -63,6 +65,10 @@ void to_json(nlohmann::json &jsonObject, const RequestPermissionUsedScene &usedS
 void from_json(const nlohmann::json &jsonObject, RequestPermissionUsedScene &usedScene);
 void to_json(nlohmann::json &jsonObject, const RequestPermission &requestPermission);
 void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission);
+void to_json(nlohmann::json& jsonObject, const DistributedAbilityInfo& distributedAbilityInfo);
+void from_json(const nlohmann::json& jsonObject, DistributedAbilityInfo& distributedAbilityInfo);
+void to_json(nlohmann::json& jsonObject, const DistributedModuleInfo& distributedModuleInfo);
+void from_json(const nlohmann::json& jsonObject, DistributedModuleInfo& distributedModuleInfo);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_SERIALIZER_H

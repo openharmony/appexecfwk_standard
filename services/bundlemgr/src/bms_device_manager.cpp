@@ -17,6 +17,7 @@
 
 #include "app_log_wrapper.h"
 #include "device_manager.h"
+#include "distributed_data_storage.h"
 #include "service_control.h"
 #include "system_ability_definition.h"
 
@@ -119,6 +120,9 @@ void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOnline(const DistributedH
 {
     APP_LOGD("DeviceInitCallBack OnDeviceOnline");
     BmsDeviceManager::StartDynamicSystemProcess(DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    std::vector<std::string> deviceList;
+    deviceList.push_back(std::string(deviceInfo.networkId));
+    DistributedDataStorage::GetInstance()->SyncDistributedData(deviceList);
 }
 
 void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOffline(const DistributedHardware::DmDeviceInfo &deviceInfo)
