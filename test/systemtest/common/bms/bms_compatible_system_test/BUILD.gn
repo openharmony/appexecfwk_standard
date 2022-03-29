@@ -20,41 +20,28 @@ ohos_systemtest("BmsCompatibleSystemTest") {
 
   configs = [ "${libs_path}/libeventhandler:libeventhandler_config" ]
 
-  include_dirs = [
-    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
-    "${services_path}/bundlemgr/include",
-  ]
-
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${common_path}:libappexecfwk_common",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/bundlemgr:libbms",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
-    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
   ]
   sources = [ "bms_compatible_system_test.cpp" ]
 
   defines = [ "APP_LOG_TAG = \"BundleMgrTool\"" ]
 
   external_deps = [
-    "ces_standard:cesfwk_innerkits",
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
   ]
 }
 

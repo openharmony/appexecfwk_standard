@@ -18,8 +18,6 @@ module_output_path = "bundle_framework/bundlemgrsst"
 ohos_systemtest("BundleMgrClientSystemTest") {
   module_out_path = module_output_path
 
-  include_dirs = [ "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/" ]
-
   sources = [ "bundle_mgr_client_system_test.cpp" ]
   cflags = []
   if (target_cpu == "arm") {
@@ -27,13 +25,7 @@ ohos_systemtest("BundleMgrClientSystemTest") {
   }
   deps = [
     "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
-    "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
   ]
 
@@ -49,9 +41,13 @@ ohos_systemtest("BundleMgrClientSystemTest") {
   }
 
   external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
   ]
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrsst/ohos_test.xml"
 }

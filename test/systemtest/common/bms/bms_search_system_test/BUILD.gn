@@ -27,21 +27,19 @@ ohos_systemtest("BmsSearchSystemTest") {
   }
   deps = [
     "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
   ]
 
   defines = [ "APP_LOG_TAG = \"BundleMgrTool\"" ]
 
   external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
   ]
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrsst/ohos_test.xml"
 }
