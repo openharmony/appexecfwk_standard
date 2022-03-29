@@ -29,7 +29,6 @@
 #include "form_info.h"
 #include "foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/permission_def.h"
 #include "hap_module_info.h"
-#include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "ohos/aafwk/content/want.h"
 #ifdef SUPPORT_GRAPHICS
@@ -772,11 +771,9 @@ public:
         GET_ALL_FORMS_INFO,
         GET_FORMS_INFO_BY_APP,
         GET_FORMS_INFO_BY_MODULE,
-        GET_MODULE_USAGE_RECORD,
         GET_SHORTCUT_INFO,
         GET_ALL_COMMON_EVENT_INFO,
         GET_BUNDLE_INSTALLER,
-        NOTIFY_ABILITY_LIFE_STATUS,
         REMOVE_CLONED_BUNDLE,
         BUNDLE_CLONE,
         CHECK_BUNDLE_NAME_IN_ALLOWLIST,

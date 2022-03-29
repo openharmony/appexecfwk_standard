@@ -19,8 +19,6 @@
 #include <map>
 #include <mutex>
 
-#include "module_usage_record.h"
-
 #include "bundle_constants.h"
 #include "distributed_kv_data_manager.h"
 #include "inner_bundle_info.h"

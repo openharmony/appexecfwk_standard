@@ -187,13 +187,6 @@ struct AsyncGetBundleGidsCallbackInfo : public AsyncWorkData {
     std::string message;
 };
 
-struct AsyncModuleUsageRecordsCallbackInfo : public AsyncWorkData {
-    explicit AsyncModuleUsageRecordsCallbackInfo(napi_env env) : AsyncWorkData(env) {}
-    int32_t number;
-    std::vector<OHOS::AppExecFwk::ModuleUsageRecord> moduleUsageRecords;
-    bool ret = false;
-};
-
 struct AsyncExtensionInfoCallbackInfo : public AsyncWorkData {
     explicit AsyncExtensionInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     OHOS::AAFwk::Want want;
@@ -292,7 +285,6 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info);
 napi_value GetShortcutInfos(napi_env env, napi_callback_info info);
-napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info);
 napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info);
 napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info);
 napi_value ClearBundleCache(napi_env env, napi_callback_info info);

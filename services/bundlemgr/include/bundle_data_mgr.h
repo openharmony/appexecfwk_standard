@@ -34,8 +34,6 @@
 #include "distributed_data_storage.h"
 #include "inner_bundle_info.h"
 #include "inner_bundle_user_info.h"
-#include "module_usage_data_storage.h"
-#include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #ifdef SUPPORT_GRAPHICS
 #include "pixel_map.h"
@@ -481,23 +479,6 @@ public:
      */
     bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) const;
     /**
-     * @brief Notify a specified ability for ability.
-     * @param bundleName Indicates the bundle name of the ability to ability.
-     * @param abilityName Indicates the name of the ability to ability.
-     * @param launchTime Indicates the ability launchTime.
-     * @param uid Indicates the uid.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool NotifyAbilityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) const;
-    /**
-     * @brief Query ModuleUsageRecord objects ordered by lastLaunchTime desc
-     * @param maxNum Indicates the max number ShortcutInfo objects to get.
-     * @param records List of ModuleUsageRecord objects if obtained.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool GetUsageRecords(int32_t maxNum, std::vector<ModuleUsageRecord> &records);
-    /**
      * @brief Registers a callback for listening for permission changes of all UIDs.
      * @param callback Indicates the callback method to register.
      * @return Returns true if this function is successfully called; returns false otherwise.
@@ -528,14 +509,6 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool NotifyPermissionsChanged(int32_t uid);
-    /**
-     * @brief Update bundle usage record on bundle removed.
-     * @param keepUsage Indicates the flag record is remove on bundle removed.
-     * @param userId Indicates the user Id of the application.
-     * @param bundleName Indicates the bundle name of the application.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool UpdateUsageRecordOnBundleRemoved(bool keepUsage, const int userId, const std::string &bundleName) const;
     /**
      * @brief Update bundle usage record on module removed.
      * @param keepUsage Indicates the flag record is remove on module removed.
@@ -806,7 +779,6 @@ private:
     // current-status:previous-statue pair
     std::multimap<InstallState, InstallState> transferStates_;
     std::shared_ptr<IBundleDataStorage> dataStorage_;
-    std::shared_ptr<ModuleUsageRecordStorage> usageRecordStorage_;
     std::shared_ptr<PreInstallDataStorage> preInstallDataStorage_;
     std::shared_ptr<DistributedDataStorage> distributedDataStorage_;
     std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
