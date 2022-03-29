@@ -533,6 +533,10 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
         return false;
     }
+    if (applicationInfo.isSystemApp && !applicationInfo.userDataClearable) {
+        APP_LOGE("can not clean cacheFiles of %{public}s due to userDataClearable is false", bundleName.c_str());
+        return false;
+    }
     std::string rootDir = applicationInfo.dataDir;
     auto cleanCache = [this, rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
