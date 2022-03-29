@@ -31,21 +31,19 @@ public:
      * @param infos Indicates the map to save all installed bundles.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool LoadAllData(std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos) = 0;
+    virtual bool LoadAllData(std::map<std::string, InnerBundleInfo> &infos) = 0;
     /**
      * @brief Save the bundle data corresponding to the device Id of the bundle name to KvStore.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
      * @param innerBundleInfo Indicates the InnerBundleInfo object to be save.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool SaveStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo) = 0;
+    virtual bool SaveStorageBundleInfo(const InnerBundleInfo &innerBundleInfo) = 0;
     /**
      * @brief Delete the bundle data corresponding to the device Id of the bundle name to KvStore.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
      * @param innerBundleInfo Indicates the InnerBundleInfo object to be Delete.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool DeleteStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo) = 0;
+    virtual bool DeleteStorageBundleInfo(const InnerBundleInfo &innerBundleInfo) = 0;
 
     virtual bool ResetKvStore() = 0;
 };

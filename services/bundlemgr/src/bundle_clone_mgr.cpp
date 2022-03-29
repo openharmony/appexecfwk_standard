@@ -175,7 +175,7 @@ bool BundleCloneMgr::CreateCloneBundleInfo(const std::string &bundleName)
         APP_LOGE("datamgr is nullptr");
         return false;
     }
-    auto result = dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, cloneInfo_);
+    auto result = dataMgr_->GetInnerBundleInfo(bundleName, cloneInfo_);
     if (!result) {
         APP_LOGE("Clone AppName BundleInfo fail");
         return false;
@@ -300,7 +300,7 @@ bool BundleCloneMgr::RemoveClonedBundle(const std::string &oldName, const std::s
         return false;
     }
     InnerBundleInfo newcloneInfo_;
-    if (!dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, newcloneInfo_)) {
+    if (!dataMgr_->GetInnerBundleInfo(bundleName, newcloneInfo_)) {
         APP_LOGE("remove bundle info missing");
         return false;
     }

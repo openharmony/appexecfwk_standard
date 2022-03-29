@@ -100,9 +100,9 @@ public:
     }
 
     void SaveBundleDataToStorage(std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName,
-        const std::string &data, const std::string &deviceId);
+        const std::string &data);
     void DeleteBundleDataToStorage(
-        std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId);
+        std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName);
     void DeleteBundleDataToStorage();
     std::shared_ptr<SingleKvStore> GetKvStorePtr(DistributedKvDataManager &dataManager);
     InnerBundleInfo CreateInnerBundleInfo(const std::string &bundleName);
@@ -389,7 +389,6 @@ protected:
             "isPreInstallApp": true
         }
     )"_json;
-    std::string deviceId_{};
 
 private:
     std::shared_ptr<InstalldService> installdService_ = std::make_unique<InstalldService>();
@@ -398,7 +397,6 @@ private:
 
 BmsBundleInstallerModuleTest::BmsBundleInstallerModuleTest()
 {
-    deviceId_ = Constants::CURRENT_DEVICE_ID;
 }
 
 BmsBundleInstallerModuleTest::~BmsBundleInstallerModuleTest()
@@ -407,12 +405,10 @@ BmsBundleInstallerModuleTest::~BmsBundleInstallerModuleTest()
 }
 
 void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(std::shared_ptr<SingleKvStore> &kvStorePtr,
-    const std::string &bundleName, const std::string &data, const std::string &deviceId)
+    const std::string &bundleName, const std::string &data)
 {
     Status status;
-    std::string keyString = deviceId + "_" + bundleName;
-
-    Key key(keyString);
+    Key key(bundleName);
     Value value(data);
     status = kvStorePtr->Put(key, value);
     if (status != Status::SUCCESS) {
@@ -422,12 +418,9 @@ void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(std::shared_ptr<Singl
 }
 
 void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage(
-    std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId)
+    std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName)
 {
-    Status status;
-    std::string keyString = deviceId + "_" + bundleName;
-
-    Key key(keyString);
+    Key key(bundleName);
     status = kvStorePtr->Delete(key);
     if (status != Status::SUCCESS) {
         EXPECT_TRUE(false) << "delete fail";
@@ -1401,7 +1394,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0100, Function | Medium
         for (int j = 0; j < saveTimes; j++) {
             std::string bundleName = baseBundleName + std::to_string(i * saveTimes + j);
             InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
-            bool res = bundleDataStorage.SaveStorageBundleInfo(deviceId_, innerBundleInfo);
+            bool res = bundleDataStorage.SaveStorageBundleInfo(innerBundleInfo);
             EXPECT_TRUE(res) << "save bundle data fail";
             bundleNames.emplace_back(bundleName);
             innerBundleInfoStrs.emplace_back(innerBundleInfo.ToString());
@@ -1430,7 +1423,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0100, Function | Medium
         }
     }
     for (InnerBundleInfo inner : innerBundleInfos) {
-        bool delRes = bundleDataStorage.DeleteStorageBundleInfo(deviceId_, inner);
+        bool delRes = bundleDataStorage.DeleteStorageBundleInfo(inner);
         EXPECT_TRUE(delRes) << "delete data fail!!!";
     }
 }
@@ -1453,7 +1446,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0200, Function | Medium
     for (int i = 0; i < saveTimes; i++) {
         std::string bundleName = baseBundleName + std::to_string(i);
         InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
-        bool res = bundleDataStorage.SaveStorageBundleInfo(deviceId_, innerBundleInfo);
+        bool res = bundleDataStorage.SaveStorageBundleInfo(innerBundleInfo);
         EXPECT_TRUE(res) << "save bundle data fail";
         bundleNames.emplace_back(bundleName);
         innerBundleInfos.emplace_back(innerBundleInfo);
@@ -1480,7 +1473,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0200, Function | Medium
     }
 
     for (InnerBundleInfo inner : innerBundleInfos) {
-        bool delRes = bundleDataStorage.DeleteStorageBundleInfo(deviceId_, inner);
+        bool delRes = bundleDataStorage.DeleteStorageBundleInfo(inner);
         EXPECT_TRUE(delRes) << "delete data fail!!!";
     }
 }
@@ -1504,16 +1497,15 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
 
     int saveTimes = 100;
     int pos = 50;
-    std::string deviceId = Constants::CURRENT_DEVICE_ID;
     std::string abnormalData = "{";
     std::vector<std::string> bundleNames;
     for (int i = 0; i < saveTimes; i++) {
         std::string bundleName = "ohos.system" + std::to_string(i);
         if (i == pos) {
-            SaveBundleDataToStorage(kvStorePtr, bundleName, abnormalData, deviceId);
+            SaveBundleDataToStorage(kvStorePtr, bundleName, abnormalData);
         } else {
             InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
-            SaveBundleDataToStorage(kvStorePtr, bundleName, innerBundleInfo.ToString(), deviceId);
+            SaveBundleDataToStorage(kvStorePtr, bundleName, innerBundleInfo.ToString());
         }
         bundleNames.emplace_back(bundleName);
     }
@@ -1545,7 +1537,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
             EXPECT_TRUE(getAppInfo) << "Get Application: " + bundleNames[i] + " fail!";
             EXPECT_EQ(appInfo.bundleName, bundleNames[i]) << "appinfo bundleName is wrong";
         }
-        DeleteBundleDataToStorage(kvStorePtr, bundleNames[i], deviceId);
+        DeleteBundleDataToStorage(kvStorePtr, bundleNames[i]);
     }
     AppId appId{Constants::APP_ID};
     StoreId storeId{Constants::STORE_ID};

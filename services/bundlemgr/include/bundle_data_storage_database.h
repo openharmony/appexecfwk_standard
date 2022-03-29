@@ -36,26 +36,24 @@ public:
      * @param infos Indicates the map to save all installed bundles.
      * @return Returns true if the data is successfully loaded; returns false otherwise.
      */
-    virtual bool LoadAllData(std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos);
+    virtual bool LoadAllData(std::map<std::string, InnerBundleInfo> &infos);
     /**
      * @brief Save the bundle data corresponding to the device Id of the bundle name to KvStore.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
      * @param innerBundleInfo Indicates the InnerBundleInfo object to be save.
      * @return Returns true if the data is successfully saved; returns false otherwise.
      */
-    virtual bool SaveStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo);
+    virtual bool SaveStorageBundleInfo(const InnerBundleInfo &innerBundleInfo);
     /**
      * @brief Delete the bundle data corresponding to the device Id of the bundle name to KvStore.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
      * @param innerBundleInfo Indicates the InnerBundleInfo object to be Delete.
      * @return Returns true if the data is successfully deleted; returns false otherwise.
      */
-    virtual bool DeleteStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo);
+    virtual bool DeleteStorageBundleInfo(const InnerBundleInfo &innerBundleInfo);
     void RegisterKvStoreDeathListener();
     bool ResetKvStore();
 private:
     void SaveEntries(const std::vector<DistributedKv::Entry> &allEntries,
-        std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos);
+        std::map<std::string, InnerBundleInfo> &infos);
     DistributedKv::Status GetEntries(std::vector<DistributedKv::Entry> &allEntries) const;
     void TryTwice(const std::function<DistributedKv::Status()> &func) const;
     bool CheckKvStore();
@@ -64,8 +62,6 @@ private:
 private:
     const DistributedKv::AppId appId_ {Constants::APP_ID};
     const DistributedKv::StoreId storeId_ {Constants::STORE_ID};
-    bool KeyToDeviceAndName(const std::string &key, std::string &deviceId, std::string &bundleName) const;
-    void DeviceAndNameToKey(const std::string &deviceId, const std::string &bundleName, std::string &key) const;
     DistributedKv::DistributedKvDataManager dataManager_;
     std::shared_ptr<DistributedKv::SingleKvStore> kvStorePtr_;
     // std::shared_ptr<DataChangeListener> dataChangeListener_;

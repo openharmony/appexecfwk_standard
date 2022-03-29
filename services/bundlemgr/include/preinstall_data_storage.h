@@ -30,35 +30,22 @@ public:
     ~PreInstallDataStorage();
     /**
      * @brief Save the preInstall bundle data corresponding to the device Id of the bundle name to KvStore.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
      * @param preInstallBundleInfo Indicates the PreInstallBundleInfo object to be save.
      * @return Returns true if the data is successfully saved; returns false otherwise.
      */
-    bool SavePreInstallStorageBundleInfo(
-        const std::string &deviceId, const PreInstallBundleInfo &preInstallBundleInfo);
-    /**
-     * @brief Delete the bundle data corresponding to the device Id of the bundle name to KvStore.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
-     * @param preInstallBundleInfo Indicates the PreInstallBundleInfo object to be Delete.
-     * @return Returns true if the data is successfully deleted; returns false otherwise.
-     */
-    bool GetPreInstallStorageBundleInfo(
-        const std::string &deviceId, PreInstallBundleInfo &preInstallBundleInfo);
+    bool SavePreInstallStorageBundleInfo(const PreInstallBundleInfo &preInstallBundleInfo);
     /**
      * @brief Obtains the PreInstallBundleInfo objects provided by bundleName.
-     * @param deviceId Indicates the bundle name of the application.
      * @param preInstallBundleInfos Indicates information about the PreInstallBundleInfo.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool LoadAllPreInstallBundleInfos(std::vector<PreInstallBundleInfo> &preInstallBundleInfos);
     /**
      * @brief Delete the bundle data corresponding to the device Id of the bundle name to KvStore.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
      * @param innerBundleInfo Indicates the InnerBundleInfo object to be Delete.
      * @return Returns true if the data is successfully deleted; returns false otherwise.
      */
-    bool DeletePreInstallStorageBundleInfo(
-        const std::string &deviceId, const PreInstallBundleInfo &preInstallBundleInfo);
+    bool DeletePreInstallStorageBundleInfo(const PreInstallBundleInfo &preInstallBundleInfo);
 
 private:
     void TryTwice(const std::function<DistributedKv::Status()>& func) const;
