@@ -276,7 +276,7 @@ void BmsBundleInstallerTest::ClearBundleInfo()
     applicationInfo.bundleName = BUNDLE_NAME;
     innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
     // clear innerBundleInfo from data storage
-    bool result = dataStorage->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo);
+    bool result = dataStorage->DeleteStorageBundleInfo(innerBundleInfo);
     EXPECT_TRUE(result) << "the bundle info in db clear fail: " << BUNDLE_NAME;
 }
 

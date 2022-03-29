@@ -115,11 +115,10 @@ public:
     /**
      * @brief Get an InnerBundleInfo if exist (will change the status to DISABLED).
      * @param bundleName Indicates the bundle name.
-     * @param deviceId Indicates this device Id corresponding to the bundle name.
      * @param info Indicates the obtained InnerBundleInfo object.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    bool GetInnerBundleInfo(const std::string &bundleName, const std::string &deviceId, InnerBundleInfo &info);
+    bool GetInnerBundleInfo(const std::string &bundleName, InnerBundleInfo &info);
     /**
      * @brief Generate UID and GID for a bundle.
      * @param innerBundleUserInfo Indicates the InnerBundleUserInfo object.
@@ -576,7 +575,6 @@ public:
     bool SavePreInstallBundleInfo(const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo);
     /**
      * @brief Obtains the PreInstallBundleInfo objects provided by bundleName.
-     * @param bundleName Indicates the bundle name of the application.
      * @param preInstallBundleInfo Indicates information about the PreInstallBundleInfo.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
@@ -760,7 +758,7 @@ private:
     bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
         int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
     bool GetInnerBundleInfoWithFlags(const std::string &bundleName, const int32_t flags,
-        const std::string &deviceId, InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+        InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     int32_t GetUserId(int32_t userId = Constants::UNSPECIFIED_USERID) const;
     bool GenerateBundleId(const std::string &bundleName, int32_t &bundleId);
     int32_t GetUserIdByUid(int32_t uid) const;
@@ -801,8 +799,8 @@ private:
     std::vector<sptr<IBundleStatusCallback>> callbackList_;
     // all installed bundles
     // key:bundleName
-    // value:deviceId-innerbundleinfo pair
-    std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleInfos_;
+    // value:innerbundleInfo
+    std::map<std::string, InnerBundleInfo> bundleInfos_;
     // key:bundle name
     std::map<std::string, InstallState> installStates_;
     // current-status:previous-statue pair

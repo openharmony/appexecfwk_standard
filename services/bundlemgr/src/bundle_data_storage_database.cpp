@@ -43,44 +43,12 @@ BundleDataStorageDatabase::~BundleDataStorageDatabase()
     dataManager_.CloseKvStore(appId_, kvStorePtr_);
 }
 
-bool BundleDataStorageDatabase::KeyToDeviceAndName(
-    const std::string &key, std::string &deviceId, std::string &bundleName) const
-{
-    const size_t underlinePos = key.find_first_of(Constants::FILE_UNDERLINE);
-    if (underlinePos == std::string::npos) {
-        APP_LOGW("invalid key : %{private}s", key.c_str());
-        return false;
-    }
-    deviceId = key.substr(0, underlinePos);
-    bundleName = key.substr(underlinePos + 1);
-    return true;
-}
-
-void BundleDataStorageDatabase::DeviceAndNameToKey(
-    const std::string &deviceId, const std::string &bundleName, std::string &key) const
-{
-    key.append(deviceId);
-    key.append(Constants::FILE_UNDERLINE);
-    key.append(bundleName);
-    APP_LOGD("bundleName = %{public}s", bundleName.c_str());
-}
-
 void BundleDataStorageDatabase::SaveEntries(
-    const std::vector<Entry> &allEntries, std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos)
+    const std::vector<Entry> &allEntries, std::map<std::string, InnerBundleInfo> &infos)
 {
     for (const auto &item : allEntries) {
-        std::string bundleName;
-        std::string deviceId;
+        std::string bundleName = item.key.ToString();
         InnerBundleInfo innerBundleInfo;
-        if (!KeyToDeviceAndName(item.key.ToString(), deviceId, bundleName)) {
-            APP_LOGE("error key: %{private}s", item.key.ToString().c_str());
-            // it's an error key, delete it
-            {
-                std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
-                kvStorePtr_->Delete(item.key);
-            }
-            continue;
-        }
 
         nlohmann::json jsonObject = nlohmann::json::parse(item.value.ToString(), nullptr, false);
         if (jsonObject.is_discarded()) {
@@ -107,21 +75,12 @@ void BundleDataStorageDatabase::SaveEntries(
         if (!isBundleValid) {
             continue;
         }
-        auto allDevicesInfosIter = infos.find(bundleName);
-        if (allDevicesInfosIter != infos.end()) {
-            APP_LOGD("already have bundle: %{public}s", bundleName.c_str());
-            allDevicesInfosIter->second.emplace(deviceId, innerBundleInfo);
-        } else {
-            APP_LOGD("emplace bundle: %{public}s", bundleName.c_str());
-            std::map<std::string, InnerBundleInfo> allDevicesInfos;
-            allDevicesInfos.emplace(deviceId, innerBundleInfo);
-            infos.emplace(bundleName, allDevicesInfos);
-        }
+        infos.emplace(bundleName, innerBundleInfo);
     }
     APP_LOGD("SaveEntries end");
 }
 
-bool BundleDataStorageDatabase::LoadAllData(std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos)
+bool BundleDataStorageDatabase::LoadAllData(std::map<std::string, InnerBundleInfo> &infos)
 {
     APP_LOGI("load all installed bundle data to map");
     {
@@ -152,8 +111,7 @@ bool BundleDataStorageDatabase::LoadAllData(std::map<std::string, std::map<std::
     return ret;
 }
 
-bool BundleDataStorageDatabase::SaveStorageBundleInfo(
-    const std::string &deviceId, const InnerBundleInfo &innerBundleInfo)
+bool BundleDataStorageDatabase::SaveStorageBundleInfo(const InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGI("save bundle data");
     {
@@ -164,9 +122,7 @@ bool BundleDataStorageDatabase::SaveStorageBundleInfo(
         }
     }
 
-    std::string keyOfData;
-    DeviceAndNameToKey(deviceId, innerBundleInfo.GetBundleName(), keyOfData);
-    Key key(keyOfData);
+    Key key(innerBundleInfo.GetBundleName());
     Value value(innerBundleInfo.ToString());
     Status status;
     {
@@ -187,8 +143,7 @@ bool BundleDataStorageDatabase::SaveStorageBundleInfo(
     return true;
 }
 
-bool BundleDataStorageDatabase::DeleteStorageBundleInfo(
-    const std::string &deviceId, const InnerBundleInfo &innerBundleInfo)
+bool BundleDataStorageDatabase::DeleteStorageBundleInfo(const InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGI("delete bundle data");
     {
@@ -198,9 +153,7 @@ bool BundleDataStorageDatabase::DeleteStorageBundleInfo(
             return false;
         }
     }
-    std::string keyOfData;
-    DeviceAndNameToKey(deviceId, innerBundleInfo.GetBundleName(), keyOfData);
-    Key key(keyOfData);
+    Key key(innerBundleInfo.GetBundleName());
     Status status;
 
     {

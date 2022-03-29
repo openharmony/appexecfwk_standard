@@ -1399,7 +1399,7 @@ bool BundleMgrHostImpl::GetAbilityInfo(
 {
     APP_LOGD("start GetAbilityInfo, bundleName : %{public}s, abilityName : %{public}s",
         bundleName.c_str(), abilityName.c_str());
-    ElementName elementName(Constants::CURRENT_DEVICE_ID, bundleName, abilityName);
+    ElementName elementName("", bundleName, abilityName);
     Want want;
     want.SetElement(elementName);
     return QueryAbilityInfo(want, abilityInfo);
