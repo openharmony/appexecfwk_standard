@@ -52,7 +52,6 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     "${services_path}/bundlemgr/src/installd/installd_operator.cpp",
     "${services_path}/bundlemgr/src/installd/installd_service.cpp",
     "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
-    "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
     "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
     "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
   ]

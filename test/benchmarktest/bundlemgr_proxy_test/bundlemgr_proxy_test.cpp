@@ -1668,44 +1668,6 @@ static void BenchmarkTestGetAllCommonEventInfo(benchmark::State &state)
     }
 }
 
-/**
- * @tc.name: BenchmarkTestGetModuleUsageRecords
- * @tc.desc: Testcase for testing GetModuleUsageRecords.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestGetModuleUsageRecords(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    std::vector<ModuleUsageRecord> moduleUsageRecords;
-    ModuleUsageRecord info;
-    info.bundleName = "com.ohos.contactsdataability";
-    info.name = "com.ohos.contactsdataability";
-    moduleUsageRecords.push_back(info);
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->GetModuleUsageRecords(DEFAULT_USERID, moduleUsageRecords);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestNotifyAbilityLifeStatus
- * @tc.desc: Testcase for testing NotifyAbilityLifeStatus.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestNotifyAbilityLifeStatus(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->NotifyAbilityLifeStatus(bundleName, abilityName, time, 0);
-    }
-}
 
 /**
  * @tc.name: BenchmarkTestRemoveClonedBundle
@@ -2077,8 +2039,6 @@ BENCHMARK(BenchmarkTestGetFormsInfoByApp)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetFormsInfoByModule)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetShortcutInfos)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetAllCommonEventInfo)->Iterations(1000);
-BENCHMARK(BenchmarkTestGetModuleUsageRecords)->Iterations(1000);
-BENCHMARK(BenchmarkTestNotifyAbilityLifeStatus)->Iterations(1000);
 BENCHMARK(BenchmarkTestRemoveClonedBundle)->Iterations(1000);
 BENCHMARK(BenchmarkTestCheckBundleNameInAllowList)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetDistributedBundleInfo)->Iterations(1000);

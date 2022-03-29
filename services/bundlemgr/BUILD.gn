@@ -141,7 +141,6 @@ ohos_shared_library("libbms") {
     "src/distributed_data_storage.cpp",
     "src/hidump_helper.cpp",
     "src/kvstore_death_recipient_callback.cpp",
-    "src/module_usage_data_storage.cpp",
     "src/permission_changed_death_recipient.cpp",
     "src/preinstall_data_storage.cpp",
     "src/system_ability_helper.cpp",

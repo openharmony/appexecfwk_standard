@@ -1067,26 +1067,13 @@ bool BundleMgrHostImpl::GetAllCommonEventInfo(const std::string &eventKey,
 
 bool BundleMgrHostImpl::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
 {
-    APP_LOGD("start GetModuleUsageRecords, number : %{public}d", number);
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return false;
-    }
-    return dataMgr->GetUsageRecords(number, moduleUsageRecords);
+    return false;
 }
 
 bool BundleMgrHostImpl::NotifyAbilityLifeStatus(
     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
-    APP_LOGI("NotifyAbilityLifeStatus begin");
-    auto task = [this, bundleName, abilityName, launchTime, uid] {
-        auto dataMgr = GetDataMgrFromService();
-        dataMgr->NotifyAbilityLifeStatus(bundleName, abilityName, launchTime, uid);
-    };
-    handler_->PostTask(task);
-    APP_LOGI("NotifyAbilityLifeStatus end");
-    return true;
+    return false;
 }
 
 bool BundleMgrHostImpl::RemoveClonedBundle(const std::string &bundleName, const int32_t uid)

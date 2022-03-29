@@ -232,7 +232,6 @@ const std::string BUNDLE_INSTALL_MARK_STATUS = "installMarkStatus";
 const uint32_t VALUE_HOME_SCREEN = 1 << 0;
 // 000010 represents supporting search box
 const uint32_t VALUE_SEARCHBOX = 1 << 1;
-const int32_t MAX_USAGE_RECORD_SIZE = 1000;
 
 const std::string KEY_HOME_SCREEN = "homeScreen";
 const std::string KEY_SEARCHBOX = "searchbox";
