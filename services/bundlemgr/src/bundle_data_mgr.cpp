@@ -38,9 +38,6 @@ BundleDataMgr::BundleDataMgr()
 {
     InitStateTransferMap();
     dataStorage_ = std::make_shared<BundleDataStorageDatabase>();
-    usageRecordStorage_ = std::make_shared<ModuleUsageRecordStorage>();
-    // register distributed data process death listener.
-    usageRecordStorage_->RegisterKvStoreDeathListener();
     preInstallDataStorage_ = std::make_shared<PreInstallDataStorage>();
     distributedDataStorage_ = DistributedDataStorage::GetInstance();
     APP_LOGI("BundleDataMgr instance is created");
@@ -1643,67 +1640,6 @@ bool BundleDataMgr::GenerateCloneUid(InnerBundleInfo &info)
     return true;
 }
 
-bool BundleDataMgr::GetUsageRecords(const int32_t maxNum, std::vector<ModuleUsageRecord> &records)
-{
-    APP_LOGD("GetUsageRecords, maxNum: %{public}d", maxNum);
-    if ((maxNum <= 0) || (maxNum > ProfileReader::MAX_USAGE_RECORD_SIZE)) {
-        APP_LOGE("maxNum illegal");
-        return false;
-    }
-    records.clear();
-    std::vector<ModuleUsageRecord> usageRecords;
-    bool result = usageRecordStorage_->QueryRecordByNum(maxNum, usageRecords, GetUserId());
-    if (!result) {
-        APP_LOGE("GetUsageRecords error");
-        return false;
-    }
-    for (ModuleUsageRecord &item : usageRecords) {
-        APP_LOGD("GetUsageRecords item:%{public}s,%{public}s,%{public}s",
-            item.bundleName.c_str(),
-            item.name.c_str(),
-            item.abilityName.c_str());
-
-        std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-        if (bundleInfos_.empty()) {
-            APP_LOGW("bundleInfos_ data is empty");
-            break;
-        }
-        auto infoItem = bundleInfos_.find(item.bundleName);
-        if (infoItem == bundleInfos_.end()) {
-            continue;
-        }
-        APP_LOGD("GetUsageRecords %{public}s", infoItem->first.c_str());
-        if (infoItem->second.IsDisabled()) {
-            APP_LOGW("app %{public}s is disabled", infoItem->second.GetBundleName().c_str());
-            continue;
-        }
-        auto innerModuleInfo = infoItem->second.GetInnerModuleInfoByModuleName(item.name);
-        if (!innerModuleInfo) {
-            continue;
-        }
-        item.labelId = innerModuleInfo->labelId;
-        item.descriptionId = innerModuleInfo->descriptionId;
-        item.installationFreeSupported = innerModuleInfo->installationFree;
-        auto appInfo = infoItem->second.GetBaseApplicationInfo();
-        item.appLabelId = static_cast<uint32_t>(appInfo.labelId);
-        auto ability = infoItem->second.FindAbilityInfo(item.bundleName, item.abilityName, GetUserId());
-        if (!ability) {
-            APP_LOGW("ability:%{public}s not find", item.abilityName.c_str());
-            continue;
-        }
-        if (ability->type != AbilityType::PAGE) {
-            APP_LOGW("ability:%{public}s type is not PAGE", item.abilityName.c_str());
-            continue;
-        }
-        item.abilityName = ability->name;
-        item.abilityLabelId = ability->labelId;
-        item.abilityDescriptionId = ability->descriptionId;
-        item.abilityIconId = ability->iconId;
-        records.emplace_back(item);
-    }
-    return true;
-}
-
 bool BundleDataMgr::RestoreUidAndGid()
 {
     for (const auto &info : bundleInfos_) {
@@ -1942,78 +1878,6 @@ bool BundleDataMgr::GetFormsInfoByApp(const std::string &bundleName, std::vector
     infoItem->second.GetFormsInfoByApp(formInfos);
     APP_LOGE("App forminfo find success");
     return true;
-}
-
-bool BundleDataMgr::NotifyAbilityLifeStatus(
-    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) const
-{
-    if (bundleName.empty() || abilityName.empty()) {
-        return false;
-    }
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    if (bundleInfos_.empty()) {
-        return false;
-    }
-
-    int userId = GetUserIdByUid(uid);
-    std::string cloneBundleName = bundleName;
-    for (auto it = bundleInfos_.begin(); it != bundleInfos_.end();) {
-        if (it->first.find(cloneBundleName) != std::string::npos) {
-            if (it->second.GetUid(userId) == uid) {
-                cloneBundleName = it->first;
-                break;
-            }
-            ++it;
-        } else {
-            ++it;
-        }
-    }
-    auto infoItem = bundleInfos_.find(cloneBundleName);
-    if (infoItem == bundleInfos_.end()) {
-        return false;
-    }
-    if (infoItem->second.IsDisabled()) {
-        return false;
-    }
-    auto ability = infoItem->second.FindAbilityInfo(bundleName, abilityName, GetUserId(userId));
-    if (!ability) {
-        return false;
-    }
-    if (ability->applicationInfo.isCloned) {
-        userId = Constants::C_UESRID;
-    }
-    if (ability->type != AbilityType::PAGE) {
-        return false;
-    }
-    ModuleUsageRecord moduleUsageRecord;
-    moduleUsageRecord.bundleName = bundleName;
-    moduleUsageRecord.name = ability->moduleName;
-    moduleUsageRecord.abilityName = abilityName;
-    moduleUsageRecord.lastLaunchTime = launchTime;
-    moduleUsageRecord.launchedCount = 1;
-    return usageRecordStorage_->AddOrUpdateRecord(moduleUsageRecord, Constants::CURRENT_DEVICE_ID, userId);
-}
-
-bool BundleDataMgr::UpdateUsageRecordOnBundleRemoved(
-    bool keepUsage, const int userId, const std::string &bundleName) const
-{
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    if (bundleInfos_.empty()) {
-        APP_LOGE("bundleInfos_ data is empty");
-        return false;
-    }
-    auto infoItem = bundleInfos_.find(bundleName);
-    if (infoItem == bundleInfos_.end()) {
-        return false;
-    }
-    APP_LOGD("UpdateUsageRecordOnBundleRemoved %{public}s", infoItem->first.c_str());
-    if (infoItem->second.IsDisabled()) {
-        APP_LOGE("app %{public}s is disabled", infoItem->second.GetBundleName().c_str());
-        return false;
-    }
-    std::vector<std::string> moduleNames;
-    return keepUsage ? usageRecordStorage_->MarkUsageRecordRemoved(infoItem->second, GetUserId(userId))
-                     : usageRecordStorage_->DeleteUsageRecord(infoItem->second, GetUserId(userId));
 }
 
 bool BundleDataMgr::GetShortcutInfos(
