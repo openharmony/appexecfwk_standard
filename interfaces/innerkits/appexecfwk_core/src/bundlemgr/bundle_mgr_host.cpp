@@ -256,12 +256,6 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_COMMON_EVENT_INFO):
             errCode = HandleGetAllCommonEventInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_MODULE_USAGE_RECORD):
-            errCode = HandleGetModuleUsageRecords(data, reply);
-            break;
-        case static_cast<uint32_t>(IBundleMgr::Message::NOTIFY_ABILITY_LIFE_STATUS):
-            errCode = HandleNotifyAbilityLifeStatus(data, reply);
-            break;
         case static_cast<uint32_t>(IBundleMgr::Message::CHECK_BUNDLE_NAME_IN_ALLOWLIST):
             errCode = HandleCheckBundleNameInAllowList(data, reply);
             break;
@@ -1561,46 +1555,6 @@ ErrCode BundleMgrHost::HandleGetAllCommonEventInfo(Parcel &data, Parcel &reply)
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleGetModuleUsageRecords(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    int32_t number = data.ReadInt32();
-    std::vector<ModuleUsageRecord> records;
-    bool ret = GetModuleUsageRecords(number, records);
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-
-    if (ret) {
-        if (!WriteParcelableVector(records, reply)) {
-            APP_LOGE("write failed");
-            return ERR_APPEXECFWK_PARCEL_ERROR;
-        }
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleNotifyAbilityLifeStatus(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::string bundleName = data.ReadString();
-    std::string abilityName = data.ReadString();
-    int64_t launchTime = data.ReadInt64();
-    int32_t uid = data.ReadInt32();
-    APP_LOGI("bundleName %{public}s, abilityName %{public}s, launchTime %{public}" PRId64,
-        bundleName.c_str(),
-        abilityName.c_str(),
-        launchTime);
-
-    bool ret = NotifyAbilityLifeStatus(bundleName, abilityName, launchTime, uid);
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return ERR_OK;
 }

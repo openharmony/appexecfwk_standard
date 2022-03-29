@@ -112,7 +112,6 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getFormsInfoByModule", GetFormsInfoByModule),
         DECLARE_NAPI_FUNCTION("getFormsInfo", GetFormsInfoByApp),
         DECLARE_NAPI_FUNCTION("getAllFormsInfo", GetAllFormsInfo),
-        DECLARE_NAPI_FUNCTION("getModuleUsageRecords", GetModuleUsageRecords),
         DECLARE_NAPI_FUNCTION("on", RegisterAllPermissionsChanged),
         DECLARE_NAPI_FUNCTION("off", UnregisterPermissionsChanged),
         DECLARE_NAPI_FUNCTION("cleanBundleCacheFiles", ClearBundleCache),

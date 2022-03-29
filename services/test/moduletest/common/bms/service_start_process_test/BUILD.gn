@@ -40,7 +40,6 @@ ohos_moduletest("BmsServiceStartModuleTest") {
     "${services_path}/bundlemgr/src/bundle_user_mgr_host_impl.cpp",
     "${services_path}/bundlemgr/src/hidump_helper.cpp",
     "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
-    "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
     "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
     "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
   ]

@@ -1965,64 +1965,13 @@ bool BundleMgrProxy::GetAllCommonEventInfo(const std::string &eventKey, std::vec
 
 bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    MessageParcel data;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to GetModuleUsageRecords due to write MessageParcel fail");
-        return false;
-    }
-
-    if (!data.WriteInt32(number)) {
-        APP_LOGE("fail to GetModuleUsageRecords due to write number fail");
-        return false;
-    }
-
-    if (!GetParcelableInfos<ModuleUsageRecord>(
-            IBundleMgr::Message::GET_MODULE_USAGE_RECORD, data, moduleUsageRecords)) {
-        APP_LOGE("fail to GetModuleUsageRecords from server");
-        return false;
-    }
-    return true;
+    return false;
 }
 
 bool BundleMgrProxy::NotifyAbilityLifeStatus(
     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to NotifyAbilityLifeStatus of %{public}s", abilityName.c_str());
-    if (bundleName.empty() || abilityName.empty()) {
-        APP_LOGE("fail to NotifyAbilityLifeStatus due to params empty");
-        return false;
-    }
-
-    MessageParcel data;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to NotifyAbilityLifeStatus due to write InterfaceToken fail");
-        return false;
-    }
-    if (!data.WriteString(bundleName)) {
-        APP_LOGE("fail to NotifyAbilityLifeStatus due to write bundleName fail");
-        return false;
-    }
-    if (!data.WriteString(abilityName)) {
-        APP_LOGE("fail to NotifyAbilityLifeStatus due to write abilityName fail");
-        return false;
-    }
-    if (!data.WriteInt64(launchTime)) {
-        APP_LOGE("fail to NotifyAbilityLifeStatus due to write launchTime fail");
-        return false;
-    }
-    if (!data.WriteInt32(uid)) {
-        APP_LOGE("fail to NotifyAbilityLifeStatus due to write uid fail");
-        return false;
-    }
-
-    MessageParcel reply;
-    if (!SendTransactCmd(IBundleMgr::Message::NOTIFY_ABILITY_LIFE_STATUS, data, reply)) {
-        APP_LOGE("fail to NotifyAbilityLifeStatus from server");
-        return false;
-    }
-    return reply.ReadBool();
+    return false;
 }
 
 bool BundleMgrProxy::CheckBundleNameInAllowList(const std::string &bundleName)

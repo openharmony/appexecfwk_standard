@@ -32,7 +32,6 @@ group("benchmarktest") {
     "json_serializer_test:benchmarktest",
     "launcher_service_test:benchmarktest",
     "module_info_test:benchmarktest",
-    "module_usage_record_test:benchmarktest",
     "permission_def_test:benchmarktest",
     "remote_ability_info_test:benchmarktest",
     "shortcut_info_test:benchmarktest",

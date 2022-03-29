@@ -33,7 +33,6 @@
 #include "launcher_service.h"
 #include "mock_clean_cache.h"
 #include "mock_bundle_status.h"
-#include "module_usage_data_storage.h"
 #include "ohos/aafwk/content/want.h"
 
 using namespace testing::ext;
@@ -56,7 +55,6 @@ const std::string BUNDLE_VERSION_NAME = "1.0.0.1";
 const std::string BUNDLE_MAIN_ABILITY = "com.example.bundlekit.test.entry";
 const int32_t BUNDLE_MAX_SDK_VERSION = 0;
 const int32_t BUNDLE_MIN_SDK_VERSION = 0;
-const uint32_t RECORD_SIZE = 0;
 const std::string BUNDLE_JOINT_USERID = "3";
 const uint32_t BUNDLE_VERSION_CODE = 1001;
 const std::string BUNDLE_NAME_TEST1 = "com.example.bundlekit.test1";
@@ -104,7 +102,6 @@ const uint32_t PERMISSION_SIZE_ZERO = 0;
 const uint32_t PERMISSION_SIZE_TWO = 2;
 const uint32_t META_DATA_SIZE_ONE = 1;
 const uint32_t BUNDLE_NAMES_SIZE_ZERO = 0;
-const uint32_t RECORDS_SIZE_ZERO = 0;
 const uint32_t BUNDLE_NAMES_SIZE_ONE = 1;
 const std::string EMPTY_STRING = "";
 const int INVALID_UID = -1;
@@ -3025,192 +3022,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | 
     EXPECT_TRUE(shortcutInfos.empty());
 }
 
-/**
- * @tc.number: GetUsageRecords_0100
- * @tc.name: test can get usage records by notify ability life status
- * @tc.desc: 1.can get usage records
- */
-HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, 1629094922, 0);
-    EXPECT_TRUE(ret);
-    std::vector<ModuleUsageRecord> records;
-    auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
-    EXPECT_TRUE(result);
-    auto iter = std::find_if(records.begin(), records.end(), [](const auto &item) {
-        return (item.bundleName == BUNDLE_NAME_TEST && item.name == MODULE_NAME_TEST &&
-                item.abilityName == ABILITY_NAME_TEST);
-    });
-    EXPECT_NE(iter, records.end());
-    uint32_t count = 1;
-    EXPECT_EQ(iter->launchedCount, count);
-    InnerBundleInfo innerBundleInfo;
-    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
 
-/**
- * @tc.number: GetUsageRecords_0300
- * @tc.name: test can get usage records by notify ability life status
- * @tc.desc: 1.can get usage records called two notify ability
- */
-HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0300, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
-    auto ret1 = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
-    EXPECT_TRUE(ret);
-    EXPECT_TRUE(ret1);
-    std::vector<ModuleUsageRecord> records;
-    auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
-    EXPECT_TRUE(result);
-    auto iter = std::find_if(records.begin(), records.end(), [](const auto &item) {
-        return (item.bundleName == BUNDLE_NAME_TEST && item.name == MODULE_NAME_TEST &&
-                item.abilityName == ABILITY_NAME_TEST);
-    });
-    EXPECT_NE(iter, records.end());
-    uint32_t count = 2;
-    EXPECT_EQ(iter->launchedCount, count);
-    InnerBundleInfo innerBundleInfo1;
-    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: GetUsageRecords_0400
- * @tc.name: test can't get usage records if maxNum is Less than 0.
- * @tc.desc: 1.can't get usage records.
- */
-HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0400, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
-    EXPECT_TRUE(ret);
-    std::vector<ModuleUsageRecord> records;
-    auto result = GetBundleDataMgr()->GetUsageRecords(-1, records);
-    EXPECT_FALSE(result);
-    EXPECT_EQ(records.size(), RECORDS_SIZE_ZERO);
-    InnerBundleInfo innerBundleInfo1;
-    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: GetUsageRecords_0500
- * @tc.name: test can't get usage records if maxNum is more than 1000.
- * @tc.desc: 1.can't get usage records.
- */
-HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0500, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
-    EXPECT_TRUE(ret);
-    std::vector<ModuleUsageRecord> records;
-    auto result = GetBundleDataMgr()->GetUsageRecords(1001, records);
-    EXPECT_FALSE(result);
-    EXPECT_EQ(records.size(), RECORD_SIZE);
-    InnerBundleInfo innerBundleInfo1;
-    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: NotifyAbilityLifeStatus_0100
- * @tc.name: test can called notify ability life status
- * @tc.desc: 1. have called notify ability life status
- *           2. called notify ability life
- */
-HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0100, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
-    EXPECT_TRUE(ret);
-    InnerBundleInfo innerBundleInfo;
-    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST, innerBundleInfo);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: NotifyAbilityLifeStatus_0200
- * @tc.name: test can called notify ability life status
- * @tc.desc: 1. have two bundle to called notify ability life status
- *           2. notify ability life
- */
-HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0200, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
-    auto ret1 = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
-    EXPECT_TRUE(ret);
-    EXPECT_TRUE(ret1);
-    InnerBundleInfo innerBundleInfo1;
-    InnerBundleInfo innerBundleInfo2;
-    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
-    MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO, innerBundleInfo2);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo2, 0);
-    MockUninstallBundle(BUNDLE_NAME_DEMO);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: NotifyAbilityLifeStatus_0300
- * @tc.name: test can't called notify ability life status by error bundleName
- * @tc.desc: 1. can't to called notify ability life status
- */
-HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0300, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
-    EXPECT_FALSE(ret);
-    InnerBundleInfo innerBundleInfo;
-    MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: NotifyAbilityLifeStatus_0400
- * @tc.name: test can't called notify ability life status by null bundleName
- * @tc.desc: 1. can't to called notify ability life status
- */
-HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0400, Function | SmallTest | Level1)
-{
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
-    InnerBundleInfo innerBundleInfo;
-    MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
-    EXPECT_FALSE(ret);
-}
 
 /**
  * @tc.number: Ability_0100
