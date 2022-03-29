@@ -34,6 +34,7 @@
 #include "distributed_data_storage.h"
 #include "inner_bundle_info.h"
 #include "inner_bundle_user_info.h"
+#include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #ifdef SUPPORT_GRAPHICS
 #include "pixel_map.h"
