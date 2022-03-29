@@ -2672,6 +2672,12 @@ bool BundleDataMgr::QueryAllDeviceIds(std::vector<std::string> &deviceIds)
     return distributedDataStorage_->QueryAllDeviceIds(deviceIds);
 }
 
+const std::vector<PreInstallBundleInfo>& BundleDataMgr::GetAllPreInstallBundleInfos()
+{
+    std::lock_guard<std::mutex> lock(preInstallInfoMutex_);
+    return preInstallBundleInfos_;
+}
+
 #ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string &path) const
 {

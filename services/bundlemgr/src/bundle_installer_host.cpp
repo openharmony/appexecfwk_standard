@@ -283,6 +283,24 @@ bool BundleInstallerHost::Uninstall(const std::string &bundleName, const std::st
     return true;
 }
 
+bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
+    const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    if (!CheckBundleInstallerManager(statusReceiver)) {
+        APP_LOGE("statusReceiver invalid");
+        return false;
+    }
+
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+        APP_LOGE("install permission denied");
+        statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
+        return false;
+    }
+
+    manager_->CreateInstallByBundleNameTask(bundleName, CheckInstallParam(installParam), statusReceiver);
+    return true;
+}
+
 bool BundleInstallerHost::CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const
 {
     if (!statusReceiver) {
