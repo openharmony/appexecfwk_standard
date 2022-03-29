@@ -87,7 +87,6 @@ ohos_unittest("BmsServiceBundleScanTest") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
@@ -96,6 +95,10 @@ ohos_unittest("BmsServiceBundleScanTest") {
   if (configpolicy_enable) {
     external_deps += [ "config_policy:configpolicy_util" ]
     defines += [ "CONFIG_POLOCY_ENABLE" ]
+  }
+  if (account_enable) {
+    external_deps += [ "os_account_standard:os_account_innerkits" ]
+    defines += [ "ACCOUNT_ENABLE" ]
   }
   if (device_manager_enable) {
     sources += [ "${services_path}/bundlemgr/src/bms_device_manager.cpp" ]
