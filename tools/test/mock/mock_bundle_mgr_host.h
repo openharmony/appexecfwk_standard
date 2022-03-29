@@ -103,6 +103,10 @@ public:
     MOCK_METHOD2(GetShortcutInfos, bool(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos));
     MOCK_METHOD2(GetAllCommonEventInfo,
         bool(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos));
+    MOCK_METHOD2(GetModuleUsageRecords,
+        bool(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords));
+    MOCK_METHOD4(NotifyAbilityLifeStatus,
+        bool(const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid));
     MOCK_METHOD1(CheckBundleNameInAllowList, bool(const std::string &bundleName));
     MOCK_METHOD3(GetBundleGidsByUid, bool(const std::string &bundleName, const int &uid, std::vector<int> &gids));
     MOCK_METHOD2(RemoveClonedBundle, bool(const std::string &bundleName, const int32_t uid));
