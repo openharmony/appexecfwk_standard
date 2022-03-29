@@ -15,7 +15,10 @@
 
 #include "account_helper.h"
 
+#include <vector>
+
 #include "app_log_wrapper.h"
+#include "bundle_constants.h"
 
 #ifdef ACCOUNT_ENABLE
 #include "os_account_manager.h"
@@ -31,6 +34,26 @@ int AccountHelper::IsOsAccountExists(const int id, bool &isOsAccountExists)
     APP_LOGI("ACCOUNT_ENABLE is false");
     // ACCOUNT_ENABLE is false, do nothing and return -1.
     return -1;
+#endif
+}
+
+int32_t AccountHelper::GetCurrentActiveUserId()
+{
+#ifdef ACCOUNT_ENABLE
+    std::vector<int32_t> activeIds;
+    int ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(activeIds);
+    if (ret != 0) {
+        APP_LOGE("QueryActiveOsAccountIds failed ret:%{public}d", ret);
+        return Constants::INVALID_USERID;
+    }
+    if (activeIds.empty()) {
+        APP_LOGE("QueryActiveOsAccountIds activeIds empty");
+        return Constants::INVALID_USERID;
+    }
+    return activeIds[0];
+#else
+    APP_LOGI("ACCOUNT_ENABLE is false");
+    return 0;
 #endif
 }
 }  // namespace AppExecFwk

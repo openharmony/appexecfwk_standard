@@ -27,7 +27,7 @@ const std::string BUNDLE_INFO_LABEL = "label";
 const std::string BUNDLE_INFO_DESCRIPTION = "description";
 const std::string BUNDLE_INFO_VENDOR = "vendor";
 const std::string BUNDLE_INFO_IS_KEEP_ALIVE = "isKeepAlive";
-const std::string BUNDLE_INFO_SINGLE_USER = "singleUser";
+const std::string BUNDLE_INFO_SINGLETON = "singleton";
 const std::string BUNDLE_INFO_IS_NATIVE_APP = "isNativeApp";
 const std::string BUNDLE_INFO_IS_PREINSTALL_APP = "isPreInstallApp";
 const std::string BUNDLE_INFO_IS_DIFFERENT_NAME = "isDifferentName";
@@ -330,7 +330,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_MODULE_PUBLIC_DIRS, bundleInfo.modulePublicDirs},
         {BUNDLE_INFO_MODULE_DIRS, bundleInfo.moduleDirs},
         {BUNDLE_INFO_MODULE_RES_PATHS, bundleInfo.moduleResPaths},
-        {BUNDLE_INFO_SINGLE_USER, bundleInfo.singleUser}
+        {BUNDLE_INFO_SINGLETON, bundleInfo.singleton}
     };
 }
 
@@ -652,8 +652,8 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         ArrayType::STRING);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_INFO_SINGLE_USER,
-        bundleInfo.singleUser,
+        BUNDLE_INFO_SINGLETON,
+        bundleInfo.singleton,
         JsonType::BOOLEAN,
         false,
         parseResult,

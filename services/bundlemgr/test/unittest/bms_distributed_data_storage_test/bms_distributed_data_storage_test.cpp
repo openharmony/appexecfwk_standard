@@ -15,6 +15,7 @@
 
 #include <gtest/gtest.h>
 
+#include "bundle_info.h"
 #include "bundle_installer_host.h"
 #include "bundle_mgr_service.h"
 #include "install_param.h"
@@ -32,7 +33,6 @@ namespace {
 std::string BUNDULE_NAME_FIRST {"bunduleName1"};
 std::string BUNDULE_NAME_SECOND {"bunduleName2"};
 const std::string MAIN_ABILITY {"com.ohos.distributedmusicplayer.MainAbility"};
-constexpr uint32_t VERSION {5};
 constexpr uint32_t VERSION_CODE {10};
 std::string VERSION_NAME {"10"};
 constexpr uint32_t MIN_COMPATIBLE_VERSION {8};
@@ -53,10 +53,10 @@ public:
     void SetUp();
     void TearDown();
     const std::shared_ptr<DistributedDataStorage> GetDistributedDataStorage() const;
-    DistributedBundleInfo MockDistributedBundleInfo(const std::string &bundleName) const;
+    BundleInfo MockBundleInfo(const std::string &bundleName) const;
 
 private:
-    std::shared_ptr<DistributedDataStorage> distributedDataStorage_ = std::make_shared<DistributedDataStorage>();
+    std::shared_ptr<DistributedDataStorage> distributedDataStorage_ = DistributedDataStorage::GetInstance();
 };
 
 BmsDistributedDataStorageTest::BmsDistributedDataStorageTest()
@@ -88,24 +88,17 @@ const std::shared_ptr<DistributedDataStorage> BmsDistributedDataStorageTest::Get
     return distributedDataStorage_;
 }
 
-DistributedBundleInfo BmsDistributedDataStorageTest::MockDistributedBundleInfo(const std::string &bundleName) const
+BundleInfo BmsDistributedDataStorageTest::MockBundleInfo(const std::string &bundleName) const
 {
-    DistributedBundleInfo distributedBundleInfo;
-    distributedBundleInfo.name = bundleName;
-    distributedBundleInfo.mainAbility = MAIN_ABILITY;
-    distributedBundleInfo.minCompatibleVersion = MIN_COMPATIBLE_VERSION;
-    distributedBundleInfo.targetVersionCode = TARGET_VERSION_CODE;
-    distributedBundleInfo.version = VERSION;
-    distributedBundleInfo.versionCode = VERSION_CODE;
-    distributedBundleInfo.versionName = VERSION_NAME;
-    distributedBundleInfo.appId = APP_ID;
-    distributedBundleInfo.compatibleVersionCode = COMPATIBLE_VERSION_CODE;
-    BundleUserInfo bundleUserInfo;
-    bundleUserInfo.userId = USER_ID;
-    bundleUserInfo.enabled = true;
-    bundleUserInfo.abilities.emplace_back(MAIN_ABILITY);
-    distributedBundleInfo.bundleUserInfos.emplace_back(bundleUserInfo);
-    return distributedBundleInfo;
+    BundleInfo bundleInfo;
+    bundleInfo.name = bundleName;
+    bundleInfo.minCompatibleVersionCode = MIN_COMPATIBLE_VERSION;
+    bundleInfo.targetVersion = TARGET_VERSION_CODE;
+    bundleInfo.versionCode = VERSION_CODE;
+    bundleInfo.versionName = VERSION_NAME;
+    bundleInfo.appId = APP_ID;
+    bundleInfo.compatibleVersion = COMPATIBLE_VERSION_CODE;
+    return bundleInfo;
 }
 
 /**
@@ -116,9 +109,9 @@ DistributedBundleInfo BmsDistributedDataStorageTest::MockDistributedBundleInfo(c
  */
 HWTEST_F(BmsDistributedDataStorageTest, SaveStorageDistributeInfo_0100, Function | SmallTest | Level0)
 {
-    auto distributedBundleInfo = MockDistributedBundleInfo(BUNDULE_NAME_FIRST);
+    auto bundleInfo = MockBundleInfo(BUNDULE_NAME_FIRST);
     auto dataStorage =  GetDistributedDataStorage();
-    bool result = dataStorage->SaveStorageDistributeInfo(distributedBundleInfo);
+    bool result = dataStorage->SaveStorageDistributeInfo(bundleInfo);
     EXPECT_TRUE(result);
 
     result = dataStorage->DeleteStorageDistributeInfo(BUNDULE_NAME_FIRST);
@@ -163,8 +156,8 @@ HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0100, Functio
 HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0200, Function | SmallTest | Level0)
 {
     auto dataStorage =  GetDistributedDataStorage();
-    auto distributedBundleInfo = MockDistributedBundleInfo(BUNDULE_NAME_FIRST);
-    bool result = dataStorage->SaveStorageDistributeInfo(distributedBundleInfo);
+    auto bundleInfo = MockBundleInfo(BUNDULE_NAME_FIRST);
+    bool result = dataStorage->SaveStorageDistributeInfo(bundleInfo);
     EXPECT_TRUE(result);
 
     result = dataStorage->DeleteStorageDistributeInfo(BUNDULE_NAME_FIRST);
@@ -181,8 +174,8 @@ HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0200, Functio
 HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0300, Function | SmallTest | Level0)
 {
     auto dataStorage =  GetDistributedDataStorage();
-    auto distributedBundleInfo = MockDistributedBundleInfo(BUNDULE_NAME_FIRST);
-    bool result = dataStorage->SaveStorageDistributeInfo(distributedBundleInfo);
+    auto bundleInfo = MockBundleInfo(BUNDULE_NAME_FIRST);
+    bool result = dataStorage->SaveStorageDistributeInfo(bundleInfo);
     EXPECT_TRUE(result);
 
     DistributedKv::DistributedKvDataManager dataManager;
@@ -204,8 +197,8 @@ HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0300, Functio
 HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0400, Function | SmallTest | Level0)
 {
     auto dataStorage =  GetDistributedDataStorage();
-    auto distributedBundleInfo = MockDistributedBundleInfo(BUNDULE_NAME_FIRST);
-    bool result = dataStorage->SaveStorageDistributeInfo(distributedBundleInfo);
+    auto bundleInfo = MockBundleInfo(BUNDULE_NAME_FIRST);
+    bool result = dataStorage->SaveStorageDistributeInfo(bundleInfo);
     EXPECT_TRUE(result);
 
     DistributedKv::DistributedKvDataManager dataManager;
@@ -230,12 +223,12 @@ HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0400, Functio
 HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0500, Function | SmallTest | Level0)
 {
     auto dataStorage =  GetDistributedDataStorage();
-    auto distributedBundleInfo = MockDistributedBundleInfo(BUNDULE_NAME_FIRST);
-    bool result = dataStorage->SaveStorageDistributeInfo(distributedBundleInfo);
+    auto bundleInfo = MockBundleInfo(BUNDULE_NAME_FIRST);
+    bool result = dataStorage->SaveStorageDistributeInfo(bundleInfo);
     EXPECT_TRUE(result);
 
     DistributedBundleInfo getInfo;
-    result = dataStorage->QueryStroageDistributeInfo(BUNDULE_NAME_SECOND, USER_ID, NETWORK_ID_INVALID, getInfo);
+    result = dataStorage->QueryStroageDistributeInfo(BUNDULE_NAME_FIRST, USER_ID, NETWORK_ID_INVALID, getInfo);
     EXPECT_FALSE(result);
 
     result = dataStorage->DeleteStorageDistributeInfo(BUNDULE_NAME_FIRST);
