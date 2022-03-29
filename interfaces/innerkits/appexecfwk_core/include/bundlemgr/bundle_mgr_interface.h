@@ -29,6 +29,7 @@
 #include "form_info.h"
 #include "foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/permission_def.h"
 #include "hap_module_info.h"
+#include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "ohos/aafwk/content/want.h"
 #ifdef SUPPORT_GRAPHICS
