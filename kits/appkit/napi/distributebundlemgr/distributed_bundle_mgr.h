@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef DISTRIBUTED_BUNDLE_MGR_H
-#define DISTRIBUTED_BUNDLE_MGR_H
+#ifndef APPEXECFWK_STANDARD_KITS_APPKIT_NAPI_DISTRIBUTEBUNDLEMGR_DISTRIBUTED_BUNDLE_MGR_H
+#define APPEXECFWK_STANDARD_KITS_APPKIT_NAPI_DISTRIBUTEBUNDLEMGR_DISTRIBUTED_BUNDLE_MGR_H
 #include <vector>
 
 #include "napi/native_api.h"
@@ -26,11 +26,17 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-struct ElementNameInfo {
-    napi_env env = nullptr;
+struct AsyncWorkData {
+    explicit AsyncWorkData(napi_env napiEnv);
+    virtual ~AsyncWorkData();
+    napi_env env;
     napi_async_work asyncWork = nullptr;
     napi_deferred deferred = nullptr;
-    napi_ref callbackRef = 0;
+    napi_ref callbackRef = nullptr;
+};
+
+struct ElementNameInfo : public AsyncWorkData {
+    explicit ElementNameInfo(napi_env env) : AsyncWorkData(env) {}
     OHOS::AppExecFwk::ElementName elementName;
     OHOS::AppExecFwk::RemoteAbilityInfo remoteAbilityInfo;
     int32_t errCode = 0;
@@ -38,11 +44,8 @@ struct ElementNameInfo {
     std::string errMssage;
 };
 
-struct ElementNameInfos {
-    napi_env env = nullptr;
-    napi_async_work asyncWork = nullptr;
-    napi_deferred deferred = nullptr;
-    napi_ref callbackRef = 0;
+struct ElementNameInfos: public AsyncWorkData {
+    explicit ElementNameInfos(napi_env env) : AsyncWorkData(env) {}
     std::vector<ElementName> elementNames;
     std::vector<RemoteAbilityInfo> remoteAbilityInfos;
     int32_t errCode = 0;
@@ -54,4 +57,4 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info);
 napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info);
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif /* DISTRIBUTED_BUNDLE_MGR_H */
+#endif /* APPEXECFWK_STANDARD_KITS_APPKIT_NAPI_DISTRIBUTEBUNDLEMGR_DISTRIBUTED_BUNDLE_MGR_H */
