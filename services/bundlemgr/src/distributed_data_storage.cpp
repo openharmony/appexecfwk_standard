@@ -17,10 +17,12 @@
 
 #include <unistd.h>
 
+#include "account_helper.h"
 #include "app_log_wrapper.h"
 #ifdef DEVICE_MANAGER_ENABLE
 #include "bms_device_manager.h"
 #endif
+#include "bundle_mgr_service.h"
 #include "bundle_util.h"
 #include "parameter.h"
 
@@ -60,7 +62,7 @@ DistributedDataStorage::~DistributedDataStorage()
     dataManager_.CloseKvStore(appId_, storeId_);
 }
 
-bool DistributedDataStorage::SaveStorageDistributeInfo(const BundleInfo &info)
+bool DistributedDataStorage::SaveStorageDistributeInfo(const std::string &bundleName, int32_t userId)
 {
     APP_LOGI("save DistributedBundleInfo data");
     {
@@ -70,6 +72,37 @@ bool DistributedDataStorage::SaveStorageDistributeInfo(const BundleInfo &info)
             return false;
         }
     }
+    int32_t currentUserId = AccountHelper::GetCurrentActiveUserId();
+    if (currentUserId == Constants::INVALID_USERID) {
+        currentUserId = Constants::START_USERID;
+    }
+    if (userId != currentUserId) {
+        APP_LOGW("install userid:%{public}d is not currentUserId:%{public}d", userId, currentUserId);
+        return false;
+    }
+    auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    if (!dataMgr) {
+        APP_LOGE("Get dataMgr shared_ptr nullptr");
+        return false;
+    }
+    BundleInfo bundleInfo;
+    bool ret = dataMgr->GetBundleInfo(
+        bundleName, BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo, currentUserId);
+    if (!ret) {
+        APP_LOGW("GetBundleInfo:%{public}s  userid:%{public}d failed", bundleName.c_str(), currentUserId);
+        return false;
+    }
+    ret = InnerSaveStorageDistributeInfo(ConvertToDistributedBundleInfo(bundleInfo));
+    if (!ret) {
+        APP_LOGW("InnerSaveStorageDistributeInfo:%{public}s  failed", bundleName.c_str());
+        return false;
+    }
+    CheckToSyncDistributedData();
+    return true;
+}
+
+bool DistributedDataStorage::InnerSaveStorageDistributeInfo(const DistributedBundleInfo distributedBundleInfo)
+{
     std::string udid;
     bool ret = GetLocalUdid(udid);
     if (!ret) {
@@ -77,9 +110,9 @@ bool DistributedDataStorage::SaveStorageDistributeInfo(const BundleInfo &info)
         return false;
     }
     std::string keyOfData;
-    DeviceAndNameToKey(udid, info.name, keyOfData);
+    DeviceAndNameToKey(udid, distributedBundleInfo.bundleName, keyOfData);
     Key key(keyOfData);
-    Value value(ConvertToDistributedBundleInfo(info).ToString());
+    Value value(distributedBundleInfo.ToString());
     Status status;
     {
         std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
@@ -92,13 +125,12 @@ bool DistributedDataStorage::SaveStorageDistributeInfo(const BundleInfo &info)
     if (status != Status::SUCCESS) {
         APP_LOGE("put to kvStore error: %{public}d", status);
         return false;
-    } else {
-        APP_LOGI("put value to kvStore success");
     }
+    APP_LOGI("put value to kvStore success");
     return true;
 }
 
-bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bundleName)
+bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bundleName, int32_t userId)
 {
     APP_LOGI("query DistributedBundleInfo");
     {
@@ -107,6 +139,11 @@ bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bund
             APP_LOGE("kvStore is nullptr");
             return false;
         }
+    }
+    int32_t currentUserId = AccountHelper::GetCurrentActiveUserId();
+    if (userId != currentUserId) {
+        APP_LOGW("install userid:%{public}d is not currentUserId:%{public}d", userId, currentUserId);
+        return false;
     }
     std::string udid;
     bool ret = GetLocalUdid(udid);
@@ -129,9 +166,9 @@ bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bund
     if (status != Status::SUCCESS) {
         APP_LOGE("delete key error: %{public}d", status);
         return false;
-    } else {
-        APP_LOGI("delete value to kvStore success");
     }
+    APP_LOGI("delete value to kvStore success");
+    CheckToSyncDistributedData();
     return true;
 }
 
@@ -140,6 +177,11 @@ bool DistributedDataStorage::QueryStroageDistributeInfo(
     DistributedBundleInfo &info)
 {
     APP_LOGI("query DistributedBundleInfo");
+    if (userId != AccountHelper::GetCurrentActiveUserId()) {
+        APP_LOGI("userid is not current active userid");
+        return false;
+    }
+
     std::string udid;
     int32_t ret = GetUdidByNetworkId(networkId, udid);
     if (ret != 0) {
@@ -224,7 +266,7 @@ Status DistributedDataStorage::GetKvStore()
         .encrypt = false,
         .autoSync = false,
         .kvStoreType = KvStoreType::SINGLE_VERSION
-        };
+    };
     Status status = dataManager_.GetSingleKvStore(options, appId_, storeId_, kvStorePtr_);
     if (status != Status::SUCCESS) {
         APP_LOGE("return error: %{public}d", status);
@@ -330,6 +372,69 @@ void DistributedDataStorage::SyncDistributedData(const std::vector<std::string> 
     if (status != Status::SUCCESS) {
         APP_LOGE("kvStorePtr_ Sync error: %{public}d", status);
     }
+}
+
+void DistributedDataStorage::UpdateDistributedData(const std::vector<BundleInfo> &bundleInfos)
+{
+    APP_LOGI("UpdateDistributedData");
+    if (kvStorePtr_ == nullptr) {
+        APP_LOGE("kvStorePtr_ is null");
+        return;
+    }
+    std::string udid;
+    bool ret = GetLocalUdid(udid);
+    if (!ret) {
+        APP_LOGE("GetLocalUdid failed");
+        return;
+    }
+    Key allEntryKeyPrefix("");
+    std::vector<Entry> allEntries;
+    Status status = kvStorePtr_->GetEntries(allEntryKeyPrefix, allEntries);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("dataManager_ GetEntries error: %{public}d", status);
+        return;
+    }
+    for (auto entry : allEntries) {
+        std::string key = entry.key.ToString();
+        if (key.find(udid) == std::string::npos) {
+            continue;
+        }
+        status = kvStorePtr_->Delete(entry.key);
+        if (status != Status::SUCCESS) {
+            APP_LOGE("Delete key:%{public}s failed", key.c_str());
+        }
+    }
+
+    for (auto bundleInfo : bundleInfos) {
+        if (bundleInfo.singleton) {
+            continue;
+        }
+        bool ret = InnerSaveStorageDistributeInfo(ConvertToDistributedBundleInfo(bundleInfo));
+        if (!ret) {
+            APP_LOGW("UpdateDistributedData SaveStorageDistributeInfo:%{public}s failed", bundleInfo.name.c_str());
+        }
+    }
+    CheckToSyncDistributedData();
+}
+
+void DistributedDataStorage::CheckToSyncDistributedData()
+{
+    APP_LOGD("CheckToSyncDistributedData");
+    std::vector<DeviceInfo> deviceInfoList;
+    Status status = dataManager_.GetDeviceList(deviceInfoList, DeviceFilterStrategy::FILTER);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("get GetDeviceList error: %{public}d", status);
+        return;
+    }
+    if (deviceInfoList.size() == 0) {
+        APP_LOGW("deviceInfoList is invalid");
+        return;
+    }
+    std::vector<std::string> deviceIds;
+    for (auto deviceInfo : deviceInfoList) {
+        deviceIds.emplace_back(deviceInfo.deviceId);
+    }
+    SyncDistributedData(deviceIds);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

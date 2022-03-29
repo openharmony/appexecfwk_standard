@@ -32,12 +32,13 @@ public:
     ~DistributedDataStorage();
     static std::shared_ptr<DistributedDataStorage> GetInstance();
 
-    bool SaveStorageDistributeInfo(const BundleInfo &info);
-    bool DeleteStorageDistributeInfo(const std::string &bundleName);
+    bool SaveStorageDistributeInfo(const std::string &bundleName, int32_t userId);
+    bool DeleteStorageDistributeInfo(const std::string &bundleName, int32_t userId);
     bool QueryStroageDistributeInfo(
         const std::string &bundleName, int32_t userId, const std::string &networkId,
         DistributedBundleInfo &info);
     bool QueryAllDeviceIds(std::vector<std::string> &deviceIds);
+    void UpdateDistributedData(const std::vector<BundleInfo> &bundleInfos);
     void SyncDistributedData(const std::vector<std::string> &deviceList);
 
 private:
@@ -48,6 +49,8 @@ private:
     bool GetLocalUdid(std::string &udid);
     DistributedBundleInfo ConvertToDistributedBundleInfo(const BundleInfo &bundleInfo);
     int32_t GetUdidByNetworkId(const std::string &networkId, std::string &udid);
+    void CheckToSyncDistributedData();
+    bool InnerSaveStorageDistributeInfo(const DistributedBundleInfo distributedBundleInfo);
 private:
     static std::recursive_mutex mutex_;
     static std::shared_ptr<DistributedDataStorage> instance_;

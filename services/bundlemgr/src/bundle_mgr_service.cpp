@@ -90,6 +90,13 @@ void BundleMgrService::AfterRegisterToService()
         perChangeSub_ = std::make_shared<BundlePermissionsChangedMonitor>(dataMgr_, subscribeInfo);
         EventFwk::CommonEventManager::SubscribeCommonEvent(perChangeSub_);
     }
+    if (!distributedSub_) {
+        EventFwk::MatchingSkills matchingSkills;
+        matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
+        EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
+        distributedSub_ = std::make_shared<DistributedMonitor>(dataMgr_, subscribeInfo);
+        EventFwk::CommonEventManager::SubscribeCommonEvent(distributedSub_);
+    }
 }
 
 void BundleMgrService::OnStop()
@@ -98,6 +105,9 @@ void BundleMgrService::OnStop()
     SelfClean();
     if (perChangeSub_) {
         EventFwk::CommonEventManager::UnSubscribeCommonEvent(perChangeSub_);
+    }
+    if (distributedSub_) {
+        EventFwk::CommonEventManager::UnSubscribeCommonEvent(distributedSub_);
     }
 }
 
