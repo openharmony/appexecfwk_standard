@@ -1110,68 +1110,6 @@ static void ConvertWantInfo(napi_env env, napi_value objWantInfo, const Want &wa
     }
 }
 
-static void ConvertModuleUsageRecords(
-    napi_env env, napi_value objModuleUsageRecord, const ModuleUsageRecord &moduleUsageRecord)
-{
-    napi_value nbundleName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, moduleUsageRecord.bundleName.c_str(), NAPI_AUTO_LENGTH, &nbundleName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "bundleName", nbundleName));
-
-    napi_value nappLabelId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.appLabelId, &nappLabelId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "appLabelId", nappLabelId));
-
-    napi_value nname;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, moduleUsageRecord.name.c_str(), NAPI_AUTO_LENGTH, &nname));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "name", nname));
-
-    napi_value nlabelId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.labelId, &nlabelId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "labelId", nlabelId));
-
-    napi_value ndescriptionId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.descriptionId, &ndescriptionId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "descriptionId", ndescriptionId));
-
-    napi_value nabilityName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, moduleUsageRecord.abilityName.c_str(), NAPI_AUTO_LENGTH, &nabilityName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "abilityName", nabilityName));
-
-    napi_value nabilityLabelId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.abilityLabelId, &nabilityLabelId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "abilityLabelId", nabilityLabelId));
-
-    napi_value nabilityDescriptionId;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_uint32(env, moduleUsageRecord.abilityDescriptionId, &nabilityDescriptionId));
-    NAPI_CALL_RETURN_VOID(
-        env, napi_set_named_property(env, objModuleUsageRecord, "abilityDescriptionId", nabilityDescriptionId));
-
-    napi_value nabilityIconId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.abilityIconId, &nabilityIconId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "abilityIconId", nabilityIconId));
-
-    napi_value nlaunchedCount;
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.launchedCount, &nlaunchedCount));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "launchedCount", nlaunchedCount));
-
-    napi_value nlastLaunchTime;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int64(env, moduleUsageRecord.lastLaunchTime, &nlastLaunchTime));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "lastLaunchTime", nlastLaunchTime));
-
-    napi_value nremoved;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, moduleUsageRecord.removed, &nremoved));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "isRemoved", nremoved));
-
-    napi_value ninstallationFreeSupported;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_get_boolean(env, moduleUsageRecord.installationFreeSupported, &ninstallationFreeSupported));
-    NAPI_CALL_RETURN_VOID(env,
-        napi_set_named_property(env, objModuleUsageRecord, "installationFreeSupported", ninstallationFreeSupported));
-}
-
 static std::string GetStringFromNAPI(napi_env env, napi_value value)
 {
     std::string result;
