@@ -947,6 +947,36 @@ bool BundleMgrProxy::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleI
     return true;
 }
 
+bool BundleMgrProxy::GetHapModuleInfo(const AbilityInfo &abilityInfo, int32_t userId, HapModuleInfo &hapModuleInfo)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to GetHapModuleInfo of %{public}s", abilityInfo.package.c_str());
+    if (abilityInfo.bundleName.empty() || abilityInfo.package.empty()) {
+        APP_LOGE("fail to GetHapModuleInfo due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetHapModuleInfo due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&abilityInfo)) {
+        APP_LOGE("fail to GetHapModuleInfo due to write abilityInfo fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to QueryAbilityInfo due to write want fail");
+        return false;
+    }
+
+    if (!GetParcelableInfo<HapModuleInfo>(IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID, data, hapModuleInfo)) {
+        APP_LOGE("fail to GetHapModuleInfo from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::GetLaunchWantForBundle(const std::string &bundleName, Want &want)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);

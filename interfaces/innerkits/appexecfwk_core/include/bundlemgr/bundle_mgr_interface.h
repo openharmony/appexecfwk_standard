@@ -335,6 +335,17 @@ public:
      */
     virtual bool GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) = 0;
     /**
+     * @brief Obtain the HAP module info of a specific ability.
+     * @param abilityInfo Indicates the ability.
+     * @param userId Indicates the userId.
+     * @param hapModuleInfo Indicates the obtained HapModuleInfo object.
+     * @return Returns true if the HapModuleInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetHapModuleInfo(const AbilityInfo &abilityInfo, int32_t userId, HapModuleInfo &hapModuleInfo)
+    {
+        return false;
+    }
+    /**
      * @brief Obtains the Want for starting the main ability of an application based on the given bundle name.
      * @param bundleName Indicates the bundle name.
      * @param want Indicates the obtained launch Want object.
@@ -796,6 +807,7 @@ public:
         VERIFY_CALLING_PERMISSION,
         GET_ACCESSIBLE_APP_CODE_PATH,
         QUERY_EXTENSION_ABILITY_INFO_BY_URI,
+        GET_HAP_MODULE_INFO_WITH_USERID,
     };
 };
 }  // namespace AppExecFwk
