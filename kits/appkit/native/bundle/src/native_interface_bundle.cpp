@@ -20,7 +20,7 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_mgr_interface.h"
-#include "bundle_mgr_proxy_ndk.h"
+#include "bundle_mgr_proxy_native.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "securec.h"
@@ -28,7 +28,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-class BundleNdk {
+class BundleNative {
 public:
     static sptr<IBundleMgr> GetBundleMgr();
 
@@ -36,10 +36,10 @@ private:
     static sptr<IBundleMgr> bundleMgr_;
     static std::mutex bundleMgrMutex_;
 };
-sptr<IBundleMgr> BundleNdk::bundleMgr_ = nullptr;
-std::mutex BundleNdk::bundleMgrMutex_;
+sptr<IBundleMgr> BundleNative::bundleMgr_ = nullptr;
+std::mutex BundleNative::bundleMgrMutex_;
 
-sptr<IBundleMgr> BundleNdk::GetBundleMgr()
+sptr<IBundleMgr> BundleNative::GetBundleMgr()
 {
     if (bundleMgr_ == nullptr) {
         std::lock_guard<std::mutex> lock(bundleMgrMutex_);
@@ -77,7 +77,7 @@ const char* OH_NativeBundleMgr_GetAppIdByBundleName(const char *bundleName)
         APP_LOGE("bundleName is empty");
         return nullptr;
     }
-    auto iBundleMgr = OHOS::AppExecFwk::BundleNdk::GetBundleMgr();
+    auto iBundleMgr = OHOS::AppExecFwk::BundleNative::GetBundleMgr();
     if (!iBundleMgr) {
         APP_LOGE("can not get iBundleMgr");
         return nullptr;
@@ -94,7 +94,7 @@ const char* OH_NativeBundleMgr_GetAppIdByBundleName(const char *bundleName)
         return nullptr;
     }
 
-    if (strcpy_s(result, sizeof(result), appId.c_str()) != EOK) {
+    if (strcpy_s(result, len + 1, appId.c_str()) != EOK) {
         APP_LOGE("failed due to strcpy_s error");
         free(result);
         result = nullptr;

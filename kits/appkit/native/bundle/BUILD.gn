@@ -28,7 +28,7 @@ ohos_ndk_library("libbundle_ndk") {
 ohos_shared_library("bundle_ndk") {
   include_dirs = [
     "include",
-    "${innerkits_path}/appexecfwk_core/include/bundlemgr"
+    "${innerkits_path}/appexecfwk_core/include/bundlemgr",
   ]
   defines = [
     "APP_LOG_TAG = \"BundleMgrService\"",
