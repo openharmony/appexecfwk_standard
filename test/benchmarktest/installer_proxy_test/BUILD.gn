@@ -28,11 +28,7 @@ ohos_benchmarktest("BenchmarkTestInstallerProxy") {
   }
 
   deps = [
-    "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/benchmark:benchmark",
   ]
 
@@ -41,6 +37,7 @@ ohos_benchmarktest("BenchmarkTestInstallerProxy") {
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
   resource_config_file = "//foundation/appexecfwk/standard/test/benchmarktest/resource/ohos_test.xml"
