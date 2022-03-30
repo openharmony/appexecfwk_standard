@@ -25,16 +25,10 @@ ohos_benchmarktest("BenchmarkTestForFormInfo") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
 
-  deps = [
-    "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
-    "//third_party/benchmark:benchmark",
-    "//third_party/googletest:gtest_main",
-  ]
+  deps = [ "//third_party/benchmark:benchmark" ]
 
   external_deps = [
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
+    "bundle_framework:appexecfwk_base",
     "utils_base:utils",
   ]
 }
