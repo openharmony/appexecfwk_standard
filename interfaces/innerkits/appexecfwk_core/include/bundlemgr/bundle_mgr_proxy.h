@@ -293,6 +293,15 @@ public:
      */
     virtual bool GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) override;
     /**
+     * @brief Obtain the HAP module info of a specific ability through the proxy object.
+     * @param abilityInfo Indicates the ability.
+     * @param userId Indicates the userId.
+     * @param hapModuleInfo Indicates the obtained HapModuleInfo object.
+     * @return Returns true if the HapModuleInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetHapModuleInfo(
+        const AbilityInfo &abilityInfo, int32_t userId, HapModuleInfo &hapModuleInfo) override;
+    /**
      * @brief Obtains the Want for starting the main ability of an application
      *          based on the given bundle name through the proxy object.
      * @param bundleName Indicates the bundle name.
