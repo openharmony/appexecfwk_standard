@@ -56,18 +56,7 @@ ohos_unittest("BmsServiceStartupTest") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  deps = [
-    "${libs_path}/libeventhandler:libeventhandler_target",
-    "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
-    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//third_party/googletest:gtest_main",
-    "//third_party/jsoncpp:jsoncpp",
-    "//utils/native/base:utils",
-  ]
+  deps = []
 
   if (bundle_framework_graphics) {
     include_dirs += [
@@ -79,16 +68,17 @@ ohos_unittest("BmsServiceStartupTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ability_base:want",
     "ability_runtime:app_manager",
-    "access_token:libaccesstoken_sdk",
-    "bundle_framework:appexecfwk_base",
+    "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
-    "hiviewdfx_hilog_native:libhilog",
+    "distributeddatamgr:distributeddata_inner",
+    "eventhandler:libeventhandler",
     "init:libbegetutil",
-    "ipc:ipc_core",
     "resmgr_standard:global_resmgr",
+    "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
   ]

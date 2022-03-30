@@ -50,12 +50,7 @@ ohos_unittest("BmsBundleDataStorageDatabaseTest") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  deps = [
-    "${services_path}/bundlemgr:bundle_parser",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//third_party/googletest:gtest_main",
-  ]
+  deps = [ "${services_path}/bundlemgr:bundle_parser" ]
 
   external_deps = [
     "ability_runtime:app_manager",
