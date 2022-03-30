@@ -27,20 +27,16 @@ ohos_benchmarktest("BenchmarkTestForLauncherService") {
 
   deps = [
     "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "//third_party/benchmark:benchmark",
-    "//third_party/googletest:gtest_main",
   ]
 
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
-    "bytrace_standard:bytrace_core",
-    "ces_standard:cesfwk_core",
+    "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
