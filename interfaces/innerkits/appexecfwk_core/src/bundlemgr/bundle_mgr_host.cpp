@@ -301,6 +301,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME):
             errCode = HandleGetUidByBundleName(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID):
+            errCode = HandleGetHapModuleInfoWithUserId(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -904,6 +907,31 @@ ErrCode BundleMgrHost::HandleGetHapModuleInfo(Parcel &data, Parcel &reply)
 
     HapModuleInfo info;
     bool ret = GetHapModuleInfo(*abilityInfo, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetHapModuleInfoWithUserId(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
+    if (!abilityInfo) {
+        APP_LOGE("ReadParcelable<abilityInfo> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    int32_t userId = data.ReadInt32();
+    HapModuleInfo info;
+    bool ret = GetHapModuleInfo(*abilityInfo, userId, info);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

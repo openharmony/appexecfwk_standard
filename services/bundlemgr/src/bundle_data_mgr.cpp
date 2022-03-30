@@ -1143,9 +1143,15 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
     }
 }
 
-bool BundleDataMgr::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) const
+bool BundleDataMgr::GetHapModuleInfo(
+    const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo, int32_t userId) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        return false;
+    }
+
     if (bundleInfos_.empty()) {
         APP_LOGE("bundleInfos_ data is empty");
         return false;
@@ -1163,7 +1169,7 @@ bool BundleDataMgr::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleIn
         return false;
     }
 
-    int32_t responseUserId = innerBundleInfo.GetResponseUserId(GetUserId());
+    int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
     auto module = innerBundleInfo.FindHapModuleInfo(abilityInfo.package, responseUserId);
     if (!module) {
         APP_LOGE("can not find module %{public}s", abilityInfo.package.c_str());

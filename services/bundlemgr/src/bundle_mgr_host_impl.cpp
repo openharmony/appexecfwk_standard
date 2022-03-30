@@ -383,6 +383,12 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
 bool BundleMgrHostImpl::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo)
 {
     APP_LOGD("start GetHapModuleInfo");
+    return GetHapModuleInfo(abilityInfo, Constants::UNSPECIFIED_USERID, hapModuleInfo);
+}
+
+bool BundleMgrHostImpl::GetHapModuleInfo(const AbilityInfo &abilityInfo, int32_t userId, HapModuleInfo &hapModuleInfo)
+{
+    APP_LOGD("start GetHapModuleInfo with userId: %{public}d", userId);
     if (abilityInfo.bundleName.empty() || abilityInfo.package.empty()) {
         APP_LOGE("fail to GetHapModuleInfo due to params empty");
         return false;
@@ -392,7 +398,7 @@ bool BundleMgrHostImpl::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModu
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->GetHapModuleInfo(abilityInfo, hapModuleInfo);
+    return dataMgr->GetHapModuleInfo(abilityInfo, hapModuleInfo, userId);
 }
 
 bool BundleMgrHostImpl::GetLaunchWantForBundle(const std::string &bundleName, Want &want)

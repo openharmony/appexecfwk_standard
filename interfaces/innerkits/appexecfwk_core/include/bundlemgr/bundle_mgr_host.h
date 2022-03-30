@@ -239,6 +239,13 @@ private:
      */
     ErrCode HandleGetHapModuleInfo(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the GetHapModuleInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetHapModuleInfoWithUserId(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the GetLaunchWantForBundle function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
