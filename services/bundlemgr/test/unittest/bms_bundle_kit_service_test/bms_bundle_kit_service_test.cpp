@@ -67,6 +67,7 @@ const std::string PROCESS_TEST = "test.process";
 const std::string DEVICE_ID = "PHONE-001";
 const int APPLICATION_INFO_FLAGS = 1;
 const int DEFAULT_USER_ID_TEST = 100;
+const int NEW_USER_ID_TEST = 200;
 const std::string LABEL = "hello";
 const std::string DESCRIPTION = "mainEntry";
 const std::string THEME = "mytheme";
@@ -1994,6 +1995,29 @@ HWTEST_F(BmsBundleKitServiceTest, GetHapModuleInfo_0300, Function | SmallTest | 
 
     HapModuleInfo hapModuleInfo;
     bool ret = GetBundleDataMgr()->GetHapModuleInfo(abilityInfo, hapModuleInfo);
+    EXPECT_EQ(false, ret);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetHapModuleInfo_0400
+ * @tc.name: test get the hap module info by userId
+ * @tc.desc: 1.system run normally
+ *           2.get the hap module info failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetHapModuleInfo_0400, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    AbilityInfo abilityInfo;
+    abilityInfo.bundleName = BUNDLE_NAME_TEST;
+    abilityInfo.package = PACKAGE_NAME;
+    HapModuleInfo hapModuleInfo;
+    bool ret = GetBundleDataMgr()->GetHapModuleInfo(abilityInfo, hapModuleInfo, DEFAULT_USER_ID_TEST);
+    EXPECT_EQ(true, ret);
+
+    ret = GetBundleDataMgr()->GetHapModuleInfo(abilityInfo, hapModuleInfo, NEW_USER_ID_TEST);
     EXPECT_EQ(false, ret);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);

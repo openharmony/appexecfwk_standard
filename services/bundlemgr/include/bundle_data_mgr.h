@@ -304,10 +304,12 @@ public:
     /**
      * @brief Obtain the HAP module info of a specific ability.
      * @param abilityInfo Indicates the ability.
+     * @param userId Indicates the user ID.
      * @param hapModuleInfo Indicates the obtained HapModuleInfo object.
      * @return Returns true if the HapModuleInfo is successfully obtained; returns false otherwise.
      */
-    bool GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) const;
+    bool GetHapModuleInfo(const AbilityInfo &abilityInfo,
+        HapModuleInfo &hapModuleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Check whether the app is system app by it's UID.
      * @param uid Indicates the uid.
