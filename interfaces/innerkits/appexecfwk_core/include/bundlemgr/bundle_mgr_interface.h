@@ -61,7 +61,10 @@ public:
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
     virtual bool GetApplicationInfo(
-        const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) = 0;
+        const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the ApplicationInfo based on a given bundle name.
      * @param appName Indicates the application bundle name to be queried.
@@ -85,7 +88,10 @@ public:
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
     virtual bool GetApplicationInfos(
-        const ApplicationFlag flag, int userId, std::vector<ApplicationInfo> &appInfos) = 0;
+        const ApplicationFlag flag, int userId, std::vector<ApplicationInfo> &appInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains information about all installed applications of a specified user.
      * @param flags Indicates the flag used to specify information contained
@@ -108,7 +114,10 @@ public:
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
     virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag,
-        BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) = 0;
+        BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the BundleInfo based on a given bundle name.
      * @param bundleName Indicates the application bundle name to be queried.
@@ -130,7 +139,10 @@ public:
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
     virtual bool GetBundleInfos(const BundleFlag flag,
-        std::vector<BundleInfo> &bundleInfos, int32_t userId = Constants::UNSPECIFIED_USERID) = 0;
+        std::vector<BundleInfo> &bundleInfos, int32_t userId = Constants::UNSPECIFIED_USERID)
+    {
+        return false;
+    }
     /**
      * @brief Obtains BundleInfo of all bundles available in the system.
      * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
@@ -149,42 +161,60 @@ public:
      * @param userId Indicates the user ID.
      * @return Returns the uid if successfully obtained; returns -1 otherwise.
      */
-    virtual int GetUidByBundleName(const std::string &bundleName, const int userId) = 0;
+    virtual int GetUidByBundleName(const std::string &bundleName, const int userId)
+    {
+        return Constants::INVALID_UID;
+    }
     /**
      * @brief Obtains the application ID based on the given bundle name and user ID.
      * @param bundleName Indicates the bundle name of the application.
      * @param userId Indicates the user ID.
      * @return Returns the application ID if successfully obtained; returns empty string otherwise.
      */
-    virtual std::string GetAppIdByBundleName(const std::string &bundleName, const int userId) = 0;
+    virtual std::string GetAppIdByBundleName(const std::string &bundleName, const int userId)
+    {
+        return Constants::EMPTY_STRING;
+    }
     /**
      * @brief Obtains the bundle name of a specified application based on the given UID.
      * @param uid Indicates the uid.
      * @param bundleName Indicates the obtained bundle name.
      * @return Returns true if the bundle name is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleNameForUid(const int uid, std::string &bundleName) = 0;
+    virtual bool GetBundleNameForUid(const int uid, std::string &bundleName)
+    {
+        return false;
+    }
     /**
      * @brief Obtains all bundle names of a specified application based on the given application UID.
      * @param uid Indicates the uid.
      * @param bundleNames Indicates the obtained bundle names.
      * @return Returns true if the bundle names is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames) = 0;
+    virtual bool GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the formal name associated with the given UID.
      * @param uid Indicates the uid.
      * @param name Indicates the obtained formal name.
      * @return Returns true if the formal name is successfully obtained; returns false otherwise.
      */
-    virtual bool GetNameForUid(const int uid, std::string &name) = 0;
+    virtual bool GetNameForUid(const int uid, std::string &name)
+    {
+        return false;
+    }
     /**
      * @brief Obtains an array of all group IDs associated with a specified bundle.
      * @param bundleName Indicates the bundle name.
      * @param gids Indicates the group IDs associated with the specified bundle.
      * @return Returns true if the gids is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleGids(const std::string &bundleName, std::vector<int> &gids) = 0;
+    virtual bool GetBundleGids(const std::string &bundleName, std::vector<int> &gids)
+    {
+        return false;
+    }
     /**
      * @brief Obtains an array of all group IDs associated with the given bundle name and UID.
      * @param bundleName Indicates the bundle name.
@@ -192,33 +222,48 @@ public:
      * @param gids Indicates the group IDs associated with the specified bundle.
      * @return Returns true if the gids is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) = 0;
+    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the type of a specified application based on the given bundle name.
      * @param bundleName Indicates the bundle name.
      * @return Returns "system" if the bundle is a system application; returns "third-party" otherwise.
      */
-    virtual std::string GetAppType(const std::string &bundleName) = 0;
+    virtual std::string GetAppType(const std::string &bundleName) 
+    {
+        return Constants::EMPTY_STRING;
+    }
     /**
      * @brief Check whether the app is system app by it's UID.
      * @param uid Indicates the uid.
      * @return Returns true if the bundle is a system application; returns false otherwise.
      */
-    virtual bool CheckIsSystemAppByUid(const int uid) = 0;
+    virtual bool CheckIsSystemAppByUid(const int uid)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the BundleInfo of application bundles based on the specified metaData.
      * @param metaData Indicates the metadata to get in the bundle.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos) = 0;
+    virtual bool GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos)
+    {
+        return false;
+    }
     /**
      * @brief Query the AbilityInfo by the given Want.
      * @param want Indicates the information of the ability.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) = 0;
+    virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
+    {
+        return false;
+    }
     /**
      * @brief Query the AbilityInfo by the given Want.
      * @param want Indicates the information of the ability.
@@ -237,7 +282,10 @@ public:
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) = 0;
+    virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+    {
+        return false;
+    }
     /**
      * @brief Query the AbilityInfo of list by the given Want.
      * @param want Indicates the information of the ability.
@@ -257,7 +305,10 @@ public:
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos) = 0;
+    virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+    {
+        return false;
+    }
     /**
      * @brief Query the AllAbilityInfos of list by the given userId.
      * @param userId Indicates the information of the user.
@@ -274,7 +325,10 @@ public:
      * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) = 0;
+    virtual bool QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
+    {
+        return false;
+    }
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
@@ -292,20 +346,29 @@ public:
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos) = 0;
+    virtual bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the BundleInfo of all keep-alive applications in the system.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos) = 0;
+    virtual bool QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the label of a specified ability.
      * @param bundleName Indicates the bundle name.
      * @param className Indicates the ability class name.
      * @return Returns the label of the ability if exist; returns empty string otherwise.
      */
-    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &className) = 0;
+    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &className)
+    {
+        return Constants::EMPTY_STRING;
+    }
     /**
      * @brief Obtains information about an application bundle contained in an ohos Ability Package (HAP).
      * @param hapFilePath Indicates the absolute file path of the HAP.
@@ -314,7 +377,10 @@ public:
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
     virtual bool GetBundleArchiveInfo(
-        const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo) = 0;
+        const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo)
+    {
+        return false;
+    }
     /**
      * @brief Obtains information about an application bundle contained in an ohos Ability Package (HAP).
      * @param hapFilePath Indicates the absolute file path of the HAP.
@@ -333,14 +399,20 @@ public:
      * @param hapModuleInfo Indicates the obtained HapModuleInfo object.
      * @return Returns true if the HapModuleInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) = 0;
+    virtual bool GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the Want for starting the main ability of an application based on the given bundle name.
      * @param bundleName Indicates the bundle name.
      * @param want Indicates the obtained launch Want object.
      * @return Returns true if the launch Want object is successfully obtained; returns false otherwise.
      */
-    virtual bool GetLaunchWantForBundle(const std::string &bundleName, Want &want) = 0;
+    virtual bool GetLaunchWantForBundle(const std::string &bundleName, Want &want)
+    {
+        return false;
+    }
     /**
      * @brief Checks whether the publickeys of two bundles are the same.
      * @param firstBundleName Indicates the first bundle name.
@@ -349,14 +421,20 @@ public:
      *         returns SIGNATURE_NOT_MATCHED if their publickeys are different;
      *         returns SIGNATURE_MATCHED if their publickeys are the same.
      */
-    virtual int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) = 0;
+    virtual int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName)
+    {
+        retrun Constants::SIGNATURE_UNKNOWN_BUNDLE;
+    }
     /**
      * @brief Checks whether a specified bundle has been granted a specific permission.
      * @param bundleName Indicates the name of the bundle to check.
      * @param permission Indicates the permission to check.
      * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
      */
-    virtual int CheckPermission(const std::string &bundleName, const std::string &permission) = 0;
+    virtual int CheckPermission(const std::string &bundleName, const std::string &permission)
+    {
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
     /**
      * @brief Checks whether a specified bundle has been granted a specific permission.
      * @param bundleName Indicates the name of the bundle to check.
@@ -365,20 +443,29 @@ public:
      * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
      */
     virtual int CheckPermissionByUid(
-        const std::string &bundleName, const std::string &permission, const int userId) = 0;
+        const std::string &bundleName, const std::string &permission, const int userId)
+    {
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
     /**
      * @brief Obtains detailed information about a specified permission.
      * @param permissionName Indicates the name of the ohos permission.
      * @param permissionDef Indicates the object containing detailed information about the given ohos permission.
      * @return Returns true if the PermissionDef object is successfully obtained; returns false otherwise.
      */
-    virtual bool GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef) = 0;
+    virtual bool GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
+    {
+        return false;
+    }
     /**
      * @brief Obtains all known permission groups in the system.
      * @param permissionDefs Indicates the list of objects containing the permission group information.
      * @return Returns true if the PermissionDef objects is successfully obtained; returns false otherwise.
      */
-    virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) = 0;
+    virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs)
+    {
+        return false;
+    }
     /**
      * @brief Obtains all known permission groups in the system.
      * @param permissions Indicates the permission array.
@@ -386,24 +473,36 @@ public:
      * @return Returns true if the application names is successfully obtained; returns false otherwise.
      */
     virtual bool GetAppsGrantedPermissions(
-        const std::vector<std::string> &permissions, std::vector<std::string> &appNames) = 0;
+        const std::vector<std::string> &permissions, std::vector<std::string> &appNames)
+    {
+        return false;
+    }
     /**
      * @brief Checks whether the system has a specified capability.
      * @param capName Indicates the name of the system feature to check.
      * @return Returns true if the given feature specified by name is available in the system; returns false otherwise.
      */
-    virtual bool HasSystemCapability(const std::string &capName) = 0;
+    virtual bool HasSystemCapability(const std::string &capName)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the capabilities that are available in the system.
      * @param systemCaps Indicates the list of capabilities available in the system.
      * @return Returns true if capabilities in the system are successfully obtained; returns false otherwise.
      */
-    virtual bool GetSystemAvailableCapabilities(std::vector<std::string> &systemCaps) = 0;
+    virtual bool GetSystemAvailableCapabilities(std::vector<std::string> &systemCaps)
+    {
+        return false;
+    }
     /**
      * @brief Checks whether the current device has been started in safe mode.
      * @return Returns true if the device is in safe mode; returns false otherwise.
      */
-    virtual bool IsSafeMode() = 0;
+    virtual bool IsSafeMode()
+    {
+        return false;
+    }
     /**
      * @brief Clears cache data of a specified application.
      * @param bundleName Indicates the bundle name of the application whose cache data is to be cleared.
@@ -423,24 +522,36 @@ public:
      * @param userId Indicates the user id.
      * @return Returns true if the data cleared successfully; returns false otherwise.
      */
-    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId = 0) = 0;
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId = 0)
+    {
+        return false;
+    }
     /**
      * @brief Register the specific bundle status callback.
      * @param bundleStatusCallback Indicates the callback to be invoked for returning the bundle status changed result.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback) = 0;
+    virtual bool RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
+    {
+        return false;
+    }
     /**
      * @brief Clear the specific bundle status callback.
      * @param bundleStatusCallback Indicates the callback to be cleared.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback) = 0;
+    virtual bool ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
+    {
+        return false;
+    }
     /**
      * @brief Unregister all the callbacks of status changed.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool UnregisterBundleStatusCallback() = 0;
+    virtual bool UnregisterBundleStatusCallback()
+    {
+        return false;
+    }
     /**
      * @brief Dump the bundle informations with specific flags.
      * @param flag Indicates the information contained in the dump result.
@@ -450,13 +561,19 @@ public:
      * @return Returns true if the dump result is successfully obtained; returns false otherwise.
      */
     virtual bool DumpInfos(
-        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result) = 0;
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
+    {
+        return false;
+    }
     /**
      * @brief Checks whether a specified application is enabled.
      * @param bundleName Indicates the bundle name of the application.
      * @return Returns true if the application is enabled; returns false otherwise.
      */
-    virtual bool IsApplicationEnabled(const std::string &bundleName) = 0;
+    virtual bool IsApplicationEnabled(const std::string &bundleName)
+    {
+        return false;
+    }
     /**
      * @brief Sets whether to enable a specified application.
      * @param bundleName Indicates the bundle name of the application.
@@ -475,7 +592,10 @@ public:
      * @param abilityInfo Indicates information about the ability to check.
      * @return Returns true if the ability is enabled; returns false otherwise.
      */
-    virtual bool IsAbilityEnabled(const AbilityInfo &abilityInfo) = 0;
+    virtual bool IsAbilityEnabled(const AbilityInfo &abilityInfo)
+    {
+        return false;
+    }
     /**
      * @brief Sets whether to enable a specified ability.
      * @param abilityInfo Indicates information about the ability.
@@ -495,7 +615,10 @@ public:
      * @param className Indicates the ability class name.
      * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
      */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &className) = 0;
+    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &className)
+    {
+        return Constants::EMPTY_STRING;
+    }
     /**
      * @brief Confirms with the permission management module to check whether a request prompt is required for granting
      * a certain permission.
@@ -507,7 +630,10 @@ public:
      * by the system, or the permission is denied by the user and the user has turned off further requests.
      */
     virtual bool CanRequestPermission(
-        const std::string &bundleName, const std::string &permissionName, const int userId) = 0;
+        const std::string &bundleName, const std::string &permissionName, const int userId)
+    {
+        return false;
+    }
     /**
      * @brief Requests a certain permission from user.
      * @param bundleName Indicates the name of the bundle to request permission.
@@ -516,13 +642,19 @@ public:
      * @return Returns true if the permission request successfully; returns false otherwise.
      */
     virtual bool RequestPermissionFromUser(
-        const std::string &bundleName, const std::string &permission, const int userId) = 0;
+        const std::string &bundleName, const std::string &permission, const int userId)
+    {
+        return false;
+    }
     /**
      * @brief Registers a callback for listening for permission changes of all UIDs.
      * @param callback Indicates the callback method to register.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback) = 0;
+    virtual bool RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+    {
+        return false;
+    }
     /**
      * @brief Registers a callback for listening for permission changes of specified UIDs.
      * @param uids Indicates the list of UIDs whose permission changes will be monitored.
@@ -530,20 +662,29 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool RegisterPermissionsChanged(
-        const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback) = 0;
+        const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
+    {
+        return false;
+    }
     /**
      * @brief Unregisters a specified callback for listening for permission changes.
      * @param callback Indicates the callback method to register.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback) = 0;
+    virtual bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the FormInfo objects provided by all applications on the device.
      * @param formInfo list of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
      * device.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetAllFormsInfo(std::vector<FormInfo> &formInfos) = 0;
+    virtual bool GetAllFormsInfo(std::vector<FormInfo> &formInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the FormInfo objects provided by a specified application on the device.
      * @param bundleName Indicates the bundle name of the application.
@@ -551,7 +692,10 @@ public:
      * device.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) = 0;
+    virtual bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the FormInfo objects provided by a specified.
      * @param formInfo list of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
@@ -561,33 +705,48 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool GetFormsInfoByModule(
-        const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) = 0;
+        const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
      * @param bundleName Indicates the bundle name of the application.
      * @param shortcutInfos List of ShortcutInfo objects if obtained.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) = 0;
+    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the CommonEventInfo objects provided by an event key on the device.
      * @param eventKey Indicates the event of the subscribe.
      * @param commonEventInfos List of CommonEventInfo objects if obtained.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) = 0;
+    virtual bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos)
+    {
+        return false;
+    }
     /**
      * @brief Get module usage record list in descending order of lastLaunchTime.
      * @param maxNum the return size of the records, must be in range of 1 to 1000.
      * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) = 0;
+    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the interface used to install and uninstall bundles.
      * @return Returns a pointer to IBundleInstaller class if exist; returns nullptr otherwise.
      */
-    virtual sptr<IBundleInstaller> GetBundleInstaller() = 0;
+    virtual sptr<IBundleInstaller> GetBundleInstaller()
+    {
+        return nullptr;
+    }
     /**
      * @brief Notify a specified ability for ability.
      * @param bundleName Indicates the bundle name of the ability to ability.
@@ -597,31 +756,46 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool NotifyAbilityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid = 0) = 0;
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid = 0)
+    {
+        return false;
+    }
     /**
      * @brief Remove cloned bundle.
      * @param bundleName Indicates the bundle name of remove cloned bundle.
      * @param uid Indicates the uid of remove cloned bundle.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool RemoveClonedBundle(const std::string &bundleName, const int32_t uid) = 0;
+    virtual bool RemoveClonedBundle(const std::string &bundleName, const int32_t uid)
+    {
+        return false;
+    }
     /**
      * @brief create bundle clone.
      * @param bundleName Indicates the bundle name of create bundle clone.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool BundleClone(const std::string &bundleName) = 0;
+    virtual bool BundleClone(const std::string &bundleName)
+    {
+        return false;
+    }
      /**
      * @brief Determine whether the application is in the allow list.
      * @param bundleName Indicates the bundle Names.
      * @return Returns true if bundle name in the allow list successfully; returns false otherwise.
      */
-    virtual bool CheckBundleNameInAllowList(const std::string &bundleName) = 0;
+    virtual bool CheckBundleNameInAllowList(const std::string &bundleName)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the interface used to create or delete user.
      * @return Returns a pointer to IBundleUserMgr class if exist; returns nullptr otherwise.
      */
-    virtual sptr<IBundleUserMgr> GetBundleUserMgr() = 0;
+    virtual sptr<IBundleUserMgr> GetBundleUserMgr()
+    {
+        return nullptr;
+    }
     /**
      * @brief Obtains the DistributedBundleInfo based on a given bundle name and networkId.
      * @param networkId Indicates the networkId of remote device.
@@ -632,7 +806,10 @@ public:
      */
     virtual bool GetDistributedBundleInfo(
         const std::string &networkId, int32_t userId, const std::string &bundleName,
-        DistributedBundleInfo &distributedBundleInfo) = 0;
+        DistributedBundleInfo &distributedBundleInfo)
+    {
+        return false;
+    }
     /**
      * @brief Get app privilege level.
      * @param bundleName Indicates the bundle name of the app privilege level.
