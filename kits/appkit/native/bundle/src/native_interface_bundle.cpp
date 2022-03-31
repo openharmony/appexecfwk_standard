@@ -69,7 +69,7 @@ sptr<IBundleMgr> BundleNative::GetBundleMgr()
 } // AppExecFwk
 } // OHOS
 
-const char* OH_NativeBundleMgr_GetAppIdByBundleName(const char *bundleName)
+char* OH_NativeBundle_GetAppIdByBundleName(const char* bundleName)
 {
     if (bundleName == nullptr) {
         APP_LOGE("bundleName is nullptr");
