@@ -35,7 +35,7 @@ ohos_shared_library("bundle_ndk") {
     "LOG_DOMAIN = 0xD001120",
   ]
   sources = [
-    "src/bundle_mgr_proxy_ndk.cpp",
+    "src/bundle_mgr_proxy_native.cpp",
     "src/native_interface_bundle.cpp",
   ]
 
