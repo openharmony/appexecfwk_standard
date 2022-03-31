@@ -45,7 +45,7 @@ extern "C" {
  * @since 9
  * @version 1.0
  */
-const char* OH_NativeBundle_GetAppIdByBundleName(const char *bundleName);
+char* OH_NativeBundle_GetAppIdByBundleName(const char* bundleName);
 
 #ifdef __cplusplus
 };
