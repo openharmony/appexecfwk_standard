@@ -192,7 +192,8 @@ public:
     void MockInnerBundleInfo(const std::string &bundleName, const std::string &moduleName,
         const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
     void MockInstallBundle(
-        const std::string &bundleName, const std::string &moduleName, const std::string &abilityName) const;
+        const std::string &bundleName, const std::string &moduleName, const std::string &abilityName,
+        bool userDataClearable = true, bool isSystemApp = false) const;
     void MockUninstallBundle(const std::string &bundleName) const;
     AbilityInfo MockAbilityInfo(
         const std::string &bundleName, const std::string &module, const std::string &abilityName) const;
@@ -230,7 +231,8 @@ public:
     void CheckCommonEventInfoTest(std::vector<CommonEventInfo> &commonEventInfos) const;
     void CheckShortcutInfoDemo(std::vector<ShortcutInfo> &shortcutInfos) const;
     void AddBundleInfo(const std::string &bundleName, BundleInfo &bundleInfo) const;
-    void AddApplicationInfo(const std::string &bundleName, ApplicationInfo &appInfo) const;
+    void AddApplicationInfo(const std::string &bundleName, ApplicationInfo &appInfo,
+        bool userDataClearable = true, bool isSystemApp = false) const;
     void AddInnerBundleInfoByTest(const std::string &bundleName, const std::string &moduleName,
         const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
 
@@ -292,7 +294,8 @@ void BmsBundleKitServiceTest::AddBundleInfo(const std::string &bundleName, Bundl
     bundleInfo.singleton = true;
 }
 
-void BmsBundleKitServiceTest::AddApplicationInfo(const std::string &bundleName, ApplicationInfo &appInfo) const
+void BmsBundleKitServiceTest::AddApplicationInfo(const std::string &bundleName, ApplicationInfo &appInfo,
+    bool userDataClearable, bool isSystemApp) const
 {
     appInfo.bundleName = bundleName;
     appInfo.name = bundleName;
@@ -307,6 +310,8 @@ void BmsBundleKitServiceTest::AddApplicationInfo(const std::string &bundleName, 
     appInfo.flags = APPLICATION_INFO_FLAGS;
     appInfo.enabled = true;
     appInfo.isCloned = false;
+    appInfo.userDataClearable = userDataClearable;
+    appInfo.isSystemApp = isSystemApp;
 }
 
 void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundleName,
@@ -340,7 +345,8 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
 }
 
 void BmsBundleKitServiceTest::MockInstallBundle(
-    const std::string &bundleName, const std::string &moduleName, const std::string &abilityName) const
+    const std::string &bundleName, const std::string &moduleName, const std::string &abilityName,
+    bool userDataClearable, bool isSystemApp) const
 {
     auto dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
@@ -358,7 +364,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     innerBundleUserInfo1.uid = TEST_UID;
 
     ApplicationInfo appInfo;
-    AddApplicationInfo(bundleName, appInfo);
+    AddApplicationInfo(bundleName, appInfo, userDataClearable, isSystemApp);
     BundleInfo bundleInfo;
     AddBundleInfo(bundleName, bundleInfo);
 
@@ -2286,6 +2292,95 @@ HWTEST_F(BmsBundleKitServiceTest, CleanCache_0300, Function | SmallTest | Level1
     sptr<MockCleanCache> cleanCache = new (std::nothrow) MockCleanCache();
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     bool result = hostImpl->CleanBundleCacheFiles("", cleanCache);
+    EXPECT_FALSE(result);
+    CheckCacheExist();
+
+    CleanFileDir();
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CleanCache_0400
+ * @tc.name: test can clean the cache files
+ * @tc.desc: 1.system run normally
+ *           2. userDataClearable is true, isSystemApp is false
+ *           3.clean the cache files succeed
+ * @tc.require: SR000H00TH
+ */
+HWTEST_F(BmsBundleKitServiceTest, CleanCache_0400, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, true, false);
+    CreateFileDir();
+
+    sptr<MockCleanCache> cleanCache = new (std::nothrow) MockCleanCache();
+    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
+    bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
+    EXPECT_TRUE(result);
+
+    CleanFileDir();
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CleanCache_0500
+ * @tc.name: test can clean the cache files
+ * @tc.desc: 1.system run normally
+ *           2. userDataClearable is false, isSystemApp is false
+ *           3.clean the cache files succeed
+ * @tc.require: SR000H00TH
+ */
+HWTEST_F(BmsBundleKitServiceTest, CleanCache_0500, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, false, false);
+    CreateFileDir();
+
+    sptr<MockCleanCache> cleanCache = new (std::nothrow) MockCleanCache();
+    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
+    bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
+    EXPECT_TRUE(result);
+
+    CleanFileDir();
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CleanCache_0600
+ * @tc.name: test can clean the cache files
+ * @tc.desc: 1.system run normally
+ *           2. userDataClearable is true, isSystemApp is true
+ *           3.clean the cache files succeed
+ * @tc.require: AR000H035G
+ */
+HWTEST_F(BmsBundleKitServiceTest, CleanCache_0600, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, true, true);
+    CreateFileDir();
+
+    sptr<MockCleanCache> cleanCache = new (std::nothrow) MockCleanCache();
+    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
+    bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
+    EXPECT_TRUE(result);
+
+    CleanFileDir();
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CleanCache_0700
+ * @tc.name: test can clean the cache files
+ * @tc.desc: 1.system run normally
+ *           2. userDataClearable is false, isSystemApp is true
+ *           3.clean the cache files failed
+ * @tc.require: AR000H035G
+ */
+HWTEST_F(BmsBundleKitServiceTest, CleanCache_0700, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, false, true);
+    CreateFileDir();
+
+    sptr<MockCleanCache> cleanCache = new (std::nothrow) MockCleanCache();
+    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
+    bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
     EXPECT_FALSE(result);
     CheckCacheExist();
 
