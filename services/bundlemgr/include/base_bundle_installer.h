@@ -182,9 +182,10 @@ private:
     /**
      * @brief Remove a whole bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
+     * @param isKeepData Indicates that whether to save data.
      * @return Returns ERR_OK if the bundle removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveBundle(InnerBundleInfo &info);
+    ErrCode RemoveBundle(InnerBundleInfo &info, bool isKeepData);
     /**
      * @brief Create the code and data directories of a bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
@@ -201,19 +202,20 @@ private:
     /**
      * @brief Remove the code and data directories of a bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
-     * @param isUninstall Indicates that whether the remove is in an uninstall process.
+     * @param isKeepData Indicates that whether to save data.
      * @return Returns ERR_OK if the bundle directories removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isUninstall) const;
+    ErrCode RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isKeepData) const;
     /**
      * @brief Remove the code and data directories of a module in a bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
      * @param modulePackage Indicates the module to be removed.
      * @param userId Indicates the userId.
+     * @param isKeepData Indicates that whether to save data.
      * @return Returns ERR_OK if the bundle directories removed successfully; returns error code otherwise.
      */
     ErrCode RemoveModuleAndDataDir(const InnerBundleInfo &info,
-        const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+        const std::string &modulePackage, int32_t userId, bool isKeepData) const;
     /**
      * @brief Parse the bundle config.json file.
      * @param bundleFilePath Indicates the HAP file path.
@@ -407,8 +409,8 @@ private:
 private:
     ErrCode CreateBundleCodeDir(InnerBundleInfo &info) const;
     ErrCode CreateBundleDataDir(InnerBundleInfo &info) const;
-    ErrCode RemoveHapModuleDataDir(const InnerBundleInfo &info,
-        const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+    ErrCode RemoveModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage,
+        int32_t userId) const;
     ErrCode RemoveBundleCodeDir(const InnerBundleInfo &info) const;
     ErrCode RemoveBundleDataDir(const InnerBundleInfo &info) const;
     uint32_t CreateAccessTokenId(const InnerBundleInfo &info);
