@@ -312,6 +312,8 @@ void BmsBundleKitServiceTest::AddApplicationInfo(const std::string &bundleName, 
     appInfo.flags = APPLICATION_INFO_FLAGS;
     appInfo.enabled = true;
     appInfo.isCloned = false;
+    appInfo.userDataClearable = userDataClearable;
+    appInfo.isSystemApp = isSystemApp;
 }
 
 void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundleName,
@@ -2292,7 +2294,6 @@ HWTEST_F(BmsBundleKitServiceTest, CleanCache_0400, Function | SmallTest | Level1
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
     EXPECT_TRUE(result);
-    CheckCacheNonExist();
 
     CleanFileDir();
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -2315,7 +2316,6 @@ HWTEST_F(BmsBundleKitServiceTest, CleanCache_0500, Function | SmallTest | Level1
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
     EXPECT_TRUE(result);
-    CheckCacheNonExist();
 
     CleanFileDir();
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -2338,14 +2338,13 @@ HWTEST_F(BmsBundleKitServiceTest, CleanCache_0600, Function | SmallTest | Level1
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
     EXPECT_TRUE(result);
-    CheckCacheNonExist();
 
     CleanFileDir();
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
 /**
- * @tc.number: CleanCache_0600
+ * @tc.number: CleanCache_0700
  * @tc.name: test can clean the cache files
  * @tc.desc: 1.system run normally
  *           2. userDataClearable is false, isSystemApp is true
