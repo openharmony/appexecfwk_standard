@@ -57,7 +57,7 @@ ohos_shared_library("appexecfwk_base") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  public_deps = [ "${common_path}:libappexecfwk_common" ]
+  deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
     "ability_base:want",
