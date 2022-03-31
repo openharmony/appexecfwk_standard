@@ -309,7 +309,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 
     ScopeGuard userGuard([&] {
         if (!hasInstalledInUser_ || (!isAppExist_)) {
-            RemoveBundleUserData(oldInfo, true);
+            RemoveBundleUserData(oldInfo, false);
         }
     });
 
@@ -577,7 +577,6 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
 
     uid = curInnerBundleUserInfo.uid;
-    oldInfo.SetIsKeepData(installParam.isKeepData);
     if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp &&
         !oldInfo.IsRemovable() && installParam.noSkipsKill) {
         APP_LOGE("uninstall system app");
@@ -592,7 +591,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
 
     if (oldInfo.GetInnerBundleUserInfos().size() > 1) {
         APP_LOGD("only delete userinfo %{public}d", userId_);
-        return RemoveBundleUserData(oldInfo);
+        return RemoveBundleUserData(oldInfo, installParam.isKeepData);
     }
 
     if (!dataMgr_->UpdateBundleInstallState(bundleName, InstallState::UNINSTALL_START)) {
@@ -618,7 +617,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
 
-    ErrCode result = RemoveBundle(oldInfo);
+    ErrCode result = RemoveBundle(oldInfo, installParam.isKeepData);
     if (result != ERR_OK) {
         APP_LOGE("remove whole bundle failed");
         return result;
@@ -671,7 +670,6 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
 
     uid = curInnerBundleUserInfo.uid;
-    oldInfo.SetIsKeepData(installParam.isKeepData);
     if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp
         && !oldInfo.IsRemovable() && installParam.noSkipsKill) {
         APP_LOGE("uninstall system app");
@@ -719,17 +717,19 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         enableGuard.Dismiss();
         stateGuard.Dismiss();
         if (onlyInstallInUser) {
-            return RemoveBundle(oldInfo);
+            return RemoveBundle(oldInfo, installParam.isKeepData);
         }
 
-        return RemoveBundleUserData(oldInfo);
+        return RemoveBundleUserData(oldInfo, installParam.isKeepData);
     }
 
     ErrCode result = ERR_OK;
     if (onlyInstallInUser) {
-        result = RemoveModuleAndDataDir(oldInfo, modulePackage, userId_);
+        result = RemoveModuleAndDataDir(oldInfo, modulePackage, userId_, installParam.isKeepData);
     } else {
-        result = RemoveHapModuleDataDir(oldInfo, modulePackage, userId_);
+        if (!installParam.isKeepData) {
+            result = RemoveModuleDataDir(oldInfo, modulePackage, userId_);
+        }
     }
 
     if (result != ERR_OK) {
@@ -843,9 +843,9 @@ ErrCode BaseBundleInstaller::InnerProcessInstallByPreInstallInfo(
     return ProcessBundleInstall(pathVec, innerInstallParam, preInstallBundleInfo.GetAppType(), uid);
 }
 
-ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
+ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info, bool isKeepData)
 {
-    ErrCode result = RemoveBundleAndDataDir(info, true);
+    ErrCode result = RemoveBundleAndDataDir(info, isKeepData);
     if (result != ERR_OK) {
         APP_LOGE("remove bundle dir failed");
         dataMgr_->UpdateBundleInstallState(info.GetBundleName(), InstallState::UNINSTALL_FAIL);
@@ -1221,7 +1221,7 @@ ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::str
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isUninstall) const
+ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isKeepData) const
 {
     // remove bundle dir
     auto result = RemoveBundleCodeDir(info);
@@ -1229,14 +1229,14 @@ ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info,
         APP_LOGE("fail to remove bundle dir %{private}s, error is %{public}d", info.GetAppCodePath().c_str(), result);
         return result;
     }
-    if (!info.GetIsKeepData() || !isUninstall) {
+    if (!isKeepData) {
         result = RemoveBundleDataDir(info);
         if (result != ERR_OK) {
-            APP_LOGE("fail to remove newbundleName: %{public}s, error is %{public}d",
+            APP_LOGE("fail to remove bundleData dir %{private}s, error is %{public}d",
                 info.GetBundleName().c_str(), result);
         }
     }
-    return ERR_OK;
+    return result;
 }
 
 ErrCode BaseBundleInstaller::RemoveBundleCodeDir(const InnerBundleInfo &info) const
@@ -1261,7 +1261,7 @@ ErrCode BaseBundleInstaller::RemoveBundleDataDir(const InnerBundleInfo &info) co
 }
 
 ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(
-    const InnerBundleInfo &info, const std::string &modulePackage, int32_t userId) const
+    const InnerBundleInfo &info, const std::string &modulePackage, int32_t userId, bool isKeepData) const
 {
     auto moduleDir = info.GetModuleDir(modulePackage);
     auto result = RemoveModuleDir(moduleDir);
@@ -1270,21 +1270,20 @@ ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(
         return result;
     }
 
-    if (!info.GetIsKeepData()) {
+    if (!isKeepData) {
+        // uninstall hap remove current userId data dir
         if (userId != Constants::UNSPECIFIED_USERID) {
-            RemoveHapModuleDataDir(info, modulePackage, userId);
+            RemoveModuleDataDir(info, modulePackage, userId);
             return ERR_OK;
         }
 
+        // updata hap remove all lower version data dir
         for (auto infoItem : info.GetInnerBundleUserInfos()) {
             int32_t installedUserId = infoItem.second.bundleUserInfo.userId;
-            if (installedUserId == userId_) {
-                continue;
-            }
-
-            RemoveHapModuleDataDir(info, modulePackage, installedUserId);
+            RemoveModuleDataDir(info, modulePackage, installedUserId);
         }
     }
+
     return ERR_OK;
 }
 
@@ -1294,10 +1293,10 @@ ErrCode BaseBundleInstaller::RemoveModuleDir(const std::string &modulePath) cons
     return InstalldClient::GetInstance()->RemoveDir(modulePath);
 }
 
-ErrCode BaseBundleInstaller::RemoveHapModuleDataDir(
+ErrCode BaseBundleInstaller::RemoveModuleDataDir(
     const InnerBundleInfo &info, const std::string &modulePackage, int32_t userId) const
 {
-    APP_LOGD("RemoveHapModuleDataDir bundleName: %{public}s  modulePackage: %{public}s",
+    APP_LOGD("RemoveModuleDataDir bundleName: %{public}s  modulePackage: %{public}s",
              info.GetBundleName().c_str(),
              modulePackage.c_str());
     auto hapModuleInfo = info.FindHapModuleInfo(modulePackage);
@@ -1306,7 +1305,7 @@ ErrCode BaseBundleInstaller::RemoveHapModuleDataDir(
         return ERR_NO_INIT;
     }
     std::string moduleDataDir = info.GetBundleName() + Constants::HAPS + (*hapModuleInfo).moduleName;
-    APP_LOGD("RemoveHapModuleDataDir moduleDataDir: %{public}s", moduleDataDir.c_str());
+    APP_LOGD("RemoveModuleDataDir moduleDataDir: %{public}s", moduleDataDir.c_str());
     auto result = InstalldClient::GetInstance()->RemoveModuleDataDir(moduleDataDir, userId);
     if (result != ERR_OK) {
         APP_LOGE("fail to remove HapModuleData dir, error is %{public}d", result);
@@ -1453,7 +1452,6 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
             }
         }
         newInfo.SetUserId(installParam.userId);
-        newInfo.SetIsKeepData(installParam.isKeepData);
         newInfo.SetIsPreInstallApp(installParam.isPreInstallApp);
         result = ParseBundleInfo(bundlePaths[i], newInfo);
         if (result != ERR_OK) {
@@ -1607,7 +1605,7 @@ ErrCode BaseBundleInstaller::UninstallLowerVersionFeature(const std::vector<std:
     for (const auto &package : moduleVec) {
         if (find(packageVec.begin(), packageVec.end(), package) == packageVec.end()) {
             APP_LOGD("uninstall package %{public}s", package.c_str());
-            ErrCode result = RemoveModuleAndDataDir(info, package);
+            ErrCode result = RemoveModuleAndDataDir(info, package, Constants::UNSPECIFIED_USERID, true);
             if (result != ERR_OK) {
                 APP_LOGE("remove module dir failed");
                 return result;
@@ -1688,7 +1686,7 @@ ErrCode BaseBundleInstaller::CreateBundleUserData(InnerBundleInfo &innerBundleIn
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleInfo, bool needRemoveData)
+ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleInfo, bool isKeepData)
 {
     auto bundleName = innerBundleInfo.GetBundleName();
     APP_LOGD("remove user(%{public}d) in bundle(%{public}s).", userId_, bundleName.c_str());
@@ -1696,7 +1694,7 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
         return ERR_APPEXECFWK_USER_NOT_EXIST;
     }
 
-    if (needRemoveData) {
+    if (!isKeepData) {
         ErrCode result = RemoveBundleDataDir(innerBundleInfo);
         if (result != ERR_OK) {
             APP_LOGE("remove user data directory failed.");

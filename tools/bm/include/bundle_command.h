@@ -54,7 +54,8 @@ const std::string HELP_MSG_UNINSTALL =
     "  -h, --help                           list available commands\n"
     "  -n, --bundle-name <bundle-name>      uninstall a bundle by bundle name\n"
     "  -m, --module-name <module-name>      uninstall a module by module name\n"
-    "  -u, --user-id <user-id>              specify a user id\n";
+    "  -u, --user-id <user-id>              specify a user id\n"
+    "  -k, --keep-data                      keep the user data after uninstall\n";
 
 const std::string HELP_MSG_DUMP =
     "usage: bm dump <options>\n"

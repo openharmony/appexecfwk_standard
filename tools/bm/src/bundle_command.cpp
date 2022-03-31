@@ -706,6 +706,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
     std::string bundleName = "";
     std::string moduleName = "";
     int32_t userId = Constants::ALL_USERID;
+    bool isKeepData = false;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -754,6 +755,13 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     resultReceiver_.append("error: option ");
                     resultReceiver_.append("requires a value.\n");
                     result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 'k': {
+                    // 'bm uninstall -n <bundleName> -k'
+                    // 'bm uninstall --bundle-name <bundleName> --keep-data'
+                    APP_LOGD("'bm uninstall -k'");
+                    isKeepData = true;
                     break;
                 }
                 default: {
@@ -820,6 +828,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
     } else {
         InstallParam installParam;
         installParam.userId = userId;
+        installParam.isKeepData = isKeepData;
         int32_t uninstallResult = UninstallOperation(bundleName, moduleName, installParam);
         if (uninstallResult == OHOS::ERR_OK) {
             resultReceiver_ = STRING_UNINSTALL_BUNDLE_OK + "\n";
