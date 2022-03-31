@@ -21,7 +21,7 @@ ohos_unittest("CommonPerfProfileTest") {
 
   sources = [
     "${common_path}/log/src/app_log_wrapper.cpp",
-    "${common_path}/perf/src/perf_profile.cpp",
+    "${innerkits_path}/appexecfwk_base/src/perf_profile.cpp",
   ]
 
   sources += [ "common_perf_profile_test.cpp" ]
@@ -29,6 +29,7 @@ ohos_unittest("CommonPerfProfileTest") {
   configs = [
     "${common_path}:appexecfwk_common_config",
     "${common_path}/test:common_test_config",
+    "${innerkits_path}/appexecfwk_base:appexecfwk_base_sdk_config",
     "//utils/native/base:utils_config",
   ]
 

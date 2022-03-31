@@ -41,6 +41,7 @@ ohos_shared_library("appexecfwk_base") {
     "src/install_param.cpp",
     "src/module_info.cpp",
     "src/module_usage_record.cpp",
+    "src/perf_profile.cpp",
     "src/permission_def.cpp",
     "src/remote_ability_info.cpp",
     "src/shortcut_info.cpp",
@@ -56,7 +57,7 @@ ohos_shared_library("appexecfwk_base") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  deps = [ "${common_path}:libappexecfwk_common" ]
+  public_deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
     "ability_base:want",
