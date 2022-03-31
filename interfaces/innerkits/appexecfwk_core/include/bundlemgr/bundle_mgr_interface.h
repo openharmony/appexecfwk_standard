@@ -231,7 +231,7 @@ public:
      * @param bundleName Indicates the bundle name.
      * @return Returns "system" if the bundle is a system application; returns "third-party" otherwise.
      */
-    virtual std::string GetAppType(const std::string &bundleName) 
+    virtual std::string GetAppType(const std::string &bundleName)
     {
         return Constants::EMPTY_STRING;
     }
