@@ -28,6 +28,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+    static constexpr size_t APPID_MAX_LENGTH = 10240;
+}
 class BundleNative {
 public:
     static sptr<IBundleMgr> GetBundleMgr();
@@ -88,6 +91,10 @@ const char* OH_NativeBundleMgr_GetAppIdByBundleName(const char *bundleName)
         return nullptr;
     }
     size_t len = appId.size();
+    if ((len == 0) || (len + 1) > OHOS::AppExecFwk::APPID_MAX_LENGTH) {
+        APP_LOGE("failed due to the length of appId is 0 or to long");
+        return nullptr;
+    }
     char* result = static_cast<char*>(malloc(len + 1));
     if (result == nullptr) {
         APP_LOGE("failed due to malloc error");

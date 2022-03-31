@@ -60,7 +60,7 @@
                 "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
                 "//foundation/appexecfwk/standard/services/bundlemgr:bms_target",
                 "//foundation/appexecfwk/standard/kits/appkit/napi:napi_packages",
-                "//foundation/appexecfwk/standard/kits/appkit/native/bundlemgr:bundle_ndk",
+                "//foundation/appexecfwk/standard/kits/appkit/native/bundle:bundle_ndk",
                 "//foundation/appexecfwk/standard/test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
                 "//foundation/appexecfwk/standard/tools/zip:tools_zip"
             ],
