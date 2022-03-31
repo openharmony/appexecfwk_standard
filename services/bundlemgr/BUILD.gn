@@ -148,7 +148,10 @@ ohos_shared_library("libbms") {
 
   sources += bundle_install_sources
 
-  defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
+  defines = [
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
+  ]
 
   configs = [ ":bundlemgr_common_config" ]
   cflags = []

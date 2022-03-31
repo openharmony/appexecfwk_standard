@@ -32,6 +32,7 @@
 #include "bundle_mgr_service_event_handler.h"
 #include "bundle_permissions_changed_monitor.h"
 #include "bundle_user_mgr_host_impl.h"
+#include "distributed_monitor.h"
 #include "hidump_helper.h"
 
 namespace OHOS {
@@ -126,6 +127,7 @@ private:
     sptr<BundleInstallerHost> installer_;
     sptr<BundleUserMgrHostImpl> userMgrHost_;
     std::shared_ptr<BundlePermissionsChangedMonitor> perChangeSub_;
+    std::shared_ptr<DistributedMonitor> distributedSub_;
 
     DISALLOW_COPY_AND_MOVE(BundleMgrService);
 };

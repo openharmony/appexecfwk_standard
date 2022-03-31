@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "ability_manager_interface.h"
-#include "account_helper.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
@@ -97,7 +96,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
             uid);
     }
     if (result == ERR_OK) {
-        SaveStorageDistributeInfo();
+        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName_, userId_);
     }
 
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
@@ -119,7 +118,7 @@ ErrCode BaseBundleInstaller::InstallBundleByBundleName(
     }
 
     if (result == ERR_OK) {
-        SaveStorageDistributeInfo();
+        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName_, userId_);
     }
 
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
@@ -141,7 +140,7 @@ ErrCode BaseBundleInstaller::Recover(
     }
 
     if (result == ERR_OK) {
-        SaveStorageDistributeInfo();
+        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName_, userId_);
     }
 
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
@@ -161,7 +160,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
     if (result == ERR_OK) {
-        DeleteStorageDistributeInfo(bundleName);
+        DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName_, userId_);
     }
 
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
@@ -186,7 +185,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
     APP_LOGD("finish to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
 
     if (result == ERR_OK) {
-        DeleteStorageDistributeInfo(bundleName);
+        DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName_, userId_);
     }
     return result;
 }
@@ -1778,37 +1777,6 @@ void BaseBundleInstaller::ResetInstallProperties()
     uninstallModuleVec_.clear();
     installedModules_.clear();
     state_ = InstallerState::INSTALL_START;
-}
-
-void BaseBundleInstaller::SaveStorageDistributeInfo()
-{
-    int32_t currentUserId = AccountHelper::GetCurrentActiveUserId();
-    if (currentUserId == Constants::INVALID_USERID) {
-        currentUserId = Constants::START_USERID;
-    }
-    if (userId_ != currentUserId) {
-        APP_LOGW("install userid:%{public}d is not currentUserId:%{public}d", userId_, currentUserId);
-        return;
-    }
-    BundleInfo bundleInfo;
-    bool ret = dataMgr_->GetBundleInfo(
-        bundleName_, BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo, currentUserId);
-    if (ret) {
-        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleInfo);
-    }
-}
-
-void BaseBundleInstaller::DeleteStorageDistributeInfo(const std::string &bundleName)
-{
-    int32_t currentUserId = AccountHelper::GetCurrentActiveUserId();
-    if (userId_ != currentUserId) {
-        APP_LOGW("uninstall userid:%{public}d is not currentUserId:%{public}d", userId_, currentUserId);
-        return;
-    }
-    bool ret = DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName);
-    if (!ret) {
-        APP_LOGW("bundleName:%{public}s, deleteStorageDistributeInfo failed", bundleName.c_str());
-    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
