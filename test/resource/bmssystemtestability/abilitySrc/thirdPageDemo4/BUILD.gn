@@ -18,15 +18,7 @@ config("third_page_demo4_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "${SUBDEMOSYSTEM_DIR}/include",
-    "${aafwk_path}/frameworks/kits/appkit/native/app",
-    "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
-    "${aafwk_path}/interfaces/innerkits/ability_manager/include",
-    "${innerkits_path}/libeventhandler/include",
-    "${services_path}/bundlemgr/include",
-    "${aafwk_path}/services/abilitymgr/include",
-    "${common_path}/log/include",
     "${SUBST_TOOLS_DIR}/include",
-    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"thirdPageDemo4\"",
@@ -37,22 +29,15 @@ ohos_shared_library("page_ability_native4") {
   sources = [ "${SUBDEMOSYSTEM_DIR}/src/pageAbilityDemo.cpp" ]
   configs = [ ":third_page_demo4_config" ]
   deps = [
-    "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
-    "${aafwk_path}/frameworks/kits/ability/native:dummy_classes",
-    "${aafwk_path}/frameworks/kits/appkit:appkit_native",
-    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
-    "${aafwk_path}/interfaces/innerkits/want:want",
     "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
-    "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${services_path}/bundlemgr:libbms",
-    "//third_party/jsoncpp:jsoncpp",
-    "//utils/native/base:utilsbase",
   ]
   external_deps = [
+    "ability_base:want",
+    "ability_runtime:abilitykit_native",
+    "ability_runtime:app_manager",
     "ces_standard:cesfwk_innerkits",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
+    "utils_base:utils",
   ]
   subsystem_name = "bmssystemtestability"
 }
