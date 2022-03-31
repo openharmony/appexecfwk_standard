@@ -423,7 +423,7 @@ public:
      */
     virtual int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName)
     {
-        retrun Constants::SIGNATURE_UNKNOWN_BUNDLE;
+        return Constants::SIGNATURE_UNKNOWN_BUNDLE;
     }
     /**
      * @brief Checks whether a specified bundle has been granted a specific permission.
