@@ -42,12 +42,7 @@ ohos_unittest("BmsBundleParserTest") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  deps = [
-    "${common_path}:libappexecfwk_common",
-    "${services_path}/bundlemgr:bundle_parser",
-    "${services_path}/bundlemgr:parser_common",
-    "//third_party/googletest:gtest_main",
-  ]
+  deps = [ "${services_path}/bundlemgr:bundle_parser" ]
 
   external_deps = [
     "ability_base:want",
