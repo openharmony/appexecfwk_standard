@@ -23,16 +23,12 @@ ohos_unittest("BmsBundleNativeTest") {
   include_dirs = [ "${kits_path}/appkit/native/bundle/include" ]
 
   sources = [ "bms_bundle_native_test.cpp" ]
-  configs = [
-    "${services_path}/bundlemgr/test:bundlemgr_test_config",
-  ]
+  configs = [ "${services_path}/bundlemgr/test:bundlemgr_test_config" ]
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  deps = [
-    "${kits_path}/appkit/native/bundle:bundle_ndk",
-  ]
+  deps = [ "${kits_path}/appkit/native/bundle:bundle_ndk" ]
 }
 
 group("unittest") {

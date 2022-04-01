@@ -45,7 +45,7 @@ group("unittest") {
     "unittest/bms_bundle_data_storage_test:unittest",
     "unittest/bms_bundle_installer_test:unittest",
     "unittest/bms_bundle_kit_service_test:unittest",
-    "unittest/bms_bundle_ndk_test:unittest",
+    "unittest/bms_bundle_native_test:unittest",
     "unittest/bms_bundle_parser_test:unittest",
     "unittest/bms_bundle_permission_grant_test:unittest",
     "unittest/bms_bundle_uninstaller_test:unittest",
