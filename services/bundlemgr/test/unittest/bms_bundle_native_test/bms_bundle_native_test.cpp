@@ -21,7 +21,6 @@
 
 using namespace testing::ext;
 namespace OHOS {
-
 class BmsBundleNativeTest : public testing::Test {
 public:
     static void SetUpTestCase();
