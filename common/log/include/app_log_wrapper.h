@@ -54,10 +54,10 @@ private:
 };
 
 #define PRINT_LOG(LEVEL, Level, fmt, ...)                  \
-    if (AppLogWrapper::JudgeLevel(AppLogLevel::LEVEL))     \
-    OHOS::HiviewDFX::HiLog::Level(APP_LABEL,               \
+    if (OHOS::AppExecFwk::AppLogWrapper::JudgeLevel(OHOS::AppExecFwk::AppLogLevel::LEVEL))     \
+    OHOS::HiviewDFX::HiLog::Level(OHOS::AppExecFwk::APP_LABEL,               \
         "[%{public}s(%{public}s):%{public}d] " fmt,        \
-        AppLogWrapper::GetBriefFileName(__FILE__).c_str(), \
+        OHOS::AppExecFwk::AppLogWrapper::GetBriefFileName(__FILE__).c_str(), \
         __FUNCTION__,                                      \
         __LINE__,                                          \
         ##__VA_ARGS__)
