@@ -468,6 +468,7 @@ void from_json(const nlohmann::json &jsonObject, App &app)
             false,
             parseResult,
             ArrayType::NOT_ARRAY);
+    }
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         BUNDLE_APP_PROFILE_KEY_USER_DATA_CLEARABLE,
@@ -476,7 +477,6 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    }
 }
 
 void from_json(const nlohmann::json &jsonObject, ReqVersion &reqVersion)
