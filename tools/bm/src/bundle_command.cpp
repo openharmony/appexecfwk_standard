@@ -288,6 +288,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install releaseType target not same",
         },
         {
+            IStatusReceiver::ERR_INSTALL_RELEASETYPE_NOT_SAME,
+            "error: install releaseType not same",
+        },
+        {
             IStatusReceiver::ERR_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME,
             "error: install releaseType compatible not same",
         },
