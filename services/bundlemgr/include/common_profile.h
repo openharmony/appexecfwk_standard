@@ -93,6 +93,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_PACKAGE = "package";
 const std::string BUNDLE_MODULE_PROFILE_KEY_SUPPORTED_MODES = "supportedModes";
 const std::string BUNDLE_MODULE_PROFILE_KEY_REQ_CAPABILITIES = "reqCapabilities";
 const std::string BUNDLE_MODULE_PROFILE_KEY_SUPPORTED_REQ_CAPABILITIES = "reqCapabilities";
+const std::string BUNDLE_MODULE_DEPENDENCIES = "dependencies";
 const std::string MODULE_SUPPORTED_MODES_VALUE_DRIVE = "drive";
 const std::string BUNDLE_MODULE_PROFILE_KEY_DEVICE_TYPE = "deviceType";
 const std::string BUNDLE_MODULE_PROFILE_KEY_COLOR_MODE = "colorMode";
@@ -351,6 +352,7 @@ const std::string MODULE_ABILITIES = "abilities";
 const std::string MODULE_EXTENSION_ABILITIES = "extensionAbilities";
 const std::string MODULE_REQUEST_PERMISSIONS = "requestPermissions";
 const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
+const std::string MODULE_DEPENDENCIES = "dependencies";
 // module type
 const std::string MODULE_TYPE_ENTRY = "entry";
 const std::string MODULE_TYPE_FEATURE = "feature";

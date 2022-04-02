@@ -64,6 +64,7 @@ const std::string MODULE_FORMS = "formInfos";
 const std::string MODULE_SHORTCUT = "shortcutInfos";
 const std::string MODULE_COMMON_EVENT = "commonEvents";
 const std::string MODULE_MAIN_ABILITY = "mainAbility";
+const std::string MODULE_DEPENDENCIES = "dependencies";
 const std::string NEW_BUNDLE_NAME = "newBundleName";
 const std::string MODULE_SRC_PATH = "srcPath";
 const std::string SCHEME_SEPARATOR = "://";
@@ -361,7 +362,8 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_EXTENSION_KEYS, info.extensionKeys},
         {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys},
         {MODULE_IS_MODULE_JSON, info.isModuleJson},
-        {MODULE_IS_STAGE_BASED_MODEL, info.isStageBasedModel}
+        {MODULE_IS_STAGE_BASED_MODEL, info.isStageBasedModel},
+        {MODULE_DEPENDENCIES, info.dependencies},
     };
 }
 
@@ -693,6 +695,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DEPENDENCIES,
+        info.dependencies,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
     if (parseResult != ERR_OK) {
         APP_LOGE("read InnerModuleInfo from database error, error code : %{public}d", parseResult);
     }
@@ -1262,6 +1272,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
                 ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
         }
     }
+    hapInfo.dependencies = it->second.dependencies;
     return hapInfo;
 }
 

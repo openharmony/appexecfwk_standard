@@ -89,6 +89,7 @@ struct InnerModuleInfo {
     std::vector<std::string> extensionKeys;
     std::vector<std::string> extensionSkillKeys;
     std::vector<Metadata> metadata;
+    std::vector<std::string> dependencies;
 };
 
 struct SkillUri {

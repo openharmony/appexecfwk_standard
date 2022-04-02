@@ -304,6 +304,7 @@ struct Module {
     std::vector<std::string> supportedModes;
     std::vector<std::string> reqCapabilities;
     std::vector<std::string> deviceType;
+    std::vector<std::string> dependencies;
     Distro distro;
     MetaData metaData;
     std::vector<Ability> abilities;
@@ -1715,6 +1716,14 @@ void from_json(const nlohmann::json &jsonObject, Module &module)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_DEPENDENCIES,
+        module.dependencies,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
 }
 
 void from_json(const nlohmann::json &jsonObject, ConfigJson &configJson)
@@ -2067,6 +2076,7 @@ bool ToInnerModuleInfo(const ProfileReader::ConfigJson &configJson, InnerModuleI
             innerModuleInfo.isEntry = true;
         }
     }
+    innerModuleInfo.dependencies = configJson.module.dependencies;
 
     innerModuleInfo.isModuleJson = false;
     return true;
