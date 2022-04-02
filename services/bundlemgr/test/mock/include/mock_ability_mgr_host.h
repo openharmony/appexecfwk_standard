@@ -288,10 +288,7 @@ public:
     {
         return 0;
     }
-    virtual int SetShowOnLockScreen(bool isAllow) override
-    {
-        return 0;
-    }
+
     int MoveMissionToFloatingStack(const MissionOption &missionOption) override
     {
         return 0;
