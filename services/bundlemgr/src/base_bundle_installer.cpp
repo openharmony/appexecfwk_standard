@@ -1496,6 +1496,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
     versionCode_ = (infos.begin()->second).GetVersionCode();
     std::string versionName = (infos.begin()->second).GetVersionName();
     uint32_t target = (infos.begin()->second).GetTargetVersion();
+    std::string releaseType = (infos.begin()->second).GetReleaseType();
     uint32_t compatible = (infos.begin()->second).GetCompatibleVersion();
     bool singleton = (infos.begin()->second).IsSingleton();
     Constants::AppType appType = (infos.begin()->second).GetAppType();
@@ -1522,6 +1523,9 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
         }
         if (compatible != info.second.GetCompatibleVersion()) {
             return ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME;
+        }
+        if (releaseType != info.second.GetReleaseType()) {
+            return ERR_APPEXECFWK_INSTALL_RELEASETYPE_NOT_SAME;
         }
         if (singleton != info.second.IsSingleton()) {
             return ERR_APPEXECFWK_INSTALL_SINGLETON_NOT_SAME;
