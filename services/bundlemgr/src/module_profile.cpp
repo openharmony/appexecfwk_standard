@@ -213,6 +213,7 @@ struct Module {
     std::vector<Extension> extensionAbilities;
     std::vector<RequestPermission> requestPermissions;
     std::vector<DefinePermission> definePermissions;
+    std::vector<std::string> dependencies;
 };
 
 struct ModuleJson {
@@ -1021,6 +1022,14 @@ void from_json(const nlohmann::json &jsonObject, Module &module)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DEPENDENCIES,
+        module.dependencies,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
 }
 
 void from_json(const nlohmann::json &jsonObject, ModuleJson &moduleJson)
@@ -1390,6 +1399,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     }
     innerModuleInfo.pages = moduleJson.module.pages;
     GetPermissions(moduleJson, innerModuleInfo, isSystemApp, isPreInstallApp);
+    innerModuleInfo.dependencies = moduleJson.module.dependencies;
     innerModuleInfo.isModuleJson = true;
     innerModuleInfo.isStageBasedModel = true;
     // abilities and extensionAbilities store in InnerBundleInfo
