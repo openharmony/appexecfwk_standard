@@ -34,6 +34,7 @@ const std::string PROFILE_KEY_DESCRIPTION_ID = "descriptionId";
 const std::string PROFILE_KEY_TYPE = "type";
 const std::string PROFILE_KEY_SRCPATH = "srcPath";
 const std::string PROFILE_KEY_SRCLANGUAGE = "srcLanguage";
+const std::string PRIORITY = "priority";
 
 // bundle profile tag
 const std::string BUNDLE_PROFILE_KEY_APP = "app";
@@ -305,6 +306,7 @@ const std::string SRC_ENTRANCE = "srcEntrance";
 const std::string PERMISSIONS = "permissions";
 const std::string VISIBLE = "visible";
 const std::string SRC_LANGUAGE = "srcLanguage";
+const std::string PRIORITY = "priority";
 // module.json
 const std::string APP = "app";
 const std::string MODULE = "module";

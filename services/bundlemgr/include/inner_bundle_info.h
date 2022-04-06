@@ -776,11 +776,6 @@ public:
     void SetAppType(Constants::AppType appType)
     {
         appType_ = appType;
-        if (appType_ == Constants::AppType::SYSTEM_APP) {
-            baseApplicationInfo_.isSystemApp = true;
-        } else {
-            baseApplicationInfo_.isSystemApp = false;
-        }
     }
     /**
      * @brief Get application user id.

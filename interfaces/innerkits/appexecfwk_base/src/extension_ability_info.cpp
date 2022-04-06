@@ -38,6 +38,7 @@ const std::string LABEL = "label";
 const std::string LABEL_ID = "labelId";
 const std::string DESCRIPTION = "description";
 const std::string DESCRIPTION_ID = "descriptionId";
+const std::string PRIORITY = "priority";
 const std::string TYPE = "type";
 const std::string PERMISSIONS = "permissions";
 const std::string READ_PERMISSION = "readPermission";
@@ -45,6 +46,7 @@ const std::string WRITE_PERMISSION = "writePermission";
 const std::string URI = "uri";
 const std::string VISIBLE = "visible";
 const std::string META_DATA = "metadata";
+const std::string APPLICATION_INFO = "applicationInfo";
 const std::string RESOURCE_PATH = "resourcePath";
 const std::string ENABLED = "enabled";
 const std::string PROCESS = "process";
@@ -52,43 +54,27 @@ const std::string PROCESS = "process";
 
 bool ExtensionAbilityInfo::ReadFromParcel(Parcel &parcel)
 {
-    bundleName = Str16ToStr8(parcel.ReadString16());
-    moduleName = Str16ToStr8(parcel.ReadString16());
-    name = Str16ToStr8(parcel.ReadString16());
-    icon = Str16ToStr8(parcel.ReadString16());
-    iconId = parcel.ReadInt32();
-    label = Str16ToStr8(parcel.ReadString16());
-    labelId = parcel.ReadInt32();
-    description = Str16ToStr8(parcel.ReadString16());
-    descriptionId = parcel.ReadInt32();
-    type = static_cast<ExtensionAbilityType>(parcel.ReadInt32());
-    int32_t permissionSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < permissionSize; ++i) {
-        permissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-    readPermission = Str16ToStr8(parcel.ReadString16());
-    writePermission = Str16ToStr8(parcel.ReadString16());
-    uri = Str16ToStr8(parcel.ReadString16());
-    visible = parcel.ReadBool();
-    int32_t metadataSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < metadataSize; ++i) {
-        std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
-        if (!meta) {
-            APP_LOGE("ReadParcelable<ApplicationInfo> failed");
-            return false;
-        }
-        metadata.emplace_back(*meta);
-    }
-    std::unique_ptr<ApplicationInfo> appInfo(parcel.ReadParcelable<ApplicationInfo>());
-    if (!appInfo) {
-        APP_LOGE("ReadParcelable<ApplicationInfo> failed");
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
         return false;
     }
-    applicationInfo = *appInfo;
-
-    resourcePath = Str16ToStr8(parcel.ReadString16());
-    enabled = parcel.ReadBool();
-    process = Str16ToStr8(parcel.ReadString16());
+    uint32_t length = messageParcel->ReadUint32();
+    if (length == 0) {
+        APP_LOGE("Invalid data length");
+        return false;
+    }
+    const char *data = reinterpret_cast<const char *>(messageParcel->ReadRawData(length));
+    if (!data) {
+        APP_LOGE("Fail to read raw data, length = %{public}d", length);
+        return false;
+    }
+    nlohmann::json jsonObject = nlohmann::json::parse(data, nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("failed to parse ApplicationInfo");
+        return false;
+    }
+    *this = jsonObject.get<ExtensionAbilityInfo>();
     return true;
 }
 
@@ -105,38 +91,27 @@ ExtensionAbilityInfo *ExtensionAbilityInfo::Unmarshalling(Parcel &parcel)
 
 bool ExtensionAbilityInfo::Marshalling(Parcel &parcel) const
 {
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(icon));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
-    for (const auto &per : permissions) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(per));
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
+        return false;
     }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(writePermission));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(uri));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
-    for (const auto &meta : metadata) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
+    nlohmann::json json = *this;
+    std::string str = json.dump();
+    if (!messageParcel->WriteUint32(str.size() + 1)) {
+        APP_LOGE("Failed to write data size");
+        return false;
     }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(process));
+    if (!messageParcel->WriteRawData(str.c_str(), str.size() + 1)) {
+        APP_LOGE("Failed to write data");
+        return false;
+    }
     return true;
 }
 
 void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionInfo)
 {
-    APP_LOGD("write ExtensionAbilityInfo to database");
+    APP_LOGD("ExtensionAbilityInfo to_json begin");
     jsonObject = nlohmann::json {
         {BUNDLE_NAME, extensionInfo.bundleName},
         {MODULE_NAME, extensionInfo.moduleName},
@@ -148,6 +123,7 @@ void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionIn
         {LABEL_ID, extensionInfo.labelId},
         {DESCRIPTION, extensionInfo.description},
         {DESCRIPTION_ID, extensionInfo.descriptionId},
+        {PRIORITY, extensionInfo.priority},
         {TYPE, extensionInfo.type},
         {READ_PERMISSION, extensionInfo.readPermission},
         {WRITE_PERMISSION, extensionInfo.writePermission},
@@ -155,6 +131,7 @@ void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionIn
         {PERMISSIONS, extensionInfo.permissions},
         {VISIBLE, extensionInfo.visible},
         {META_DATA, extensionInfo.metadata},
+        {APPLICATION_INFO, extensionInfo.applicationInfo},
         {RESOURCE_PATH, extensionInfo.resourcePath},
         {ENABLED, extensionInfo.enabled},
         {PROCESS, extensionInfo.process}
@@ -163,7 +140,7 @@ void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionIn
 
 void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extensionInfo)
 {
-    APP_LOGD("read ExtensionAbilityInfo from database");
+    APP_LOGD("ExtensionAbilityInfo from_json begin");
     const auto &jsonObjectEnd = jsonObject.end();
     int32_t parseResult = ERR_OK;
     GetValueIfFindKey<std::string>(jsonObject,
@@ -246,6 +223,14 @@ void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extension
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        extensionInfo.priority,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<ExtensionAbilityType>(jsonObject,
         jsonObjectEnd,
         TYPE,
@@ -302,6 +287,14 @@ void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extension
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<ApplicationInfo>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_INFO,
+        extensionInfo.applicationInfo,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         RESOURCE_PATH,
@@ -327,7 +320,7 @@ void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extension
         parseResult,
         ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
-        APP_LOGE("read ExtensionAbilityInfo from database error, error code : %{public}d", parseResult);
+        APP_LOGE("ExtensionAbilityInfo from_json error, error code : %{public}d", parseResult);
     }
 }
 }  // namespace AppExecFwk

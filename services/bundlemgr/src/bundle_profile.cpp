@@ -234,6 +234,7 @@ struct Ability {
     int32_t iconId = 0;
     std::string label;
     int32_t labelId = 0;
+    int32_t priority = 0;
     std::string uri;
     std::string process;
     std::string launchType = "standard";
@@ -1192,6 +1193,14 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        ability.priority,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_URI,
@@ -1895,7 +1904,7 @@ bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
 }
 
 bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
-    ApplicationInfo &applicationInfo, bool isPreInstallApp, const BundleExtractor &bundleExtractor)
+    ApplicationInfo &applicationInfo, const BundleExtractor &bundleExtractor)
 {
     APP_LOGD("transform ConfigJson to ApplicationInfo");
     applicationInfo.name = configJson.app.bundleName;
@@ -1914,7 +1923,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
 
     // if there is main ability, it's icon label description will be set to applicationInfo.
 
-    if (applicationInfo.isSystemApp && isPreInstallApp) {
+    if (applicationInfo.isSystemApp) {
         applicationInfo.keepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
         applicationInfo.singleton = configJson.app.singleton;
         applicationInfo.userDataClearable = configJson.app.userDataClearable;
@@ -2083,7 +2092,7 @@ bool ToInnerModuleInfo(const ProfileReader::ConfigJson &configJson, InnerModuleI
 }
 
 bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
-    const ProfileReader::Ability &ability, AbilityInfo &abilityInfo)
+    const ProfileReader::Ability &ability, AbilityInfo &abilityInfo, bool isSystemApp)
 {
     abilityInfo.name = ability.name;
     if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
@@ -2100,6 +2109,9 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     abilityInfo.kind = ability.type;
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
+    if (isSystemApp) {
+        abilityInfo.priority = ability.priority;
+    }
 
     std::transform(
         abilityInfo.srcLanguage.begin(), abilityInfo.srcLanguage.end(), abilityInfo.srcLanguage.begin(), ::tolower);
@@ -2113,6 +2125,7 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     if (iterType != ProfileReader::ABILITY_TYPE_MAP.end()) {
         abilityInfo.type = iterType->second;
     } else {
+        APP_LOGE("ability type invalid.");
         return false;
     }
 
@@ -2139,6 +2152,7 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     abilityInfo.deviceCapabilities = ability.deviceCapability;
     if (iterType->second == AbilityType::DATA &&
         ability.uri.find(Constants::DATA_ABILITY_URI_PREFIX) == std::string::npos) {
+        APP_LOGE("ability uri invalid.");
         return false;
     }
     abilityInfo.uri = ability.uri;
@@ -2177,17 +2191,15 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
         return false;
     }
 
-    bool isPreInstallApp = innerBundleInfo.IsPreInstallApp();
-
     ApplicationInfo applicationInfo;
-    applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
-    ToApplicationInfo(configJson, applicationInfo, isPreInstallApp, bundleExtractor);
+    applicationInfo.isSystemApp = innerBundleInfo.IsPreInstallApp();
+    ToApplicationInfo(configJson, applicationInfo, bundleExtractor);
 
     InnerModuleInfo innerModuleInfo;
     ToInnerModuleInfo(configJson, innerModuleInfo);
 
     BundleInfo bundleInfo;
-    ToBundleInfo(configJson, applicationInfo, innerModuleInfo, isPreInstallApp, bundleInfo);
+    ToBundleInfo(configJson, applicationInfo, innerModuleInfo, innerBundleInfo.IsPreInstallApp(), bundleInfo);
 
     for (const auto &info : configJson.module.shortcuts) {
         ShortcutInfo shortcutInfo;
@@ -2226,8 +2238,8 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {
         AbilityInfo abilityInfo;
-        if (!ToAbilityInfo(configJson, ability, abilityInfo)) {
-            APP_LOGE("ability type is valid");
+        if (!ToAbilityInfo(configJson, ability, abilityInfo, applicationInfo.isSystemApp)) {
+            APP_LOGE("parse to abilityInfo failed");
             return false;
         }
         std::string keyName;
@@ -2277,7 +2289,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
                     find = true;
                 }
                 if (std::find(skill.entities.begin(), skill.entities.end(), Constants::FLAG_HOME_INTENT_FROM_SYSTEM) !=
-                    skill.entities.end() && isPreInstallApp) {
+                    skill.entities.end() && applicationInfo.isSystemApp) {
                     applicationInfo.isLauncherApp = true;
                     abilityInfo.isLauncherAbility = true;
                 }
