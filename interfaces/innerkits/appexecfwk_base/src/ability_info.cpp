@@ -38,26 +38,25 @@ const std::string JSON_KEY_DESCRIPTION = "description";
 const std::string JSON_KEY_ICON_PATH = "iconPath";
 const std::string JSON_KEY_THEME = "theme";
 const std::string JSON_KEY_VISIBLE = "visible";
-const std::string JSON_KEY_ABILITY_CONTINUABLE = "continuable";
 const std::string JSON_KEY_KIND = "kind";
 const std::string JSON_KEY_TYPE = "type";
+const std::string JSON_KEY_EXTENSION_ABILITY_TYPE = "extensionAbilityType";
 const std::string JSON_KEY_ORIENTATION = "orientation";
 const std::string JSON_KEY_LAUNCH_MODE = "launchMode";
 const std::string JSON_KEY_CODE_PATH = "codePath";
 const std::string JSON_KEY_RESOURCE_PATH = "resourcePath";
-const std::string JSON_KEY_LIB_PATH = "libPath";
 const std::string JSON_KEY_PERMISSIONS = "permissions";
 const std::string JSON_KEY_PROCESS = "process";
 const std::string JSON_KEY_DEVICE_TYPES = "deviceTypes";
 const std::string JSON_KEY_DEVICE_CAPABILITIES = "deviceCapabilities";
 const std::string JSON_KEY_URI = "uri";
 const std::string JSON_KEY_MODULE_NAME = "moduleName";
-const std::string JSON_KEY_DEVICE_ID = "deviceId";
 const std::string JSON_KEY_IS_LAUNCHER_ABILITY = "isLauncherAbility";
 const std::string JSON_KEY_IS_NATIVE_ABILITY = "isNativeAbility";
 const std::string JSON_KEY_ENABLED = "enabled";
 const std::string JSON_KEY_SUPPORT_PIP_MODE = "supportPipMode";
 const std::string JSON_KEY_TARGET_ABILITY = "targetAbility";
+const std::string APPLICATION_INFO = "applicationInfo";
 const std::string JSON_KEY_READ_PERMISSION = "readPermission";
 const std::string JSON_KEY_WRITE_PERMISSION = "writePermission";
 const std::string JSON_KEY_CONFIG_CHANGES = "configChanges";
@@ -85,118 +84,33 @@ const std::string META_DATA_RESOURCE = "resource";
 const std::string SRC_ENTRANCE = "srcEntrance";
 const std::string IS_MODULE_JSON = "isModuleJson";
 const std::string IS_STAGE_BASED_MODEL = "isStageBasedModel";
+const std::string CONTINUABLE = "continuable";
+const std::string PRIORITY = "priority";
 }  // namespace
 
 bool AbilityInfo::ReadFromParcel(Parcel &parcel)
 {
-    name = Str16ToStr8(parcel.ReadString16());
-    label = Str16ToStr8(parcel.ReadString16());
-    description = Str16ToStr8(parcel.ReadString16());
-    iconPath = Str16ToStr8(parcel.ReadString16());
-    theme = Str16ToStr8(parcel.ReadString16());
-    kind = Str16ToStr8(parcel.ReadString16());
-    uri = Str16ToStr8(parcel.ReadString16());
-    package = Str16ToStr8(parcel.ReadString16());
-    bundleName = Str16ToStr8(parcel.ReadString16());
-    moduleName = Str16ToStr8(parcel.ReadString16());
-    applicationName = Str16ToStr8(parcel.ReadString16());
-    process = Str16ToStr8(parcel.ReadString16());
-    deviceId = Str16ToStr8(parcel.ReadString16());
-    codePath = Str16ToStr8(parcel.ReadString16());
-    resourcePath = Str16ToStr8(parcel.ReadString16());
-    libPath = Str16ToStr8(parcel.ReadString16());
-    targetAbility = Str16ToStr8(parcel.ReadString16());
-    readPermission = Str16ToStr8(parcel.ReadString16());
-    writePermission = Str16ToStr8(parcel.ReadString16());
-    srcPath = Str16ToStr8(parcel.ReadString16());
-    srcLanguage = Str16ToStr8(parcel.ReadString16());
-    visible = parcel.ReadBool();
-    continuable = parcel.ReadBool();
-    isLauncherAbility = parcel.ReadBool();
-    isNativeAbility = parcel.ReadBool();
-    enabled = parcel.ReadBool();
-    supportPipMode = parcel.ReadBool();
-    formEnabled = parcel.ReadBool();
-    int32_t configChangesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, configChangesSize);
-    for (int32_t i = 0; i < configChangesSize; i++) {
-        configChanges.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-    formEntity = parcel.ReadInt32();
-    minFormHeight = parcel.ReadInt32();
-    defaultFormHeight = parcel.ReadInt32();
-    minFormWidth = parcel.ReadInt32();
-    defaultFormWidth = parcel.ReadInt32();
-    backgroundModes = parcel.ReadInt32();
-    labelId = parcel.ReadInt32();
-    descriptionId = parcel.ReadInt32();
-    iconId = parcel.ReadInt32();
-
-    int32_t typeData;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, typeData);
-    type = static_cast<AbilityType>(typeData);
-
-    int32_t extensionTypeData;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extensionTypeData);
-    extensionAbilityType = static_cast<ExtensionAbilityType>(extensionTypeData);
-
-    int32_t orientationData;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, orientationData);
-    orientation = static_cast<DisplayOrientation>(orientationData);
-
-    int32_t launchModeData;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, launchModeData);
-    launchMode = static_cast<LaunchMode>(launchModeData);
-
-    int32_t permissionsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissionsSize);
-    for (int32_t i = 0; i < permissionsSize; i++) {
-        permissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    uint32_t deviceTypesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, deviceTypesSize);
-    for (uint32_t i = 0; i < deviceTypesSize; i++) {
-        deviceTypes.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t deviceCapabilitiesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceCapabilitiesSize);
-    for (int32_t i = 0; i < deviceCapabilitiesSize; i++) {
-        deviceCapabilities.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t customizeDataSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
-    for (auto i = 0; i < customizeDataSize; i++) {
-        std::unique_ptr<CustomizeData> customizeData(parcel.ReadParcelable<CustomizeData>());
-        if (!customizeData) {
-            APP_LOGE("ReadParcelable<CustomizeData> failed");
-            return false;
-        }
-        metaData.customizeData.emplace_back(*customizeData);
-    }
-
-    std::unique_ptr<ApplicationInfo> appInfo(parcel.ReadParcelable<ApplicationInfo>());
-    if (!appInfo) {
-        APP_LOGE("ReadParcelable<ApplicationInfo> failed");
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
         return false;
     }
-    applicationInfo = *appInfo;
-
-    srcEntrance = Str16ToStr8(parcel.ReadString16());
-    int32_t metadataSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadataSize);
-    for (auto i = 0; i < metadataSize; ++i) {
-        std::unique_ptr<Metadata> data(parcel.ReadParcelable<Metadata>());
-        if (!data) {
-            APP_LOGE("ReadParcelable<CustomizeData> failed");
-            return false;
-        }
-        metadata.emplace_back(*data);
+    uint32_t length = messageParcel->ReadUint32();
+    if (length == 0) {
+        APP_LOGE("Invalid data length");
+        return false;
     }
-    isModuleJson = parcel.ReadBool();
-    isStageBasedModel = parcel.ReadBool();
+    const char *data = reinterpret_cast<const char *>(messageParcel->ReadRawData(length));
+    if (!data) {
+        APP_LOGE("Fail to read raw data, length = %{public}d", length);
+        return false;
+    }
+    nlohmann::json jsonObject = nlohmann::json::parse(data, nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("failed to parse ApplicationInfo");
+        return false;
+    }
+    *this = jsonObject.get<AbilityInfo>();
     return true;
 }
 
@@ -213,83 +127,21 @@ AbilityInfo *AbilityInfo::Unmarshalling(Parcel &parcel)
 
 bool AbilityInfo::Marshalling(Parcel &parcel) const
 {
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(iconPath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(theme));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(kind));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(uri));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(package));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(applicationName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(process));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceId));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(codePath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(libPath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(targetAbility));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(writePermission));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcPath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcLanguage));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, continuable);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, supportPipMode);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, formEnabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, configChanges.size());
-    for (auto &configChange : configChanges) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(configChange));
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
+        return false;
     }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormHeight);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormWidth);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormWidth);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, backgroundModes);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(extensionAbilityType));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(orientation));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(launchMode));
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
-    for (auto &permission : permissions) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(permission));
+    nlohmann::json json = *this;
+    std::string str = json.dump();
+    if (!messageParcel->WriteUint32(str.size() + 1)) {
+        APP_LOGE("Failed to write data size");
+        return false;
     }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, deviceTypes.size());
-    for (auto &deviceType : deviceTypes) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceType));
+    if (!messageParcel->WriteRawData(str.c_str(), str.size() + 1)) {
+        APP_LOGE("Failed to write data");
+        return false;
     }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceCapabilities.size());
-    for (auto &deviceCapability : deviceCapabilities) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceCapability));
-    }
-
-    const auto customizeDataSize = static_cast<int32_t>(metaData.customizeData.size());
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
-    for (auto i = 0; i < customizeDataSize; i++) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &metaData.customizeData[i]);
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcEntrance));
-    const auto metadataSize = static_cast<int32_t>(metadata.size());
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadataSize);
-    for (auto i = 0; i < metadataSize; i++) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &metadata[i]);
-    }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isModuleJson);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStageBasedModel);
     return true;
 }
 
@@ -347,56 +199,58 @@ void to_json(nlohmann::json &jsonObject, const Metadata &metadata)
 
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
 {
+    APP_LOGD("AbilityInfo to_json begin");
     jsonObject = nlohmann::json {
         {JSON_KEY_NAME, abilityInfo.name},
         {JSON_KEY_LABEL, abilityInfo.label},
         {JSON_KEY_DESCRIPTION, abilityInfo.description},
         {JSON_KEY_ICON_PATH, abilityInfo.iconPath},
-        {JSON_KEY_THEME, abilityInfo.theme},
-        {JSON_KEY_VISIBLE, abilityInfo.visible},
-        {JSON_KEY_ABILITY_CONTINUABLE, abilityInfo.continuable},
-        {JSON_KEY_IS_LAUNCHER_ABILITY, abilityInfo.isLauncherAbility},
-        {JSON_KEY_IS_NATIVE_ABILITY, abilityInfo.isNativeAbility},
-        {JSON_KEY_ENABLED, abilityInfo.enabled},
-        {JSON_KEY_SUPPORT_PIP_MODE, abilityInfo.supportPipMode},
-        {JSON_KEY_READ_PERMISSION, abilityInfo.readPermission},
-        {JSON_KEY_WRITE_PERMISSION, abilityInfo.writePermission},
-        {JSON_KEY_SRC_PATH, abilityInfo.srcPath},
-        {JSON_KEY_SRC_LANGUAGE, abilityInfo.srcLanguage},
-        {JSON_KEY_CONFIG_CHANGES, abilityInfo.configChanges},
-        {JSON_KEY_FORM_ENTITY, abilityInfo.formEntity},
-        {JSON_KEY_MIN_FORM_HEIGHT, abilityInfo.minFormHeight},
-        {JSON_KEY_DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight},
-        {JSON_KEY_BACKGROUND_MODES, abilityInfo.backgroundModes},
-        {JSON_KEY_MIN_FORM_WIDTH, abilityInfo.minFormWidth},
-        {JSON_KEY_DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth},
         {JSON_KEY_LABEL_ID, abilityInfo.labelId},
         {JSON_KEY_DESCRIPTION_ID, abilityInfo.descriptionId},
         {JSON_KEY_ICON_ID, abilityInfo.iconId},
+        {JSON_KEY_THEME, abilityInfo.theme},
+        {JSON_KEY_VISIBLE, abilityInfo.visible},
         {JSON_KEY_KIND, abilityInfo.kind},
         {JSON_KEY_TYPE, abilityInfo.type},
+        {JSON_KEY_EXTENSION_ABILITY_TYPE, abilityInfo.extensionAbilityType},
         {JSON_KEY_ORIENTATION, abilityInfo.orientation},
         {JSON_KEY_LAUNCH_MODE, abilityInfo.launchMode},
+        {JSON_KEY_SRC_PATH, abilityInfo.srcPath},
+        {JSON_KEY_SRC_LANGUAGE, abilityInfo.srcLanguage},
         {JSON_KEY_PERMISSIONS, abilityInfo.permissions},
         {JSON_KEY_PROCESS, abilityInfo.process},
         {JSON_KEY_DEVICE_TYPES, abilityInfo.deviceTypes},
         {JSON_KEY_DEVICE_CAPABILITIES, abilityInfo.deviceCapabilities},
         {JSON_KEY_URI, abilityInfo.uri},
         {JSON_KEY_TARGET_ABILITY, abilityInfo.targetAbility},
+        {APPLICATION_INFO, abilityInfo.applicationInfo},
+        {JSON_KEY_IS_LAUNCHER_ABILITY, abilityInfo.isLauncherAbility},
+        {JSON_KEY_IS_NATIVE_ABILITY, abilityInfo.isNativeAbility},
+        {JSON_KEY_ENABLED, abilityInfo.enabled},
+        {JSON_KEY_SUPPORT_PIP_MODE, abilityInfo.supportPipMode},
+        {JSON_KEY_FORM_ENABLED, abilityInfo.formEnabled},
+        {JSON_KEY_READ_PERMISSION, abilityInfo.readPermission},
+        {JSON_KEY_WRITE_PERMISSION, abilityInfo.writePermission},
+        {JSON_KEY_CONFIG_CHANGES, abilityInfo.configChanges},
+        {JSON_KEY_FORM_ENTITY, abilityInfo.formEntity},
+        {JSON_KEY_MIN_FORM_HEIGHT, abilityInfo.minFormHeight},
+        {JSON_KEY_DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight},
+        {JSON_KEY_MIN_FORM_WIDTH, abilityInfo.minFormWidth},
+        {JSON_KEY_DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth},
+        {JSON_KEY_META_DATA, abilityInfo.metaData},
+        {JSON_KEY_BACKGROUND_MODES, abilityInfo.backgroundModes},
         {JSON_KEY_PACKAGE, abilityInfo.package},
         {JSON_KEY_BUNDLE_NAME, abilityInfo.bundleName},
         {JSON_KEY_MODULE_NAME, abilityInfo.moduleName},
         {JSON_KEY_APPLICATION_NAME, abilityInfo.applicationName},
-        {JSON_KEY_DEVICE_ID, abilityInfo.deviceId},
         {JSON_KEY_CODE_PATH, abilityInfo.codePath},
         {JSON_KEY_RESOURCE_PATH, abilityInfo.resourcePath},
-        {JSON_KEY_LIB_PATH, abilityInfo.libPath},
-        {JSON_KEY_META_DATA, abilityInfo.metaData},
-        {JSON_KEY_FORM_ENABLED, abilityInfo.formEnabled},
         {SRC_ENTRANCE, abilityInfo.srcEntrance},
         {META_DATA, abilityInfo.metadata},
         {IS_MODULE_JSON, abilityInfo.isModuleJson},
-        {IS_STAGE_BASED_MODEL, abilityInfo.isStageBasedModel}
+        {IS_STAGE_BASED_MODEL, abilityInfo.isStageBasedModel},
+        {CONTINUABLE, abilityInfo.continuable},
+        {PRIORITY, abilityInfo.priority}
     };
 }
 
@@ -479,6 +333,7 @@ void from_json(const nlohmann::json &jsonObject, Metadata &metadata)
 
 void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
 {
+    APP_LOGD("AbilityInfo from_json begin");
     const auto &jsonObjectEnd = jsonObject.end();
     int32_t parseResult = ERR_OK;
     GetValueIfFindKey<std::string>(jsonObject,
@@ -494,14 +349,6 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         JSON_KEY_LABEL,
         abilityInfo.label,
         JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<uint32_t>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_BACKGROUND_MODES,
-        abilityInfo.backgroundModes,
-        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -521,6 +368,30 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_LABEL_ID,
+        abilityInfo.labelId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_DESCRIPTION_ID,
+        abilityInfo.descriptionId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_ICON_ID,
+        abilityInfo.iconId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         JSON_KEY_THEME,
@@ -537,11 +408,115 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
+    GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        JSON_KEY_ABILITY_CONTINUABLE,
-        abilityInfo.continuable,
-        JsonType::BOOLEAN,
+        JSON_KEY_KIND,
+        abilityInfo.kind,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<AbilityType>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_TYPE,
+        abilityInfo.type,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<ExtensionAbilityType>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_EXTENSION_ABILITY_TYPE,
+        abilityInfo.extensionAbilityType,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<DisplayOrientation>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_ORIENTATION,
+        abilityInfo.orientation,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<LaunchMode>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_LAUNCH_MODE,
+        abilityInfo.launchMode,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_SRC_PATH,
+        abilityInfo.srcPath,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_SRC_LANGUAGE,
+        abilityInfo.srcLanguage,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_PERMISSIONS,
+        abilityInfo.permissions,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_PROCESS,
+        abilityInfo.process,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_DEVICE_TYPES,
+        abilityInfo.deviceTypes,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_DEVICE_CAPABILITIES,
+        abilityInfo.deviceCapabilities,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_URI,
+        abilityInfo.uri,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_TARGET_ABILITY,
+        abilityInfo.targetAbility,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<ApplicationInfo>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_INFO,
+        abilityInfo.applicationInfo,
+        JsonType::OBJECT,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -577,6 +552,14 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_FORM_ENABLED,
+        abilityInfo.formEnabled,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         JSON_KEY_READ_PERMISSION,
@@ -589,22 +572,6 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         jsonObjectEnd,
         JSON_KEY_WRITE_PERMISSION,
         abilityInfo.writePermission,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_SRC_PATH,
-        abilityInfo.srcPath,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_SRC_LANGUAGE,
-        abilityInfo.srcLanguage,
         JsonType::STRING,
         false,
         parseResult,
@@ -657,107 +624,19 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
+    GetValueIfFindKey<MetaData>(jsonObject,
         jsonObjectEnd,
-        JSON_KEY_LABEL_ID,
-        abilityInfo.labelId,
+        JSON_KEY_META_DATA,
+        abilityInfo.metaData,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BACKGROUND_MODES,
+        abilityInfo.backgroundModes,
         JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_DESCRIPTION_ID,
-        abilityInfo.descriptionId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_ICON_ID,
-        abilityInfo.iconId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_KIND,
-        abilityInfo.kind,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<AbilityType>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_TYPE,
-        abilityInfo.type,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<DisplayOrientation>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_ORIENTATION,
-        abilityInfo.orientation,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<LaunchMode>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_LAUNCH_MODE,
-        abilityInfo.launchMode,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_PERMISSIONS,
-        abilityInfo.permissions,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::STRING);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_PROCESS,
-        abilityInfo.process,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_DEVICE_TYPES,
-        abilityInfo.deviceTypes,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::STRING);
-    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_DEVICE_CAPABILITIES,
-        abilityInfo.deviceCapabilities,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::STRING);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_URI,
-        abilityInfo.uri,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_TARGET_ABILITY,
-        abilityInfo.targetAbility,
-        JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -795,14 +674,6 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        JSON_KEY_DEVICE_ID,
-        abilityInfo.deviceId,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
         JSON_KEY_CODE_PATH,
         abilityInfo.codePath,
         JsonType::STRING,
@@ -814,30 +685,6 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         JSON_KEY_RESOURCE_PATH,
         abilityInfo.resourcePath,
         JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_LIB_PATH,
-        abilityInfo.libPath,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<MetaData>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_META_DATA,
-        abilityInfo.metaData,
-        JsonType::OBJECT,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_FORM_ENABLED,
-        abilityInfo.formEnabled,
-        JsonType::BOOLEAN,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -873,8 +720,24 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        CONTINUABLE,
+        abilityInfo.continuable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        abilityInfo.priority,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
-        APP_LOGE("read Ability from database error, error code : %{public}d", parseResult);
+        APP_LOGE("AbilityInfo from_json error, error code : %{public}d", parseResult);
     }
 }
 
