@@ -190,16 +190,6 @@ public:
         return true;
     }
 
-    virtual int PowerOff() override
-    {
-        return 0;
-    }
-
-    virtual int PowerOn() override
-    {
-        return 0;
-    }
-
     virtual int LockMission(int missionId) override
     {
         return 0;
