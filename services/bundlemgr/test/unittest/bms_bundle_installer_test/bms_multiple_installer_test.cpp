@@ -73,6 +73,7 @@ const std::string INVALID_BUNDLE = "nonfile.hap";
 const std::string FORMAT_ERROR_BUNDLE = "format_error_profile.hap";
 const std::string WRONG_BUNDLE_NAME = "wrong_bundle_name.ha";
 const std::string ERROR_BUNDLE_PROFILE_FILE = "error_bundle_profile.hap";
+const std::string RIGHT_DIFFERENT_RELEASE_TYPE = "first_diff_release_type.hap";
 const std::string BUNDLE_DATA_DIR = "/data/app/el2/100/base/com.example.l3jsdemo";
 const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo";
 const std::string PACKAGE_NAME_FIRST = "com.example.l3jsdemo";
@@ -1099,6 +1100,25 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_2700, Function | SmallTes
     filePaths.emplace_back(secondBundleFile);
     ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
     EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_FAILED_INCONSISTENT_SIGNATURE);
+    CheckFileNonExist();
+}
+
+/**
+ * @tc.number: MultipleHapsInstall_2800
+ * @tc.name: test to install haps with different releaseType in the input file path array
+ * @tc.desc: 1.the releaseType is differnet in the input file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_2800, Function | SmallTest | Level0)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_DIFFERENT_RELEASE_TYPE;
+    filePaths.emplace_back(firstBundleFile);
+    filePaths.emplace_back(secondBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_RELEASETYPE_NOT_SAME);
     CheckFileNonExist();
 }
 
