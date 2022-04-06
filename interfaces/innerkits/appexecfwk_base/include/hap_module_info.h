@@ -53,6 +53,7 @@ struct HapModuleInfo : public Parcelable {
 
     std::vector<std::string> reqCapabilities;
     std::vector<std::string> deviceTypes;
+    std::vector<std::string> dependencies;
     std::vector<AbilityInfo> abilityInfos;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     // new version fields

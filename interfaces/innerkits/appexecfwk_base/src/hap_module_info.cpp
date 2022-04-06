@@ -54,6 +54,7 @@ const std::string HAP_MODULE_INFO_IS_STAGE_BASED_MODEL = "isStageBasedModel";
 const std::string HAP_MODULE_INFO_MODULE_TYPE = "moduleType";
 const std::string HAP_MODULE_INFO_EXTENSION_INFOS = "extensionInfos";
 const std::string HAP_MODULE_INFO_META_DATA = "metadata";
+const std::string HAP_MODULE_INFO_DEPENDENCIES = "dependencies";
 }
 
 bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
@@ -145,7 +146,8 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_IS_STAGE_BASED_MODEL, hapModuleInfo.isStageBasedModel},
         {HAP_MODULE_INFO_MODULE_TYPE, hapModuleInfo.moduleType},
         {HAP_MODULE_INFO_EXTENSION_INFOS, hapModuleInfo.extensionInfos},
-        {HAP_MODULE_INFO_META_DATA, hapModuleInfo.metadata}
+        {HAP_MODULE_INFO_META_DATA, hapModuleInfo.metadata},
+        {HAP_MODULE_INFO_DEPENDENCIES, hapModuleInfo.dependencies}
     };
 }
 
@@ -393,6 +395,14 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_DEPENDENCIES,
+        hapModuleInfo.dependencies,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
