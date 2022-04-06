@@ -183,18 +183,25 @@ struct AbilityInfo : public Parcelable {
     int32_t minFormWidth = 0;
     int32_t defaultFormWidth = 0;
     MetaData metaData;
+    uint32_t backgroundModes = 0;
 
     // set when install
     std::string package;  // the "module.package" in config.json
     std::string bundleName;
     std::string moduleName;       // the "module.name" in config.json
     std::string applicationName;  // the "bundlename" in config.json
-    std::string deviceId;         // should auto-get self device id
+    
     std::string codePath;         // ability main code path with name
     std::string resourcePath;     // resource path for resource init
-    std::string libPath;          // ability library path without name, libPath->libDir
 
-    // element that does not exist for a while
+    std::string srcEntrance;
+    std::vector<Metadata> metadata;
+    bool isModuleJson = false;
+    bool isStageBasedModel = false;
+    bool continuable = false;
+    int32_t priority = 0;
+
+    // unused
     std::string originalBundleName;
     std::string appName;
     std::string privacyUrl;
@@ -205,18 +212,13 @@ struct AbilityInfo : public Parcelable {
     std::string originalClassName;
     std::string uriPermissionMode;
     std::string uriPermissionPath;
-    uint32_t backgroundModes = 0;
     uint32_t packageSize = 0;
     bool multiUserShared = false;
     bool grantPermission = false;
     bool directLaunch = true;
     AbilitySubType subType = AbilitySubType::UNSPECIFIED;
-    // new version fields
-    std::string srcEntrance;
-    std::vector<Metadata> metadata;
-    bool isModuleJson = false;
-    bool isStageBasedModel = false;
-    bool continuable = false;
+    std::string libPath;
+    std::string deviceId;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
