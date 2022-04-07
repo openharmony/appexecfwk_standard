@@ -46,8 +46,8 @@ public:
         EXPECT_EQ(bundleInfo.versionCode, versionCode);
         EXPECT_EQ(bundleInfo.vendor, "example");
 
-        EXPECT_EQ(bundleInfo.maxSdkVersion, 0);
-        EXPECT_EQ(bundleInfo.minSdkVersion, 0);
+        EXPECT_EQ(bundleInfo.maxSdkVersion, -1);
+        EXPECT_EQ(bundleInfo.minSdkVersion, -1);
     }
 
 protected:

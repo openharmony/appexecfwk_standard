@@ -23,19 +23,16 @@ config("bms_module_test_config") {
     "//foundation/aafwk/standard/services/common/include",
   ]
 
-  configs = [
-    "${services_path}/test:services_module_test_config",
-    "${services_path}/bundlemgr:bundlemgr_common_config",
-  ]
+  configs = [ "${services_path}/bundlemgr:bundlemgr_common_config" ]
 }
 
 group("moduletest") {
   testonly = true
 
   deps = [
-    #"bundle_installer_test:moduletest",
-    #"bundle_parser_test:moduletest",
-    #"bundle_uninstall_test:moduletest",
-    #"service_start_process_test:moduletest",
+    # "bundle_installer_test:moduletest",
+    "bundle_parser_test:moduletest",
+    # "bundle_uninstall_test:moduletest",
+    # "service_start_process_test:moduletest",
   ]
 }
