@@ -17,35 +17,16 @@
 #include <iostream>
 #include <fstream>
 
-#include "installd_client.h"
-#include "bundle_mgr_service.h"
-#include "ability_manager_interface.h"
-#include "system_ability_helper.h"
-#include "system_ability_definition.h"
 #include "nlohmann/json.hpp"
+
+#include "ability_manager_helper.h"
+#include "bundle_mgr_service.h"
+#include "installd_client.h"
 #include "ipc_skeleton.h"
 #include "scope_guard.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-namespace {
-bool UninstallApplicationProcesses(const std::string &bundleName, const int uid)
-{
-    APP_LOGI("remove cloned bundle kill running processes, app name is %{public}s", bundleName.c_str());
-    sptr<AAFwk::IAbilityManager> abilityMgrProxy =
-        iface_cast<AAFwk::IAbilityManager>(SystemAbilityHelper::GetSystemAbility(ABILITY_MGR_SERVICE_ID));
-    if (!abilityMgrProxy) {
-        APP_LOGE("fail to find the app mgr service to kill application");
-        return false;
-    }
-    if (abilityMgrProxy->UninstallApp(bundleName, uid) != 0) {
-        APP_LOGE("kill application process failed");
-        return false;
-    }
-    return true;
-}
-}
-
 BundleCloneMgr::BundleCloneMgr()
 {
     APP_LOGI("");
@@ -311,7 +292,7 @@ bool BundleCloneMgr::RemoveClonedBundle(const std::string &oldName, const std::s
     APP_LOGD("bundleName_ is %{public}s", bundleName_.c_str());
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName_); });
 
-    if (!UninstallApplicationProcesses(newcloneInfo_.GetApplicationName(), uid)) {
+    if (!AbilityManagerHelper::UninstallApplicationProcesses(newcloneInfo_.GetApplicationName(), uid)) {
         APP_LOGE("can not kill process");
         return false;
     }

@@ -23,10 +23,16 @@ tools_path = "${appexecfwk_path}/tools"
 declare_args() {
   bundle_framework_graphics = true
 
+  ability_runtime_enable = true
   account_enable = true
   configpolicy_enable = true
   device_manager_enable = true
   hicollie_enable = true
+
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.aafwk_ability_runtime)) {
+    ability_runtime_enable = false
+  }
 
   if (defined(global_parts_info) &&
       !defined(global_parts_info.account_os_account_standard)) {
@@ -49,6 +55,7 @@ declare_args() {
   }
 
   print("bundle_framework_graphics = " + "$bundle_framework_graphics")
+  print("ability_runtime_enable = " + "$ability_runtime_enable")
   print("account_enable = " + "$account_enable")
   print("configpolicy_enable = " + "$configpolicy_enable")
   print("device_manager_enable = " + "$device_manager_enable")
