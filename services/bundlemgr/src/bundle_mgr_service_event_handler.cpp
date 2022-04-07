@@ -105,10 +105,16 @@ void BMSEventHandler::ProcessSystemBundleInstall(
     scanPaths_.emplace_back(scanDir);
     auto scanner = std::make_unique<BundleScanner>();
     std::list<std::string> bundleList = scanner->Scan(scanDir);
-    auto iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    auto iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH_NEW);
     if (iter != bundleList.end()) {
         bundleList.erase(iter);
-        bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
+        bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH_NEW);
+    } else {
+        iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
+        if (iter != bundleList.end()) {
+            bundleList.erase(iter);
+            bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
+        }
     }
 
     for (const auto &item : bundleList) {
@@ -203,11 +209,16 @@ void BMSEventHandler::RebootProcessBundleInstall(
     scanPaths_.emplace_back(scanDir);
     auto scanner = std::make_unique<BundleScanner>();
     std::list<std::string> bundleList = scanner->Scan(scanDir);
-    auto iter = std::find(
-        bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    auto iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH_NEW);
     if (iter != bundleList.end()) {
         bundleList.erase(iter);
-        bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
+        bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH_NEW);
+    } else {
+        iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
+        if (iter != bundleList.end()) {
+            bundleList.erase(iter);
+            bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
+        }
     }
 
     RebootBundleInstall(bundleList, appType);

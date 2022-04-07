@@ -40,6 +40,7 @@ const std::string BUNDLE_DATA_BASE_DIR = "/data/bundlemgr";
 const std::string BUNDLE_DATA_BASE_FILE = BUNDLE_DATA_BASE_DIR + "/bmsdb.json";
 const std::string SYSTEM_APP_SCAN_PATH = "/system/app";
 const std::string SYSTEM_RESOURCES_APP_PATH = "/system/app/SystemResources.hap";
+const std::string SYSTEM_RESOURCES_APP_PATH_NEW = "/system/app/ohos.global.systemres";
 const std::string SYSTEM_APP_INSTALL_PATH = "/data/accounts";
 const std::string THIRD_SYSTEM_APP_SCAN_PATH = "/system/vendor";
 const std::string THIRD_SYSTEM_APP_INSTALL_PATH = "/data/accounts";
