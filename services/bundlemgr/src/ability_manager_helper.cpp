@@ -15,8 +15,6 @@
 
 #include "ability_manager_helper.h"
 
-#include <vector>
-
 #include "app_log_wrapper.h"
 #include "system_ability_helper.h"
 #include "system_ability_definition.h"
