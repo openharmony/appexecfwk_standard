@@ -112,9 +112,9 @@ void BMSEventHandler::ProcessSystemBundleInstall(
     }
 
     for (const auto &item : bundleList) {
-        SystemBundleInstaller installer(item);
+        SystemBundleInstaller installer;
         APP_LOGD("scan item %{public}s", item.c_str());
-        if (!installer.InstallSystemBundle(appType, userId)) {
+        if (!installer.InstallSystemBundle(item, appType, userId)) {
             APP_LOGW("Install System app:%{public}s error", item.c_str());
         }
     }
@@ -237,7 +237,8 @@ void BMSEventHandler::RebootBundleInstall(
         if (mapIter == loadExistData_.end()) {
             APP_LOGD("OTA Install new bundle(%{public}s) by path(%{private}s).",
                 bundleName.c_str(), scanPathIter.c_str());
-            if (!OTAInstallSystemBundle(scanPathIter, appType)) {
+            std::vector<std::string> filePaths { scanPathIter };
+            if (!OTAInstallSystemBundle(filePaths, appType)) {
                 APP_LOGE("OTA Install new bundle(%{public}s) error.", bundleName.c_str());
             }
 
@@ -255,6 +256,7 @@ void BMSEventHandler::RebootBundleInstall(
             continue;
         }
 
+        std::vector<std::string> filePaths;
         for (auto item : infos) {
             auto parserModuleNames = item.second.GetModuleNameVec();
             if (parserModuleNames.empty()) {
@@ -277,9 +279,7 @@ void BMSEventHandler::RebootBundleInstall(
             if (hasInstalledInfo.versionCode < hapVersionCode) {
                 APP_LOGD("OTA update module(%{public}s) by path(%{private}s)",
                     parserModuleNames[0].c_str(), item.first.c_str());
-                if (!OTAInstallSystemBundle(item.first, appType)) {
-                    APP_LOGE("OTA update module(%{public}s) failed", parserModuleNames[0].c_str());
-                }
+                    filePaths.emplace_back(item.first);
             }
 
             // The versionCode of Hap is equal to the installed versionCode.
@@ -293,10 +293,16 @@ void BMSEventHandler::RebootBundleInstall(
 
                 APP_LOGD("OTA install module(%{public}s) by path(%{private}s)",
                     parserModuleNames[0].c_str(), item.first.c_str());
-                if (!OTAInstallSystemBundle(item.first, appType)) {
-                    APP_LOGE("OTA install module(%{public}s) failed", parserModuleNames[0].c_str());
-                }
+                filePaths.emplace_back(item.first);
             }
+        }
+
+        if (filePaths.empty()) {
+            continue;
+        }
+
+        if (!OTAInstallSystemBundle(filePaths, appType)) {
+            APP_LOGE("OTA bundle(%{public}s) failed", bundleName.c_str());
         }
     }
 }
@@ -332,8 +338,7 @@ void BMSEventHandler::RebootBundleUninstall()
         auto listIter = hapParseInfoMap_.find(bundleName);
         if (listIter == hapParseInfoMap_.end()) {
             APP_LOGD("OTA uninstall app(%{public}s).", bundleName.c_str());
-            std::string list;
-            SystemBundleInstaller installer(list);
+            SystemBundleInstaller installer;
             if (!installer.UninstallSystemBundle(bundleName)) {
                 APP_LOGE("OTA uninstall app(%{public}s) error", bundleName.c_str());
             } else {
@@ -367,8 +372,7 @@ void BMSEventHandler::RebootBundleUninstall()
             if (!hasModuleHapExist) {
                 APP_LOGD("OTA app(%{public}s) uninstall module(%{public}s).",
                     bundleName.c_str(), moduleName.c_str());
-                std::string list;
-                SystemBundleInstaller installer(list);
+                SystemBundleInstaller installer;
                 if (!installer.UninstallSystemBundle(bundleName, moduleName)) {
                     APP_LOGE("OTA app(%{public}s) uninstall module(%{public}s) error.",
                         bundleName.c_str(), moduleName.c_str());
@@ -438,15 +442,15 @@ bool BMSEventHandler::HasModuleSavedInPreInstalledDb(
 }
 
 bool BMSEventHandler::OTAInstallSystemBundle(
-    const std::string &filePath, Constants::AppType appType)
+    const std::vector<std::string> &filePaths, Constants::AppType appType)
 {
-    APP_LOGD("OTA install start in bunlde: %{private}s", filePath.c_str());
-    if (filePath.empty()) {
+    if (filePaths.empty()) {
+        APP_LOGE("File path is empty");
         return false;
     }
 
-    SystemBundleInstaller installer(filePath);
-    return installer.OTAInstallSystemBundle(appType);
+    SystemBundleInstaller installer;
+    return installer.OTAInstallSystemBundle(filePaths, appType);
 }
 
 bool BMSEventHandler::ParseHapFiles(

@@ -104,11 +104,11 @@ private:
     ErrCode CheckAppLabelInfo(const std::unordered_map<std::string, InnerBundleInfo> &infos);
     /**
      * @brief OTA Install system app and system vendor bundles.
-     * @param filePath Indicates the filePath.
+     * @param filePaths Indicates the filePaths.
      * @param appType Indicates the bundle type.
      * @return Returns true if this function called successfully; returns false otherwise.
      */
-    bool OTAInstallSystemBundle(const std::string &filePath, Constants::AppType appType);
+    bool OTAInstallSystemBundle(const std::vector<std::string> &filePaths, Constants::AppType appType);
     /**
      * @brief Used to determine whether the module has been installed. If the installation has
      *        been uninstalled, OTA install and upgrade will not be allowed.
