@@ -911,6 +911,20 @@ public:
         return false;
     }
 
+    /**
+     * @brief Obtains the dependent module names.
+     *
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param dependentModuleNames Indicates the obtained dependent module names.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
+        std::vector<std::string> &dependentModuleNames)
+    {
+        return false;
+    }
+
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -991,7 +1005,8 @@ public:
         GET_ACCESSIBLE_APP_CODE_PATH,
         QUERY_EXTENSION_ABILITY_INFO_BY_URI,
         GET_HAP_MODULE_INFO_WITH_USERID,
-        IMPLICIT_QUERY_INFO_BY_PRIORITY
+        IMPLICIT_QUERY_INFO_BY_PRIORITY,
+        GET_ALL_DEPENDENT_MODULE_NAMES,
     };
 };
 }  // namespace AppExecFwk

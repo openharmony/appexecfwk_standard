@@ -15,6 +15,7 @@
 
 #include "inner_bundle_info.h"
 
+#include <deque>
 #include <regex>
 #include "bundle_mgr_client.h"
 #include "bundle_permission_mgr.h"
@@ -2191,6 +2192,40 @@ void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList, 
         return;
     }
     GetUriPrefixList(uriPrefixList, excludeModule);
+}
+
+std::vector<std::string> InnerBundleInfo::GetDependentModuleNames(const std::string &moduleName) const
+{
+    std::vector<std::string> dependentModuleNames;
+    auto it = innerModuleInfos_.find(moduleName);
+    if (it == innerModuleInfos_.end()) {
+        APP_LOGE("GetDependentModuleNames can not find module %{public}s", moduleName.c_str());
+        return dependentModuleNames;
+    }
+    dependentModuleNames = it->second.dependencies;
+    return dependentModuleNames;
+}
+
+std::vector<std::string> InnerBundleInfo::GetAllDependentModuleNames(const std::string &moduleName) const
+{
+    std::deque<std::string> moduleDeque;
+    std::vector<std::string> dependentModuleNames = GetDependentModuleNames(moduleName);
+    for (auto &st : dependentModuleNames) {
+        moduleDeque.push_back(st);
+    }
+    std::vector<std::string> res;
+    while (!moduleDeque.empty()) {
+        std::string name = moduleDeque.front();
+        moduleDeque.pop_front();
+        if (std::find(res.begin(), res.end(), name) == res.end()) {
+            res.push_back(name);
+            dependentModuleNames = GetDependentModuleNames(name);
+            for (auto &st : dependentModuleNames) {
+                moduleDeque.push_back(st);
+            }
+        }
+    }
+    return res;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

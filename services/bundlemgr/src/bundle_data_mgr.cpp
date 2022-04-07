@@ -2733,6 +2733,22 @@ bool BundleDataMgr::ImplicitQueryInfoByPriority(const Want &want, int32_t flags,
     return true;
 }
 
+bool BundleDataMgr::GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
+    std::vector<std::string> &dependentModuleNames)
+{
+    APP_LOGD("GetAllDependentModuleNames bundleName: %{public}s, moduleName: %{public}s",
+        bundleName.c_str(), moduleName.c_str());
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    auto item = bundleInfos_.find(bundleName);
+    if (item == bundleInfos_.end()) {
+        APP_LOGE("GetAllDependentModuleNames: bundleName not find");
+        return false;
+    }
+    const InnerBundleInfo &innerBundleInfo = item->second;
+    dependentModuleNames = innerBundleInfo.GetAllDependentModuleNames(moduleName);
+    return true;
+}
+
 #ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string &path) const
 {
