@@ -641,6 +641,17 @@ public:
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) override;
 #endif
+    /**
+     * @brief Obtains the dependent module names.
+     *
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param dependentModuleNames Indicates the obtained dependent module names.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
+        std::vector<std::string> &dependentModuleNames) override;
+
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
