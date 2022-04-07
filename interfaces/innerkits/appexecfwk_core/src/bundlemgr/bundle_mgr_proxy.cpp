@@ -2344,7 +2344,7 @@ bool BundleMgrProxy::ImplicitQueryInfoByPriority(const Want &want, int32_t flags
     }
 
     MessageParcel reply;
-    if (!SendTransactCmd(code, data, reply)) {
+    if (!SendTransactCmd(IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY, data, reply)) {
         return false;
     }
 
