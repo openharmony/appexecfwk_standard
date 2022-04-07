@@ -42,7 +42,6 @@ bool AbilityManagerHelper::UninstallApplicationProcesses(const std::string &bund
     return true;
 #else
     APP_LOGI("ABILITY_RUNTIME_ENABLE is false");
-    // ACCOUNT_ENABLE is false, do nothing and return -1.
     return true;
 #endif
 }
