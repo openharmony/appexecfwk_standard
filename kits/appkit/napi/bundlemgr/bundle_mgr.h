@@ -85,7 +85,7 @@ struct AsyncApplicationInfoCallbackInfo : public AsyncWorkData {
     explicit AsyncApplicationInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     int32_t flags = 0;
-    int32_t userId;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     OHOS::AppExecFwk::ApplicationInfo appInfo;
     bool ret = false;
     int32_t err = 0;
@@ -114,7 +114,7 @@ struct AsyncBundleInfosCallbackInfo : public AsyncWorkData {
 struct AsyncApplicationInfosCallbackInfo : public AsyncWorkData {
     explicit AsyncApplicationInfosCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t flags = 0;
-    int32_t userId = 0;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     std::vector<OHOS::AppExecFwk::ApplicationInfo> appInfos;
     bool ret = false;
     int32_t err = 0;
@@ -132,7 +132,7 @@ struct AsyncAbilityLabelCallbackInfo : public AsyncWorkData {
 
 struct InstallResult {
     std::string resultMsg;
-    int32_t resultCode;
+    int32_t resultCode = 0;
 };
 
 struct AsyncInstallCallbackInfo : public AsyncWorkData {
@@ -201,7 +201,7 @@ struct AsyncExtensionInfoCallbackInfo : public AsyncWorkData {
 
 struct AsyncGetNameByUidInfo : public AsyncWorkData {
     explicit AsyncGetNameByUidInfo(napi_env env) : AsyncWorkData(env) {}
-    int32_t uid;
+    int32_t uid = 0;
     std::string bundleName;
     int32_t err = 0;
     bool ret = false;
@@ -227,8 +227,8 @@ struct AsyncHandleBundleContext : public AsyncWorkData {
     OHOS::sptr<CleanCacheCallback> cleanCacheCallback;
     std::string bundleName;
     std::string className;
-    int32_t labelId;
-    int32_t iconId;
+    int32_t labelId = 0;
+    int32_t iconId = 0;
     bool ret = false;
     int32_t err = 0;
 };

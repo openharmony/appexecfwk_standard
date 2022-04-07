@@ -110,7 +110,7 @@ static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(con
     APP_LOGI("GetDistributedBundleMgr");
     auto samgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     OHOS::sptr<OHOS::IRemoteObject> remoteObject;
-    APP_LOGD("GetDistributedBundleMgr deviceId:%{public}s", deviceId.c_str());
+    APP_LOGD("GetDistributedBundleMgr deviceId:%{private}s", deviceId.c_str());
     if (deviceId.empty()) {
         return nullptr;
     } else {
