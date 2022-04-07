@@ -154,6 +154,8 @@ struct ApplicationInfo : public Parcelable {
     std::vector<ModuleInfo> moduleInfos;
     std::map<std::string, std::vector<CustomizeData>> metaData;
     std::map<std::string, std::vector<Metadata>> metadata;
+    // Installation-free
+    std::vector<std::string> targetBundleList;
 
     bool isCloned = false;
 

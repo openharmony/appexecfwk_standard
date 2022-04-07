@@ -193,6 +193,7 @@ struct App {
     bool singleton = false;
     bool userDataClearable = true;
     bool accessible = false;
+    std::vector<std::string> targetBundleList;
     std::map<std::string, DeviceConfig> deviceConfigs;
 };
 
@@ -759,6 +760,14 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        APP_TARGETBUNDLELIST,
+        app.targetBundleList,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
     if (jsonObject.find(APP_REMOVABLE) != jsonObject.end()) {
         app.removable.first = true;
         GetValueIfFindKey<bool>(jsonObject,
@@ -1128,6 +1137,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
     applicationInfo.labelId = app.labelId;
     applicationInfo.description = app.description;
     applicationInfo.descriptionId = app.descriptionId;
+    applicationInfo.targetBundleList = app.targetBundleList;
 
     if (applicationInfo.isSystemApp) {
         applicationInfo.keepAlive = app.keepAlive;

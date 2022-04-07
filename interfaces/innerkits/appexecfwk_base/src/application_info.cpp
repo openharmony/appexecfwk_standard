@@ -82,6 +82,7 @@ const std::string APPLICATION_NATIVE_LIBRARY_PATH = "nativeLibraryPath";
 const std::string APPLICATION_CPU_ABI = "cpuAbi";
 const std::string APPLICATION_IS_COMPRESS_NATIVE_LIBS = "isCompressNativeLibs";
 const std::string APPLICATION_SIGNATURE_KEY = "signatureKey";
+const std::string APPLICATION_TARGETBUNDLELIST = "targetBundleList";
 }
 
 Metadata::Metadata(const std::string &paramName, const std::string &paramValue, const std::string &paramResource)
@@ -304,7 +305,8 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_NATIVE_LIBRARY_PATH, applicationInfo.nativeLibraryPath},
         {APPLICATION_CPU_ABI, applicationInfo.cpuAbi},
         {APPLICATION_IS_COMPRESS_NATIVE_LIBS, applicationInfo.isCompressNativeLibs},
-        {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey}
+        {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey},
+        {APPLICATION_TARGETBUNDLELIST, applicationInfo.targetBundleList},
     };
 }
 
@@ -712,6 +714,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_TARGETBUNDLELIST,
+        applicationInfo.targetBundleList,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
     if (parseResult != ERR_OK) {
         APP_LOGE("from_json error, error code : %{public}d", parseResult);
     }
