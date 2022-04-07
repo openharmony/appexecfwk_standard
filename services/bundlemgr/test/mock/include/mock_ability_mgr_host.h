@@ -107,10 +107,7 @@ public:
     {
         return 0;
     }
-    virtual void AddWindowInfo(const sptr<IRemoteObject> &token, int32_t windowToken) override
-    {
-        return;
-    }
+
     virtual int AttachAbilityThread(
         const sptr<AAFwk::IAbilityScheduler> &scheduler, const sptr<IRemoteObject> &token) override
     {
@@ -150,10 +147,7 @@ public:
     {
         return 0;
     }
-    virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionPixelMap &missionPixelMap) override
-    {
-        return 0;
-    }
+
     virtual int KillProcess(const std::string &bundleName) override
     {
         return 0;
@@ -227,23 +221,6 @@ public:
     {}
 
     virtual int GetPendingRequestWant(const sptr<IWantSender> &target, std::shared_ptr<Want> &want) override
-    {
-        return 0;
-    }
-
-    int MinimizeMultiWindow(int missionId) override
-    {
-        return 0;
-    }
-    int MaximizeMultiWindow(int missionId) override
-    {
-        return 0;
-    }
-    int CloseMultiWindow(int missionId) override
-    {
-        return 0;
-    }
-    int ChangeFocusAbility(const sptr<IRemoteObject> &lostFocusToken, const sptr<IRemoteObject> &getFocusToken) override
     {
         return 0;
     }
