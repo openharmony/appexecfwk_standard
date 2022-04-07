@@ -20,7 +20,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-SystemBundleInstaller::SystemBundleInstaller(const std::string &filePath) : filePath_(filePath)
+SystemBundleInstaller::SystemBundleInstaller()
 {
     APP_LOGI("system bundle installer instance is created");
 }
@@ -30,7 +30,8 @@ SystemBundleInstaller::~SystemBundleInstaller()
     APP_LOGI("system bundle installer instance is destroyed");
 }
 
-bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType, int32_t userId)
+bool SystemBundleInstaller::InstallSystemBundle(
+    const std::string &filePath, Constants::AppType appType, int32_t userId)
 {
     InstallParam installParam;
     installParam.userId = userId;
@@ -41,7 +42,7 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType, int3
         || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
     }
-    ErrCode result = InstallBundle(filePath_, installParam, appType);
+    ErrCode result = InstallBundle(filePath, installParam, appType);
     if (result != ERR_OK) {
         APP_LOGE("install system bundle fail, error: %{public}d", result);
         return false;
@@ -49,7 +50,8 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType, int3
     return true;
 }
 
-bool SystemBundleInstaller::OTAInstallSystemBundle(Constants::AppType appType)
+bool SystemBundleInstaller::OTAInstallSystemBundle(
+    const std::vector<std::string> &filePaths, Constants::AppType appType)
 {
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
     if (!dataMgr) {
@@ -60,13 +62,14 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(Constants::AppType appType)
     installParam.isPreInstallApp = true;
     installParam.noSkipsKill = false;
     installParam.needSendEvent = false;
+    installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     if (appType == Constants::AppType::SYSTEM_APP
     || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
     }
     for (auto allUserId : dataMgr->GetAllUser()) {
         installParam.userId = allUserId;
-        ErrCode result = InstallBundle(filePath_, installParam, appType);
+        ErrCode result = InstallBundle(filePaths, installParam, appType);
         if (result != ERR_OK) {
             APP_LOGW("install system bundle fail, error: %{public}d", result);
         }

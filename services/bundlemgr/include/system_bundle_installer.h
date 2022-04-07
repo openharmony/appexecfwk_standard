@@ -22,22 +22,24 @@ namespace OHOS {
 namespace AppExecFwk {
 class SystemBundleInstaller : public BaseBundleInstaller {
 public:
-    explicit SystemBundleInstaller(const std::string &filePath);
+    SystemBundleInstaller();
     virtual ~SystemBundleInstaller() override;
     /**
      * @brief Install system and system vendor bundles.
+     * @param filePath Indicates the filePath.
      * @param appType Indicates the bundle type.
      * @param userId Indicates the user ID.
      * @return Returns true if this function called successfully; returns false otherwise.
      */
-    bool InstallSystemBundle(
+    bool InstallSystemBundle(const std::string &filePath,
         Constants::AppType appType, int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief OTA Install system and system vendor bundles.
+     * @param filePath Indicates the filePaths.
      * @param appType Indicates the bundle type.
      * @return Returns true if this function called successfully; returns false otherwise.
      */
-    bool OTAInstallSystemBundle(Constants::AppType appType);
+    bool OTAInstallSystemBundle(const std::vector<std::string> &filePaths, Constants::AppType appType);
     /**
      * @brief Uninstall system and system vendor bundles.
      * @param bundleName Indicates the bundle name.
@@ -53,7 +55,6 @@ public:
     bool UninstallSystemBundle(const std::string &bundleName, const std::string &modulePackage);
 
 private:
-    const std::string filePath_;
 
     DISALLOW_COPY_AND_MOVE(SystemBundleInstaller);
 };

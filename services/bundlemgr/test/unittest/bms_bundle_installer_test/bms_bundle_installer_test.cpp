@@ -97,8 +97,8 @@ BmsBundleInstallerTest::~BmsBundleInstallerTest()
 
 bool BmsBundleInstallerTest::InstallSystemBundle(const std::string &filePath) const
 {
-    auto installer = std::make_unique<SystemBundleInstaller>(filePath);
-    return installer->InstallSystemBundle(Constants::AppType::SYSTEM_APP, USERID);
+    auto installer = std::make_unique<SystemBundleInstaller>();
+    return installer->InstallSystemBundle(filePath, Constants::AppType::SYSTEM_APP, USERID);
 }
 
 ErrCode BmsBundleInstallerTest::InstallThirdPartyBundle(const std::string &filePath) const
