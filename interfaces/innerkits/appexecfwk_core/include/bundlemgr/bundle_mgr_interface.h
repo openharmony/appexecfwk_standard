@@ -883,6 +883,12 @@ public:
         return false;
     }
 
+    virtual bool ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+        AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo)
+    {
+        return false;
+    }
+
 #ifdef SUPPORT_GRAPHICS
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName)
@@ -985,6 +991,7 @@ public:
         GET_ACCESSIBLE_APP_CODE_PATH,
         QUERY_EXTENSION_ABILITY_INFO_BY_URI,
         GET_HAP_MODULE_INFO_WITH_USERID,
+        IMPLICIT_QUERY_INFO_BY_PRIORITY
     };
 };
 }  // namespace AppExecFwk

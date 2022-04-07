@@ -304,6 +304,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID):
             errCode = HandleGetHapModuleInfoWithUserId(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY):
+            errCode = HandleImplicitQueryInfoByPriority(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1810,6 +1813,36 @@ ErrCode BundleMgrHost::HandleGetUidByBundleName(Parcel &data, Parcel &reply)
     if (!reply.WriteInt32(uid)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleImplicitQueryInfoByPriority(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("ReadParcelable<want> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    int32_t flags = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+    AbilityInfo abilityInfo;
+    ExtensionAbilityInfo extensionInfo;
+    bool ret = ImplicitQueryInfoByPriority(*want, flags, userId, abilityInfo, extensionInfo);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&abilityInfo)) {
+            APP_LOGE("write AbilityInfo failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+        if (!reply.WriteParcelable(&extensionInfo)) {
+            APP_LOGE("write ExtensionAbilityInfo failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
     }
     return ERR_OK;
 }

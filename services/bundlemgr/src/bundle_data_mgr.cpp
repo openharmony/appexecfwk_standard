@@ -2692,6 +2692,43 @@ const std::vector<PreInstallBundleInfo>& BundleDataMgr::GetAllPreInstallBundleIn
     return preInstallBundleInfos_;
 }
 
+bool BundleDataMgr::ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo)
+{
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        APP_LOGE("invalid userId");
+        return false;
+    }
+    std::vector<AbilityInfo> abilityInfos;
+    bool abilityValid = ImplicitQueryAbilityInfos(want, flags, requestUserId, abilityInfos) && (abilityInfos.size() > 0);
+    std::vector<ExtensionAbilityInfo> extensionInfos;
+    bool extensionValid = 
+        ImplicitQueryExtensionInfos(want, flags, requestUserId, extensionInfos) && (extensionInfos.size() > 0);
+    if (!abilityValid && !extensionValid) {
+        // both invalid
+        APP_LOGE("can't find target AbilityInfo or ExtensionAbilityInfo");
+        return false;
+    }
+    if (abilityValid && extensionValid) {
+        // both valid
+        if (abilityInfos[0].priority >= extensionInfos[0].priority) {
+            abilityInfo = abilityInfos[0];
+        } else {
+            extensionInfo = extensionInfos[0];
+        }
+    } else if (abilityValid) {
+        // only ability valid
+        APP_LOGD("find target AbilityInfo, name : %{public}s", abilityInfos[0].name);
+        abilityInfo = abilityInfos[0];
+    } else {
+        // only extension valid
+        APP_LOGD("find target ExtensionAbilityInfo, name : %{public}s", extensionInfos[0].name);
+        extensionInfo = extensionInfos[0];
+    }
+    return true;
+}
+
 #ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string &path) const
 {
