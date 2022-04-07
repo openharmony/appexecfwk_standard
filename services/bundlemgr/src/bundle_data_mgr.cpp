@@ -2719,11 +2719,11 @@ bool BundleDataMgr::ImplicitQueryInfoByPriority(const Want &want, int32_t flags,
         }
     } else if (abilityValid) {
         // only ability valid
-        APP_LOGD("find target AbilityInfo, name : %{public}s", abilityInfos[0].name);
+        APP_LOGD("find target AbilityInfo, name : %{public}s", abilityInfos[0].name.c_str());
         abilityInfo = abilityInfos[0];
     } else {
         // only extension valid
-        APP_LOGD("find target ExtensionAbilityInfo, name : %{public}s", extensionInfos[0].name);
+        APP_LOGD("find target ExtensionAbilityInfo, name : %{public}s", extensionInfos[0].name.c_str());
         extensionInfo = extensionInfos[0];
     }
     return true;
