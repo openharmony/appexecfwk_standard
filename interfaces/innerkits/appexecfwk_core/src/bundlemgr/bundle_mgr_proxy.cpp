@@ -1455,6 +1455,72 @@ bool BundleMgrProxy::IsApplicationEnabled(const std::string &bundleName)
     return reply.ReadBool();
 }
 
+bool BundleMgrProxy::IsModuleRemovable(const std::string &bundleName, const std::string &moduleName)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to IsModuleRemovable of %{public}s", bundleName.c_str());
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("fail to IsModuleRemovable due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to IsModuleRemovable due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to IsModuleRemovable due to write bundleName fail");
+        return false;
+    }
+
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to IsModuleRemovable due to write moduleName fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::IS_MODULE_REMOVABLE, data, reply)) {
+        APP_LOGE("fail to IsModuleRemovable from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::SetModuleRemovable(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to SetModuleRemovable of %{public}s", bundleName.c_str());
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("fail to SetModuleRemovable due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to SetModuleRemovable due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to SetModuleRemovable due to write bundleName fail");
+        return false;
+    }
+
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to SetModuleRemovable due to write moduleName fail");
+        return false;
+    }
+    if (!data.WriteBool(isEnable)) {
+        APP_LOGE("fail to SetModuleRemovable due to write isEnable fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::SET_MODULE_REMOVABLE, data, reply)) {
+        APP_LOGE("fail to SetModuleRemovable from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
 bool BundleMgrProxy::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);

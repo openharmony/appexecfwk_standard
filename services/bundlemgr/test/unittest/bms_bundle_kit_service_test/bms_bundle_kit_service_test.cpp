@@ -960,6 +960,111 @@ void BmsBundleKitServiceTest::CheckShortcutInfoDemo(std::vector<ShortcutInfo> &s
 }
 
 /**
+ * @tc.number: CheckModuleRemovable_0100
+ * @tc.name: test can check module removable is enable by no setting
+ * @tc.desc: 1.system run normally
+ *           2.check the module removable successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckModuleRemovable_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    bool testRet = GetBundleDataMgr()->IsModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST);
+    EXPECT_FALSE(testRet);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckModuleRemovable_0200
+ * @tc.name: test can check module removable is enable by setting
+ * @tc.desc: 1.system run normally
+ *           2.check the module removable successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckModuleRemovable_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    bool testRet = GetBundleDataMgr()->SetModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST, true);
+    EXPECT_TRUE(testRet);
+    bool testRet1 = GetBundleDataMgr()->IsModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST);
+    EXPECT_TRUE(testRet1);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckModuleRemovable_0300
+ * @tc.name: test can check module removable is disable by setting
+ * @tc.desc: 1.system run normally
+ *           2.check the module removable successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckModuleRemovable_0300, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    bool testRet = GetBundleDataMgr()->SetModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST, false);
+    EXPECT_TRUE(testRet);
+    bool testRet1 = GetBundleDataMgr()->IsModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST);
+    EXPECT_FALSE(testRet1);
+
+    bool testRet2 = GetBundleDataMgr()->SetModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST, true);
+    EXPECT_TRUE(testRet2);
+    bool testRet3 = GetBundleDataMgr()->IsModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST);
+    EXPECT_TRUE(testRet3);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckModuleRemovable_0400
+ * @tc.name: test can check module removable is disable by no install
+ * @tc.desc: 1.system run normally
+ *           2.check the module removable failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckModuleRemovable_0400, Function | SmallTest | Level1)
+{
+    bool testRet = GetBundleDataMgr()->IsModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST);
+    EXPECT_FALSE(testRet);
+}
+
+/**
+ * @tc.number: CheckModuleRemovable_0500
+ * @tc.name: test can check module removable is able by empty bundle name
+ * @tc.desc: 1.system run normally
+ *           2.check the module removable successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckModuleRemovable_0500, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    bool testRet = GetBundleDataMgr()->SetModuleRemovable("", "", true);
+    EXPECT_FALSE(testRet);
+    bool testRet1 = GetBundleDataMgr()->IsModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST);
+    EXPECT_FALSE(testRet1);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckModuleRemovable_0600
+ * @tc.name: test can check module removable is disable by empty bundle name
+ * @tc.desc: 1.system run normally
+ *           2.check the module removable failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckModuleRemovable_0600, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    bool testRet = GetBundleDataMgr()->SetModuleRemovable(BUNDLE_NAME_TEST, MODULE_NAME_TEST, true);
+    EXPECT_TRUE(testRet);
+    bool testRet1 = GetBundleDataMgr()->IsModuleRemovable("", "");
+    EXPECT_FALSE(testRet1);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
  * @tc.number: GetBundleInfo_0100
  * @tc.name: test can get the bundleName's bundle info
  * @tc.desc: 1.system run normal

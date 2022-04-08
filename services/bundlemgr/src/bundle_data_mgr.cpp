@@ -18,6 +18,11 @@
 #include <chrono>
 #include <cinttypes>
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+#include "installd/installd_operator.h"
+#include "os_account_info.h"
+#include "os_account_manager.h"
+#endif
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_data_storage_database.h"
@@ -1035,6 +1040,62 @@ bool BundleDataMgr::GetInnerBundleInfoByUid(const int uid, InnerBundleInfo &inne
     APP_LOGD("the uid(%{public}d) is not exists.", uid);
     return false;
 }
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+int64_t BundleDataMgr::GetBundleSpaceSize(const std::string &bundleName) const
+{
+    int32_t userId;
+    int64_t curSize = 0;
+    int64_t spaceSize = 0;
+    BundleInfo bundleInfo;
+
+    if ((userId = GetActiveUserId()) != Constants::INVALID_USERID
+        && GetBundleInfo(bundleName, GET_ALL_APPLICATION_INFO, bundleInfo, userId) == true) {
+        if (!bundleInfo.applicationInfo.codePath.empty()) {
+            curSize = InstalldOperator::GetDiskUsage(bundleInfo.applicationInfo.codePath);
+            spaceSize += curSize;
+            APP_LOGI("Code %{public}s:%{public}" PRId64, bundleInfo.applicationInfo.codePath.c_str(), curSize);
+        }
+        if (!bundleInfo.applicationInfo.dataDir.empty()) {
+            curSize = InstalldOperator::GetDiskUsage(bundleInfo.applicationInfo.dataDir);
+            spaceSize += curSize;
+            APP_LOGI("Data %{public}s:%{public}" PRId64, bundleInfo.applicationInfo.dataDir.c_str(), curSize);
+        }
+    }
+
+    APP_LOGI("%{public}s spaceSize:%{public}" PRId64, bundleName.c_str(), spaceSize);
+    return spaceSize;
+}
+
+int64_t BundleDataMgr::GetAllFreeInstallBundleSpaceSize() const
+{
+    int32_t userId;
+    int64_t allSize = 0;
+    int64_t curSize = 0;
+    std::vector<BundleInfo> bundleInfos;
+
+    if ((userId = GetActiveUserId()) != Constants::INVALID_USERID
+        && GetBundleInfos(GET_ALL_APPLICATION_INFO, bundleInfos, userId) == true) {
+        for (const auto &item : bundleInfos) {
+            APP_LOGI("%{public}s freeInstall:%{public}d", item.name.c_str(), item.applicationInfo.isFreeInstallApp);
+            if (item.applicationInfo.isFreeInstallApp) {
+                if (!item.applicationInfo.codePath.empty()) {
+                    curSize = InstalldOperator::GetDiskUsage(item.applicationInfo.codePath);
+                    allSize += curSize;
+                    APP_LOGI("Code %{public}s:%{public}" PRId64, item.applicationInfo.codePath.c_str(), curSize);
+                }
+                if (!item.applicationInfo.dataDir.empty()) {
+                    curSize = InstalldOperator::GetDiskUsage(item.applicationInfo.dataDir);
+                    allSize += curSize;
+                    APP_LOGI("Data %{public}s:%{public}" PRId64, item.applicationInfo.dataDir.c_str(), curSize);
+                }
+            }
+        }
+    }
+
+    APP_LOGI("All sfreeInstall:%{public}" PRId64, allSize);
+    return allSize;
+}
+#endif
 
 bool BundleDataMgr::GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames) const
 {
@@ -1437,6 +1498,58 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
         return false;
     }
 }
+
+bool BundleDataMgr::SetModuleRemovable(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+{
+    APP_LOGD("bundleName:%{public}s, moduleName:%{public}s", bundleName.c_str(), moduleName.c_str());
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("bundleName or moduleName is empty");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        APP_LOGE("can not find bundle %{public}s", bundleName.c_str());
+        return false;
+    }
+    InnerBundleInfo newInfo = infoItem->second;
+    bool ret = newInfo.SetModuleRemovable(moduleName, isEnable);
+    if (ret && dataStorage_->SaveStorageBundleInfo(newInfo)) {
+        ret = infoItem->second.SetModuleRemovable(moduleName, isEnable);
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+        if (isEnable) {
+            // call clean task
+            APP_LOGD("bundle:%{public}s isEnable:%{public}d ret:%{public}d call clean task",
+                bundleName.c_str(), isEnable, ret);
+            DelayedSingleton<BundleMgrService>::GetInstance()->GetAgingMgr()->Start(
+                BundleAgingMgr::AgingTriggertype::UPDATE_REMOVABLE_FLAG);
+        }
+#endif
+        return ret;
+    } else {
+        APP_LOGE("bundle:%{public}s SetModuleRemoved failed", bundleName.c_str());
+        return false;
+    }
+}
+
+bool BundleDataMgr::IsModuleRemovable(const std::string &bundleName, const std::string &moduleName) const
+{
+    APP_LOGD("bundleName is bundleName:%{public}s, moduleName:%{public}s", bundleName.c_str(), moduleName.c_str());
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("bundleName or moduleName is empty");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        APP_LOGE("can not find bundle %{public}s", bundleName.c_str());
+        return false;
+    }
+    InnerBundleInfo newInfo = infoItem->second;
+
+    return newInfo.isModuleRemovable(moduleName);
+}
+
 
 bool BundleDataMgr::IsAbilityEnabled(const AbilityInfo &abilityInfo) const
 {
@@ -2324,6 +2437,20 @@ int32_t BundleDataMgr::GetUserIdByCallingUid() const
     return BundleUtil::GetUserIdByCallingUid();
 }
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+int32_t BundleDataMgr::GetActiveUserId() const
+{
+    std::vector<int> activeIds;
+    int32_t ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(activeIds);
+    if (ret != 0 || activeIds.empty()) {
+        APP_LOGE("QueryActiveOsAccountIds ret = %{public}d. activeIds empty:%{public}d",
+            ret, activeIds.empty());
+        return Constants::INVALID_USERID;
+    }
+    return activeIds[0];
+}
+#endif
+
 std::set<int32_t> BundleDataMgr::GetAllUser() const
 {
     std::lock_guard<std::mutex> lock(multiUserIdSetMutex_);
@@ -2680,6 +2807,27 @@ std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceMan
     resourceManager->UpdateResConfig(*resConfig);
     return resourceManager;
 }
+
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+bool BundleDataMgr::GetRemovableBundleNameVec(std::map<std::string, int>& bundlenameAndUids)
+{
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ is data is empty.");
+    }
+    for (auto &it : bundleInfos_) {
+        APP_LOGD("bundleName: %{public}s", it.first.c_str());
+        int32_t userId = GetActiveUserId();
+        APP_LOGD("bundle userId is %{public}d, userId= %{public}d", it.second.GetUserId(), userId);
+        if (!it.second.HasInnerBundleUserInfo(userId)) {
+            continue;
+        }
+        if (it.second.IsBundleRemovable()) {
+            bundlenameAndUids.emplace(it.first, it.second.GetUid(it.second.GetUserId()));
+        }
+    }
+    return true;
+}
+#endif
 
 bool BundleDataMgr::QueryAllDeviceIds(std::vector<std::string> &deviceIds)
 {

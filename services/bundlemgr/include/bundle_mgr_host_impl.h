@@ -642,6 +642,23 @@ public:
         const std::string &abilityName) override;
 #endif
     /**
+     * @brief Obtains the value of isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName) override;
+    /**
+     * @brief Sets whether to enable isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleRemovable(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable) override;
+    /**
      * @brief Obtains the dependent module names.
      *
      * @param bundleName Indicates the bundle name to be queried.

@@ -51,7 +51,7 @@ ohos_unittest("zip_test") {
   ]
 
   external_deps = [
-    "ability_runtime:task_dispatcher",
+    "ability_base:task_dispatcher",
     "bundle_framework:appexecfwk_base",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
