@@ -36,17 +36,15 @@ ohos_moduletest("BmsBundleParserModuleTest") {
   deps = [
     "${common_path}:libappexecfwk_common",
     "${services_path}/bundlemgr:bundle_parser",
-    "${services_path}/bundlemgr:parser_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//third_party/googletest:gtest_main",
   ]
 
   external_deps = [
+    "ability_base:want",
     "ability_runtime:app_manager",
+    "access_token:libaccesstoken_sdk",
+    "bundle_framework:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
   ]
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
