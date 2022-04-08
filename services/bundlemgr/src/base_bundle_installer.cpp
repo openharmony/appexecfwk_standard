@@ -15,10 +15,6 @@
 
 #include "base_bundle_installer.h"
 
-#include <unistd.h>
-#include <set>
-#include <vector>
-
 #include "nlohmann/json.hpp"
 
 #include "ability_manager_helper.h"
