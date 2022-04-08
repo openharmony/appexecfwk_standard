@@ -845,6 +845,26 @@ bool BundleMgrHostImpl::IsApplicationEnabled(const std::string &bundleName)
     return dataMgr->IsApplicationEnabled(bundleName);
 }
 
+bool BundleMgrHostImpl::IsModuleRemovable(const std::string &bundleName, const std::string &moduleName)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->IsModuleRemovable(bundleName, moduleName);
+}
+
+bool BundleMgrHostImpl::SetModuleRemovable(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->SetModuleRemovable(bundleName, moduleName, isEnable);
+}
+
 bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     APP_LOGD("start SetApplicationEnabled");

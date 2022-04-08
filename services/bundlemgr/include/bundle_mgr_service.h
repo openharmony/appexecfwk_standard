@@ -24,6 +24,9 @@
 #ifdef DEVICE_MANAGER_ENABLE
 #include "bms_device_manager.h"
 #endif
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+#include "aging/bundle_aging_mgr.h"
+#endif
 #include "bundle_clone_mgr.h"
 #include "bundle_constants.h"
 #include "bundle_data_mgr.h"
@@ -64,6 +67,9 @@ public:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgr() const;
 
     const std::shared_ptr<BundleDataMgr> GetDataMgr() const;
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+    const std::shared_ptr<BundleAgingMgr> GetAgingMgr() const;
+#endif
     /**
      * @brief Get a IBundleInstaller object for IPC
      * @return Returns the pointer of IBundleInstaller object.
@@ -89,11 +95,13 @@ public:
      * @return Returns whether the interface is called successfully.
      */
     bool Hidump(const std::vector<std::string> &args, std::string& result) const;
+
 protected:
 #ifdef DEVICE_MANAGER_ENABLE
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
     void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
 #endif
+
 private:
     /**
      * @brief Initialize the bundle manager service context.
@@ -123,6 +131,9 @@ private:
     std::shared_ptr<BmsDeviceManager> deviceManager_;
 #endif
     std::shared_ptr<HidumpHelper> hidumpHelper_;
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+    std::shared_ptr<BundleAgingMgr> agingMgr_;
+#endif
     sptr<BundleMgrHostImpl> host_;
     sptr<BundleInstallerHost> installer_;
     sptr<BundleUserMgrHostImpl> userMgrHost_;

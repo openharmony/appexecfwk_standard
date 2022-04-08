@@ -53,7 +53,7 @@ private:
     static AppLogLevel level_;
 };
 
-#define PRINT_LOG(LEVEL, Level, fmt, ...)                  \
+#define AFWK_PRINT_LOG(LEVEL, Level, fmt, ...)                  \
     if (OHOS::AppExecFwk::AppLogWrapper::JudgeLevel(OHOS::AppExecFwk::AppLogLevel::LEVEL))     \
     OHOS::HiviewDFX::HiLog::Level(OHOS::AppExecFwk::APP_LABEL,               \
         "[%{public}s(%{public}s):%{public}d] " fmt,        \
@@ -62,11 +62,11 @@ private:
         __LINE__,                                          \
         ##__VA_ARGS__)
 
-#define APP_LOGD(fmt, ...) PRINT_LOG(DEBUG, Debug, fmt, ##__VA_ARGS__)
-#define APP_LOGI(fmt, ...) PRINT_LOG(INFO, Info, fmt, ##__VA_ARGS__)
-#define APP_LOGW(fmt, ...) PRINT_LOG(WARN, Warn, fmt, ##__VA_ARGS__)
-#define APP_LOGE(fmt, ...) PRINT_LOG(ERROR, Error, fmt, ##__VA_ARGS__)
-#define APP_LOGF(fmt, ...) PRINT_LOG(FATAL, Fatal, fmt, ##__VA_ARGS__)
+#define APP_LOGD(fmt, ...) AFWK_PRINT_LOG(DEBUG, Debug, fmt, ##__VA_ARGS__)
+#define APP_LOGI(fmt, ...) AFWK_PRINT_LOG(INFO, Info, fmt, ##__VA_ARGS__)
+#define APP_LOGW(fmt, ...) AFWK_PRINT_LOG(WARN, Warn, fmt, ##__VA_ARGS__)
+#define APP_LOGE(fmt, ...) AFWK_PRINT_LOG(ERROR, Error, fmt, ##__VA_ARGS__)
+#define APP_LOGF(fmt, ...) AFWK_PRINT_LOG(FATAL, Fatal, fmt, ##__VA_ARGS__)
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_STANDARD_COMMON_LOG_INCLUDE_APP_LOG_WRAPPER_H

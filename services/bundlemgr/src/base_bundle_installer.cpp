@@ -17,7 +17,11 @@
 
 #include "nlohmann/json.hpp"
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+#include "aging/bundle_aging_mgr.h"
+#endif
 #include "ability_manager_helper.h"
+#include "ability_manager_interface.h"
 #include "app_log_wrapper.h"
 #include "bundle_clone_mgr.h"
 #include "bundle_constants.h"
@@ -215,6 +219,18 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         }
     }
 
+    // set newInfos all haps isRemovable is true
+    if (!isAppExist_ && (InstallFlag::FREE_INSTALL == installParam.installFlag)) {
+        for (auto &item : newInfos) {
+            std::map<std::string, InnerModuleInfo> &moduleInfo = item.second.FetchInnerModuleInfos();
+            for (auto iter = moduleInfo.begin(); iter != moduleInfo.end(); iter++) {
+                APP_LOGD("set bundleName:(%{public}s) hap modulePackage:(%{public}s) isRemovable true.",
+                    bundleName_.c_str(), iter->second.modulePackage.c_str());
+                iter->second.isRemovable = true;
+            }
+        }
+    }
+
     ErrCode result = ERR_OK;
     if (isAppExist_) {
         // to guarantee that the hap version can be compatible.
@@ -265,6 +281,8 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         newInnerBundleUserInfo.bundleUserInfo.userId = userId_;
         newInnerBundleUserInfo.bundleName = bundleName_;
         newInfo.AddInnerBundleUserInfo(newInnerBundleUserInfo);
+        APP_LOGI("SetIsFreeInstallApp(%{public}d)", InstallFlag::FREE_INSTALL == installParam.installFlag);
+        newInfo.SetIsFreeInstallApp(InstallFlag::FREE_INSTALL == installParam.installFlag);
         result = ProcessBundleInstallStatus(newInfo, uid);
         if (result != ERR_OK) {
             return result;
@@ -406,7 +424,13 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     }
 
     UpdateInstallerState(InstallerState::INSTALL_SUCCESS);                         // ---- 100%
-    APP_LOGD("finish ProcessBundleInstall bundlePath install");
+    APP_LOGD("finish ProcessBundleInstall bundlePath install touch off aging");
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+    if (installParam.installFlag == InstallFlag::FREE_INSTALL) {
+        DelayedSingleton<BundleMgrService>::GetInstance()->GetAgingMgr()->Start(
+            BundleAgingMgr::AgingTriggertype::FREE_INSTALL);
+    }
+#endif
     return result;
 }
 
@@ -1480,7 +1504,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
     bool singleton = (infos.begin()->second).IsSingleton();
     Constants::AppType appType = (infos.begin()->second).GetAppType();
 
-    for (const auto &info :infos) {
+    for (const auto &info : infos) {
         // check bundleName
         if (bundleName != info.second.GetBundleName()) {
             return ERR_APPEXECFWK_INSTALL_BUNDLENAME_NOT_SAME;

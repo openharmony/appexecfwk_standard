@@ -68,6 +68,7 @@ struct InnerModuleInfo {
     std::string srcPath;
     bool isEntry = false;
     bool installationFree = false;
+    bool isRemovable = false;
     MetaData metaData;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     Distro distro;
@@ -948,6 +949,16 @@ public:
         return baseApplicationInfo_.isLauncherApp;
     }
 
+    void SetIsFreeInstallApp(bool isFreeInstall)
+    {
+        baseApplicationInfo_.isFreeInstallApp = isFreeInstall;
+    }
+
+    bool GetIsFreeInstallApp() const
+    {
+        return baseApplicationInfo_.isFreeInstallApp;
+    }
+
     void SetMainAbility(const std::string &mainAbility)
     {
         mainAbility_ = mainAbility;
@@ -1343,6 +1354,25 @@ public:
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, const std::string &excludeModule = "") const;
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
         const std::string &excludeModule = "") const;
+    /**
+     * @brief module is removed.
+     * @param moduleName Indicates the moduleName.
+     * @return Return get module removed result.
+     */
+    bool isModuleRemovable(const std::string &moduleName) const;
+    /**
+     * @brief module is removed.
+     * @param moduleName Indicates the moduleName.
+     * @param isEnable Indicates the module isRemovable is enable.
+     * @return Return set module removed result.
+     */
+    bool SetModuleRemovable(const std::string &moduleName, bool isEnable);
+    /**
+     * @brief bundle is removed.
+     * @return Return get bundle removed result
+     */
+    bool IsBundleRemovable() const;
+
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;

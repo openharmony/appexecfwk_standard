@@ -107,6 +107,19 @@ ohos_unittest("BmsBundleUninstallerTest") {
     external_deps += [ "os_account_standard:os_account_innerkits" ]
     defines += [ "ACCOUNT_ENABLE" ]
   }
+  if (bundle_framework_free_install) {
+    sources += aging
+    include_dirs +=
+        [ "${aafwk_path}/frameworks/kits/appkit/native/app/include" ]
+    deps += [ "${aafwk_path}/frameworks/kits/appkit:appkit_native" ]
+    external_deps += [
+      "battery_manager_native:batterysrv_client",
+      "device_usage_statistics:usagestatsinner",
+      "display_manager_native:displaymgr",
+      "power_manager_native:powermgr_client",
+    ]
+    defines += [ "BUNDLE_FRAMEWORK_FREE_INSTALL" ]
+  }
   if (device_manager_enable) {
     sources += [ "${services_path}/bundlemgr/src/bms_device_manager.cpp" ]
     external_deps += [ "device_manager_base:devicemanagersdk" ]
@@ -116,6 +129,7 @@ ohos_unittest("BmsBundleUninstallerTest") {
     external_deps += [ "hicollie_native:libhicollie" ]
     defines += [ "HICOLLIE_ENABLE" ]
   }
+
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
