@@ -78,7 +78,8 @@ const std::vector<std::string> EXTENSION_TYPE_SET = {
     "dataShare",
     "fileShare",
     "staticSubscriber",
-    "wallpaper"
+    "wallpaper",
+    "backup"
 };
 
 const std::set<std::string> ENTITY_TYPE_SET = {
