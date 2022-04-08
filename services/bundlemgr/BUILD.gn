@@ -166,7 +166,6 @@ ohos_shared_library("libbms") {
 
   external_deps = [
     "ability_base:want",
-    "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",
@@ -184,6 +183,11 @@ ohos_shared_library("libbms") {
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
   ]
+
+  if (ability_runtime_enable) {
+    external_deps += [ "ability_runtime:ability_manager" ]
+    defines += [ "ABILITY_RUNTIME_ENABLE" ]
+  }
 
   if (account_enable) {
     external_deps += [ "os_account_standard:os_account_innerkits" ]

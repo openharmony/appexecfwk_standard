@@ -15,50 +15,29 @@
 
 #include "base_bundle_installer.h"
 
-#include <unistd.h>
-#include <set>
-#include <vector>
+#include "nlohmann/json.hpp"
 
-#include "ability_manager_interface.h"
+#include "ability_manager_helper.h"
 #include "app_log_wrapper.h"
+#include "bundle_clone_mgr.h"
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
 #include "bundle_mgr_service.h"
 #include "bundle_parser.h"
 #include "bundle_permission_mgr.h"
 #include "bundle_util.h"
+#include "bundle_verify_mgr.h"
 #include "bytrace.h"
 #include "datetime_ex.h"
 #include "installd_client.h"
-#include "nlohmann/json.hpp"
 #include "perf_profile.h"
-#include "string_ex.h"
-#include "system_ability_definition.h"
-#include "system_ability_helper.h"
-#include "systemcapability.h"
-#include "bundle_clone_mgr.h"
 #include "scope_guard.h"
-#include "bundle_verify_mgr.h"
+#include "string_ex.h"
+#include "systemcapability.h"
+
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::Security;
-namespace {
-bool UninstallApplicationProcesses(const std::string &bundleName, const int uid)
-{
-    APP_LOGI("uninstall kill running processes, app name is %{public}s", bundleName.c_str());
-    sptr<AAFwk::IAbilityManager> abilityMgrProxy =
-        iface_cast<AAFwk::IAbilityManager>(SystemAbilityHelper::GetSystemAbility(ABILITY_MGR_SERVICE_ID));
-    if (!abilityMgrProxy) {
-        APP_LOGE("fail to find the app mgr service to kill application");
-        return false;
-    }
-    if (abilityMgrProxy->UninstallApp(bundleName, uid) != 0) {
-        APP_LOGE("kill application process failed");
-        return false;
-    }
-    return true;
-}
-}  // namespace
 
 BaseBundleInstaller::BaseBundleInstaller()
 {
@@ -603,7 +582,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     // reboot scan case will not kill the bundle
     if (installParam.noSkipsKill) {
         // kill the bundle process during uninstall.
-        if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
+        if (!AbilityManagerHelper::UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
             APP_LOGE("can not kill process");
             dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
             return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
@@ -694,7 +673,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     // reboot scan case will not kill the bundle
     if (installParam.noSkipsKill) {
         // kill the bundle process during uninstall.
-        if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
+        if (!AbilityManagerHelper::UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
             APP_LOGE("can not kill process");
             return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
         }
@@ -1052,7 +1031,8 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     // reboot scan case will not kill the bundle
     if (noSkipsKill) {
         // kill the bundle process during updating
-        if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), oldInfo.GetUid(userId_))) {
+        if (!AbilityManagerHelper::UninstallApplicationProcesses(
+            oldInfo.GetApplicationName(), oldInfo.GetUid(userId_))) {
             APP_LOGE("fail to kill running application");
             return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
         }
@@ -1602,7 +1582,7 @@ ErrCode BaseBundleInstaller::UninstallLowerVersionFeature(const std::vector<std:
     }
 
     // kill the bundle process during uninstall.
-    if (!UninstallApplicationProcesses(info.GetApplicationName(), info.GetUid(userId_))) {
+    if (!AbilityManagerHelper::UninstallApplicationProcesses(info.GetApplicationName(), info.GetUid(userId_))) {
         APP_LOGW("can not kill process");
     }
     std::vector<std::string> moduleVec = info.GetModuleNameVec();
