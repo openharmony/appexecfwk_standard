@@ -2369,6 +2369,45 @@ bool BundleMgrProxy::ImplicitQueryInfoByPriority(const Want &want, int32_t flags
     return true;
 }
 
+bool BundleMgrProxy::GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
+    std::vector<std::string> &dependentModuleNames)
+{
+    APP_LOGD("begin to GetAllDependentModuleNames");
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("bundleName or moduleName is empty");
+        return false;
+    }
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to GetAllDependentModuleNames due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("failed to GetAllDependentModuleNames due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("failed to GetAllDependentModuleNames due to write moduleName fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_ALL_DEPENDENT_MODULE_NAMES, data, reply)) {
+        APP_LOGE("fail to GetAllDependentModuleNames from server");
+        return false;
+    }
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return false;
+    }
+    if (!reply.ReadStringVector(&dependentModuleNames)) {
+        APP_LOGE("fail to GetAllDependentModuleNames from reply");
+        return false;
+    }
+    return true;
+}
+
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
