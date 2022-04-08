@@ -1406,6 +1406,18 @@ bool BundleMgrHostImpl::GetAbilityInfo(
     return QueryAbilityInfo(want, abilityInfo);
 }
 
+bool BundleMgrHostImpl::ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo)
+{
+    APP_LOGD("start ImplicitQueryInfoByPriority, flags : %{public}d, userId : %{public}d", flags, userId);
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->ImplicitQueryInfoByPriority(want, flags, userId, abilityInfo, extensionInfo);
+}
+
 int BundleMgrHostImpl::Dump(int fd, const std::vector<std::u16string> &args)
 {
     std::string result;
