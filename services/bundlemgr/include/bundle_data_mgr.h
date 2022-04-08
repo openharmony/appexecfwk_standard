@@ -687,6 +687,9 @@ public:
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) const;
 #endif
+    bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
+        std::vector<std::string> &dependentModuleNames);
+
 private:
     /**
      * @brief Init transferStates.

@@ -307,6 +307,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY):
             errCode = HandleImplicitQueryInfoByPriority(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_DEPENDENT_MODULE_NAMES):
+            errCode = HandleGetAllDependentModuleNames(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1843,6 +1846,24 @@ ErrCode BundleMgrHost::HandleImplicitQueryInfoByPriority(Parcel &data, Parcel &r
             APP_LOGE("write ExtensionAbilityInfo failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAllDependentModuleNames(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+    std::vector<std::string> dependentModuleNames;
+    bool ret = GetAllDependentModuleNames(bundleName, moduleName, dependentModuleNames);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write result failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret && !reply.WriteStringVector(dependentModuleNames)) {
+        APP_LOGE("write dependentModuleNames failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return ERR_OK;
 }

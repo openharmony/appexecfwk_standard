@@ -1439,5 +1439,18 @@ int BundleMgrHostImpl::Dump(int fd, const std::vector<std::u16string> &args)
 
     return ERR_OK;
 }
+
+bool BundleMgrHostImpl::GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
+    std::vector<std::string> &dependentModuleNames)
+{
+    APP_LOGD("GetAllDependentModuleNames: bundleName: %{public}s, moduleName: %{public}s",
+        bundleName.c_str(), moduleName.c_str());
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetAllDependentModuleNames(bundleName, moduleName, dependentModuleNames);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
