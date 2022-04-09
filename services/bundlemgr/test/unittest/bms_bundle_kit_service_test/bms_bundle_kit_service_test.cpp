@@ -3902,7 +3902,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_003, Function | Sma
  * @tc.desc: expect true
  * @tc.require: AR000HDTN
  */
-HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_003, Function | SmallTest | Level1)
+HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_004, Function | SmallTest | Level1)
 {
     InnerBundleInfo innerBundleInfo;
     std::vector<std::string> dependencies;
