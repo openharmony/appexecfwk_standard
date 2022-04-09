@@ -3866,7 +3866,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_002, Function | Sma
 
     auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
     EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_ONE);
-    if (!res.empty()){
+    if (!res.empty()) {
         EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
     }
 }
@@ -3890,7 +3890,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_003, Function | Sma
 
     auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
     EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_TWO);
-    if (res.size() == MODULE_NAMES_SIZE_TWO){
+    if (res.size() == MODULE_NAMES_SIZE_TWO) {
         EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
         EXPECT_EQ(res[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
     }
@@ -3919,7 +3919,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_004, Function | Sma
 
     auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
     EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_THREE);
-    if (res.size() == MODULE_NAMES_SIZE_THREE){
+    if (res.size() == MODULE_NAMES_SIZE_THREE) {
         EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
         EXPECT_EQ(res[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
         EXPECT_EQ(res[MODULE_NAMES_SIZE_TWO], MODULE_NAME_TEST_3);
