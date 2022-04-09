@@ -44,6 +44,9 @@ namespace OHOS {
 namespace {
 const std::string BUNDLE_NAME_TEST = "com.example.bundlekit.test";
 const std::string MODULE_NAME_TEST = "com.example.bundlekit.test.entry";
+const std::string MODULE_NAME_TEST_1 = "com.example.bundlekit.test.entry_A";
+const std::string MODULE_NAME_TEST_2 = "com.example.bundlekit.test.entry_B";
+const std::string MODULE_NAME_TEST_3 = "com.example.bundlekit.test.entry_C";
 const std::string ABILITY_NAME_TEST1 = ".Reading1";
 const std::string ABILITY_NAME_TEST = ".Reading";
 const int32_t BASE_TEST_UID = 65535;
@@ -104,6 +107,9 @@ const uint32_t PERMISSION_SIZE_TWO = 2;
 const uint32_t META_DATA_SIZE_ONE = 1;
 const uint32_t BUNDLE_NAMES_SIZE_ZERO = 0;
 const uint32_t BUNDLE_NAMES_SIZE_ONE = 1;
+const uint32_t MODULE_NAMES_SIZE_ONE = 1;
+const uint32_t MODULE_NAMES_SIZE_TWO = 2;
+const uint32_t MODULE_NAMES_SIZE_THREE = 3;
 const std::string EMPTY_STRING = "";
 const int INVALID_UID = -1;
 const std::string ABILITY_URI = "dataability:///com.example.hiworld.himusic.UserADataAbility/person/10";
@@ -190,7 +196,8 @@ public:
     std::shared_ptr<LauncherService> GetLauncherService() const;
     std::shared_ptr<BundleCloneMgr> GetBundleCloneMgr() const;
     void MockInnerBundleInfo(const std::string &bundleName, const std::string &moduleName,
-        const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
+        const std::string &abilityName, const std::vector<std::string> &dependencies,
+        InnerBundleInfo &innerBundleInfo) const;
     void MockInstallBundle(
         const std::string &bundleName, const std::string &moduleName, const std::string &abilityName,
         bool userDataClearable = true, bool isSystemApp = false) const;
@@ -532,7 +539,8 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
 }
 
 void BmsBundleKitServiceTest::MockInnerBundleInfo(const std::string &bundleName, const std::string &moduleName,
-    const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const
+    const std::string &abilityName, const std::vector<std::string> &dependencies,
+    InnerBundleInfo &innerBundleInfo) const
 {
     ApplicationInfo appInfo;
     appInfo.bundleName = bundleName;
@@ -543,6 +551,7 @@ void BmsBundleKitServiceTest::MockInnerBundleInfo(const std::string &bundleName,
     moduleInfo.modulePackage = moduleName;
     moduleInfo.moduleName = moduleName;
     moduleInfo.description = BUNDLE_DESCRIPTION;
+    moduleInfo.dependencies = dependencies;
     innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
     AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
     std::string keyName = bundleName + "." + moduleName + "." + abilityName;
@@ -3823,5 +3832,97 @@ HWTEST_F(BmsBundleKitServiceTest, SkillMatch_UriAndType_009, Function | SmallTes
     want.SetUri(URI_PATH_001);
     bool ret = skill.Match(want);
     EXPECT_EQ(true, ret);
+}
+
+/**
+ * @tc.number: GetAlldependentModuleNames
+ * @tc.name: no dependencies
+ * @tc.desc: expect true
+ * @tc.require: SR000H00TB
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_001, Function | SmallTest | Level1)
+{
+    InnerBundleInfo innerBundleInfo;
+    std::vector<std::string> dependencies;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
+    EXPECT_TRUE(res.empty());
+}
+
+/**
+ * @tc.number: GetAlldependentModuleNames
+ * @tc.name: one dependent module
+ * @tc.desc: expect true
+ * @tc.require: SR000H0DUR
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_002, Function | SmallTest | Level1)
+{
+    InnerBundleInfo innerBundleInfo;
+    std::vector<std::string> dependencies;
+    dependencies.push_back(MODULE_NAME_TEST_1);
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+    dependencies.clear();
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_1, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
+    EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_ONE);
+    if (!res.empty()) {
+        EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
+    }
+}
+
+/**
+ * @tc.number: GetAlldependentModuleNames
+ * @tc.name: more than one dependent module
+ * @tc.desc: expect true
+ * @tc.require: AR000H0362
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_003, Function | SmallTest | Level1)
+{
+    InnerBundleInfo innerBundleInfo;
+    std::vector<std::string> dependencies;
+    dependencies.push_back(MODULE_NAME_TEST_1);
+    dependencies.push_back(MODULE_NAME_TEST_2);
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+    dependencies.clear();
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_1, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_2, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
+    EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_TWO);
+    if (res.size() == MODULE_NAMES_SIZE_TWO) {
+        EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
+        EXPECT_EQ(res[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
+    }
+}
+
+/**
+ * @tc.number: GetAlldependentModuleNames
+ * @tc.name: Multiple dependent modules
+ * @tc.desc: expect true
+ * @tc.require: AR000HDTN
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_004, Function | SmallTest | Level1)
+{
+    InnerBundleInfo innerBundleInfo;
+    std::vector<std::string> dependencies;
+    dependencies.push_back(MODULE_NAME_TEST_1);
+    dependencies.push_back(MODULE_NAME_TEST_2);
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+    dependencies.clear();
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_1, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+    dependencies.clear();
+    dependencies.push_back(MODULE_NAME_TEST_3);
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_2, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+    dependencies.clear();
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_3, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
+
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
+    EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_THREE);
+    if (res.size() == MODULE_NAMES_SIZE_THREE) {
+        EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
+        EXPECT_EQ(res[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
+        EXPECT_EQ(res[MODULE_NAMES_SIZE_TWO], MODULE_NAME_TEST_3);
+    }
 }
 }
