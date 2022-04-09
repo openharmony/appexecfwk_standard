@@ -32,15 +32,16 @@ enum ExtensionAbilityInfoFlag {
 
 enum class ExtensionAbilityType {
     FORM = 0,
-    WORK_SCHEDULER,
-    INPUTMETHOD,
-    SERVICE,
-    ACCESSIBILITY,
-    DATASHARE,
-    FILESHARE,
-    STATICSUBSCRIBER,
-    WALLPAPER,
-    UNSPECIFIED
+    WORK_SCHEDULER = 1,
+    INPUTMETHOD = 2,
+    SERVICE = 3,
+    ACCESSIBILITY = 4,
+    DATASHARE = 5,
+    FILESHARE = 6,
+    STATICSUBSCRIBER = 7,
+    WALLPAPER = 8,
+    BACKUP = 9,
+    UNSPECIFIED = 20
 };
 
 struct ExtensionAbilityInfo : public Parcelable {
