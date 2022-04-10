@@ -120,6 +120,7 @@ struct ApplicationInfo : public Parcelable {
 
     bool isSystemApp = false;
     bool isLauncherApp = false;
+    bool isFreeInstallApp = false;
 
     std::string codePath;
     std::string dataDir;
