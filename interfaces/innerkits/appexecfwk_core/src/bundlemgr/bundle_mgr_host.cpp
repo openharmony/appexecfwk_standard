@@ -301,6 +301,11 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME):
             errCode = HandleGetUidByBundleName(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::IS_MODULE_REMOVABLE):
+            errCode = HandleIsModuleRemovable(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::SET_MODULE_REMOVABLE):
+            errCode = HandleSetModuleRemovable(data, reply);
         case static_cast<uint32_t>(IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID):
             errCode = HandleGetHapModuleInfoWithUserId(data, reply);
             break;
@@ -1814,6 +1819,36 @@ ErrCode BundleMgrHost::HandleGetUidByBundleName(Parcel &data, Parcel &reply)
     int32_t uid = GetUidByBundleName(bundleName, userId);
     APP_LOGD("uid is %{public}d", uid);
     if (!reply.WriteInt32(uid)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleIsModuleRemovable(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+
+    APP_LOGD("bundleName %{public}s, moduleName %{public}s", bundleName.c_str(), moduleName.c_str());
+    bool ret = IsModuleRemovable(bundleName, moduleName);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleSetModuleRemovable(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+    bool isEnable = data.ReadBool();
+    APP_LOGD("bundleName %{public}s, moduleName %{public}s", bundleName.c_str(), moduleName.c_str());
+    bool ret = SetModuleRemovable(bundleName, moduleName, isEnable);
+    if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }

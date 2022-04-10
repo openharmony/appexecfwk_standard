@@ -52,6 +52,7 @@ const std::string MODULE_DESCRIPTION_ID = "descriptionId";
 const std::string MODULE_LABEL = "label";
 const std::string MODULE_LABEL_ID = "labelId";
 const std::string MODULE_DESCRIPTION_INSTALLATION_FREE = "installationFree";
+const std::string MODULE_IS_REMOVABLE = "isRemovable";
 const std::string MODULE_IS_ENTRY = "isEntry";
 const std::string MODULE_METADATA = "metaData";
 const std::string MODULE_COLOR_MODE = "colorMode";
@@ -345,6 +346,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_LABEL, info.label},
         {MODULE_LABEL_ID, info.labelId},
         {MODULE_DESCRIPTION_INSTALLATION_FREE, info.installationFree},
+        {MODULE_IS_REMOVABLE, info.isRemovable},
         {MODULE_REQ_CAPABILITIES, info.reqCapabilities},
         {MODULE_ABILITY_KEYS, info.abilityKeys},
         {MODULE_SKILL_KEYS, info.skillKeys},
@@ -555,6 +557,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         jsonObjectEnd,
         MODULE_DESCRIPTION_INSTALLATION_FREE,
         info.installationFree,
+        JsonType::BOOLEAN,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        MODULE_IS_REMOVABLE,
+        info.isRemovable,
         JsonType::BOOLEAN,
         false,
         ProfileReader::parseResult,
@@ -1229,6 +1239,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.supportedModes = baseApplicationInfo_.supportedModes;
     hapInfo.reqCapabilities = it->second.reqCapabilities;
     hapInfo.colorMode = it->second.colorMode;
+    hapInfo.isRemovable = it->second.isRemovable;
 
     hapInfo.bundleName = baseApplicationInfo_.bundleName;
     hapInfo.mainElementName = it->second.mainAbility;
@@ -1885,6 +1896,8 @@ void InnerBundleInfo::GetCommonEvents(const std::string &eventKey, std::vector<C
 std::optional<InnerModuleInfo> InnerBundleInfo::GetInnerModuleInfoByModuleName(const std::string &moduleName) const
 {
     for (const auto &innerModuleInfo : innerModuleInfos_) {
+        APP_LOGD("info.moduleName = %{public}s, moduleName= %{public}s",
+            innerModuleInfo.second.moduleName.c_str(), moduleName.c_str());
         if (innerModuleInfo.second.moduleName == moduleName) {
             return innerModuleInfo.second;
         }
@@ -2111,6 +2124,43 @@ void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)
     }
 
     infoItem->second.bundleUserInfo.enabled = enabled;
+}
+
+bool InnerBundleInfo::IsBundleRemovable() const
+{
+    if (IsPreInstallApp()) {
+        APP_LOGE("PreInstallApp should not be cleaned");
+        return false;
+    }
+    for (const auto &innerModuleInfo : innerModuleInfos_) {
+        if (!innerModuleInfo.second.isRemovable) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool InnerBundleInfo::isModuleRemovable(const std::string &moduleName) const
+{
+    auto modInfoItem = GetInnerModuleInfoByModuleName(moduleName);
+    if (!modInfoItem) {
+        APP_LOGE("get InnerModuleInfo by moduleName(%{public}s) failed", moduleName.c_str());
+        return false;
+    }
+    APP_LOGD("isRemovable = %{public}d, moduleName= %{public}s", modInfoItem->isRemovable, moduleName.c_str());
+    return modInfoItem->isRemovable;
+}
+
+bool InnerBundleInfo::SetModuleRemovable(const std::string &moduleName, bool isEnable)
+{
+    for (auto &innerModuleInfo : innerModuleInfos_) {
+        if (innerModuleInfo.second.moduleName == moduleName) {
+            innerModuleInfo.second.isRemovable = isEnable;
+            APP_LOGD("moduleName = %{public}s, isEnable = %{public}d", moduleName.c_str(), isEnable);
+            return true;
+        }
+    }
+    return false;
 }
 
 int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const

@@ -51,6 +51,7 @@ const std::string APPLICATION_SINGLETON = "singleton";
 const std::string APPLICATION_USER_DATA_CLEARABLE = "userDataClearable";
 const std::string APPLICATION_IS_SYSTEM_APP = "isSystemApp";
 const std::string APPLICATION_IS_LAUNCHER_APP = "isLauncherApp";
+const std::string APPLICATION_IS_FREEINSTALL_APP = "isFreeInstallApp";
 const std::string APPLICATION_CODE_PATH = "codePath";
 const std::string APPLICATION_DATA_DIR = "dataDir";
 const std::string APPLICATION_DATA_BASE_DIR = "dataBaseDir";
@@ -276,6 +277,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_ACCESSIBLE, applicationInfo.accessible},
         {APPLICATION_IS_SYSTEM_APP, applicationInfo.isSystemApp},
         {APPLICATION_IS_LAUNCHER_APP, applicationInfo.isLauncherApp},
+        {APPLICATION_IS_FREEINSTALL_APP, applicationInfo.isFreeInstallApp},
         {APPLICATION_CODE_PATH, applicationInfo.codePath},
         {APPLICATION_DATA_DIR, applicationInfo.dataDir},
         {APPLICATION_DATA_BASE_DIR, applicationInfo.dataBaseDir},
@@ -470,6 +472,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_IS_LAUNCHER_APP,
         applicationInfo.isLauncherApp,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_IS_FREEINSTALL_APP,
+        applicationInfo.isFreeInstallApp,
         JsonType::BOOLEAN,
         false,
         parseResult,

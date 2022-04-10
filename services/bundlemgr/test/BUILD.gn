@@ -31,6 +31,10 @@ config("bundlemgr_test_config") {
     "//base/security/appverify/interfaces/innerkits/appverify/include",
   ]
 
+  if (bundle_framework_free_install) {
+    include_dirs += [ "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/aging" ]
+  }
+
   configs = [
     "${services_path}/bundlemgr:bundlemgr_common_config",
     "${common_path}:appexecfwk_common_config",
