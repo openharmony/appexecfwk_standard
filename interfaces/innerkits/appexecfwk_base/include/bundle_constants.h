@@ -118,7 +118,6 @@ const std::map<std::string, std::string> ABI_MAP = {
     {X86_64, "x86_64"},
 };
 const std::string SO_SUFFIX = ".so";
-constexpr unsigned int SO_SUFFIX_LEN = 3;
 
 // uid and gid
 constexpr int32_t INVALID_UID = -1;
