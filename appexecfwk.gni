@@ -60,8 +60,7 @@ declare_args() {
   if (defined(global_parts_info) &&
       (!defined(global_parts_info.powermgr_power_manager_native) ||
        !defined(global_parts_info.powermgr_battery_manager_native) ||
-       !defined(global_parts_info.powermgr_display_manager_native) ||
-       !defined(global_parts_info.aafwk_ability_runtime))) {
+       !defined(global_parts_info.powermgr_display_manager_native)) {
     bundle_framework_free_install = false
   }
 
