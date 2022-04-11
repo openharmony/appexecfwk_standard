@@ -53,6 +53,7 @@ ohos_unittest("BmsBundleCloneTest") {
   ]
 
   sources += bundle_install_sources
+  sources += free_install
 
   sources += [ "bms_bundle_clone_test.cpp" ]
 
@@ -84,6 +85,8 @@ ohos_unittest("BmsBundleCloneTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ability_base:task_dispatcher",
+    "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",

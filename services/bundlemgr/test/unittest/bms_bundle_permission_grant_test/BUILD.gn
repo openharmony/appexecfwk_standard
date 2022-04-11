@@ -57,6 +57,7 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
   ]
 
   sources += bundle_install_sources
+  sources += free_install
 
   sources += [ "bms_bundle_permission_grant_test.cpp" ]
 
@@ -81,7 +82,9 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ability_base:task_dispatcher",
     "ability_base:want",
+    "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "appverify:libhapverify",

@@ -30,11 +30,12 @@
 #include "bundle_status_callback_death_recipient.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
-#include "ipc_skeleton.h"
 #include "image_source.h"
+#include "ipc_skeleton.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
 #include "permission_changed_death_recipient.h"
+#include "service_center_code.h"
 #include "singleton.h"
 
 namespace OHOS {
@@ -1737,6 +1738,42 @@ bool BundleDataMgr::GenerateBundleId(const std::string &bundleName, int32_t &bun
     bundleIdMap_.emplace(bundleId, bundleName);
     BundleUtil::MakeHmdfsConfig(bundleName, bundleId);
     return true;
+}
+
+bool BundleDataMgr::SetModuleNeedUpdate(const std::string &bundleName,
+    const std::string &moduleName, const bool isNeedUpdate)
+{
+    APP_LOGD("SetModuleNeedUpdate %{public}d", isNeedUpdate);
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        return false;
+    }
+    InnerBundleInfo newInfo = infoItem->second;
+    newInfo.SetModuleNeedUpdate(moduleName, isNeedUpdate);
+    if (dataStorage_->SaveStorageBundleInfo(newInfo)) {
+        return infoItem->second.SetModuleNeedUpdate(moduleName, isNeedUpdate);
+    }
+    APP_LOGD("dataStorage SetModuleNeedUpdate %{public}s failed", bundleName.c_str());
+    return false;
+}
+
+bool BundleDataMgr::IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName) const
+{
+    APP_LOGD("bundleName is bundleName:%{public}s, moduleName:%{public}s", bundleName.c_str(), moduleName.c_str());
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("bundleName or moduleName is empty");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        APP_LOGE("can not find bundle %{public}s", bundleName.c_str());
+        return false;
+    }
+    InnerBundleInfo newInfo = infoItem->second;
+
+    return newInfo.IsModuleNeedUpdate(moduleName);
 }
 
 void BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
