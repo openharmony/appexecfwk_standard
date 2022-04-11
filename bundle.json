@@ -14,7 +14,8 @@
             "SystemCapability.BundleManager.Zlib"
         ],
         "features": [
-            "bundle_framework_graphics"
+            "bundle_framework_graphics",
+            "bundle_framework_free_install"
         ],
         "adapted_system_type": [
             "standard"
