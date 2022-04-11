@@ -24,6 +24,7 @@ namespace OHOS {
 namespace AppExecFwk {
 const std::u16string ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN = u"ohos.aafwk.IAtomicServiceStatusCallback";
 constexpr uint32_t IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE = 0;
+
 void ServiceCenterDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &wptrDeath)
 {
     APP_LOGI("service center died");
@@ -55,7 +56,7 @@ void ServiceCenterDeathRecipient::SendCallBack(FreeInstallParams &freeInstallPar
         APP_LOGE("Write interface token failed");
         return;
     }
-    int32_t resultCode = FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR;
+    int32_t resultCode = FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR;
     if (!data.WriteInt32(resultCode)) {
         APP_LOGE("Write result code error");
         return;

@@ -47,7 +47,6 @@ void ServiceCenterStatusCallbackProxy::OnRemoteInstallFinished(std::string insta
     int32_t error = Remote()->SendRequest(0, data, reply, option);
     if (error != NO_ERROR) {
         HILOG_ERROR("OnFinished fail, error: %{public}d", error);
-        return;
     }
 }
 }  // namespace AppExecFwk

@@ -58,6 +58,7 @@ void ServiceCenterConnection::OnAbilityConnectDone(
 
 void ServiceCenterConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode)
 {
+    APP_LOGI("OnAbilityDisconnectDone start");
     if (serviceCenterRemoteObject_ != nullptr && deathRecipient_ != nullptr) {
         serviceCenterRemoteObject_->RemoveDeathRecipient(deathRecipient_);
     }
@@ -69,7 +70,7 @@ void ServiceCenterConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementN
     APP_LOGI("OnAbilityDisconnectDone end");
 }
 
-sptr<IRemoteObject> ServiceCenterConnection::GetIRemoteObject()
+sptr<IRemoteObject> ServiceCenterConnection::GetRemoteObject()
 {
     return serviceCenterRemoteObject_;
 }

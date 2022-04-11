@@ -52,7 +52,7 @@ public:
      */
     void OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode) override;
 
-    sptr<IRemoteObject> GetIRemoteObject();
+    sptr<IRemoteObject> GetRemoteObject();
 
 private:
     TargetAbilityInfo targetAbilityInfo_;

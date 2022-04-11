@@ -223,8 +223,6 @@ bool BundleMgrService::Init()
         }
     }
 #endif
-
-    APP_LOGI("create BmsDeviceManager success");
     if (!connectAbilityMgr_) {
         APP_LOGI("Create BundleConnectAbility");
         connectAbilityMgr_ = std::make_shared<BundleConnectAbilityMgr>();

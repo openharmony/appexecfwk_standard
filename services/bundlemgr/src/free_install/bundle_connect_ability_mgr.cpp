@@ -32,8 +32,8 @@
 namespace OHOS {
 namespace AppExecFwk {
 const std::u16string ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN = u"ohos.aafwk.IAtomicServiceStatusCallback";
-const std::string serviceCenterBundleName = "com.huawei.ohos.famanager";
-const std::string serviceCenterAbilityName = "com.huawei.ohos.famanager.HapInstallServiceAbility";
+const std::string serviceCenterBundleName = "com.ohos.hag.famanager";
+const std::string serviceCenterAbilityName = "com.ohos.hag.famanager.HapInstallServiceAbility";
 constexpr uint32_t IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE = 0;
 constexpr uint32_t CALLING_TYPE_HARMONY = 2;
 constexpr uint32_t BIT_ONE_COMPATIBLE = 0;
@@ -58,16 +58,10 @@ BundleConnectAbilityMgr::~BundleConnectAbilityMgr()
 {
 }
 
-bool BundleConnectAbilityMgr::GetDispatcherVersion(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
-    const sptr<IRemoteObject> &callerToken, int32_t userId)
-{
-    return true;
-}
-
 bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("start to create SilentInstallSafely");
+    APP_LOGI("start to SilentInstallSafely");
     std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
     TaskPriority defaultPriority = TaskPriority::DEFAULT;
     std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
@@ -75,7 +69,7 @@ bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targe
     if (!ptrGlobalTaskDispatcher) {
         APP_LOGE("BundleConnectAbilityMgr::SilentInstallSafely ptrGlobalTaskDispatcher is nullptr");
         SendCallBack(
-            FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
     std::shared_ptr<Runnable> func = std::make_shared<Runnable>([&]() {
@@ -86,7 +80,7 @@ bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targe
     if (!task) {
         APP_LOGE("BundleConnectAbilityMgr::SilentInstallSafely Asunc task is nullptr");
         SendCallBack(
-            FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
     return true;
@@ -95,27 +89,26 @@ bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targe
 bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("start to create UpgradeCheckSafely");
+    APP_LOGI("start to UpgradeCheckSafely");
     std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
     TaskPriority defaultPriority = TaskPriority::DEFAULT;
     std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
     if (!ptrGlobalTaskDispatcher) {
         APP_LOGE("BundleConnectAbilityMgr::UpgradeCheckSafely ptrGlobalTaskDispatcher is nullptr");
         SendCallBack(
-            FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
     std::shared_ptr<Runnable> func = std::make_shared<Runnable>([&]() {
         int32_t flag = ServiceCenterFunction::SERVICE_CENTER_CONNECT_UPGRADE_CHECK;
-        bool result = RunnableFun(flag, targetAbilityInfo, want, userId, callerToken);
-        return result;
+        return RunnableFun(flag, targetAbilityInfo, want, userId, callerToken);
     });
 
     auto task = ptrGlobalTaskDispatcher->AsyncDispatch(func);
     if (!task) {
         APP_LOGE("BundleConnectAbilityMgr::UpgradeCheckSafely Async task is nullptr");
         SendCallBack(
-            FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
     return true;
@@ -124,7 +117,7 @@ bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &target
 bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("start to create UpgradeInstallSafely");
+    APP_LOGI("start to UpgradeInstallSafely");
     std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
     TaskPriority defaultPriority = TaskPriority::DEFAULT;
     std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
@@ -132,20 +125,19 @@ bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targ
     if (!ptrGlobalTaskDispatcher) {
         APP_LOGE("BundleConnectAbilityMgr::UpgradeInstallSafely ptrGlobalTaskDispatcher is nullptr");
         SendCallBack(
-            FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
 
     std::shared_ptr<Runnable> func = std::make_shared<Runnable>([&]() {
         int32_t flag = ServiceCenterFunction::SERVICE_CENTER_CONNECT_UPGRADE_INSTALL;
-        bool result = RunnableFun(flag, targetAbilityInfo, want, userId, callerToken);
-        return result;
+        return RunnableFun(flag, targetAbilityInfo, want, userId, callerToken);
     });
     auto task = ptrGlobalTaskDispatcher->AsyncDispatch(func);
     if (!task) {
-        APP_LOGE("BundleConnectAbilityMgr::UpgradeInstallSafely Asunc task is nullptr");
+        APP_LOGE("BundleConnectAbilityMgr::UpgradeInstallSafely Async task is nullptr");
         SendCallBack(
-            FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
     APP_LOGI("end to create UpgradeInstallSafely");
@@ -162,7 +154,7 @@ bool BundleConnectAbilityMgr::RunnableFun(int32_t flag, const TargetAbilityInfo 
     bool isConnectSuccess = ConnectAbility(serviceCenterWant, callerToken);
     if (!isConnectSuccess) {
         APP_LOGE("fail to connect ServiceCenter");
-        SendCallBack(FreeInstallCode::FREE_INSTALL_CONNECT_ERROR, want,
+        SendCallBack(FreeInstallErrorCode::FREE_INSTALL_CONNECT_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     } else {
@@ -206,7 +198,7 @@ bool BundleConnectAbilityMgr::ConnectAbility(const Want &want, const sptr<IRemot
             if (connectState_ != ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
                 APP_LOGI("ConnectAbility await start ServiceCenterConnectState::SERVICE_CENTER_CONNECTED");
                 cv_.wait(lock);
-                serviceCenterRemoteObject_ = mServiceCenterConnection_->GetIRemoteObject();
+                serviceCenterRemoteObject_ = mServiceCenterConnection_->GetRemoteObject();
                 APP_LOGI("ConnectAbility await end ServiceCenterConnectState::SERVICE_CENTER_CONNECTED");
             }
         } else {
@@ -240,6 +232,7 @@ void BundleConnectAbilityMgr::SendCallBack(
 {
     sptr<IRemoteObject> amsCallBack = GetAbilityManagerServiceCallBack(transactId);
     if (amsCallBack == nullptr) {
+        APP_LOGE("amsCallBack is nullptr");
         DisconnectAbility();
         return;
     }
@@ -265,7 +258,7 @@ void BundleConnectAbilityMgr::SendCallBack(
     MessageOption option;
     amsCallBack->SendRequest(IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE, data, reply, option);
 
-    if (freeInstallParamsMap_.erase(transactId) || freeInstallParamsMap_.size() == 0) {
+    if (freeInstallParamsMap_.erase(transactId) && freeInstallParamsMap_.size() == 0) {
         if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
             APP_LOGD("Disconnect Ability.");
             DisconnectAbility();
@@ -285,6 +278,7 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
     FreeInstallParams freeInstallParams;
     auto node = freeInstallParamsMap_.find(installResult.result.transactId);
     if (node == freeInstallParamsMap_.end()) {
+        APP_LOGI("can not find node");
         return;
     }
     freeInstallParams = node->second;
@@ -311,6 +305,7 @@ void BundleConnectAbilityMgr::OutTimeMonitor(std::string transactId)
     FreeInstallParams freeInstallParams;
     auto node = freeInstallParamsMap_.find(transactId);
     if (node == freeInstallParamsMap_.end()) {
+        APP_LOGI("can not find node");
         return;
     }
     freeInstallParams = node->second;
@@ -320,7 +315,7 @@ void BundleConnectAbilityMgr::OutTimeMonitor(std::string transactId)
         return;
     }
     auto RegisterEventListenerFunc = [this, freeInstallParams, transactId]() {
-        this->SendCallBack(FreeInstallCode::FREE_INSTALL_SERVICE_CENTER_TIMEOUT,
+        this->SendCallBack(FreeInstallErrorCode::FREE_INSTALL_SERVICE_CENTER_TIMEOUT,
             freeInstallParams.want, freeInstallParams.userId, transactId);
         APP_LOGD("RegisterEventListenerFunc end");
     };
@@ -339,41 +334,30 @@ void BundleConnectAbilityMgr::SendRequest(
 
     if (!data.WriteString16(Str8ToStr16(dataString))) {
         APP_LOGE("%{public}s failed to WriteParcelable targetAbilityInfo", __func__);
-        SendCallBack(FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId,
+        SendCallBack(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId,
             targetAbilityInfo.targetInfo.transactId);
         return;
     }
-
     if (serviceCenterCallback == nullptr) {
         serviceCenterCallback = new ServiceCenterStatusCallback(weak_from_this());
     }
-    if (flag != ServiceCenterFunction::SERVICE_CENTER_CONNECT_DISPATCHER_INFO) {
-        if (!data.WriteRemoteObject(serviceCenterCallback)) {
-            APP_LOGE("%{public}s failed to WriteRemoteObject callbcak", __func__);
-            SendCallBack(FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId,
-                targetAbilityInfo.targetInfo.transactId);
-            return;
-        }
+    if (!data.WriteRemoteObject(serviceCenterCallback)) {
+        APP_LOGE("%{public}s failed to WriteRemoteObject callbcak", __func__);
+        SendCallBack(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId,
+            targetAbilityInfo.targetInfo.transactId);
+        return;
     }
     APP_LOGI("serviceCenterRemoteObject->SendRequest");
-    serviceCenterRemoteObject_ = mServiceCenterConnection_->GetIRemoteObject();
+    serviceCenterRemoteObject_ = mServiceCenterConnection_->GetRemoteObject();
     int32_t result = serviceCenterRemoteObject_->SendRequest(flag, data, reply, option);
     APP_LOGI("SendRequest result = %{public}d", result);
     if (result != ERR_OK) {
         APP_LOGE("failed to sendRequest, result = %{public}d", result);
         SendCallBack(
-            FreeInstallCode::FREE_INSTALL_CONNECT_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+            FreeInstallErrorCode::FREE_INSTALL_CONNECT_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return;
     }
     OutTimeMonitor(targetAbilityInfo.targetInfo.transactId);
-    if (flag == ServiceCenterFunction::SERVICE_CENTER_CONNECT_DISPATCHER_INFO) {
-        std::string resultObj = reply.ReadString();
-        DispatcherInfo dispatcherInfo;
-        if (!ParseInfoFromJsonStr(resultObj.c_str(), dispatcherInfo)) {
-            APP_LOGE("Parse info from json fail");
-            return;
-        }
-    }
 }
 
 sptr<IRemoteObject> BundleConnectAbilityMgr::GetAbilityManagerServiceCallBack(std::string transactId)
@@ -382,6 +366,7 @@ sptr<IRemoteObject> BundleConnectAbilityMgr::GetAbilityManagerServiceCallBack(st
     FreeInstallParams freeInstallParams;
     auto node = freeInstallParamsMap_.find(transactId);
     if (node == freeInstallParamsMap_.end()) {
+        APP_LOGI("can not find node");
         return nullptr;
     }
     freeInstallParams = node->second;
@@ -444,10 +429,22 @@ void BundleConnectAbilityMgr::CallAbilityManager(
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    data.WriteInterfaceToken(ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN);
-    data.WriteInt32(resultCode);
-    data.WriteParcelable(&want);
-    data.WriteInt32(userId);
+    if (!data.WriteInterfaceToken(ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN)) {
+    APP_LOGE("Write interface token failed");
+    return;
+    }
+    if (!data.WriteInt32(resultCode)) {
+    APP_LOGE("Write result code error");
+    return;
+    }
+    if (!data.WriteParcelable(&want)) {
+    APP_LOGE("Write want failed");
+    return;
+    }
+    if (!data.WriteInt32(userId)) {
+    APP_LOGE("Write userId error");
+    return;
+    }
     callBack->SendRequest(IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE, data, reply, option);
 }
 
@@ -459,7 +456,7 @@ bool BundleConnectAbilityMgr::CheckIsModuleNeedUpdate(
         sptr<TargetInfo> targetInfo = new TargetInfo();
         bool targetAbilityInfoResult = GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
         if (!targetAbilityInfoResult) {
-            CallAbilityManager(FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, callBack);
+            CallAbilityManager(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, callBack);
         } else {
             sptr<FreeInstallParams> freeInstallParams = new FreeInstallParams();
             freeInstallParams->callback = callBack;
@@ -486,7 +483,7 @@ bool BundleConnectAbilityMgr::QueryAbilityInfo(const Want &want, int32_t flags,
     std::string abilityName = element.GetAbilityName();
     int32_t resultCode = ServiceCenterResultCode::FREE_INSTALL_OK;
     if (bundleName == "" || abilityName == "") {
-        resultCode = FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR;
+        resultCode = FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR;
         CallAbilityManager(resultCode, want, userId, callBack);
         return false;
     }
@@ -512,7 +509,7 @@ bool BundleConnectAbilityMgr::QueryAbilityInfo(const Want &want, int32_t flags,
     sptr<TargetInfo> targetInfo = new TargetInfo();
     bool targetAbilityInfoResult = GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
     if (!targetAbilityInfoResult) {
-        CallAbilityManager(FreeInstallCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, callBack);
+        CallAbilityManager(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, callBack);
         return true;
     }
     auto runner = EventRunner::Create(true);

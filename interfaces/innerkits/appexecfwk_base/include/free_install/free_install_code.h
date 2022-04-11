@@ -18,7 +18,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-enum FreeInstallCode {
+enum FreeInstallErrorCode {
     FREE_INSTALL_CONNECT_ERROR = 0x600001,
     FREE_INSTALL_SERVICE_CENTER_CRASH = 0x600002,
     FREE_INSTALL_SERVICE_CENTER_TIMEOUT = 0x600003,

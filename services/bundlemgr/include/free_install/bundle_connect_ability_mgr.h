@@ -42,17 +42,6 @@ public:
     ~BundleConnectAbilityMgr();
 
     /**
-     * @brief Compatibility interfaces.
-     * @param targetAbilityInfo Indicates the information which will be send to service center.
-     * @param want Indicates the information of the need start ability.
-     * @param callerToken Caller form extension token.
-     * @param userId Designation User ID.
-     * @return Returns true if create async task successfully called; returns false otherwise.
-     */
-    bool GetDispatcherVersion(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
-        const sptr<IRemoteObject> &callerToken, int32_t userId);
-
-    /**
      * @brief Notify the service center center to start the installation free process.
      * @param targetAbilityInfo Indicates the information which will be send to service center.
      * @param want Indicates the information of the need start ability.
