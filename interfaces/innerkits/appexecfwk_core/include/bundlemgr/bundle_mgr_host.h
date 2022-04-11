@@ -140,6 +140,23 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleQueryAbilityInfo(Parcel &data, Parcel &reply);
+
+     /**
+     * @brief Handles the QueryAbilityInfo function called from a IBundleMgr proxy object with callback.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAbilityInfoWithCallback(Parcel &data, Parcel &reply);
+
+    /**
+     * @brief Handles the UpgradeAtomicService function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleUpgradeAtomicService(Parcel &data, Parcel &reply);
+
     /**
      * @brief Handles the QueryAbilityInfo function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -544,6 +561,35 @@ private:
     ErrCode HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply);
 #endif
     ErrCode HandleGetAbilityInfo(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleIsModuleNeedUpdate function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleIsModuleNeedUpdate(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleSetModuleNeedUpdate function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleSetModuleNeedUpdate(Parcel &data, Parcel &reply);
+
+    /**
+     * @brief Handles the HandleIsModuleRemovable function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleIsModuleRemovable(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleSetModuleRemovable function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleSetModuleRemovable(Parcel &data, Parcel &reply);
 
     ErrCode HandleImplicitQueryInfoByPriority(Parcel &data, Parcel &reply);
 

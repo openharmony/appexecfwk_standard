@@ -54,6 +54,9 @@ BundleMgrService::~BundleMgrService()
     if (cloneMgr_) {
         cloneMgr_.reset();
     }
+    if (connectAbilityMgr_ != nullptr) {
+        connectAbilityMgr_.reset();
+    }
     if (perChangeSub_) {
         perChangeSub_.reset();
     }
@@ -206,6 +209,27 @@ bool BundleMgrService::Init()
         hidumpHelper_ = std::make_shared<HidumpHelper>(dataMgr_);
     }
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+    if (!agingMgr_) {
+        APP_LOGI("Create aging manager");
+        agingMgr_ = DelayedSingleton<BundleAgingMgr>::GetInstance();
+        if (!agingMgr_) {
+            APP_LOGE("Create aging manager faild.");
+        }
+        if (agingMgr_) {
+            APP_LOGI("Create aging manager success.");
+            agingMgr_->InitAgingRunner();
+            agingMgr_->InitAgingtTimer();
+        }
+    }
+#endif
+
+    APP_LOGI("create BmsDeviceManager success");
+    if (!connectAbilityMgr_) {
+        APP_LOGI("Create BundleConnectAbility");
+        connectAbilityMgr_ = std::make_shared<BundleConnectAbilityMgr>();
+    }
+    APP_LOGI("create BundleConnectAbility success");
     CheckAllUser();
     ready_ = true;
     APP_LOGI("init end success");
@@ -222,9 +246,21 @@ const std::shared_ptr<BundleDataMgr> BundleMgrService::GetDataMgr() const
     return dataMgr_;
 }
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+const std::shared_ptr<BundleAgingMgr> BundleMgrService::GetAgingMgr() const
+{
+    return agingMgr_;
+}
+#endif
+
 const std::shared_ptr<BundleCloneMgr> BundleMgrService::GetCloneMgr() const
 {
     return cloneMgr_;
+}
+
+const std::shared_ptr<BundleConnectAbilityMgr> BundleMgrService::GetConnectAbility() const
+{
+    return connectAbilityMgr_;
 }
 
 void BundleMgrService::SelfClean()

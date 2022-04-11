@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_DATA_MGR_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_DATA_MGR_H
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -41,6 +42,7 @@
 #endif
 #include "preinstall_data_storage.h"
 #include "resource_manager.h"
+#include "target_ability_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -605,6 +607,13 @@ public:
      * @return Returns all userId.
      */
     std::set<int32_t> GetAllUser() const;
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+    /**
+     * @brief Get active user.
+     * @return Returns active userId.
+     */
+    int32_t GetActiveUserId() const;
+#endif
     /**
      * @brief Obtains the DistributedBundleInfo based on a given bundle name and networkId.
      * @param networkId Indicates the networkId of remote device.
@@ -681,14 +690,65 @@ public:
 
     bool RemoveInnerBundleUserInfo(const std::string &bundleName, int32_t userId);
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+    bool GetRemovableBundleNameVec(std::map<std::string, int>& bundlenameAndUids);
+#endif
     bool ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
         AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo);
 #ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) const;
 #endif
+
+    /**
+     * @brief Set Module isRemovable by bundleName and moduleName.
+     * @param bundleName Indicates the bundleName.
+     * @param moduleName Indicates the moduleName.
+     * @param isEnable Set module isRemovable is enable.
+     * @return Returns true if the module isRemovable is set success; returns false otherwise.
+     */
+    bool SetModuleRemovable(const std::string &bundleName, const std::string &moduleName, bool isEnable);
+    /**
+     * @brief Get Module isRemovable by bundleName and moduleName.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param moduleName Indicates the moduleName.
+     * @return Returns true if the module isRemovable is successfully obtained; returns false otherwise.
+     */
+    bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName) const;
+
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
+    /**
+     * @brief Get bundle space size (Bytes) by bundleName.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @return Returns the space size of a bundle by bundleName.
+     */
+    int64_t GetBundleSpaceSize(const std::string &bundleName) const;
+    /**
+     * @brief Get all free install bundle space size (Bytes).
+     * @return Returns the space size of all free install bundles.
+     */
+    int64_t GetAllFreeInstallBundleSpaceSize() const;
+#endif
     bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
         std::vector<std::string> &dependentModuleNames);
+    bool SetModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName, bool isEnable);
+    /**
+     * @brief Get Module isNeedUpdate by bundleName and moduleName.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param moduleName Indicates the moduleName.
+     * @return Returns true if the module isNeedUpdate is successfully obtained; returns false otherwise.
+     */
+    bool IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName) const;
+    /**
+     * @brief Get the Inner Bundle Info With Flags object
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param info Indicates the innerBundleInfo of the bundle.
+     * @param userId Indicates the user ID.
+     * @return Returns true if get inner bundle info is successfully obtained; returns false otherwise.
+     */
+    bool GetInnerBundleInfoWithFlags(const std::string &bundleName, const int32_t flags,
+        InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
 
 private:
     /**
@@ -746,8 +806,7 @@ private:
         const InnerBundleInfo &info, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
     bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
         int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
-    bool GetInnerBundleInfoWithFlags(const std::string &bundleName, const int32_t flags,
-        InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+
     int32_t GetUserId(int32_t userId = Constants::UNSPECIFIED_USERID) const;
     bool GenerateBundleId(const std::string &bundleName, int32_t &bundleId);
     int32_t GetUserIdByUid(int32_t uid) const;

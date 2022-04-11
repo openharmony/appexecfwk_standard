@@ -43,6 +43,26 @@ bundle_install_sources = [
   "${services_path}/bundlemgr/src/xcollie_helper.cpp",
 ]
 
+aging = [
+  "${services_path}/bundlemgr/src/aging/aging_handler_chain.cpp",
+  "${services_path}/bundlemgr/src/aging/aging_request.cpp",
+  "${services_path}/bundlemgr/src/aging/aging_util.cpp",
+  "${services_path}/bundlemgr/src/aging/bundle_aging_mgr.cpp",
+  "${services_path}/bundlemgr/src/aging/bundle_data_size_aging_handler.cpp",
+  "${services_path}/bundlemgr/src/aging/over_10days_unused_bundle_aging_handler.cpp",
+  "${services_path}/bundlemgr/src/aging/over_20days_unused_bundle_aging_handler.cpp",
+  "${services_path}/bundlemgr/src/aging/over_30days_unused_bundle_aging_handler.cpp",
+  "${services_path}/bundlemgr/src/aging/recently_unused_bundle_aging_handler.cpp",
+]
+
+free_install = [
+  "${services_path}/bundlemgr/src/free_install/bundle_connect_ability_mgr.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_connection.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_death_recipient.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_status_callback.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_status_callback_stub.cpp",
+]
+
 bundle_install_deps = [
   "${services_path}/bundlemgr:bundle_parser",
   "${services_path}/bundlemgr:parser_common",

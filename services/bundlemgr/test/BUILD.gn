@@ -29,7 +29,12 @@ config("bundlemgr_test_config") {
     "//base/notification/ces_standard/interfaces/innerkits/native/include",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
     "//base/security/appverify/interfaces/innerkits/appverify/include",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/free_install",
   ]
+
+  if (bundle_framework_free_install) {
+    include_dirs += [ "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/aging" ]
+  }
 
   configs = [
     "${services_path}/bundlemgr:bundlemgr_common_config",
