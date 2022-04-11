@@ -90,6 +90,7 @@ struct InnerModuleInfo {
     std::vector<std::string> extensionKeys;
     std::vector<std::string> extensionSkillKeys;
     std::vector<Metadata> metadata;
+    bool isNeedUpdate = false;
     std::vector<std::string> dependencies;
 };
 
@@ -1118,6 +1119,21 @@ public:
     bool SetAbilityEnabled(
         const std::string &bundleName, const std::string &abilityName, bool isEnabled, int32_t userId);
     /**
+     * @brief Set the Application Need Recover object
+     * @param moduleName Indicates the module name of the application.
+     * @param isNeedUpdate Indicates the module is need update or not.
+     * @return Return true if set data successfully.
+     */
+    bool SetModuleNeedUpdate(std::string moduleName, bool isNeedUpdate);
+
+    /**
+     * @brief Get the Application Need Recover object
+     * @param moduleName Indicates the module name of the application.
+     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     */
+    bool IsModuleNeedUpdate(std::string moduleName) const;
+
+    /**
      * @brief Obtains configuration information about an application.
      * @param flags Indicates the flag used to specify information contained
      *             in the ApplicationInfo object that will be returned.
@@ -1418,6 +1434,7 @@ private:
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
     // new version fields
     bool isNewVersion_ = false;
+    bool isNeedUpdate_ = false;
     std::map<std::string, ExtensionAbilityInfo> baseExtensionInfos_;
     std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
 };
