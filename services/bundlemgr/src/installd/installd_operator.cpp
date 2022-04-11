@@ -143,14 +143,8 @@ bool InstalldOperator::isNativeSo(const std::string &entryName,
         APP_LOGD("entryName not start with %{public}s", prefix.c_str());
         return false;
     }
-    size_t len = entryName.length();
-    if (len <= Constants::SO_SUFFIX_LEN) {
-        APP_LOGD("entryName length invalid");
-        return false;
-    }
-    std::string suffix = entryName.substr(len - Constants::SO_SUFFIX_LEN, len);
-    if (suffix != Constants::SO_SUFFIX) {
-        APP_LOGD("entryName suffix not .so");
+    if (entryName.find(Constants::SO_SUFFIX) == std::string::npos) {
+        APP_LOGD("file name not so format.");
         return false;
     }
     APP_LOGD("find native so, entryName : %{public}s", entryName.c_str());

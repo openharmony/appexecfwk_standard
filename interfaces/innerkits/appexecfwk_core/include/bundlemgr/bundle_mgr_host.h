@@ -575,7 +575,6 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleSetModuleNeedUpdate(Parcel &data, Parcel &reply);
-
     /**
      * @brief Handles the HandleIsModuleRemovable function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.

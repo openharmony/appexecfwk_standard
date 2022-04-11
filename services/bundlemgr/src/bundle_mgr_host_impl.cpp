@@ -232,7 +232,7 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_
 {
     auto connectAbilityMgr = GetConnectAbilityMgrFromService();
     if (connectAbilityMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
+        APP_LOGE("connectAbilityMgr is nullptr");
         return false;
     }
     return connectAbilityMgr->QueryAbilityInfo(want, flags, userId, abilityInfo, callBack);
@@ -242,7 +242,7 @@ void BundleMgrHostImpl::UpgradeAtomicService(const Want &want, int32_t userId)
 {
     auto connectAbilityMgr = GetConnectAbilityMgrFromService();
     if (connectAbilityMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
+        APP_LOGE("connectAbilityMgr is nullptr");
     }
     connectAbilityMgr->UpgradeAtomicService(want, userId);
 }
