@@ -130,6 +130,31 @@ struct AsyncAbilityLabelCallbackInfo : public AsyncWorkData {
     std::string message;
 };
 
+struct AsyncModuleRemovableCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    std::string bundleName;
+    std::string moduleName;
+    bool result = false;
+    int32_t err = 0;
+    std::string errMssage;
+};
+
+struct AsyncModuleNeedUpdateCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    std::string bundleName;
+    std::string moduleName;
+    bool needUpdate = false;
+    bool result = false;
+    int32_t err = 0;
+    std::string errMssage;
+};
+
 struct InstallResult {
     std::string resultMsg;
     int32_t resultCode = 0;
@@ -298,6 +323,8 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info);
 napi_value GetBundleGids(napi_env env, napi_callback_info info);
 napi_value IsAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value IsApplicationEnabled(napi_env env, napi_callback_info info);
+napi_value IsModuleRemovable(napi_env env, napi_callback_info info);
+napi_value UpdateModuleUpgradeFlag(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);

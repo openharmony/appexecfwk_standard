@@ -68,6 +68,7 @@ struct InnerModuleInfo {
     std::string srcPath;
     bool isEntry = false;
     bool installationFree = false;
+    bool isRemovable = false;
     MetaData metaData;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     Distro distro;
@@ -89,6 +90,7 @@ struct InnerModuleInfo {
     std::vector<std::string> extensionKeys;
     std::vector<std::string> extensionSkillKeys;
     std::vector<Metadata> metadata;
+    bool isNeedUpdate = false;
     std::vector<std::string> dependencies;
 };
 
@@ -948,6 +950,16 @@ public:
         return baseApplicationInfo_.isLauncherApp;
     }
 
+    void SetIsFreeInstallApp(bool isFreeInstall)
+    {
+        baseApplicationInfo_.isFreeInstallApp = isFreeInstall;
+    }
+
+    bool GetIsFreeInstallApp() const
+    {
+        return baseApplicationInfo_.isFreeInstallApp;
+    }
+
     void SetMainAbility(const std::string &mainAbility)
     {
         mainAbility_ = mainAbility;
@@ -1106,6 +1118,21 @@ public:
      */
     bool SetAbilityEnabled(
         const std::string &bundleName, const std::string &abilityName, bool isEnabled, int32_t userId);
+    /**
+     * @brief Set the Application Need Recover object
+     * @param moduleName Indicates the module name of the application.
+     * @param isNeedUpdate Indicates the module is need update or not.
+     * @return Return true if set data successfully.
+     */
+    bool SetModuleNeedUpdate(std::string moduleName, bool isNeedUpdate);
+
+    /**
+     * @brief Get the Application Need Recover object
+     * @param moduleName Indicates the module name of the application.
+     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     */
+    bool IsModuleNeedUpdate(std::string moduleName) const;
+
     /**
      * @brief Obtains configuration information about an application.
      * @param flags Indicates the flag used to specify information contained
@@ -1343,6 +1370,25 @@ public:
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, const std::string &excludeModule = "") const;
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
         const std::string &excludeModule = "") const;
+    /**
+     * @brief module is removed.
+     * @param moduleName Indicates the moduleName.
+     * @return Return get module removed result.
+     */
+    bool isModuleRemovable(const std::string &moduleName) const;
+    /**
+     * @brief module is removed.
+     * @param moduleName Indicates the moduleName.
+     * @param isEnable Indicates the module isRemovable is enable.
+     * @return Return set module removed result.
+     */
+    bool SetModuleRemovable(const std::string &moduleName, bool isEnable);
+    /**
+     * @brief bundle is removed.
+     * @return Return get bundle removed result
+     */
+    bool IsBundleRemovable() const;
+
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
@@ -1388,6 +1434,7 @@ private:
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
     // new version fields
     bool isNewVersion_ = false;
+    bool isNeedUpdate_ = false;
     std::map<std::string, ExtensionAbilityInfo> baseExtensionInfos_;
     std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
 };

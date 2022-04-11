@@ -194,6 +194,23 @@ public:
      * @param flags Indicates the information contained in the AbilityInfo object to be returned.
      * @param userId Indicates the user ID.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @param callBack Indicates the callback to be invoked for return ability manager service the operation result.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
+        AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack) override;
+    /**
+     * @brief Upgrade atomic service
+     * @param want Indicates the information of the ability.
+     * @param userId Indicates the user ID.
+     */
+    virtual void UpgradeAtomicService(const Want &want, int32_t userId) override;
+    /**
+     * @brief Query the AbilityInfo by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo) override;
@@ -652,6 +669,24 @@ public:
         const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo) override;
 
     /**
+     * @brief Obtains the value of isRemovable based on a given bundle name through the proxy object.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName) override;
+    /**
+     * @brief Sets whether to enable isRemovable based on a given bundle name through the proxy object.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleRemovable(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable) override;
+
+    /**
      * @brief Obtains the dependent module names.
      *
      * @param bundleName Indicates the bundle name to be queried.
@@ -661,6 +696,23 @@ public:
      */
     virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
         std::vector<std::string> &dependentModuleNames) override;
+    /**
+     * @brief Obtains the value of isNeedUpdate based on a given bundle name through the proxy object.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName) override;
+    /**
+     * @brief Sets whether to enable isNeedUpdate based on a given bundle name through the proxy object.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isNeedUpdate of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleNeedUpdate(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable) override;
 
 private:
     /**

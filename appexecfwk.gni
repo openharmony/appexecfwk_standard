@@ -22,6 +22,7 @@ innerkits_path = "${appexecfwk_path}/interfaces/innerkits"
 tools_path = "${appexecfwk_path}/tools"
 declare_args() {
   bundle_framework_graphics = true
+  bundle_framework_free_install = true
 
   ability_runtime_enable = true
   account_enable = true
@@ -32,11 +33,13 @@ declare_args() {
   if (defined(global_parts_info) &&
       !defined(global_parts_info.aafwk_ability_runtime)) {
     ability_runtime_enable = false
+    bundle_framework_free_install = false
   }
 
   if (defined(global_parts_info) &&
       !defined(global_parts_info.account_os_account_standard)) {
     account_enable = false
+    bundle_framework_free_install = false
   }
 
   if (defined(global_parts_info) &&
@@ -54,7 +57,16 @@ declare_args() {
     hicollie_enable = false
   }
 
+  if (defined(global_parts_info) &&
+      (!defined(global_parts_info.powermgr_power_manager_native) ||
+       !defined(global_parts_info.powermgr_battery_manager_native) ||
+       !defined(global_parts_info.powermgr_display_manager_native) ||
+       !defined(global_parts_info.aafwk_ability_runtime))) {
+    bundle_framework_free_install = false
+  }
+
   print("bundle_framework_graphics = " + "$bundle_framework_graphics")
+  print("bundle_framework_free_install = " + "$bundle_framework_free_install")
   print("ability_runtime_enable = " + "$ability_runtime_enable")
   print("account_enable = " + "$account_enable")
   print("configpolicy_enable = " + "$configpolicy_enable")

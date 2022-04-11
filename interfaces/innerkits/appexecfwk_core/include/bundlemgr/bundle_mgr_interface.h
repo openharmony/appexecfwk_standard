@@ -270,6 +270,29 @@ public:
      * @param flags Indicates the information contained in the AbilityInfo object to be returned.
      * @param userId Indicates the user ID.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @param callBack Indicates the callback to be invoked for return ability manager service the operation result.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo,
+        const sptr<IRemoteObject> &callBack)
+    {
+        return false;
+    }
+    /**
+     * @brief Upgrade atomic service
+     * @param want Indicates the information of the ability.
+     * @param userId Indicates the user ID.
+     */
+    virtual void UpgradeAtomicService(const Want &want, int32_t userId)
+    {
+        return;
+    }
+    /**
+     * @brief Query the AbilityInfo by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
@@ -910,6 +933,29 @@ public:
     {
         return false;
     }
+    /**
+     * @brief Obtains the value of isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName)
+    {
+        return false;
+    }
+    /**
+     * @brief Sets whether to enable isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleRemovable(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable)
+    {
+        return false;
+    }
 
     /**
      * @brief Obtains the dependent module names.
@@ -921,6 +967,29 @@ public:
      */
     virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
         std::vector<std::string> &dependentModuleNames)
+    {
+        return false;
+    }
+    /**
+     * @brief Obtains the value of isNeedUpdate based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName)
+    {
+        return false;
+    }
+    /**
+     * @brief Sets whether to enable isNeedUpdate based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleNeedUpdate(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable)
     {
         return false;
     }
@@ -1004,6 +1073,12 @@ public:
         VERIFY_CALLING_PERMISSION,
         GET_ACCESSIBLE_APP_CODE_PATH,
         QUERY_EXTENSION_ABILITY_INFO_BY_URI,
+        IS_MODULE_REMOVABLE,
+        SET_MODULE_REMOVABLE,
+        QUERY_ABILITY_INFO_WITH_CALLBACK,
+        UPGRADE_ATOMIC_SERVICE,
+        IS_MODULE_NEED_UPDATE,
+        SET_MODULE_NEED_UPDATE,
         GET_HAP_MODULE_INFO_WITH_USERID,
         IMPLICIT_QUERY_INFO_BY_PRIORITY,
         GET_ALL_DEPENDENT_MODULE_NAMES,
