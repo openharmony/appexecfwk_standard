@@ -90,13 +90,17 @@ bool BundleAgingMgr::ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &da
     std::map<std::string, int> bundleNamesAndUid;
     dataMgr->GetRemovableBundleNameVec(bundleNamesAndUid);
     if (bundleNamesAndUid.empty()) {
-        APP_LOGE("ReInitAginRequst: no removable bundles");
+        APP_LOGE("ReInitAgingRequest: no removable bundles");
         return false;
     }
-    APP_LOGD("ReInitAginRequst: removable bundles size %{public}zu", bundleNamesAndUid.size());
+    APP_LOGD("ReInitAgingRequest: removable bundles size %{public}zu", bundleNamesAndUid.size());
 
     std::vector<DeviceUsageStats::BundleActiveModuleRecord> activeModuleRecord;
-    DeviceUsageStats::BundleActiveClient* bundleActiveClient = new DeviceUsageStats::BundleActiveClient();
+    DeviceUsageStats::BundleActiveClient* bundleActiveClient = new(std::nothrow) DeviceUsageStats::BundleActiveClient();
+    if (bundleActiveClient == nullptr) {
+        APP_LOGD("bundleActiveClient is nullptr");
+        return false;
+    }
     int ret = bundleActiveClient->QueryFormStatistics(AgingConstants::COUNT_MODULE_RECODES_GET, activeModuleRecord);
     APP_LOGD("activeModuleRecord size %{public}zu, ret:%{public}d", activeModuleRecord.size(), ret);
     delete(bundleActiveClient);
