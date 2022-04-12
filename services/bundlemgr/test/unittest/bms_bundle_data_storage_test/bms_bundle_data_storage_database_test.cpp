@@ -99,6 +99,9 @@ protected:
                         "name": "",
                         "nativeLibraryPath": "",
                         "permissions": [],
+                        "targetBundleList": [
+                        ],
+                        "isFreeInstallApp": false,
                         "process": "",
                         "removable": true,
                         "signatureKey": "",
@@ -346,6 +349,9 @@ protected:
                 "nativeLibraryPath": "",
                 "permissions": [
                 ],
+                "targetBundleList": [
+                ],
+                "isFreeInstallApp": false,
                 "process": "",
                 "removable": false,
                 "signatureKey": "",
@@ -407,6 +413,9 @@ protected:
                     "nativeLibraryPath": "",
                     "permissions": [
                     ],
+                    "targetBundleList": [
+                    ],
+                    "isFreeInstallApp": false,
                     "process": "",
                     "removable": true,
                     "signatureKey": "",
