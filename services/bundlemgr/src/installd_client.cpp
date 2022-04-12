@@ -127,6 +127,15 @@ ErrCode InstalldClient::SetDirApl(const std::string &dir, const std::string &bun
     return CallService(&IInstalld::SetDirApl, dir, bundleName, apl);
 }
 
+ErrCode InstalldClient::GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath)
+{
+    if (dir.empty()) {
+        APP_LOGE("params are invalid");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+    return CallService(&IInstalld::GetBundleCachePath, dir, cachePath);
+}
+
 void InstalldClient::ResetInstalldProxy()
 {
     if ((installdProxy_ != nullptr) && (installdProxy_->AsObject() != nullptr)) {
