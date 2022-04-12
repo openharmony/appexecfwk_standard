@@ -111,6 +111,7 @@ struct App {
     int32_t iconId = 0;
     int32_t labelId = 0;
     bool userDataClearable = true;
+    std::vector<std::string> targetBundleList;
 };
 
 struct ReqVersion {
@@ -479,6 +480,14 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_TARGETET_BUNDLE_LIST,
+        app.targetBundleList,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
 }
 
 void from_json(const nlohmann::json &jsonObject, ReqVersion &reqVersion)
@@ -1998,6 +2007,11 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
     applicationInfo.labelId = configJson.app.labelId;
 
     applicationInfo.enabled = true;
+    for (const auto &targetBundle : configJson.app.targetBundleList) {
+        APP_LOGD("targetBundle = %{public}s", targetBundle.c_str());
+        applicationInfo.targetBundleList.emplace_back(targetBundle);
+    }
+
     return true;
 }
 

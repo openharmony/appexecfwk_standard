@@ -16,10 +16,9 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H
 
-#include <iremote_object.h>
-#include <iremote_stub.h>
-
 #include "ability_manager_interface.h"
+#include "iremote_object.h"
+#include "iremote_stub.h"
 
 namespace OHOS {
 namespace AppExecFwk {

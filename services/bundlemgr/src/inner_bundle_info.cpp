@@ -53,6 +53,7 @@ const std::string MODULE_LABEL = "label";
 const std::string MODULE_LABEL_ID = "labelId";
 const std::string MODULE_DESCRIPTION_INSTALLATION_FREE = "installationFree";
 const std::string MODULE_IS_REMOVABLE = "isRemovable";
+const std::string MODULE_IS_NEED_UPDATE = "isNeedUpdate";
 const std::string MODULE_IS_ENTRY = "isEntry";
 const std::string MODULE_METADATA = "metaData";
 const std::string MODULE_COLOR_MODE = "colorMode";
@@ -92,6 +93,7 @@ const std::string MODULE_EXTENSION_SKILL_KEYS = "extensionSkillKeys";
 const std::string MODULE_IS_MODULE_JSON = "isModuleJson";
 const std::string MODULE_IS_STAGE_BASED_MODEL = "isStageBasedModel";
 const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion_";
+const std::string BUNDLE_IS_NEED_UPDATE = "isNeedUpdate_";
 const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos_";
 const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos_";
 const std::string ALLOWED_ACLS = "allowedAcls";
@@ -347,6 +349,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_LABEL_ID, info.labelId},
         {MODULE_DESCRIPTION_INSTALLATION_FREE, info.installationFree},
         {MODULE_IS_REMOVABLE, info.isRemovable},
+        {MODULE_IS_NEED_UPDATE, info.isNeedUpdate},
         {MODULE_REQ_CAPABILITIES, info.reqCapabilities},
         {MODULE_ABILITY_KEYS, info.abilityKeys},
         {MODULE_SKILL_KEYS, info.skillKeys},
@@ -425,6 +428,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[INSTALL_MARK] = mark_;
     jsonObject[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
     jsonObject[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
+    jsonObject[BUNDLE_IS_NEED_UPDATE] = isNeedUpdate_;
     jsonObject[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
     jsonObject[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
 }
@@ -565,6 +569,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         jsonObjectEnd,
         MODULE_IS_REMOVABLE,
         info.isRemovable,
+        JsonType::BOOLEAN,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        MODULE_IS_NEED_UPDATE,
+        info.isNeedUpdate,
         JsonType::BOOLEAN,
         false,
         ProfileReader::parseResult,
@@ -1182,6 +1194,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_IS_NEED_UPDATE,
+        isNeedUpdate_,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::map<std::string, ExtensionAbilityInfo>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_BASE_EXTENSION_INFOS,
@@ -1240,6 +1260,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.reqCapabilities = it->second.reqCapabilities;
     hapInfo.colorMode = it->second.colorMode;
     hapInfo.isRemovable = it->second.isRemovable;
+    hapInfo.isNeedUpdate = it->second.isNeedUpdate;
 
     hapInfo.bundleName = baseApplicationInfo_.bundleName;
     hapInfo.mainElementName = it->second.mainAbility;
@@ -1642,6 +1663,7 @@ std::string InnerBundleInfo::ToString() const
     j[INSTALL_MARK] = mark_;
     j[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
     j[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
+    j[BUNDLE_IS_NEED_UPDATE] = isNeedUpdate_;
     j[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
     j[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
     return j.dump();
@@ -2161,6 +2183,17 @@ bool InnerBundleInfo::SetModuleRemovable(const std::string &moduleName, bool isE
         }
     }
     return false;
+}
+
+bool InnerBundleInfo::SetModuleNeedUpdate(std::string moduleName, bool isNeedUpdate)
+{
+    isNeedUpdate_ = isNeedUpdate;
+    return true;
+}
+
+bool InnerBundleInfo::IsModuleNeedUpdate(std::string moduleName) const
+{
+    return isNeedUpdate_;
 }
 
 int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const

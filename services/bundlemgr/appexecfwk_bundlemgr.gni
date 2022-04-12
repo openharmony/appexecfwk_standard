@@ -55,6 +55,14 @@ aging = [
   "${services_path}/bundlemgr/src/aging/recently_unused_bundle_aging_handler.cpp",
 ]
 
+free_install = [
+  "${services_path}/bundlemgr/src/free_install/bundle_connect_ability_mgr.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_connection.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_death_recipient.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_status_callback.cpp",
+  "${services_path}/bundlemgr/src/free_install/service_center_status_callback_stub.cpp",
+]
+
 bundle_install_deps = [
   "${services_path}/bundlemgr:bundle_parser",
   "${services_path}/bundlemgr:parser_common",
