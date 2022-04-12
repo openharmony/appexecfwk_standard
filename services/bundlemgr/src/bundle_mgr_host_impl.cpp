@@ -543,11 +543,22 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         APP_LOGE("can not clean cacheFiles of %{public}s due to userDataClearable is false", bundleName.c_str());
         return false;
     }
-    std::string rootDir = applicationInfo.dataDir;
+    std::vector<std::string> rootDir;
+    for (const auto &el : Constants::BUNDLE_EL) {
+        std::string dataDir = Constants::BUNDLE_APP_DATA_BASE_DIR + el +
+            Constants::FILE_SEPARATOR_CHAR + std::to_string(userId) + Constants::BASE + bundleName;
+        rootDir.emplace_back(dataDir);
+    }
     auto cleanCache = [this, rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
-        bool result = this->TraverseCacheDirectory(rootDir, caches);
-        bool error = false;
+        bool result = false;
+        for (const auto &st : rootDir) {
+            result = this->TraverseCacheDirectory(st, caches);
+            if (!result) {
+                break;
+            }
+        }
+        bool error = true;
         if (result) {
             for (const auto& cache : caches) {
                 error = InstalldClient::GetInstance()->CleanBundleDataDir(cache);
