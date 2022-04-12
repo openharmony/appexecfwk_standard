@@ -105,6 +105,14 @@ public:
      * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
      */
     virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) override;
+    /**
+     * @brief Get all cache file path.
+     * @param dir Indicates the data dir.
+     * @param cachesPath Indicates the cache file path.
+     * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
+     */
+    virtual ErrCode GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath) override;
+
 private:
     ErrCode TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
         MessageOption &option);

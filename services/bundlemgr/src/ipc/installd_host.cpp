@@ -46,6 +46,7 @@ void InstalldHost::init()
     funcMap_.emplace(IInstalld::Message::SET_DIR_APL, &InstalldHost::HandleSetDirApl);
     funcMap_.emplace(IInstalld::Message::REMOVE_DIR, &InstalldHost::HandleRemoveDir);
     funcMap_.emplace(IInstalld::Message::GET_BUNDLE_STATS, &InstalldHost::HandleGetBundleStats);
+    funcMap_.emplace(IInstalld::Message::GET_BUNDLE_CACHE_PATH, &InstalldHost::HandleGetBundleCachePath);
 }
 
 int InstalldHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
@@ -168,6 +169,19 @@ bool InstalldHost::HandleSetDirApl(MessageParcel &data, MessageParcel &reply)
     std::string apl = Str16ToStr8(data.ReadString16());
     ErrCode result = SetDirApl(dataDir, bundleName, apl);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
+    return true;
+}
+
+bool InstalldHost::HandleGetBundleCachePath(MessageParcel &data, MessageParcel &reply)
+{
+    std::string dir = Str16ToStr8(data.ReadString16());
+    std::vector<std::string> cachePath;
+    ErrCode result = GetBundleCachePath(dir, cachePath);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
+    if (!reply.WriteStringVector(cachePath)) {
+        APP_LOGE("fail to GetBundleCachePath from reply");
+        return false;
+    }
     return true;
 }
 }  // namespace AppExecFwk

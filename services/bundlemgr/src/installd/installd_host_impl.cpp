@@ -305,5 +305,12 @@ ErrCode InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &b
     return ERR_OK;
 #endif // WITH_SELINUX
 }
+
+ErrCode InstalldHostImpl::GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath)
+{
+    APP_LOGD("InstalldHostImpl::GetBundleCachePath start");
+    InstalldOperator::TraverseCacheDirectory(dir, cachePath);
+    return ERR_OK;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

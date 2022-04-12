@@ -488,33 +488,6 @@ bool BundleMgrHostImpl::IsSafeMode()
     return true;
 }
 
-bool BundleMgrHostImpl::TraverseCacheDirectory(const std::string& rootDir, std::vector<std::string>& cacheDirs)
-{
-    APP_LOGD("start TraverseCacheDirectory, rootDir : %{public}s", rootDir.c_str());
-    DIR* dir = opendir(rootDir.c_str());
-    struct dirent *ptr = nullptr;
-    if (dir == nullptr) {
-        return false;
-    }
-    while ((ptr = readdir(dir)) != nullptr) {
-        if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
-            continue;
-        }
-        if (ptr->d_type == DT_DIR && strcmp(ptr->d_name, "cache") == 0) {
-            std::string currentDir = OHOS::IncludeTrailingPathDelimiter(rootDir) + std::string(ptr->d_name);
-            cacheDirs.emplace_back(currentDir);
-            continue;
-        }
-        if (ptr->d_type == DT_DIR) {
-            std::string currentDir = OHOS::IncludeTrailingPathDelimiter(rootDir) + std::string(ptr->d_name);
-            TraverseCacheDirectory(currentDir, cacheDirs);
-        }
-    }
-    closedir(dir);
-
-    return true;
-}
-
 bool BundleMgrHostImpl::CleanBundleCacheFiles(
     const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
     int32_t userId)
@@ -543,22 +516,34 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         APP_LOGE("can not clean cacheFiles of %{public}s due to userDataClearable is false", bundleName.c_str());
         return false;
     }
+    CleanBundleCacheTask(bundleName, cleanCacheCallback, userId);
+    return true;
+}
+
+void BundleMgrHostImpl::CleanBundleCacheTask(const std::string &bundleName,
+    const sptr<ICleanCacheCallback> &cleanCacheCallback,
+    int32_t userId)
+{
     std::vector<std::string> rootDir;
     for (const auto &el : Constants::BUNDLE_EL) {
         std::string dataDir = Constants::BUNDLE_APP_DATA_BASE_DIR + el +
             Constants::FILE_SEPARATOR_CHAR + std::to_string(userId) + Constants::BASE + bundleName;
         rootDir.emplace_back(dataDir);
     }
-    auto cleanCache = [this, rootDir, cleanCacheCallback]() {
+    auto cleanCache = [rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
         bool result = false;
         for (const auto &st : rootDir) {
-            result = this->TraverseCacheDirectory(st, caches);
-            if (!result) {
+            std::vector<std::string> cache;
+            result = InstalldClient::GetInstance()->GetBundleCachePath(st, cache);
+            if (result) {
                 break;
             }
+            for (const auto &item : cache) {
+                caches.emplace_back(item);
+            }
         }
-        bool error = true;
+        bool error = false;
         if (result) {
             for (const auto& cache : caches) {
                 error = InstalldClient::GetInstance()->CleanBundleDataDir(cache);
@@ -571,7 +556,6 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         cleanCacheCallback->OnCleanCacheFinished(error);
     };
     handler_->PostTask(cleanCache);
-    return true;
 }
 
 bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, const int userId)

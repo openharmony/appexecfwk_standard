@@ -376,7 +376,7 @@ void InstalldOperator::TraverseCacheDirectory(const std::string &currentPath, st
         if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
             continue;
         }
-        if (ptr->d_type == DT_DIR && strcmp(ptr->d_name, Constants::CACHES_DIR.c_str()) == 0) {
+        if (ptr->d_type == DT_DIR && strcmp(ptr->d_name, Constants::CACHE_DIR.c_str()) == 0) {
             std::string currentDir = filePath + std::string(ptr->d_name);
             cacheDirs.emplace_back(currentDir);
             continue;
