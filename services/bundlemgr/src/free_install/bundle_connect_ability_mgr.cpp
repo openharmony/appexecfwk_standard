@@ -61,7 +61,7 @@ BundleConnectAbilityMgr::~BundleConnectAbilityMgr()
 bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("start to SilentInstallSafely");
+    APP_LOGI("SilentInstallSafely");
     std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
     TaskPriority defaultPriority = TaskPriority::DEFAULT;
     std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
@@ -117,7 +117,7 @@ bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &target
 bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("start to UpgradeInstallSafely");
+    APP_LOGI("UpgradeInstallSafely");
     std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
     TaskPriority defaultPriority = TaskPriority::DEFAULT;
     std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
@@ -140,7 +140,6 @@ bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targ
             FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
-    APP_LOGI("end to UpgradeInstallSafely");
     return true;
 }
 
@@ -150,7 +149,6 @@ bool BundleConnectAbilityMgr::RunnableFun(int32_t flag, const TargetAbilityInfo 
     APP_LOGI("RunnableFun start");
     Want serviceCenterWant;
     serviceCenterWant.SetElementName(serviceCenterBundleName, serviceCenterAbilityName);
-    APP_LOGI("ConnectAbility start");
     bool isConnectSuccess = ConnectAbility(serviceCenterWant, callerToken);
     if (!isConnectSuccess) {
         APP_LOGE("fail to connect ServiceCenter");
@@ -283,7 +281,7 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
     FreeInstallParams freeInstallParams;
     auto node = freeInstallParamsMap_.find(installResult.result.transactId);
     if (node == freeInstallParamsMap_.end()) {
-        APP_LOGI("can not find node");
+        APP_LOGE("can not find node");
         return;
     }
     freeInstallParams = node->second;
@@ -294,14 +292,10 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
             installResult.progress.downloadSize, installResult.progress.totalSize);
         return;
     }
-    std::string bundleName = freeInstallParams.want.GetElement().GetBundleName();
-    std::string moduleName = freeInstallParams.want.GetStringParam("moduleName");
-    std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
-    APP_LOGD("OnServiceCenterCall, freeInstallParams ServiceCenterFunction = %{public}d",
-        freeInstallParams.serviceCenterFunction);
+    APP_LOGD("serviceCenterFunction = %{public}d",freeInstallParams.serviceCenterFunction);
     SendCallBack(resultCode, freeInstallParams.want, freeInstallParams.userId,
         installResult.result.transactId);
-    APP_LOGD("OnServiceCenterCall, end");
+    APP_LOGD("OnServiceCenterCall end");
 }
 
 void BundleConnectAbilityMgr::OutTimeMonitor(std::string transactId)
