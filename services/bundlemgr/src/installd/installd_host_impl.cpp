@@ -309,6 +309,10 @@ ErrCode InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &b
 ErrCode InstalldHostImpl::GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath)
 {
     APP_LOGD("InstalldHostImpl::GetBundleCachePath start");
+    if (dir.empty()) {
+        APP_LOGE("Calling the function GetBundleCachePath with invalid param");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
     InstalldOperator::TraverseCacheDirectory(dir, cachePath);
     return ERR_OK;
 }
