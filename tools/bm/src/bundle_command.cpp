@@ -1491,11 +1491,11 @@ ErrCode BundleManagerShellCommand::RunAsSetRmCommand()
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
-        APP_LOGD("option: %{public}c, optopt: %{public}d, optind: %{public}d, argv_[optind - 1]:%{public}s", option,
-            optopt, optind, argv_[optind - 1]);
         if (optind < 0 || optind > argc_) {
             return OHOS::ERR_INVALID_VALUE;
         }
+        APP_LOGD("option: %{public}c, optopt: %{public}d, optind: %{public}d, argv_[optind - 1]:%{public}s", option,
+            optopt, optind, argv_[optind - 1]);
 
         if (option == -1) {
             if (counter == 1) {
