@@ -89,6 +89,7 @@ ohos_source_set("bundle_parser") {
     "src/bundle_parser.cpp",
     "src/bundle_profile.cpp",
     "src/module_profile.cpp",
+    "src/pre_bundle_profile.cpp",
   ]
 
   public_configs = bundlemgr_parser_common_config
@@ -232,6 +233,10 @@ ohos_shared_library("libbms") {
   if (hicollie_enable) {
     external_deps += [ "hicollie_native:libhicollie" ]
     defines += [ "HICOLLIE_ENABLE" ]
+  }
+
+  if (use_pre_bundle_profile) {
+    defines += [ "USE_PRE_BUNDLE_PROFILE" ]
   }
 
   subsystem_name = "appexecfwk"
