@@ -265,6 +265,7 @@ Status DistributedDataStorage::GetKvStore()
         .createIfMissing = true,
         .encrypt = false,
         .autoSync = false,
+        .securityLevel = SecurityLevel::S1,
         .kvStoreType = KvStoreType::SINGLE_VERSION
     };
     Status status = dataManager_.GetSingleKvStore(options, appId_, storeId_, kvStorePtr_);
