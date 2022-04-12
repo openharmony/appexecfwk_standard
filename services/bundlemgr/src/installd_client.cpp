@@ -127,7 +127,7 @@ ErrCode InstalldClient::SetDirApl(const std::string &dir, const std::string &bun
     return CallService(&IInstalld::SetDirApl, dir, bundleName, apl);
 }
 
-ErrCode GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath)
+ErrCode InstalldClient::GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath)
 {
     if (dir.empty()) {
         APP_LOGE("params are invalid");
