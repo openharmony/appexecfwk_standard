@@ -1481,8 +1481,8 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     if (elementUri.empty()) {
         elementUri = wantUri;
     }
-    APP_LOGD("deviceId:%{private}s, bundleName:%{public}s, abilityName:%{public}s",
-        elementDeviceId.c_str(), elementBundleName.c_str(), elementAbilityName.c_str());
+    APP_LOGD("bundleName:%{public}s, abilityName:%{public}s",
+             elementBundleName.c_str(), elementAbilityName.c_str());
     APP_LOGD("action:%{public}s, uri:%{private}s, type:%{public}s, flags:%{public}d",
         wantAction.c_str(), elementUri.c_str(), wantType.c_str(), wantFlags);
     want.SetAction(wantAction);
