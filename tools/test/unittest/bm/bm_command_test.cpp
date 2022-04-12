@@ -251,7 +251,7 @@ HWTEST_F(BmCommandTest, Bm_Command_Clean_0003, Function | MediumTest | Level1)
     BundleManagerShellCommand cmd(argc, argv);
     // set the mock objects
     SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_CLEAN);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_CLEAN);
 }
 
 /**
@@ -425,7 +425,7 @@ HWTEST_F(BmCommandTest, Bm_Command_Enable_0002, Function | MediumTest | Level1)
     BundleManagerShellCommand cmd(argc, argv);
     // set the mock objects
     SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_ENABLE);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_ENABLE);
 }
 
 /**
@@ -470,7 +470,7 @@ HWTEST_F(BmCommandTest, Bm_Command_Enable_0004, Function | MediumTest | Level1)
     BundleManagerShellCommand cmd(argc, argv);
     // set the mock objects
     SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_ENABLE);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_ENABLE);
 }
 
 /**
@@ -535,7 +535,7 @@ HWTEST_F(BmCommandTest, Bm_Command_Disable_0002, Function | MediumTest | Level1)
     BundleManagerShellCommand cmd(argc, argv);
     // set the mock objects
     SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_DISABLE);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_DISABLE);
 }
 
 /**
@@ -580,7 +580,7 @@ HWTEST_F(BmCommandTest, Bm_Command_Disable_0004, Function | MediumTest | Level1)
     BundleManagerShellCommand cmd(argc, argv);
     // set the mock objects
     SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_DISABLE);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_DISABLE);
 }
 
 /**
@@ -627,7 +627,7 @@ HWTEST_F(BmCommandTest, Bm_Command_Disable_0006, Function | MediumTest | Level1)
     BundleManagerShellCommand cmd(argc, argv);
     // set the mock objects
     SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_DISABLE);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_DISABLE);
 }
 
 /**

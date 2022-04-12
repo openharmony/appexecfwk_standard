@@ -32,6 +32,8 @@ public:
      * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
      */
     ErrCode Parse(const std::string &pathName, InnerBundleInfo &innerBundleInfo) const;
+
+    ErrCode ParsePackInfo(const std::string &pathName, BundlePackInfo &bundlePackInfo) const;
     /**
      * @brief Parse bundle by the path name, then save in innerBundleInfo info.
      * @param pathName Indicates the path of Bundle.

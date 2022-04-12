@@ -32,6 +32,7 @@
 #include "os_account_manager.h"
 #include "parameter.h"
 #include "status_receiver_impl.h"
+#include "string_ex.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -42,7 +43,8 @@ const int32_t INDEX_OFFSET = 2;
 const int32_t MAX_WAITING_TIME = 3000;
 const int32_t DEVICE_UDID_LENGTH = 65;
 const int32_t MAX_ARGUEMENTS_NUMBER = 3;
-const std::string SHORT_OPTIONS = "hp:rfn:m:a:cdu:i:";
+
+const std::string SHORT_OPTIONS = "hp:rn:m:a:cdu:";
 const struct option LONG_OPTIONS[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-path", required_argument, nullptr, 'p'},
@@ -335,6 +337,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install failed due to apptype not same",
         },
         {
+            IStatusReceiver::ERR_INSTALL_TYPE_ERROR,
+            "error: install failed due to error bundle type"
+        },
+        {
             IStatusReceiver::ERR_INSTALL_URI_DUPLICATE,
             "error: install failed due to uri prefix duplicate",
         },
@@ -576,8 +582,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                     // 'bm install -p' with no argument: bm install -p
                     // 'bm install --bundle-path' with no argument: bm install --bundle-path
                     APP_LOGD("'bm install' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -585,8 +590,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                     // 'bm install -u' with no argument: bm install -u
                     // 'bm install --user-id' with no argument: bm install --user-id
                     APP_LOGD("'bm install -u' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -618,8 +622,8 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                 APP_LOGD("'bm install %{public}s'", argv_[optind - 1]);
                 if (GetBundlePath(optarg, bundlePath) != OHOS::ERR_OK) {
                     APP_LOGD("'bm install' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a correct value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    
                     return OHOS::ERR_INVALID_VALUE;
                 }
                 index = optind;
@@ -635,7 +639,11 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                 // 'bm install -p <bundle-file-path> -u userId'
                 // 'bm install --bundle-path <bundle-file-path> --user-id userId'
                 APP_LOGD("'bm install %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = atoi(optarg);
+                if (!OHOS::StrToInt(optarg, userId) || userId < 0) {
+                    APP_LOGE("bm install with error userId %{private}s", optarg);
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    return OHOS::ERR_INVALID_VALUE;
+                }
                 break;
             }
             default: {
@@ -646,8 +654,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
     }
 
     for (; index < argc_ && index >= INDEX_OFFSET; ++index) {
-        if (argList_[index - INDEX_OFFSET] == "-r" || argList_[index - INDEX_OFFSET] == "-f" ||
-            argList_[index - INDEX_OFFSET] == "--force" || argList_[index - INDEX_OFFSET] == "--replace" ||
+        if (argList_[index - INDEX_OFFSET] == "-r" || argList_[index - INDEX_OFFSET] == "--replace" ||
             argList_[index - INDEX_OFFSET] == "-p" || argList_[index - INDEX_OFFSET] == "--bundle-path" ||
             argList_[index - INDEX_OFFSET] == "-u" || argList_[index - INDEX_OFFSET] == "--user-id") {
             break;
@@ -697,7 +704,7 @@ ErrCode BundleManagerShellCommand::GetBundlePath(const std::string& param,
     if (param.empty()) {
         return OHOS::ERR_INVALID_VALUE;
     }
-    if (param == "-f" || param == "--force" || param == "-r" || param == "--replace" || param == "-p" ||
+    if (param == "-r" || param == "--replace" || param == "-p" ||
         param == "--bundle-path" || param == "-u" || param == "--user-id") {
         return OHOS::ERR_INVALID_VALUE;
     }
@@ -741,8 +748,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     // 'bm uninstall -n' with no argument: bm uninstall -n
                     // 'bm uninstall --bundle-name' with no argument: bm uninstall --bundle-name
                     APP_LOGD("'bm uninstall -n' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -750,8 +756,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     // 'bm uninstall -m' with no argument: bm uninstall -m
                     // 'bm uninstall --module-name' with no argument: bm uninstall --module-name
                     APP_LOGD("'bm uninstall -m' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -759,8 +764,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     // 'bm uninstall -n <bundleName> -u userId'
                     // 'bm uninstall --bundle-name <bundleName> --user-id userId'
                     APP_LOGD("'bm uninstall -u' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -811,7 +815,11 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                 // 'bm uninstall -n <bundleName> -u userId'
                 // 'bm uninstall --bundle-name <bundleName> --user-id userId'
                 APP_LOGD("'bm uninstall %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = atoi(optarg);
+                if (!OHOS::StrToInt(optarg, userId) || userId < 0) {
+                    APP_LOGE("bm uninstall with error userId %{private}s", optarg);
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    return OHOS::ERR_INVALID_VALUE;
+                }
                 break;
             }
             default: {
@@ -888,8 +896,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     // 'bm dump -n' with no argument: bm dump -n
                     // 'bm dump --bundle-name' with no argument: bm dump --bundle-name
                     APP_LOGD("'bm dump -n' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -897,8 +904,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     // 'bm dump -u' with no argument: bm dump -u
                     // 'bm dump --user-id' with no argument: bm dump --user-id
                     APP_LOGD("'bm dump -u' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -906,8 +912,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     // 'bm dump -d' with no argument: bm dump -d
                     // 'bm dump --device-id' with no argument: bm dump --device-id
                     APP_LOGD("'bm dump -d' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -965,7 +970,11 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                 // 'bm dump -n <bundleName> -u userId'
                 // 'bm dump --bundle-name <bundleName> --user-id userId'
                 APP_LOGD("'bm dump %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = atoi(optarg);
+                if (!OHOS::StrToInt(optarg, userId) || userId < 0) {
+                    APP_LOGE("bm dump with error userId %{private}s", optarg);
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    return OHOS::ERR_INVALID_VALUE;
+                }
                 break;
             }
             case 'd': {
@@ -1057,8 +1066,7 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
                     // 'bm clean -n' with no argument: bm clean -n
                     // 'bm clean --bundle-name' with no argument: bm clean --bundle-name
                     APP_LOGD("'bm clean -n' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1066,8 +1074,7 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
                     // 'bm clean -u' with no argument: bm clean -u
                     // 'bm clean --user-id' with no argument: bm clean --user-id
                     APP_LOGD("'bm clean -u' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1117,8 +1124,12 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
             case 'u': {
                 // 'bm clean -u userId'
                 // 'bm clean --user-id userId'
-                APP_LOGD("'bm install %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = atoi(optarg);
+                APP_LOGD("'bm clean %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                if (!OHOS::StrToInt(optarg, userId) || userId < 0) {
+                    APP_LOGE("bm clean with error userId %{private}s", optarg);
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    return OHOS::ERR_INVALID_VALUE;
+                }
                 break;
             }
             default: {
@@ -1201,8 +1212,7 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
                     // 'bm enable -n' with no argument: bm enable -n
                     // 'bm enable --bundle-name' with no argument: bm enable --bundle-name
                     APP_LOGD("'bm enable -n' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1210,8 +1220,7 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
                     // 'bm enable -a' with no argument: bm enable -a
                     // 'bm enable --ability-name' with no argument: bm enable --ability-name
                     APP_LOGD("'bm enable -a' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1219,8 +1228,7 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
                     // 'bm enable -u' with no argument: bm enable -u
                     // 'bm enable --user-id' with no argument: bm enable --user-id
                     APP_LOGD("'bm enable -u' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1262,7 +1270,11 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
                 // 'bm enable -u userId'
                 // 'bm enable --user-id userId'
                 APP_LOGD("'bm enable %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = atoi(optarg);
+                if (!OHOS::StrToInt(optarg, userId) || userId < 0) {
+                    APP_LOGE("bm enable with error userId %{private}s", optarg);
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    return OHOS::ERR_INVALID_VALUE;
+                }
                 break;
             }
             default: {
@@ -1332,8 +1344,7 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
                     // 'bm disable -n' with no argument: bm disable -n
                     // 'bm disable --bundle-name' with no argument: bm disable --bundle-name
                     APP_LOGD("'bm disable' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1341,8 +1352,7 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
                     // 'bm disable -a' with no argument: bm disable -a
                     // 'bm disable --ability-name' with no argument: bm disable --ability-name
                     APP_LOGD("'bm disable -a' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1350,8 +1360,7 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
                     // 'bm disable -u' with no argument: bm disable -u
                     // 'bm disable --user-id' with no argument: bm disable --user-id
                     APP_LOGD("'bm disable -u' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -1392,7 +1401,11 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
                 // 'bm disable -u userId'
                 // 'bm disable --user-id userId'
                 APP_LOGD("'bm disable %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = atoi(optarg);
+                if (!OHOS::StrToInt(optarg, userId) || userId < 0) {
+                    APP_LOGE("bm disable with error userId %{private}s", optarg);
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    return OHOS::ERR_INVALID_VALUE;
+                }
                 break;
             }
             default: {

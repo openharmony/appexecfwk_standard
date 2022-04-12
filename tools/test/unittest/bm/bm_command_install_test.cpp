@@ -288,7 +288,7 @@ HWTEST_F(BmCommandInstallTest, Bm_Command_Install_0900, Function | MediumTest | 
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_INSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_INSTALL);
 }
 
 /**
@@ -635,13 +635,13 @@ HWTEST_F(BmCommandInstallTest, Bm_Command_Install_2600, Function | MediumTest | 
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a correct value.\n");
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE);
 }
 
 /**
  * @tc.number: Bm_Command_Install_2700
  * @tc.name: ExecCommand
- * @tc.desc: Verify the "bm install -p -f <bundle-path> <bundle-path>" command.
+ * @tc.desc: Verify the "bm install -p <bundle-path> <bundle-path> -u xxx" command.
  * @tc.require: AR000GJ4K9
  */
 HWTEST_F(BmCommandInstallTest, Bm_Command_Install_2700, Function | MediumTest | Level1)
@@ -651,9 +651,10 @@ HWTEST_F(BmCommandInstallTest, Bm_Command_Install_2700, Function | MediumTest | 
         (char *)TOOL_NAME.c_str(),
         (char *)cmd_.c_str(),
         (char *)"-p",
-        (char *)"-f",
         (char *)STRING_BUNDLE_PATH.c_str(),
         (char *)STRING_OTHER_BUNDLE_PATH.c_str(),
+        (char *)"-u",
+        (char *)"xxx",
         (char *)"",
     };
     int argc = sizeof(argv) / sizeof(argv[0]) - 1;
@@ -663,5 +664,62 @@ HWTEST_F(BmCommandInstallTest, Bm_Command_Install_2700, Function | MediumTest | 
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a correct value.\n");
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE);
+}
+
+/**
+ * @tc.number: Bm_Command_Install_2800
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm install -p <bundle-path> <bundle-path> -u" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandInstallTest, Bm_Command_Install_2800, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)cmd_.c_str(),
+        (char *)"-p",
+        (char *)STRING_BUNDLE_PATH.c_str(),
+        (char *)STRING_OTHER_BUNDLE_PATH.c_str(),
+        (char *)"-u",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_INSTALL);
+}
+
+/**
+ * @tc.number: Bm_Command_Install_2900
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm install -p <bundle-path> <bundle-path> -u" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandInstallTest, Bm_Command_Install_2900, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)cmd_.c_str(),
+        (char *)"-p",
+        (char *)STRING_BUNDLE_PATH.c_str(),
+        (char *)STRING_OTHER_BUNDLE_PATH.c_str(),
+        (char *)"-u",
+        (char *)DEFAULT_USER_ID.c_str(),
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), STRING_INSTALL_BUNDLE_OK + "\n");
 }

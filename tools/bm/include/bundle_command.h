@@ -158,7 +158,8 @@ const std::string HELP_MSG_NO_REMOVABLE_OPTION =
     "and a module name with '-m' or '--module-name' \n";
 
 const std::string HELP_MSG_DUMP_FAILED = "error: failed to get information and the parameters may be wrong.";
-}  // namespace
+const std::string STRING_REQUIRE_CORRECT_VALUE = "error: option requires a correct value.\n";
+} // namespace
 
 class BundleManagerShellCommand : public ShellCommand {
 public:
