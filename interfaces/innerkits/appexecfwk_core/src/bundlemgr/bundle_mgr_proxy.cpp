@@ -31,7 +31,7 @@ namespace AppExecFwk {
 namespace {
 const int32_t ASHMEM_LEN = 16;
 
-inline void ClearAshMem(sptr<Ashmem> &optMem)
+inline void ClearAshmem(sptr<Ashmem> &optMem)
 {
     if (optMem != nullptr) {
         optMem->UnmapAshmem();
@@ -41,7 +41,7 @@ inline void ClearAshMem(sptr<Ashmem> &optMem)
 
 bool ParseStr(const char *buf, const int itemLen, int index, std::string &result)
 {
-    APP_LOGD("ParseStr itemLen:%{public}d  index:%{public}d.", itemLen, index);
+    APP_LOGD("ParseStr itemLen:%{public}d index:%{public}d.", itemLen, index);
     if (buf == nullptr || itemLen <= 0 || index < 0) {
         APP_LOGE("param invalid.");
         return false;
@@ -2548,7 +2548,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
     bool ret = ashmem->MapReadOnlyAshmem();
     if (!ret) {
         APP_LOGE("Map read only ashmem fail");
-        ClearAshMem(ashmem);
+        ClearAshmem(ashmem);
         return false;
     }
 
@@ -2557,7 +2557,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         ashmem->ReadFromAshmem(ashmem->GetAshmemSize(), offset));
     if (dataStr == nullptr) {
         APP_LOGE("Data is nullptr when read from ashmem");
-        ClearAshMem(ashmem);
+        ClearAshmem(ashmem);
         return false;
     }
 
@@ -2565,7 +2565,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         std::string lenStr;
         if (!ParseStr(dataStr, ASHMEM_LEN, offset, lenStr)) {
             APP_LOGE("Parse lenStr fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -2574,14 +2574,14 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         std::string infoStr;
         if (!ParseStr(dataStr, strLen, offset, infoStr)) {
             APP_LOGE("Parse infoStr fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
         T info;
         if (!ParseInfoFromJsonStr(infoStr.c_str(), info)) {
             APP_LOGE("Parse info from json fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -2590,6 +2590,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         offset += strLen;
     }
 
+    ClearAshmem(ashmem);
     APP_LOGD("Get parcelable vector from ashmem success");
     return true;
 }

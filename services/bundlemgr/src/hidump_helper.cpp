@@ -83,7 +83,7 @@ bool HidumpHelper::Dump(const std::vector<std::string>& args, std::string &resul
             ret = true;
             break;
         }
-        case ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE: {
+        case ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR: {
             ret = false;
             break;
         }
@@ -108,7 +108,7 @@ ErrCode HidumpHelper::ProcessOneParam(const std::string& args, std::string &resu
         return ERR_OK;
     }
 
-    return Dump(hidumpParam, result);
+    return ProcessDump(hidumpParam, result);
 }
 
 ErrCode HidumpHelper::ProcessTwoParam(
@@ -135,10 +135,10 @@ ErrCode HidumpHelper::ProcessTwoParam(
         }
     }
 
-    return Dump(hidumpParam, result);
+    return ProcessDump(hidumpParam, result);
 }
 
-ErrCode HidumpHelper::Dump(const HidumpParam& hidumpParam, std::string &result)
+ErrCode HidumpHelper::ProcessDump(const HidumpParam& hidumpParam, std::string &result)
 {
     result.clear();
     ErrCode errCode = ERR_APPEXECFWK_HIDUMP_ERROR;
@@ -184,7 +184,7 @@ ErrCode HidumpHelper::GetAllAbilityInfo(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
     if (!shareDataMgr) {
-        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE;
+        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
     std::vector<BundleInfo> bundleInfos;
@@ -213,7 +213,7 @@ ErrCode HidumpHelper::GetAllAbilityNameList(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
     if (!shareDataMgr) {
-        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE;
+        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
     std::vector<BundleInfo> bundleInfos;
@@ -239,7 +239,7 @@ ErrCode HidumpHelper::GetAbilityInfoByName(const std::string &name, std::string 
 {
     auto shareDataMgr = dataMgr_.lock();
     if (!shareDataMgr) {
-        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE;
+        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
     std::vector<BundleInfo> bundleInfos;
@@ -270,7 +270,7 @@ ErrCode HidumpHelper::GetAllBundleInfo(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
     if (!shareDataMgr) {
-        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE;
+        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
     std::vector<BundleInfo> bundleInfos;
@@ -297,7 +297,7 @@ ErrCode HidumpHelper::GetAllBundleNameList(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
     if (!shareDataMgr) {
-        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE;
+        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
     std::vector<std::string> bundleNames;
@@ -319,7 +319,7 @@ ErrCode HidumpHelper::GetBundleInfoByName(const std::string &name, std::string &
     APP_LOGD("hidump bundle info begin");
     auto shareDataMgr = dataMgr_.lock();
     if (!shareDataMgr) {
-        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE;
+        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
     BundleInfo bundleInfo;
@@ -344,7 +344,7 @@ ErrCode HidumpHelper::GetAllDeviced(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
     if (!shareDataMgr) {
-        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROE;
+        return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
     std::vector<std::string> deviceIds;

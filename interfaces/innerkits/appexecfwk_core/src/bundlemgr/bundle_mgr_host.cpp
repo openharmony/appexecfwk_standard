@@ -44,7 +44,7 @@ void SplitString(const std::string &source, std::vector<std::string> &strings)
     }
 }
 
-inline void ClearAshMem(sptr<Ashmem> &optMem)
+inline void ClearAshmem(sptr<Ashmem> &optMem)
 {
     if (optMem != nullptr) {
         optMem->UnmapAshmem();
@@ -1980,7 +1980,7 @@ bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
         ret = ashmem->WriteToAshmem(std::to_string(itemLen).c_str(), ASHMEM_LEN, offset);
         if (!ret) {
             APP_LOGE("Write itemLen to shared memory fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -1988,7 +1988,7 @@ bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
         ret = ashmem->WriteToAshmem(infoStr.c_str(), itemLen, offset);
         if (!ret) {
             APP_LOGE("Write info to shared memory fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -1996,7 +1996,7 @@ bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
     }
 
     ret = messageParcel->WriteAshmem(ashmem);
-    ClearAshMem(ashmem);
+    ClearAshmem(ashmem);
     if (!ret) {
         APP_LOGE("Write ashmem to parcel fail");
         return false;
