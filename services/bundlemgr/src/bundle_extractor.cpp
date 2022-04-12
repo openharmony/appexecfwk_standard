@@ -39,5 +39,11 @@ bool BundleExtractor::ExtractProfile(std::ostream &dest) const
     APP_LOGD("profile is config.json");
     return ExtractByName(Constants::BUNDLE_PROFILE_NAME, dest);
 }
+
+bool BundleExtractor::ExtractPackFile(std::ostream &dest) const
+{
+    APP_LOGD("start to parse pack.info");
+    return ExtractByName(Constants::BUNDLE_PACKFILE_NAME, dest);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

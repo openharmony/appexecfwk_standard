@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_SERIALIZER_H
 
 #include "bundle_info.h"
+#include "bundle_pack_info.h"
 #include "bundle_user_info.h"
 #include "common_event_info.h"
 #include "distributed_ability_info.h"
@@ -84,6 +85,24 @@ void to_json(nlohmann::json &jsonObject, const InstallResult &installResult);
 void from_json(const nlohmann::json &jsonObject, InstallResult &installResult);
 void to_json(nlohmann::json &jsonObject, const DispatcherInfo &dispatcherInfo);
 void from_json(const nlohmann::json &jsonObject, DispatcherInfo &dispatcherInfo);
+void to_json(nlohmann::json &jsonObject, const Version &version);
+void from_json(const nlohmann::json &jsonObject, Version &version);
+void to_json(nlohmann::json &jsonObject, const PackageApp &app);
+void from_json(const nlohmann::json &jsonObject, PackageApp &app);
+void to_json(nlohmann::json &jsonObject, const ModuleAbilityInfo &abilityinfo);
+void from_json(const nlohmann::json &jsonObject, ModuleAbilityInfo &abilityinfo);
+void to_json(nlohmann::json &jsonObject, const ModuleDistro &distro);
+void from_json(const nlohmann::json &jsonObject, ModuleDistro &distro);
+void to_json(nlohmann::json &jsonObject, const ApiVersion &apiVersion);
+void from_json(const nlohmann::json &jsonObject, ApiVersion &apiVersion);
+void to_json(nlohmann::json &jsonObject, const PackageModule &packageModule);
+void from_json(const nlohmann::json &jsonObject, PackageModule &packageModule);
+void to_json(nlohmann::json &jsonObject, const Summary &summary);
+void from_json(const nlohmann::json &jsonObject, Summary &summary);
+void to_json(nlohmann::json &jsonObject, const Packages &packages);
+void from_json(const nlohmann::json &jsonObject, Packages &packages);
+void to_json(nlohmann::json &jsonObject, const BundlePackInfo &bundlePackInfo);
+void from_json(const nlohmann::json &jsonObject, BundlePackInfo &bundlePackInfo);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_SERIALIZER_H
