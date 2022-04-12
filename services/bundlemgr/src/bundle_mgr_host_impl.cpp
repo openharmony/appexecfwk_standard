@@ -532,19 +532,17 @@ void BundleMgrHostImpl::CleanBundleCacheTask(const std::string &bundleName,
     }
     auto cleanCache = [rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
-        bool result = false;
         for (const auto &st : rootDir) {
             std::vector<std::string> cache;
-            result = InstalldClient::GetInstance()->GetBundleCachePath(st, cache);
-            if (result) {
-                break;
+            if (InstalldClient::GetInstance()->GetBundleCachePath(st, cache) != ERR_OK) {
+                APP_LOGE("GetBundleCachePath failed, path: %{public}s", st.c_str());
             }
             for (const auto &item : cache) {
                 caches.emplace_back(item);
             }
         }
         bool error = false;
-        if (result) {
+        if (!caches.empty()) {
             for (const auto& cache : caches) {
                 error = InstalldClient::GetInstance()->CleanBundleDataDir(cache);
                 if (error) {
