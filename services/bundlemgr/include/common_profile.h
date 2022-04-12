@@ -48,6 +48,7 @@ const std::string BUNDLE_APP_PROFILE_KEY_API_VERSION = "apiVersion";
 const std::string BUNDLE_APP_PROFILE_KEY_SINGLETON = "singleton";
 const std::string BUNDLE_APP_PROFILE_KEY_REMOVABLE = "removable";
 const std::string BUNDLE_APP_PROFILE_KEY_USER_DATA_CLEARABLE = "userDataClearable";
+const std::string BUNDLE_APP_PROFILE_KEY_TARGETET_BUNDLE_LIST = "targetBundleList";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";
 const std::string BUNDLE_APP_PROFILE_KEY_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";

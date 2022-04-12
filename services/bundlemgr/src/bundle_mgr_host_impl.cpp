@@ -227,6 +227,26 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, AbilityInfo &abilityI
     return QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, Constants::UNSPECIFIED_USERID, abilityInfo);
 }
 
+bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack)
+{
+    auto connectAbilityMgr = GetConnectAbilityMgrFromService();
+    if (connectAbilityMgr == nullptr) {
+        APP_LOGE("connectAbilityMgr is nullptr");
+        return false;
+    }
+    return connectAbilityMgr->QueryAbilityInfo(want, flags, userId, abilityInfo, callBack);
+}
+
+void BundleMgrHostImpl::UpgradeAtomicService(const Want &want, int32_t userId)
+{
+    auto connectAbilityMgr = GetConnectAbilityMgrFromService();
+    if (connectAbilityMgr == nullptr) {
+        APP_LOGE("connectAbilityMgr is nullptr");
+    }
+    connectAbilityMgr->UpgradeAtomicService(want, userId);
+}
+
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
 {
     APP_LOGD("start QueryAbilityInfo, flags : %{public}d, userId : %{public}d", flags, userId);
@@ -858,6 +878,26 @@ bool BundleMgrHostImpl::SetModuleRemovable(const std::string &bundleName, const 
     return dataMgr->SetModuleRemovable(bundleName, moduleName, isEnable);
 }
 
+bool BundleMgrHostImpl::IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->IsModuleNeedUpdate(bundleName, moduleName);
+}
+
+bool BundleMgrHostImpl::SetModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->SetModuleNeedUpdate(bundleName, moduleName, isEnable);
+}
+
 bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     APP_LOGD("start SetApplicationEnabled");
@@ -1255,6 +1295,11 @@ const std::shared_ptr<BundleCloneMgr> BundleMgrHostImpl::GetCloneMgrFromService(
 const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+}
+
+const std::shared_ptr<BundleConnectAbilityMgr> BundleMgrHostImpl::GetConnectAbilityMgrFromService()
+{
+    return DelayedSingleton<BundleMgrService>::GetInstance()->GetConnectAbility();
 }
 
 std::set<int32_t> BundleMgrHostImpl::GetExistsCommonUserIs()

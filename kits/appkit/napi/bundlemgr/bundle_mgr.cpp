@@ -4692,7 +4692,6 @@ napi_value IsApplicationEnabledWrap(napi_env env, napi_callback_info info, Enabl
         APP_LOGE("%{public}s, Wrong argument count.", __func__);
         return nullptr;
     }
-
     napi_valuetype valueType = napi_undefined;
     napi_typeof(env, args[PARAM0], &valueType);
     if (valueType == napi_string) {
@@ -4940,6 +4939,225 @@ napi_value IsModuleRemovable(napi_env env, napi_callback_info info)
     }
 
     napi_value ret = GetModuleRemovableWrap(env, info, asyncCallbackInfo);
+
+    if (ret == nullptr) {
+        APP_LOGE("%{public}s ret is nullptr", __func__);
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+        ret = WrapVoidToJS(env);
+    }
+    APP_LOGI("%{public}s end.", __func__);
+    return ret;
+}
+
+static bool InnerSetModuleNeedUpdateExecute(napi_env env,
+    const std::string &bundleName, const std::string &moduleName, bool needUpdate)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (iBundleMgr == nullptr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    auto result = iBundleMgr->SetModuleNeedUpdate(bundleName, moduleName, needUpdate);
+    if (result) {
+        APP_LOGI("InnerSetModuleNeedUpdateExecute::SetModuleNeedUpdate");
+    }
+    return result;
+}
+
+void SetModuleNeedUpdateExecute(napi_env env, void *data)
+{
+    APP_LOGI("NAPI_SetModuleNeedUpdate, worker pool thread execute.");
+    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleNeedUpdateCallbackInfo *>(data);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("NAPI_SetModuleNeedUpdate, asyncCallbackInfo == nullptr");
+        return;
+    }
+    asyncCallbackInfo->result = InnerSetModuleNeedUpdateExecute(env, asyncCallbackInfo->bundleName,
+        asyncCallbackInfo->moduleName, asyncCallbackInfo->needUpdate);
+}
+
+void SetModuleNeedUpdateAsyncComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_SetModuleNeedUpdate, main event thread complete.");
+    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleNeedUpdateCallbackInfo *>(data);
+    napi_value callback = nullptr;
+    napi_value undefined = nullptr;
+    napi_value result[ARGS_SIZE_THREE] = {nullptr};
+    napi_value callResult = nullptr;
+    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
+    if (asyncCallbackInfo->err) {
+        napi_create_int32(env, asyncCallbackInfo->err, &result[PARAM0]);
+    }
+
+    if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result[PARAM1]));
+    } else {
+        result[PARAM1] = WrapUndefinedToJS(env);
+    }
+
+    NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callback, &callback));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_call_function(env, undefined, callback, sizeof(result) / sizeof(result[PARAM0]), result, &callResult));
+
+    if (asyncCallbackInfo->callback != nullptr) {
+        NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, asyncCallbackInfo->callback));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, asyncCallbackInfo->asyncWork));
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_ModuleNeedUpdate, main event thread complete end.");
+}
+
+void SetModuleNeedUpdatePromiseComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_SetModuleNeedUpdate, main event thread complete.");
+    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleNeedUpdateCallbackInfo *>(data);
+    napi_value result = nullptr;
+    if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result));
+        napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
+    } else {
+        napi_create_int32(env, asyncCallbackInfo->err, &result);
+        napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
+    }
+
+    napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_SetModuleNeedUpdate, main event thread complete end.");
+}
+
+napi_value SetModuleNeedUpdateAsync(
+    napi_env env, napi_value *args, const size_t argCallback, AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (args == nullptr || asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param is nullptr.", __func__);
+        return nullptr;
+    }
+
+    napi_value resourceName = nullptr;
+    napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName);
+
+    napi_valuetype valuetype = napi_undefined;
+    NAPI_CALL(env, napi_typeof(env, args[argCallback], &valuetype));
+    if (valuetype == napi_function) {
+        NAPI_CALL(env, napi_create_reference(env, args[argCallback], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+    } else {
+        return nullptr;
+    }
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, SetModuleNeedUpdateExecute,
+                       SetModuleNeedUpdateAsyncComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &result));
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return result;
+}
+
+napi_value SetModuleNeedUpdatePromise(napi_env env, AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, promise.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param is nullptr.", __func__);
+        return nullptr;
+    }
+    napi_value resourceName = nullptr;
+    NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName));
+    napi_deferred deferred;
+    napi_value promise = nullptr;
+    NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+    asyncCallbackInfo->deferred = deferred;
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, SetModuleNeedUpdateExecute,
+                       SetModuleNeedUpdatePromiseComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    APP_LOGI("%{public}s, promise end.", __func__);
+    return promise;
+}
+
+napi_value UpdateModuleUpgradeFlagWrap(
+    napi_env env, napi_callback_info info, AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo)
+{
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+    size_t argcAsync = ARGS_SIZE_FOUR;
+    const size_t argcPromise = ARGS_SIZE_THREE;
+    const size_t argCountWithAsync = argcPromise + ARGS_ASYNC_COUNT;
+    napi_value args[ARGS_MAX_COUNT] = {nullptr};
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
+    if (argcAsync > argCountWithAsync || argcAsync > ARGS_MAX_COUNT) {
+        return nullptr;
+    }
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, args[PARAM0], &valueType);
+    if (valueType == napi_string) {
+        ParseString(env, asyncCallbackInfo->bundleName, args[PARAM0]);
+    } else {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->errMssage = "type misMatch";
+    }
+    napi_valuetype secondValueType = napi_undefined;
+    napi_typeof(env, args[PARAM1], &secondValueType);
+    if (secondValueType == napi_string) {
+        ParseString(env, asyncCallbackInfo->moduleName, args[PARAM1]);
+    } else {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->errMssage = "type misMatch";
+    }
+    napi_valuetype thirdValueType = napi_undefined;
+    napi_typeof(env, args[PARAM2], &thirdValueType);
+    if (thirdValueType == napi_boolean) {
+        bool isEnable = false;
+        NAPI_CALL(env, napi_get_value_bool(env, args[PARAM2], &isEnable));
+        asyncCallbackInfo->needUpdate = isEnable;
+    } else {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->errMssage = "type misMatch";
+    }
+    if (asyncCallbackInfo->bundleName.empty() || asyncCallbackInfo->moduleName.empty()) {
+        asyncCallbackInfo->err = INVALID_PARAM;
+        asyncCallbackInfo->errMssage = "invalid param";
+    }
+    if (argcAsync > argcPromise) {
+        return SetModuleNeedUpdateAsync(env, args, argcAsync - 1, asyncCallbackInfo);
+    } else {
+        return SetModuleNeedUpdatePromise(env, asyncCallbackInfo);
+    }
+}
+
+AsyncModuleNeedUpdateCallbackInfo *CreateModuleNeedUpdateCallbackInfo(napi_env env)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = new AsyncModuleNeedUpdateCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo is nullptr.", __func__);
+        return nullptr;
+    }
+
+    APP_LOGI("%{public}s end.", __func__);
+    return asyncCallbackInfo;
+}
+
+napi_value UpdateModuleUpgradeFlag(napi_env env, napi_callback_info info)
+{
+    APP_LOGI("NAPI_UpdateModuleUpgradeFlag start");
+    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = CreateModuleNeedUpdateCallbackInfo(env);
+    if (asyncCallbackInfo == nullptr) {
+        return WrapVoidToJS(env);
+    }
+
+    napi_value ret = UpdateModuleUpgradeFlagWrap(env, info, asyncCallbackInfo);
 
     if (ret == nullptr) {
         APP_LOGE("%{public}s ret is nullptr", __func__);

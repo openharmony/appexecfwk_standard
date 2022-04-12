@@ -56,6 +56,7 @@ const std::string HAP_MODULE_INFO_MODULE_TYPE = "moduleType";
 const std::string HAP_MODULE_INFO_EXTENSION_INFOS = "extensionInfos";
 const std::string HAP_MODULE_INFO_META_DATA = "metadata";
 const std::string HAP_MODULE_INFO_DEPENDENCIES = "dependencies";
+const std::string HAP_MODULE_INFO_IS_NEED_UPDATE = "isNeedUpdate";
 }
 
 bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
@@ -146,6 +147,7 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_IS_MODULE_JSON, hapModuleInfo.isModuleJson},
         {HAP_MODULE_INFO_IS_STAGE_BASED_MODEL, hapModuleInfo.isStageBasedModel},
         {HAP_MODULE_INFO_IS_REMOVABLE, hapModuleInfo.isRemovable},
+        {HAP_MODULE_INFO_IS_NEED_UPDATE, hapModuleInfo.isNeedUpdate},
         {HAP_MODULE_INFO_MODULE_TYPE, hapModuleInfo.moduleType},
         {HAP_MODULE_INFO_EXTENSION_INFOS, hapModuleInfo.extensionInfos},
         {HAP_MODULE_INFO_META_DATA, hapModuleInfo.metadata},
@@ -377,6 +379,14 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         jsonObjectEnd,
         HAP_MODULE_INFO_IS_REMOVABLE,
         hapModuleInfo.isRemovable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_IS_NEED_UPDATE,
+        hapModuleInfo.isNeedUpdate,
         JsonType::BOOLEAN,
         false,
         parseResult,
