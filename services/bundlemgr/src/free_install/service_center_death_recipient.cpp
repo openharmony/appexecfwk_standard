@@ -23,7 +23,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 const std::u16string ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN = u"ohos.aafwk.IAtomicServiceStatusCallback";
-constexpr uint32_t IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE = 0;
+constexpr uint32_t FREE_INSTALL_DONE = 0;
 
 void ServiceCenterDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &wptrDeath)
 {
@@ -73,8 +73,9 @@ void ServiceCenterDeathRecipient::SendCallBack(FreeInstallParams &freeInstallPar
     }
     MessageParcel reply;
     MessageOption option;
-    sptr<IRemoteObject> amsCallBack = freeInstallParams.callback;
-    amsCallBack->SendRequest(IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE, data, reply, option);
+    if (freeInstallParams.callback->SendRequest(FREE_INSTALL_DONE, data, reply, option) != OHOS::NO_ERROR) {
+        APP_LOGE("BundleConnectAbilityMgr::SendCallBack SendRequest failed");
+    }
     freeInstallParamsMap_.erase(transactId);
 }
 }  // namespace AppExecFwk

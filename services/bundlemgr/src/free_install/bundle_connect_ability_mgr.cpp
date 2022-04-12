@@ -34,7 +34,7 @@ namespace AppExecFwk {
 const std::u16string ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN = u"ohos.aafwk.IAtomicServiceStatusCallback";
 const std::string serviceCenterBundleName = "com.ohos.hag.famanager";
 const std::string serviceCenterAbilityName = "com.ohos.hag.famanager.HapInstallServiceAbility";
-constexpr uint32_t IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE = 0;
+constexpr uint32_t FREE_INSTALL_DONE = 0;
 constexpr uint32_t CALLING_TYPE_HARMONY = 2;
 constexpr uint32_t BIT_ONE_COMPATIBLE = 0;
 constexpr uint32_t BIT_TWO_BACK_MODE = 1;
@@ -89,7 +89,7 @@ bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targe
 bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("start to UpgradeCheckSafely");
+    APP_LOGI("UpgradeCheckSafely");
     std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
     TaskPriority defaultPriority = TaskPriority::DEFAULT;
     std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
@@ -140,7 +140,7 @@ bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targ
             FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
         return false;
     }
-    APP_LOGI("end to create UpgradeInstallSafely");
+    APP_LOGI("end to UpgradeInstallSafely");
     return true;
 }
 
@@ -165,9 +165,9 @@ bool BundleConnectAbilityMgr::RunnableFun(int32_t flag, const TargetAbilityInfo 
 
 void BundleConnectAbilityMgr::DisconnectAbility()
 {
-    if (mServiceCenterConnection_ != nullptr) {
+    if (serviceCenterConnection_ != nullptr) {
         APP_LOGI("DisconnectAbility");
-        abilityMgrProxy_->DisconnectAbility(mServiceCenterConnection_);
+        abilityMgrProxy_->DisconnectAbility(serviceCenterConnection_);
     }
 }
 
@@ -175,36 +175,38 @@ bool BundleConnectAbilityMgr::ConnectAbility(const Want &want, const sptr<IRemot
 {
     APP_LOGI("ConnectAbility start target bundle = %{public}s", want.GetBundle().c_str());
     std::unique_lock<std::mutex> lock(mutex_);
-    APP_LOGI("ConnectAbility lock");
     if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_CONNECTING) {
-        APP_LOGI("ConnectAbility await start ServiceCenterConnectState::CONNECTING");
+        APP_LOGI("ConnectAbility await start SERVICE_CENTER_CONNECTING");
         cv_.wait(lock);
-        APP_LOGI("ConnectAbility await end ServiceCenterConnectState::CONNECTING");
+        APP_LOGI("ConnectAbility await end SERVICE_CENTER_CONNECTING");
     } else if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED) {
         connectState_ = ServiceCenterConnectState::SERVICE_CENTER_CONNECTING;
         if (!GetAbilityMgrProxy()) {
+            cv_.notify_all();
             return false;
         }
-        APP_LOGI("Create mServiceCenterConnection");
-        mServiceCenterConnection_ = new (std::nothrow) ServiceCenterConnection(connectState_,
+
+        serviceCenterConnection_ = new (std::nothrow) ServiceCenterConnection(connectState_,
             cv_, freeInstallParamsMap_);
-        if (!mServiceCenterConnection_) {
-            APP_LOGE("mServiceCenterConnection_is nullptr");
+        if (serviceCenterConnection_ == nullptr) {
+            APP_LOGE("mServiceCenterConnection is nullptr");
+            cv_.notify_all();
             return false;
         }
         APP_LOGI("Start ConnectAbility");
-        int result = abilityMgrProxy_->ConnectAbility(want, mServiceCenterConnection_, callerToken);
+        int result = abilityMgrProxy_->ConnectAbility(want, serviceCenterConnection_, callerToken);
         if (result == ERR_OK) {
             if (connectState_ != ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
-                APP_LOGI("ConnectAbility await start ServiceCenterConnectState::SERVICE_CENTER_CONNECTED");
+                APP_LOGI("ConnectAbility await start SERVICE_CENTER_CONNECTED");
                 cv_.wait(lock);
-                serviceCenterRemoteObject_ = mServiceCenterConnection_->GetRemoteObject();
-                APP_LOGI("ConnectAbility await end ServiceCenterConnectState::SERVICE_CENTER_CONNECTED");
+                APP_LOGI("ConnectAbility await end SERVICE_CENTER_CONNECTED");
+                serviceCenterRemoteObject_ = serviceCenterConnection_->GetRemoteObject();
             }
         } else {
             APP_LOGE("ConnectAbility fail result = %{public}d", result);
         }
     }
+
     APP_LOGI("ConnectAbility end");
     if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
         return true;
@@ -256,7 +258,10 @@ void BundleConnectAbilityMgr::SendCallBack(
     }
     MessageParcel reply;
     MessageOption option;
-    amsCallBack->SendRequest(IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE, data, reply, option);
+    
+    if (amsCallBack->SendRequest(FREE_INSTALL_DONE, data, reply, option) != OHOS::NO_ERROR) {
+        APP_LOGE("BundleConnectAbilityMgr::SendCallBack SendRequest failed");
+    }
 
     if (freeInstallParamsMap_.erase(transactId) && freeInstallParamsMap_.size() == 0) {
         if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
@@ -348,7 +353,7 @@ void BundleConnectAbilityMgr::SendRequest(
         return;
     }
     APP_LOGI("serviceCenterRemoteObject->SendRequest");
-    serviceCenterRemoteObject_ = mServiceCenterConnection_->GetRemoteObject();
+    serviceCenterRemoteObject_ = serviceCenterConnection_->GetRemoteObject();
     int32_t result = serviceCenterRemoteObject_->SendRequest(flag, data, reply, option);
     APP_LOGI("SendRequest result = %{public}d", result);
     if (result != ERR_OK) {
@@ -430,22 +435,25 @@ void BundleConnectAbilityMgr::CallAbilityManager(
     MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN)) {
-    APP_LOGE("Write interface token failed");
-    return;
+        APP_LOGE("Write interface token failed");
+        return;
     }
     if (!data.WriteInt32(resultCode)) {
-    APP_LOGE("Write result code error");
-    return;
+        APP_LOGE("Write result code error");
+        return;
     }
     if (!data.WriteParcelable(&want)) {
-    APP_LOGE("Write want failed");
-    return;
+        APP_LOGE("Write want failed");
+        return;
     }
     if (!data.WriteInt32(userId)) {
-    APP_LOGE("Write userId error");
-    return;
+        APP_LOGE("Write userId error");
+        return;
     }
-    callBack->SendRequest(IAtomicServiceStatusCallback_ON_FREE_INSTALL_DONE, data, reply, option);
+
+    if (callBack->SendRequest(FREE_INSTALL_DONE, data, reply, option) != OHOS::NO_ERROR) {
+        APP_LOGE("BundleConnectAbilityMgr::CallAbilityManager SendRequest failed");
+    }
 }
 
 bool BundleConnectAbilityMgr::CheckIsModuleNeedUpdate(
