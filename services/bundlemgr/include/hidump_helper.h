@@ -58,7 +58,7 @@ private:
         const std::string& secondParam, std::string &result);
     void ShowHelp(std::string &result);
     void ShowIllealInfomation(std::string &result);
-    ErrCode Dump(const HidumpParam& hidumpParam, std::string &result);
+    ErrCode ProcessDump(const HidumpParam& hidumpParam, std::string &result);
 
     ErrCode GetAllAbilityInfo(std::string &result);
     ErrCode GetAllAbilityNameList(std::string &result);
