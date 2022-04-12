@@ -22,7 +22,6 @@ namespace AccessToken {
 typedef unsigned int AccessTokenID;
 typedef unsigned int AccessTokenAttr;
 static const int DEFAULT_TOKEN_VERSION = 1;
-static const int DEFAULT_PERMISSION_FLAGS = 0;
 static const int FIRSTCALLER_TOKENID_DEFAULT = 0;
 
 enum AccessTokenKitRet {
@@ -68,6 +67,7 @@ typedef enum TypeGrantMode {
 } GrantMode;
 
 typedef enum TypePermissionFlag {
+    PERMISSION_DEFAULT_FLAG = 0,
     PERMISSION_USER_SET = 1 << 0,
     PERMISSION_USER_FIXED = 1 << 1,
     PERMISSION_SYSTEM_FIXED = 1 << 2,
