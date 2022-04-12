@@ -113,7 +113,7 @@ private:
      * @brief Handles the all GetBundleCachePath function.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
-     * @return Returns ERR_OK if get cache file path successfully; returns error code otherwise.
+     * @return Returns true if called successfully; returns false otherwise.
      */
     bool HandleGetBundleCachePath(MessageParcel &data, MessageParcel &reply);
 
