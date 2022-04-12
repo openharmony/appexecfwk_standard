@@ -171,6 +171,24 @@ ErrCode InstalldProxy::SetDirApl(const std::string &dir, const std::string &bund
     return TransactInstalldCmd(IInstalld::Message::SET_DIR_APL, data, reply, option);
 }
 
+ErrCode InstalldProxy::GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath)
+{
+    MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(dir));
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    auto ret = TransactInstalldCmd(IInstalld::Message::GET_BUNDLE_CACHE_PATH, data, reply, option);
+    if (ret == ERR_OK) {
+        if (reply.ReadStringVector(&cachePath)) {
+            return ERR_OK;
+        } else {
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ret;
+}
+
 ErrCode InstalldProxy::TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
