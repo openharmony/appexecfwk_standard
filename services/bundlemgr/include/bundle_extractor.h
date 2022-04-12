@@ -32,6 +32,12 @@ public:
      * @return Returns true if the Profile is successfully extracted; returns false otherwise.
      */
     virtual bool ExtractProfile(std::ostream &dest) const override;
+    /**
+     * @brief Extract the pack.info of a hap to dest stream.
+     * @param dest Indicates the obtained std::ostream object.
+     * @return Returns true if the file is successfully extracted; returns false otherwise.
+     */
+    virtual bool ExtractPackFile(std::ostream &dest) const override;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
