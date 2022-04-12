@@ -2576,7 +2576,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     if (hasKey) {
         status = napi_get_named_property(env, args, "userId", &property);
         if (status != napi_ok) {
-            APP_LOGE("napi get named property error!");
+            APP_LOGE("napi get named userId property error!");
             return false;
         }
 
@@ -2602,7 +2602,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     if (hasKey) {
         status = napi_get_named_property(env, args, "installFlag", &property);
         if (status != napi_ok) {
-            APP_LOGE("napi get named property error!");
+            APP_LOGE("napi get named installFlag property error!");
             return false;
         }
 
@@ -2624,7 +2624,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     if (hasKey) {
         status = napi_get_named_property(env, args, "isKeepData", &property);
         if (status != napi_ok) {
-            APP_LOGE("napi get named property error!");
+            APP_LOGE("napi get named isKeepData property error!");
             return false;
         }
 
@@ -2716,6 +2716,7 @@ static void ConvertInstallResult(InstallResult &installResult)
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_APPTYPE_NOT_SAME):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_URI_DUPLICATE):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_VERSION_NOT_COMPATIBLE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_TYPE_ERROR):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_FAILURE_CONFLICT);
             installResult.resultMsg = "STATUS_INSTALL_FAILURE_CONFLICT";
             break;

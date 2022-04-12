@@ -1263,7 +1263,6 @@ bool ToBundleInfo(const ApplicationInfo &applicationInfo,
     if (innerModuleInfo.isEntry) {
         bundleInfo.mainEntry = innerModuleInfo.moduleName;
         bundleInfo.entryModuleName = innerModuleInfo.moduleName;
-        bundleInfo.entryInstallationFree = innerModuleInfo.installationFree;
     }
 
     return true;

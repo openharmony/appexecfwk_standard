@@ -2040,7 +2040,6 @@ bool ToBundleInfo(const ProfileReader::ConfigJson &configJson, const Application
     if (innerModuleInfo.isEntry) {
         bundleInfo.mainEntry = innerModuleInfo.modulePackage;
         bundleInfo.entryModuleName = innerModuleInfo.moduleName;
-        bundleInfo.entryInstallationFree = innerModuleInfo.installationFree;
     }
 
     return true;
@@ -2349,5 +2348,16 @@ ErrCode BundleProfile::TransformTo(const std::ostringstream &source, const Bundl
     return ERR_OK;
 }
 
+ErrCode BundleProfile::TransformTo(const std::ostringstream &source, BundlePackInfo &bundlePackInfo)
+{
+    APP_LOGI("transform packinfo stream to bundle pack info");
+    nlohmann::json jsonObject = nlohmann::json::parse(source.str(), nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("bad profile");
+        return ERR_APPEXECFWK_PARSE_BAD_PROFILE;
+    }
+    bundlePackInfo = jsonObject.get<BundlePackInfo>();
+    return ERR_OK;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

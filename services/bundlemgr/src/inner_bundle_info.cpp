@@ -92,10 +92,11 @@ const std::string MODULE_EXTENSION_KEYS = "extensionKeys";
 const std::string MODULE_EXTENSION_SKILL_KEYS = "extensionSkillKeys";
 const std::string MODULE_IS_MODULE_JSON = "isModuleJson";
 const std::string MODULE_IS_STAGE_BASED_MODEL = "isStageBasedModel";
-const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion_";
+const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion";
 const std::string BUNDLE_IS_NEED_UPDATE = "isNeedUpdate_";
-const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos_";
-const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos_";
+const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos";
+const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos";
+const std::string BUNDLE_PACK_INFO = "bundlePackInfo";
 const std::string ALLOWED_ACLS = "allowedAcls";
 const std::string META_DATA_SHORTCUTS_NAME = "ohos.ability.shortcuts";
 
@@ -369,7 +370,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys},
         {MODULE_IS_MODULE_JSON, info.isModuleJson},
         {MODULE_IS_STAGE_BASED_MODEL, info.isStageBasedModel},
-        {MODULE_DEPENDENCIES, info.dependencies},
+        {MODULE_DEPENDENCIES, info.dependencies}
     };
 }
 
@@ -431,6 +432,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[BUNDLE_IS_NEED_UPDATE] = isNeedUpdate_;
     jsonObject[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
     jsonObject[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
+    jsonObject[BUNDLE_PACK_INFO] = bundlePackInfo_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -1218,6 +1220,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<BundlePackInfo>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_PACK_INFO,
+        bundlePackInfo_,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
         APP_LOGE("read InnerBundleInfo from database error, error code : %{public}d", parseResult);
         return parseResult;
@@ -1639,33 +1649,7 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
 std::string InnerBundleInfo::ToString() const
 {
     nlohmann::json j;
-    j[IS_SUPPORT_BACKUP] = isSupportBackup_;
-    j[APP_TYPE] = appType_;
-    j[UID] = uid_;
-    j[GID] = gid_;
-    j[BASE_DATA_DIR] = baseDataDir_;
-    j[BUNDLE_STATUS] = bundleStatus_;
-    j[ALLOWED_ACLS] = allowedAcls_;
-    j[BASE_APPLICATION_INFO] = baseApplicationInfo_;
-    j[BASE_BUNDLE_INFO] = baseBundleInfo_;
-    j[BASE_ABILITY_INFO] = baseAbilityInfos_;
-    j[INNER_MODULE_INFO] = innerModuleInfos_;
-    j[SKILL_INFOS] = skillInfos_;
-    j[USER_ID] = userId_;
-    j[MAIN_ABILITY] = mainAbility_;
-    j[MAIN_ABILITY_NAME] = mainAbilityName_;
-    j[APP_FEATURE] = appFeature_;
-    j[HAS_ENTRY] = hasEntry_;
-    j[MODULE_FORMS] = formInfos_;
-    j[MODULE_SHORTCUT] = shortcutInfos_;
-    j[NEW_BUNDLE_NAME] = newBundleName_;
-    j[MODULE_COMMON_EVENT] = commonEvents_;
-    j[INSTALL_MARK] = mark_;
-    j[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
-    j[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
-    j[BUNDLE_IS_NEED_UPDATE] = isNeedUpdate_;
-    j[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
-    j[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
+    ToJson(j);
     return j.dump();
 }
 

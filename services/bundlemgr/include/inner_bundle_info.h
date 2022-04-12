@@ -1389,6 +1389,25 @@ public:
      */
     bool IsBundleRemovable() const;
 
+    void SetEntryInstallationFree(bool installationFree)
+    {
+        baseBundleInfo_.entryInstallationFree = installationFree;
+    }
+
+    bool GetEntryInstallationFree() const
+    {
+        return baseBundleInfo_.entryInstallationFree;
+    }
+
+    void SetBundlePackInfo(const BundlePackInfo &bundlePackInfo)
+    {
+        bundlePackInfo_ = bundlePackInfo;
+    }
+
+    BundlePackInfo GetBundlePackInfo() const
+    {
+        return bundlePackInfo_;
+    }
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
@@ -1432,6 +1451,8 @@ private:
     std::map<std::string, std::vector<Skill>> skillInfos_;
 
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
+
+    BundlePackInfo bundlePackInfo_;
     // new version fields
     bool isNewVersion_ = false;
     bool isNeedUpdate_ = false;

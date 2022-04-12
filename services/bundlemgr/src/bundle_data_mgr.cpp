@@ -311,7 +311,7 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
             bundleName.c_str(), newInfo.GetCurrentModulePackage().c_str());
         // 1.exist entry, update entry.
         // 2.only exist feature, update feature.
-        if (newInfo.HasEntry() || !oldInfo.HasEntry()) {
+        if (newInfo.HasEntry() || !oldInfo.HasEntry() || oldInfo.GetEntryInstallationFree()) {
             oldInfo.UpdateBaseBundleInfo(newInfo.GetBaseBundleInfo(), newInfo.HasEntry());
             oldInfo.UpdateBaseApplicationInfo(newInfo.GetBaseApplicationInfo());
             oldInfo.SetMainAbility(newInfo.GetMainAbility());
@@ -324,6 +324,7 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         if (newInfo.HasEntry()) {
             oldInfo.SetHasEntry(true);
         }
+        oldInfo.SetBundlePackInfo(newInfo.GetBundlePackInfo());
         oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);

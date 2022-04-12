@@ -334,7 +334,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_1100, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_DUMP);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_DUMP);
 }
 
 /**
