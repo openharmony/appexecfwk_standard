@@ -31,7 +31,7 @@ namespace AppExecFwk {
 namespace {
 const int32_t ASHMEM_LEN = 16;
 
-inline void ClearAshMem(sptr<Ashmem> &optMem)
+inline void ClearAshmem(sptr<Ashmem> &optMem)
 {
     if (optMem != nullptr) {
         optMem->UnmapAshmem();
@@ -41,7 +41,7 @@ inline void ClearAshMem(sptr<Ashmem> &optMem)
 
 bool ParseStr(const char *buf, const int itemLen, int index, std::string &result)
 {
-    APP_LOGD("ParseStr itemLen:%{public}d  index:%{public}d.", itemLen, index);
+    APP_LOGD("ParseStr itemLen:%{public}d index:%{public}d.", itemLen, index);
     if (buf == nullptr || itemLen <= 0 || index < 0) {
         APP_LOGE("param invalid.");
         return false;
@@ -80,7 +80,7 @@ bool BundleMgrProxy::GetApplicationInfo(
 
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to GetApplicationInfo due to write MessageParcel fail");
+        APP_LOGE("fail to GetApplicationInfo due to write descriptor fail");
         return false;
     }
     if (!data.WriteString(appName)) {
@@ -145,7 +145,7 @@ bool BundleMgrProxy::GetApplicationInfos(
     APP_LOGD("begin to get GetApplicationInfos of specific userId id %{private}d", userId);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to GetApplicationInfo due to write MessageParcel fail");
+        APP_LOGE("fail to GetApplicationInfo due to write descriptor fail");
         return false;
     }
     if (!data.WriteInt32(static_cast<int>(flag))) {
@@ -624,6 +624,62 @@ bool BundleMgrProxy::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo
         return false;
     }
     return true;
+}
+
+bool BundleMgrProxy::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel");
+        return false;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to QueryAbilityInfo due to write want");
+        return false;
+    }
+
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to QueryAbilityInfo due to write flags");
+        return false;
+    }
+
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to QueryAbilityInfo due to write userId");
+        return false;
+    }
+
+    if (!data.WriteObject(callBack)) {
+        APP_LOGE("fail to callBack, for write parcel");
+        return false;
+    }
+
+    if (!GetParcelableInfo<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK, data, abilityInfo)) {
+        APP_LOGE("fail to query ability info from server");
+        return false;
+    }
+    return true;
+}
+
+void BundleMgrProxy::UpgradeAtomicService(const Want &want, int32_t userId)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to UpgradeAtomicService due to write descriptor");
+        return;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to UpgradeAtomicService due to write want");
+        return;
+    }
+
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to UpgradeAtomicService due to write userId");
+        return;
+    }
+    return;
 }
 
 bool BundleMgrProxy::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
@@ -1516,6 +1572,72 @@ bool BundleMgrProxy::SetModuleRemovable(const std::string &bundleName, const std
     MessageParcel reply;
     if (!SendTransactCmd(IBundleMgr::Message::SET_MODULE_REMOVABLE, data, reply)) {
         APP_LOGE("fail to SetModuleRemovable from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to IsModuleNeedUpdate of %{public}s", bundleName.c_str());
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("fail to IsModuleNeedUpdate due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to IsModuleNeedUpdate due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to IsModuleNeedUpdate due to write bundleName fail");
+        return false;
+    }
+
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to IsModuleNeedUpdate due to write moduleName fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::IS_MODULE_NEED_UPDATE, data, reply)) {
+        APP_LOGE("fail to IsModuleNeedUpdate from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::SetModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to SetModuleNeedUpdate of %{public}s", bundleName.c_str());
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("fail to SetModuleNeedUpdate due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to SetModuleNeedUpdate due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to SetModuleNeedUpdate due to write bundleName fail");
+        return false;
+    }
+
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to SetModuleNeedUpdate due to write moduleName fail");
+        return false;
+    }
+    if (!data.WriteBool(isEnable)) {
+        APP_LOGE("fail to SetModuleNeedUpdate due to write isEnable fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::SET_MODULE_NEED_UPDATE, data, reply)) {
+        APP_LOGE("fail to SetModuleNeedUpdate from server");
         return false;
     }
     return reply.ReadBool();
@@ -2548,7 +2670,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
     bool ret = ashmem->MapReadOnlyAshmem();
     if (!ret) {
         APP_LOGE("Map read only ashmem fail");
-        ClearAshMem(ashmem);
+        ClearAshmem(ashmem);
         return false;
     }
 
@@ -2557,7 +2679,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         ashmem->ReadFromAshmem(ashmem->GetAshmemSize(), offset));
     if (dataStr == nullptr) {
         APP_LOGE("Data is nullptr when read from ashmem");
-        ClearAshMem(ashmem);
+        ClearAshmem(ashmem);
         return false;
     }
 
@@ -2565,7 +2687,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         std::string lenStr;
         if (!ParseStr(dataStr, ASHMEM_LEN, offset, lenStr)) {
             APP_LOGE("Parse lenStr fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -2574,14 +2696,14 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         std::string infoStr;
         if (!ParseStr(dataStr, strLen, offset, infoStr)) {
             APP_LOGE("Parse infoStr fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
         T info;
         if (!ParseInfoFromJsonStr(infoStr.c_str(), info)) {
             APP_LOGE("Parse info from json fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -2590,6 +2712,7 @@ bool BundleMgrProxy::GetParcelableInfosFromAshmem(
         offset += strLen;
     }
 
+    ClearAshmem(ashmem);
     APP_LOGD("Get parcelable vector from ashmem success");
     return true;
 }

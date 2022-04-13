@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_MGR_HOST_IMPL_H
 
 #include "bundle_clone_mgr.h"
+#include "bundle_connect_ability_mgr.h"
 #include "bundle_data_mgr.h"
 #include "bundle_mgr_host.h"
 #include "bundle_mgr_service_event_handler.h"
@@ -168,6 +169,15 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) override;
+
+    /**
+     * @brief Query the AbilityInfo by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
+        AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack) override;
     /**
      * @brief Obtains the AbilityInfo based on a given bundle name through the proxy object.
      * @param bundleName Indicates the application bundle name to be queried.
@@ -186,6 +196,12 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo) override;
+    /**
+     * @brief Upgrade atomic service
+     * @param want Indicates the information of the ability.
+     * @param userId Indicates the user ID.
+     */
+    virtual void UpgradeAtomicService(const Want &want, int32_t userId) override;
     /**
      * @brief Query the AbilityInfo of list by the given Want.
      * @param want Indicates the information of the ability.
@@ -668,15 +684,32 @@ public:
      */
     virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
         std::vector<std::string> &dependentModuleNames) override;
+    /**
+     * @brief Obtains the value of isNeedUpdate based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName) override;
+    /**
+     * @brief Sets whether to enable isNeedUpdate based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isNeedUpdate of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleNeedUpdate(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable) override;
 
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
+    const std::shared_ptr<BundleConnectAbilityMgr> GetConnectAbilityMgrFromService();
     bool GetBundleUserInfo(
         const std::string &bundleName, int32_t userId, InnerBundleUserInfo &innerBundleUserInfo);
     bool GetBundleUserInfos(
         const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos);
-    bool TraverseCacheDirectory(const std::string& rootDir, std::vector<std::string>& cacheDirs);
     bool GetShortcutInfos(
         const std::string &bundleName, int32_t userId, std::vector<ShortcutInfo> &shortcutInfos);
     bool DumpAllBundleInfoNames(int32_t userId, std::string &result);
@@ -686,6 +719,8 @@ private:
     bool DumpShortcutInfo(const std::string &bundleName, int32_t userId, std::string &result);
     std::set<int32_t> GetExistsCommonUserIs();
     bool VerifyQueryPermission(const std::string &queryBundleName);
+    void CleanBundleCacheTask(const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
+        int32_t userId);
 
     std::shared_ptr<BMSEventHandler> handler_;
 };

@@ -19,6 +19,7 @@ import(
 config("bundlemgr_common_config") {
   include_dirs = [
     "include",
+    "include/free_install",
     "//utils/system/safwk/native/include",
   ]
 
@@ -152,6 +153,7 @@ ohos_shared_library("libbms") {
   ]
 
   sources += bundle_install_sources
+  sources += free_install
 
   defines = [
     "APP_LOG_TAG = \"BundleMgrService\"",
@@ -170,7 +172,10 @@ ohos_shared_library("libbms") {
   ]
 
   external_deps = [
+    "ability_base:task_dispatcher",
     "ability_base:want",
+    "ability_runtime:ability_manager",
+    "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",

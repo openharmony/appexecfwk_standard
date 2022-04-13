@@ -105,6 +105,13 @@ public:
      * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
      */
     virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) = 0;
+    /**
+     * @brief Get all cache file path.
+     * @param dir Indicates the data dir.
+     * @param cachesPath Indicates the cache file path.
+     * @return Returns ERR_OK if get cache file path successfully; returns error code otherwise.
+     */
+    virtual ErrCode GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath) = 0;
 protected:
     enum Message : uint32_t {
         CREATE_BUNDLE_DIR = 1,
@@ -116,7 +123,8 @@ protected:
         REMOVE_MODULE_DATA_DIR,
         REMOVE_DIR,
         GET_BUNDLE_STATS,
-        SET_DIR_APL
+        SET_DIR_APL,
+        GET_BUNDLE_CACHE_PATH
     };
 };
 

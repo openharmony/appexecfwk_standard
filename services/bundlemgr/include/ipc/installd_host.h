@@ -109,6 +109,14 @@ private:
      */
     bool HandleSetDirApl(MessageParcel &data, MessageParcel &reply);
 
+    /**
+     * @brief Handles the all GetBundleCachePath function.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns true if called successfully; returns false otherwise.
+     */
+    bool HandleGetBundleCachePath(MessageParcel &data, MessageParcel &reply);
+
     using InstalldFunc = bool (InstalldHost::*)(MessageParcel &, MessageParcel &);
     std::unordered_map<uint32_t, InstalldFunc> funcMap_;
 };

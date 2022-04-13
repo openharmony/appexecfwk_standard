@@ -17,6 +17,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 config("appexecfwk_base_sdk_config") {
   include_dirs = [
     "include",
+    "include/free_install",
     "//third_party/json/include",
   ]
 }
@@ -26,6 +27,7 @@ ohos_shared_library("appexecfwk_base") {
     "src/ability_info.cpp",
     "src/application_info.cpp",
     "src/bundle_info.cpp",
+    "src/bundle_pack_info.cpp",
     "src/bundle_user_info.cpp",
     "src/common_event_info.cpp",
     "src/compatible_ability_info.cpp",
@@ -37,6 +39,9 @@ ohos_shared_library("appexecfwk_base") {
     "src/extension_form_info.cpp",
     "src/extension_form_profile.cpp",
     "src/form_info.cpp",
+    "src/free_install/dispatch_info.cpp",
+    "src/free_install/install_result.cpp",
+    "src/free_install/target_ability_info.cpp",
     "src/hap_module_info.cpp",
     "src/install_param.cpp",
     "src/module_info.cpp",

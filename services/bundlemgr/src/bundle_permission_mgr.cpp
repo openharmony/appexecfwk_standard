@@ -278,7 +278,6 @@ bool BundlePermissionMgr::AddDefineAndRequestPermissions(const Security::AccessT
 
 int32_t BundlePermissionMgr::DeleteAccessTokenId(const AccessToken::AccessTokenID tokenId)
 {
-    APP_LOGD("BundlePermissionMgr::DeleteAccessTokenId tokenId : %{private}u", tokenId);
     return AccessToken::AccessTokenKit::DeleteToken(tokenId);
 }
 
@@ -317,7 +316,7 @@ std::vector<AccessToken::PermissionStateFull> BundlePermissionMgr::GetPermission
             perState.isGeneral = true;
             perState.resDeviceID.emplace_back(innerBundleInfo.GetBaseApplicationInfo().deviceId);
             perState.grantStatus.emplace_back(AccessToken::PermissionState::PERMISSION_DENIED);
-            perState.grantFlags.emplace_back(AccessToken::PermissionFlag::PERMISSION_USER_SET);
+            perState.grantFlags.emplace_back(AccessToken::PermissionFlag::PERMISSION_DEFAULT_FLAG);
             permStateFullList.emplace_back(perState);
         }
     } else {
@@ -351,7 +350,8 @@ bool BundlePermissionMgr::InnerGrantRequestPermissions(const std::vector<Request
 
     APP_LOGD("InnerGrantRequestPermissions add system grant permission %{public}zu", grantPermList.size());
     for (const auto &perm : grantPermList) {
-        auto ret = AccessToken::AccessTokenKit::GrantPermission(tokenId, perm, 0);
+        auto ret = AccessToken::AccessTokenKit::GrantPermission(tokenId, perm,
+            AccessToken::PermissionFlag::PERMISSION_SYSTEM_FIXED);
         if (ret != AccessToken::AccessTokenKitRet::RET_SUCCESS) {
             APP_LOGE("GrantReqPermission failed, request permission name:%{public}s", perm.c_str());
             return false;
@@ -432,8 +432,7 @@ bool BundlePermissionMgr::GetRequestPermissionStates(BundleInfo &bundleInfo)
                 return perm.permissionName == req;
             });
         if (iter != allPermissionState.end()) {
-            APP_LOGD("GetRequestPermissionStates request permission name: %{public}s, deviceId: %{private}s",
-                     req.c_str(), deviceId.c_str());
+            APP_LOGD("GetRequestPermissionStates request permission name: %{public}s", req.c_str());
             for (std::vector<std::string>::size_type i = 0; i < iter->resDeviceID.size(); i++) {
                 if (iter->resDeviceID[i] == deviceId) {
                     bundleInfo.reqPermissionStates.emplace_back(iter->grantStatus[i]);

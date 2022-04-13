@@ -227,6 +227,26 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, AbilityInfo &abilityI
     return QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, Constants::UNSPECIFIED_USERID, abilityInfo);
 }
 
+bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack)
+{
+    auto connectAbilityMgr = GetConnectAbilityMgrFromService();
+    if (connectAbilityMgr == nullptr) {
+        APP_LOGE("connectAbilityMgr is nullptr");
+        return false;
+    }
+    return connectAbilityMgr->QueryAbilityInfo(want, flags, userId, abilityInfo, callBack);
+}
+
+void BundleMgrHostImpl::UpgradeAtomicService(const Want &want, int32_t userId)
+{
+    auto connectAbilityMgr = GetConnectAbilityMgrFromService();
+    if (connectAbilityMgr == nullptr) {
+        APP_LOGE("connectAbilityMgr is nullptr");
+    }
+    connectAbilityMgr->UpgradeAtomicService(want, userId);
+}
+
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
 {
     APP_LOGD("start QueryAbilityInfo, flags : %{public}d, userId : %{public}d", flags, userId);
@@ -488,33 +508,6 @@ bool BundleMgrHostImpl::IsSafeMode()
     return true;
 }
 
-bool BundleMgrHostImpl::TraverseCacheDirectory(const std::string& rootDir, std::vector<std::string>& cacheDirs)
-{
-    APP_LOGD("start TraverseCacheDirectory, rootDir : %{public}s", rootDir.c_str());
-    DIR* dir = opendir(rootDir.c_str());
-    struct dirent *ptr = nullptr;
-    if (dir == nullptr) {
-        return false;
-    }
-    while ((ptr = readdir(dir)) != nullptr) {
-        if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
-            continue;
-        }
-        if (ptr->d_type == DT_DIR && strcmp(ptr->d_name, "cache") == 0) {
-            std::string currentDir = OHOS::IncludeTrailingPathDelimiter(rootDir) + std::string(ptr->d_name);
-            cacheDirs.emplace_back(currentDir);
-            continue;
-        }
-        if (ptr->d_type == DT_DIR) {
-            std::string currentDir = OHOS::IncludeTrailingPathDelimiter(rootDir) + std::string(ptr->d_name);
-            TraverseCacheDirectory(currentDir, cacheDirs);
-        }
-    }
-    closedir(dir);
-
-    return true;
-}
-
 bool BundleMgrHostImpl::CleanBundleCacheFiles(
     const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
     int32_t userId)
@@ -543,12 +536,33 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         APP_LOGE("can not clean cacheFiles of %{public}s due to userDataClearable is false", bundleName.c_str());
         return false;
     }
-    std::string rootDir = applicationInfo.dataDir;
-    auto cleanCache = [this, rootDir, cleanCacheCallback]() {
+    CleanBundleCacheTask(bundleName, cleanCacheCallback, userId);
+    return true;
+}
+
+void BundleMgrHostImpl::CleanBundleCacheTask(const std::string &bundleName,
+    const sptr<ICleanCacheCallback> &cleanCacheCallback,
+    int32_t userId)
+{
+    std::vector<std::string> rootDir;
+    for (const auto &el : Constants::BUNDLE_EL) {
+        std::string dataDir = Constants::BUNDLE_APP_DATA_BASE_DIR + el +
+            Constants::FILE_SEPARATOR_CHAR + std::to_string(userId) + Constants::BASE + bundleName;
+        rootDir.emplace_back(dataDir);
+    }
+    auto cleanCache = [rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
-        bool result = this->TraverseCacheDirectory(rootDir, caches);
+        for (const auto &st : rootDir) {
+            std::vector<std::string> cache;
+            if (InstalldClient::GetInstance()->GetBundleCachePath(st, cache) != ERR_OK) {
+                APP_LOGE("GetBundleCachePath failed, path: %{public}s", st.c_str());
+            }
+            for (const auto &item : cache) {
+                caches.emplace_back(item);
+            }
+        }
         bool error = false;
-        if (result) {
+        if (!caches.empty()) {
             for (const auto& cache : caches) {
                 error = InstalldClient::GetInstance()->CleanBundleDataDir(cache);
                 if (error) {
@@ -560,7 +574,6 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         cleanCacheCallback->OnCleanCacheFinished(error);
     };
     handler_->PostTask(cleanCache);
-    return true;
 }
 
 bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, const int userId)
@@ -863,6 +876,26 @@ bool BundleMgrHostImpl::SetModuleRemovable(const std::string &bundleName, const 
         return false;
     }
     return dataMgr->SetModuleRemovable(bundleName, moduleName, isEnable);
+}
+
+bool BundleMgrHostImpl::IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->IsModuleNeedUpdate(bundleName, moduleName);
+}
+
+bool BundleMgrHostImpl::SetModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->SetModuleNeedUpdate(bundleName, moduleName, isEnable);
 }
 
 bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
@@ -1262,6 +1295,11 @@ const std::shared_ptr<BundleCloneMgr> BundleMgrHostImpl::GetCloneMgrFromService(
 const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+}
+
+const std::shared_ptr<BundleConnectAbilityMgr> BundleMgrHostImpl::GetConnectAbilityMgrFromService()
+{
+    return DelayedSingleton<BundleMgrService>::GetInstance()->GetConnectAbility();
 }
 
 std::set<int32_t> BundleMgrHostImpl::GetExistsCommonUserIs()

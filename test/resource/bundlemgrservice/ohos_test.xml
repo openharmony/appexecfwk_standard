@@ -217,6 +217,22 @@
               src="res"/>
       <option name="push" value="test_bundle/second_backup_right.hap -> /data/test/resource/bms/install_bundle/test4/"
               src="res"/>
+      <option name="push" value="update_service/higher_version_entry_service.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="update_service/higher_version_feature_service.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="update_service/lower_version_entry_service.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="update_service/lower_version_feature_service.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="update_service/same_version_entry_application.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="update_service/same_version_entry_service.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="update_service/same_version_feature_application.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="update_service/same_version_feature_service.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
     </preparer>
   </target>
   <target name="BmsInstallDaemonTest">

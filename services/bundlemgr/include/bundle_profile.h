@@ -33,6 +33,8 @@ public:
      */
     ErrCode TransformTo(const std::ostringstream &source, const BundleExtractor &bundleExtractor,
         InnerBundleInfo &innerBundleInfo) const;
+
+    ErrCode TransformTo(const std::ostringstream &source, BundlePackInfo &bundlePackInfo);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

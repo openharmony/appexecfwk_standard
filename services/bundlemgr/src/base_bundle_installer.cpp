@@ -211,14 +211,6 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    if (isAppExist_) {
-        for (const auto &item : newInfos) {
-            if (oldInfo.GetIsNewVersion() != item.second.GetIsNewVersion()) {
-                return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
-            }
-        }
-    }
-
     // set newInfos all haps isRemovable is true
     if (!isAppExist_ && (InstallFlag::FREE_INSTALL == installParam.installFlag)) {
         for (auto &item : newInfos) {
@@ -233,12 +225,12 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 
     ErrCode result = ERR_OK;
     if (isAppExist_) {
+        // to check new or old modle, application or hm service of the bundle.
+        result = CheckHapModleOrType(oldInfo, newInfos);
+        CHECK_RESULT(result, "bundle modle or type is not same %{public}d");
         // to guarantee that the hap version can be compatible.
         result = CheckVersionCompatibility(oldInfo);
-        if (result != ERR_OK) {
-            APP_LOGE("The app has been installed and update lower version bundle.");
-            return result;
-        }
+        CHECK_RESULT(result, "The app has been installed and update lower version bundle %{public}d");
 
         hasInstalledInUser_ = oldInfo.HasInnerBundleUserInfo(userId_);
         if (!hasInstalledInUser_) {
@@ -252,14 +244,10 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
             uint32_t tokenId = CreateAccessTokenId(oldInfo);
             oldInfo.SetAccessTokenId(tokenId, userId_);
             result = GrantRequestPermissions(oldInfo, tokenId);
-            if (result != ERR_OK) {
-                return result;
-            }
+            CHECK_RESULT(result, "GrantRequestPermissions failed %{public}d");
 
             result = CreateBundleUserData(oldInfo);
-            if (result != ERR_OK) {
-                return result;
-            }
+            CHECK_RESULT(result, "CreateBundleUserData failed %{public}d");
 
             userGuard.Dismiss();
         }
@@ -284,9 +272,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         APP_LOGI("SetIsFreeInstallApp(%{public}d)", InstallFlag::FREE_INSTALL == installParam.installFlag);
         newInfo.SetIsFreeInstallApp(InstallFlag::FREE_INSTALL == installParam.installFlag);
         result = ProcessBundleInstallStatus(newInfo, uid);
-        if (result != ERR_OK) {
-            return result;
-        }
+        CHECK_RESULT(result, "ProcessBundleInstallStatus failed %{public}d");
 
         it++;
         hasInstalledInUser_ = true;
@@ -315,7 +301,8 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         modulePath_ = it->first;
         InnerBundleInfo &newInfo = it->second;
         newInfo.AddInnerBundleUserInfo(innerBundleUserInfo);
-        bool isReplace = (installParam.installFlag == InstallFlag::REPLACE_EXISTING);
+        bool isReplace = (installParam.installFlag == InstallFlag::REPLACE_EXISTING ||
+            installParam.installFlag == InstallFlag::FREE_INSTALL);
         // app exist, but module may not
         if ((result = ProcessBundleUpdateStatus(
             bundleInfo, newInfo, isReplace, installParam.noSkipsKill)) != ERR_OK) {
@@ -371,30 +358,30 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     std::vector<std::string> bundlePaths;
     // check hap paths
     ErrCode result = BundleUtil::CheckFilePath(inBundlePaths, bundlePaths);
-    CHECK_RESULT_WITHOUT_ROLLBACK(result, "hap file check failed %{public}d");
+    CHECK_RESULT(result, "hap file check failed %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_BUNDLE_CHECKED);                  // ---- 5%
 
     // check syscap
     result = CheckSysCap(bundlePaths);
-    CHECK_RESULT_WITHOUT_ROLLBACK(result, "hap syscap check failed %{public}d");
+    CHECK_RESULT(result, "hap syscap check failed %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_SYSCAP_CHECKED);                  // ---- 10%
 
     // verify signature info for all haps
     std::vector<Security::Verify::HapVerifyResult> hapVerifyResults;
     result = CheckMultipleHapsSignInfo(bundlePaths, installParam, hapVerifyResults);
-    CHECK_RESULT_WITHOUT_ROLLBACK(result, "hap files check signature info failed %{public}d");
+    CHECK_RESULT(result, "hap files check signature info failed %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_SIGNATURE_CHECKED);               // ---- 15%
 
     // parse the bundle infos for all haps
     // key is bundlePath , value is innerBundleInfo
     std::unordered_map<std::string, InnerBundleInfo> newInfos;
     result = ParseHapFiles(bundlePaths, installParam, appType, hapVerifyResults, newInfos);
-    CHECK_RESULT_WITHOUT_ROLLBACK(result, "parse haps file failed %{public}d");
+    CHECK_RESULT(result, "parse haps file failed %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_PARSED);                          // ---- 20%
 
     // check versioncode and bundleName
     result = CheckAppLabelInfo(newInfos);
-    CHECK_RESULT_WITHOUT_ROLLBACK(result, "verisoncode or bundleName is different in all haps %{public}d");
+    CHECK_RESULT(result, "verisoncode or bundleName is different in all haps %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_VERSION_AND_BUNDLENAME_CHECKED);  // ---- 30%
 
     // this state should always be set when return
@@ -1317,13 +1304,23 @@ ErrCode BaseBundleInstaller::RemoveModuleDataDir(
     return result;
 }
 
-ErrCode BaseBundleInstaller::ParseBundleInfo(const std::string &bundleFilePath, InnerBundleInfo &info) const
+ErrCode BaseBundleInstaller::ParseBundleInfo(const std::string &bundleFilePath, InnerBundleInfo &info,
+    BundlePackInfo &packInfo) const
 {
     BundleParser bundleParser;
     ErrCode result = bundleParser.Parse(bundleFilePath, info);
     if (result != ERR_OK) {
         APP_LOGE("parse bundle info failed, error: %{public}d", result);
         return result;
+    }
+    if (!packInfo.GetValid()) {
+        result = bundleParser.ParsePackInfo(bundleFilePath, packInfo);
+        if (result != ERR_OK) {
+            APP_LOGE("parse bundle pack info failed, error: %{public}d", result);
+            return result;
+        }
+        info.SetBundlePackInfo(packInfo);
+        packInfo.SetValid(true);
     }
     return ERR_OK;
 }
@@ -1443,6 +1440,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("Parse hap file");
     ErrCode result = ERR_OK;
+    BundlePackInfo packInfo;
     for (uint32_t i = 0; i < bundlePaths.size(); ++i) {
         InnerBundleInfo newInfo;
         newInfo.SetAppType(appType);
@@ -1456,7 +1454,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
         }
         newInfo.SetUserId(installParam.userId);
         newInfo.SetIsPreInstallApp(installParam.isPreInstallApp);
-        result = ParseBundleInfo(bundlePaths[i], newInfo);
+        result = ParseBundleInfo(bundlePaths[i], newInfo, packInfo);
         if (result != ERR_OK) {
             APP_LOGE("bundle parse failed %{public}d", result);
             return result;
@@ -1469,7 +1467,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
                 isContainEntry_ = true;
             }
         }
-
+        SetEntryInstallationFree(packInfo, newInfo);
         if (!installParam.noCheckSignature) {
             newInfo.SetProvisionId(provisionInfo.appId);
             newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
@@ -1554,13 +1552,21 @@ bool BaseBundleInstaller::GetInnerBundleInfo(InnerBundleInfo &info, bool &isAppE
     return true;
 }
 
+ErrCode BaseBundleInstaller::CheckVersionCompatibility(const InnerBundleInfo &oldInfo)
+{
+    if (oldInfo.GetEntryInstallationFree()) {
+        return CheckVersionCompatibilityForHmService(oldInfo);
+    }
+    return CheckVersionCompatibilityForApplication(oldInfo);
+}
+
 // In the process of hap updating, the version code of the entry hap which is about to be updated must not less the
 // version code of the current entry haps in the device; if no-entry hap in the device, the updating haps should
 // have same version code with the current version code; if the no-entry haps is to be updated, which should has the
 // same version code with that of the entry hap in the device.
-ErrCode BaseBundleInstaller::CheckVersionCompatibility(const InnerBundleInfo &oldInfo)
+ErrCode BaseBundleInstaller::CheckVersionCompatibilityForApplication(const InnerBundleInfo &oldInfo)
 {
-    APP_LOGD("start to check version compatibility");
+    APP_LOGD("start to check version compatibility for application");
     if (oldInfo.HasEntry()) {
         if (isContainEntry_ && versionCode_ < oldInfo.GetVersionCode()) {
             APP_LOGE("fail to update lower version bundle");
@@ -1585,7 +1591,22 @@ ErrCode BaseBundleInstaller::CheckVersionCompatibility(const InnerBundleInfo &ol
         APP_LOGD("need to uninstall lower version feature hap");
         isFeatureNeedUninstall_ = true;
     }
-    APP_LOGD("finish to check version compatibility");
+    APP_LOGD("finish to check version compatibility for application");
+    return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::CheckVersionCompatibilityForHmService(const InnerBundleInfo &oldInfo)
+{
+    APP_LOGD("start to check version compatibility for hm service");
+    if (versionCode_ < oldInfo.GetVersionCode()) {
+        APP_LOGE("fail to update lower version bundle");
+        return ERR_APPEXECFWK_INSTALL_VERSION_DOWNGRADE;
+    }
+    if (versionCode_ > oldInfo.GetVersionCode()) {
+        APP_LOGD("need to uninstall lower version hap");
+        isFeatureNeedUninstall_ = true;
+    }
+    APP_LOGD("finish to check version compatibility for hm service");
     return ERR_OK;
 }
 
@@ -1770,6 +1791,41 @@ bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, int32_t u
     }
     APP_LOGD("verify uriPrefix success");
     return true;
+}
+
+ErrCode BaseBundleInstaller::CheckHapModleOrType(const InnerBundleInfo &innerBundleInfo,
+    const std::unordered_map<std::string, InnerBundleInfo> &infos) const
+{
+    for (const auto &item : infos) {
+        if (innerBundleInfo.GetIsNewVersion() != item.second.GetIsNewVersion()) {
+            APP_LOGE("CheckHapModleOrType cannot install new modle and old modle simultaneously");
+            return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
+        }
+        if (innerBundleInfo.GetEntryInstallationFree() != item.second.GetEntryInstallationFree()) {
+            APP_LOGE("CheckHapModleOrType cannot install application and hm service simultaneously");
+            return ERR_APPEXECFWK_INSTALL_TYPE_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+void BaseBundleInstaller::SetEntryInstallationFree(const BundlePackInfo &bundlePackInfo,
+    InnerBundleInfo &innrBundleInfo)
+{
+    APP_LOGI("SetEntryInstallationFree start");
+    if (!bundlePackInfo.GetValid()) {
+        APP_LOGW("no pack.info in the hap file");
+        return;
+    }
+    auto packageModule = bundlePackInfo.summary.modules;
+    auto installationFree = std::any_of(packageModule.begin(), packageModule.end(), [&](auto &module) {
+        return module.distro.moduleType == "entry" && module.distro.installationFree;
+    });
+    if (installationFree) {
+        APP_LOGI("install or upddate hm service");
+    }
+    innrBundleInfo.SetEntryInstallationFree(installationFree);
+    APP_LOGI("SetEntryInstallationFree end");
 }
 
 void BaseBundleInstaller::ResetInstallProperties()

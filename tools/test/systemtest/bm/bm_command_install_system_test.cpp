@@ -129,22 +129,3 @@ HWTEST_F(BmCommandInstallSystemTest, Bm_Command_Install_SystemTest_0400, Functio
     ToolSystemTest::UninstallBundle(STRING_BUNDLE_NAME);
 }
 
-/**
- * @tc.number: Bm_Command_Install_SystemTest_0500
- * @tc.name: ExecCommand
- * @tc.desc: Verify the "bm install -p <bundle-path> -f" command.
- */
-HWTEST_F(BmCommandInstallSystemTest, Bm_Command_Install_SystemTest_0500, Function | MediumTest | Level1)
-{
-    // uninstall the bundle
-    ToolSystemTest::UninstallBundle(STRING_BUNDLE_NAME);
-
-    // install a valid bundle with no signature
-    std::string command = "bm install -p " + STRING_BUNDLE_PATH_NO_SIGNATURE + " -f";
-    std::string commandResult = ToolSystemTest::ExecuteCommand(command);
-
-    EXPECT_EQ(commandResult, STRING_INSTALL_BUNDLE_OK + "\n");
-
-    // uninstall the bundle
-    ToolSystemTest::UninstallBundle(STRING_BUNDLE_NAME);
-}
