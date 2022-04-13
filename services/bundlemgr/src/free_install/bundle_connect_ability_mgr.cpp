@@ -292,7 +292,7 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
             installResult.progress.downloadSize, installResult.progress.totalSize);
         return;
     }
-    APP_LOGD("serviceCenterFunction = %{public}d",freeInstallParams.serviceCenterFunction);
+    APP_LOGD("serviceCenterFunction = %{public}d", freeInstallParams.serviceCenterFunction);
     SendCallBack(resultCode, freeInstallParams.want, freeInstallParams.userId,
         installResult.result.transactId);
     APP_LOGD("OnServiceCenterCall end");
