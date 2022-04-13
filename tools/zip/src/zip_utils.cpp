@@ -16,10 +16,6 @@
 
 #include <regex>
 
-#include "parallel_task_dispatcher.h"
-#include "runnable.h"
-#include "task_dispatcher_context.h"
-
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
@@ -27,21 +23,6 @@ namespace {
 const std::string SEPARATOR = "/";
 const std::regex FILE_PATH_REGEX("([0-9A-Za-z/+_=\\-,.])+");
 }  // namespace
-using namespace OHOS::AppExecFwk;
-
-std::shared_ptr<ParallelTaskDispatcher> g_TaskDispatcher = nullptr;
-void PostTask(const std::shared_ptr<Runnable> &runnable)
-{
-    static TaskDispatcherContext taskContext;
-
-    if (g_TaskDispatcher == nullptr) {
-        g_TaskDispatcher = taskContext.CreateParallelDispatcher(std::string("toolszip"), TaskPriority::DEFAULT);
-    }
-
-    if (g_TaskDispatcher != nullptr) {
-        g_TaskDispatcher->AsyncDispatch(runnable);
-    }
-}
 
 struct tm *GetCurrentSystemTime(void)
 {
