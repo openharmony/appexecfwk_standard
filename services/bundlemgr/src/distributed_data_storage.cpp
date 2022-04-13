@@ -132,7 +132,7 @@ bool DistributedDataStorage::InnerSaveStorageDistributeInfo(const DistributedBun
 
 bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bundleName, int32_t userId)
 {
-    APP_LOGI("query DistributedBundleInfo");
+    APP_LOGI("delete DistributedBundleInfo");
     {
         std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
         if (!CheckKvStore()) {
