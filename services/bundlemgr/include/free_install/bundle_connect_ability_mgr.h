@@ -73,6 +73,7 @@ public:
      */
     bool UpgradeInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
         const sptr<IRemoteObject> &callerToken, int32_t userId);
+
     /**
      * @brief Obtains the Calling Info object
      * @param innerBundleInfo Indicates the innerBundleInfo of the bundle which will be returned.
@@ -82,6 +83,7 @@ public:
      */
     void GetCallingInfo(InnerBundleInfo &innerBundleInfo,
         std::vector<std::string> &bundleNames, std::vector<std::string>& callingAppIds);
+
     /**
      * @brief Obtains the target ability Info object which will be send to service center.
      * @param want Indicates the information of the ability.
@@ -92,14 +94,7 @@ public:
      */
     bool GetTargetAbilityInfo(const Want &want, InnerBundleInfo &innerBundleInfo,
         sptr<TargetAbilityInfo> &targetAbilityInfo, sptr<TargetInfo> &targetInfo);
-    /**
-     * @brief Send callback to ability manager service
-     * @param resultCode The result code to ability manager service call back
-     * @param want Indicates the information of the ability.
-     * @param userId Indicates the user ID.
-     * @param callBack Indicates the callback object for ability manager service.
-     */
-    void CallAbilityManager(int32_t resultCode, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack);
+
     /**
      * @brief Check is need update module.
      * @param innerBundleInfo Indicates the innerBundleInfo of the bundle which will be using.
@@ -110,6 +105,7 @@ public:
      */
     bool CheckIsModuleNeedUpdate(
         InnerBundleInfo &innerBundleInfo, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack);
+
     /**
      * @brief Query the AbilityInfo by the given Want.
      * @param want Indicates the information of the ability.
@@ -121,6 +117,7 @@ public:
      */
     bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
         AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack);
+
     /**
      * @brief Upgrade atomic service status
      * @param want Query the AbilityInfo by the given Want.
@@ -200,12 +197,21 @@ public:
     }
 
 private:
+    /**
+     * @brief Send callback to ability manager service
+     * @param resultCode The result code to ability manager service call back
+     * @param want Indicates the information of the ability.
+     * @param userId Indicates the user ID.
+     * @param callBack Indicates the callback object for ability manager service.
+     */
+    void CallAbilityManager(int32_t resultCode, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack);
     bool GetAbilityMgrProxy();
+
     mutable std::atomic<int> transactId_ = 0;
     std::condition_variable cv_;
     std::mutex mutex_;
     sptr<AAFwk::IAbilityManager> abilityMgrProxy_;
-    sptr<ServiceCenterConnection> mServiceCenterConnection_;
+    sptr<ServiceCenterConnection> serviceCenterConnection_;
     std::map<std::string, FreeInstallParams> freeInstallParamsMap_;
     sptr<IRemoteObject> serviceCenterRemoteObject_;
     int32_t connectState_ = ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED;
