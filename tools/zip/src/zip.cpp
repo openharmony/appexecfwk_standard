@@ -296,8 +296,7 @@ bool Unzip(const FilePath &srcFile, const FilePath &destDir, const OPTIONS &opti
         UnzipWithFilterCallback(srcFile, destDir, options, unzipParam);
     };
 
-    auto runner = EventRunner::Create(true);
-    std::shared_ptr<EventHandler> handler = std::make_shared<EventHandler>(runner);
+    std::shared_ptr<EventHandler> handler = std::make_shared<EventHandler>(EventRunner::Create(true));
     handler->PostTask(innerTask);
     return true;
 }
@@ -343,8 +342,7 @@ bool Zip(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &option
         }
     };
 
-    auto runner = EventRunner::Create(true);
-    std::shared_ptr<EventHandler> handler = std::make_shared<EventHandler>(runner);
+    std::shared_ptr<EventHandler> handler = std::make_shared<EventHandler>(EventRunner::Create(true));
     handler->PostTask(innerTask);
 
     return true;
