@@ -418,6 +418,19 @@ void DistributedDataStorage::UpdateDistributedData(const std::vector<BundleInfo>
     CheckToSyncDistributedData();
 }
 
+void DistributedDataStorage::RemoveDeviceData(const std::string &networkId)
+{
+    APP_LOGD("RemoveDeviceData");
+    if (kvStorePtr_ == nullptr) {
+        APP_LOGE("kvStorePtr_ is null");
+        return;
+    }
+    Status status = kvStorePtr_->RemoveDeviceData(networkId);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("kvStorePtr_ remove error: %{public}d", status);
+    }
+}
+
 void DistributedDataStorage::CheckToSyncDistributedData()
 {
     APP_LOGD("CheckToSyncDistributedData");

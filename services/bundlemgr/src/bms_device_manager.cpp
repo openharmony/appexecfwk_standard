@@ -128,6 +128,7 @@ void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOnline(const DistributedH
 void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOffline(const DistributedHardware::DmDeviceInfo &deviceInfo)
 {
     APP_LOGD("DeviceInitCallBack OnDeviceOffline");
+    DistributedDataStorage::GetInstance()->RemoveDeviceData(std::string(deviceInfo.networkId));
     std::vector<DistributedHardware::DmDeviceInfo> deviceList;
     int32_t ret =
         DistributedHardware::DeviceManager::GetInstance().GetTrustedDeviceList(BUNDLE_NAME, "", deviceList);
