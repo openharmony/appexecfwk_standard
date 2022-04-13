@@ -114,7 +114,7 @@ public:
     MOCK_METHOD2(QueryAbilityInfosByUri, bool(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos));
     MOCK_METHOD3(CheckPermissionByUid,
         int(const std::string &bundleName, const std::string &permission, const int userId));
-    MOCK_METHOD4(GetDistributedBundleInfo, bool(const std::string &networkId, int32_t userId,
+    MOCK_METHOD3(GetDistributedBundleInfo, bool(const std::string &networkId,
         const std::string &bundleName, DistributedBundleInfo &distributedBundleInfo));
 };
 }  // namespace AppExecFwk

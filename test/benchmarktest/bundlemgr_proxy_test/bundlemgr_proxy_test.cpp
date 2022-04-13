@@ -1718,7 +1718,7 @@ static void BenchmarkTestGetDistributedBundleInfo(benchmark::State &state)
         "/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=";
     for (auto _ : state) {
         /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->GetDistributedBundleInfo(networkId, DEFAULT_USERID, bundleName, distributedBundleInfo);
+        bundleMgrProxy->GetDistributedBundleInfo(networkId, bundleName, distributedBundleInfo);
     }
 }
 

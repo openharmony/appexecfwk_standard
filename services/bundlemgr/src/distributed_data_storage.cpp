@@ -172,16 +172,10 @@ bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bund
     return true;
 }
 
-bool DistributedDataStorage::QueryStroageDistributeInfo(
-    const std::string &bundleName, int32_t userId, const std::string &networkId,
+bool DistributedDataStorage::QueryStroageDistributeInfo(const std::string &bundleName, const std::string &networkId,
     DistributedBundleInfo &info)
 {
     APP_LOGI("query DistributedBundleInfo");
-    if (userId != AccountHelper::GetCurrentActiveUserId()) {
-        APP_LOGI("userid is not current active userid");
-        return false;
-    }
-
     std::string udid;
     int32_t ret = GetUdidByNetworkId(networkId, udid);
     if (ret != 0) {
