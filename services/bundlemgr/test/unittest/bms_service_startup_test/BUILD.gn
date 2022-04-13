@@ -122,5 +122,7 @@ ohos_unittest("BmsServiceStartupTest") {
 group("unittest") {
   testonly = true
 
-  deps = [ ":BmsServiceStartupTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsServiceStartupTest" ]
+  }
 }

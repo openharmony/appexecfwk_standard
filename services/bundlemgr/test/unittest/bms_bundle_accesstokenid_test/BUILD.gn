@@ -133,5 +133,7 @@ ohos_unittest("BmsBundleAccessTokenIdTest") {
 
 group("unittest") {
   testonly = true
-  deps = [ ":BmsBundleAccessTokenIdTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsBundleAccessTokenIdTest" ]
+  }
 }
