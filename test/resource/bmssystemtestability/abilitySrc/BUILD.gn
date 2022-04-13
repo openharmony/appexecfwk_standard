@@ -12,7 +12,7 @@
 # limitations under the License.
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 group("bms_system_test_app") {
-  if (bundle_framework_graphics) {
+  if (bundle_framework_graphics && ability_runtime_enable) {
     deps = [
       "thirdPageDemo1:page_ability_native1",
       "thirdPageDemo2:page_ability_native2",

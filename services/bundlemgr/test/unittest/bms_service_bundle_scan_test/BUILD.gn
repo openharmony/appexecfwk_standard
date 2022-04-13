@@ -122,5 +122,7 @@ ohos_unittest("BmsServiceBundleScanTest") {
 group("unittest") {
   testonly = true
 
-  deps = [ ":BmsServiceBundleScanTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsServiceBundleScanTest" ]
+  }
 }
