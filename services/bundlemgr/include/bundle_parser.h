@@ -16,10 +16,12 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PARSER_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PARSER_H
 
+#include <set>
 #include <string>
 
 #include "appexecfwk_errors.h"
 #include "inner_bundle_info.h"
+#include "pre_scan_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -41,6 +43,30 @@ public:
      * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
      */
     ErrCode ParseSysCap(const std::string &pathName, std::vector<std::string> &sysCaps) const;
+    /**
+     * @brief Parse scanInfos by the configFile.
+     * @param configFile Indicates the path of configFile.
+     * @param scanInfos Indicates the obtained InnerBundleInfo object.
+     * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
+     */
+    ErrCode ParsePreInstallConfig(
+        const std::string &configFile, std::set<PreScanInfo> &scanInfos) const;
+    /**
+     * @brief Parse bundleNames by the configFile.
+     * @param configFile Indicates the path of configFile.
+     * @param bundleNames Indicates the bundleNames.
+     * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
+     */
+    ErrCode ParsePreUnInstallConfig(
+        const std::string &configFile, std::set<std::string> &bundleNames) const;
+    /**
+     * @brief Parse PreBundleConfigInfo by the configFile.
+     * @param configFile Indicates the path of configFile.
+     * @param preBundleConfigInfos Indicates the obtained preBundleConfigInfo object.
+     * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
+     */
+    ErrCode ParsePreInstallAbilityConfig(
+        const std::string &configFile, std::set<PreBundleConfigInfo> &preBundleConfigInfos) const;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
