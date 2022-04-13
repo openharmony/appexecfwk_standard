@@ -296,8 +296,7 @@ bool Unzip(const FilePath &srcFile, const FilePath &destDir, const OPTIONS &opti
         UnzipWithFilterCallback(srcFile, destDir, options, unzipParam);
     };
 
-    std::shared_ptr<EventHandler> handler = std::make_shared<EventHandler>(EventRunner::Create(true));
-    handler->PostTask(innerTask);
+    PostTask(innerTask);
     return true;
 }
 
@@ -342,9 +341,7 @@ bool Zip(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &option
         }
     };
 
-    std::shared_ptr<EventHandler> handler = std::make_shared<EventHandler>(EventRunner::Create(true));
-    handler->PostTask(innerTask);
-
+    PostTask(innerTask);
     return true;
 }
 }  // namespace LIBZIP
