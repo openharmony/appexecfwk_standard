@@ -22,6 +22,8 @@
 #include <stddef.h>
 #include <functional>
 
+#include "event_handler.h"
+
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
@@ -129,6 +131,7 @@ constexpr PlatformFile kInvalidPlatformFile = -1;
 struct tm *GetCurrentSystemTime(void);
 bool StartsWith(const std::string &str, const std::string &searchFor);
 bool EndsWith(const std::string &str, const std::string &searchFor);
+void PostTask(const OHOS::AppExecFwk::InnerEvent::Callback &callback);
 bool FilePathCheckValid(const std::string &str);
 }  // namespace LIBZIP
 }  // namespace AAFwk
