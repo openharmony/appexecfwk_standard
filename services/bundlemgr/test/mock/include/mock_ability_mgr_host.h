@@ -336,6 +336,12 @@ public:
         return 0;
     }
 
+    virtual int SetMissionIcon(const sptr<IRemoteObject> &token,
+        const std::shared_ptr<OHOS::Media::PixelMap> &icon) override
+    {
+        return 0;
+    }
+
     virtual int StartUser(int userId) override
     {
         return 0;
