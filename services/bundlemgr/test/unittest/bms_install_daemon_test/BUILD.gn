@@ -42,7 +42,7 @@ ohos_unittest("BmsInstallDaemonTest") {
   deps = [ "${services_path}/bundlemgr:bundle_parser" ]
 
   external_deps = [
-    "ability_runtime:app_manager",
+    "ability_runtime:ability_manager",
     "bundle_framework:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
@@ -61,5 +61,7 @@ ohos_unittest("BmsInstallDaemonTest") {
 group("unittest") {
   testonly = true
 
-  deps = [ ":BmsInstallDaemonTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsInstallDaemonTest" ]
+  }
 }

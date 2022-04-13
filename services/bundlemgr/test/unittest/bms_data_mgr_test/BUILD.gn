@@ -133,5 +133,7 @@ ohos_unittest("BmsDataMgrTest") {
 group("unittest") {
   testonly = true
 
-  deps = [ ":BmsDataMgrTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsDataMgrTest" ]
+  }
 }

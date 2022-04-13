@@ -52,5 +52,7 @@ ohos_moduletest("BmsBundleParserModuleTest") {
 group("moduletest") {
   testonly = true
 
-  deps = [ ":BmsBundleParserModuleTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsBundleParserModuleTest" ]
+  }
 }

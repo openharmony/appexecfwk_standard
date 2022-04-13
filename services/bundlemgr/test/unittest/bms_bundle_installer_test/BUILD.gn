@@ -256,8 +256,10 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
 group("unittest") {
   testonly = true
 
-  deps = [
-    ":BmsBundleInstallerTest",
-    ":BmsMultipleBundleInstallerTest",
-  ]
+  if (ability_runtime_enable) {
+    deps = [
+      ":BmsBundleInstallerTest",
+      ":BmsMultipleBundleInstallerTest",
+    ]
+  }
 }
