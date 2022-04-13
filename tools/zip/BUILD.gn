@@ -56,8 +56,8 @@ ohos_shared_library("zlib") {
   ]
 
   external_deps = [
-    "ability_base:task_dispatcher",
     "bundle_framework:appexecfwk_base",
+    "eventhandler:libeventhandler",
     "hilog_native:libhilog_base",
     "hiviewdfx_hilog_native:libhilog",
     "napi:ace_napi",
