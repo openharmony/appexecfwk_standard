@@ -101,7 +101,7 @@ ErrCode BaseBundleInstaller::InstallBundleByBundleName(
     }
 
     if (result == ERR_OK) {
-        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName_, userId_);
+        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName, userId_);
     }
 
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
@@ -123,7 +123,7 @@ ErrCode BaseBundleInstaller::Recover(
     }
 
     if (result == ERR_OK) {
-        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName_, userId_);
+        DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName, userId_);
     }
 
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
@@ -143,7 +143,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
     if (result == ERR_OK) {
-        DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName_, userId_);
+        DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName, userId_);
     }
 
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
@@ -168,7 +168,12 @@ ErrCode BaseBundleInstaller::UninstallBundle(
     APP_LOGD("finish to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
 
     if (result == ERR_OK) {
-        DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName_, userId_);
+        InnerBundleInfo innerBundleInfo;
+        if (!dataMgr_->GetInnerBundleInfo(bundleName, innerBundleInfo)) {
+            DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName, userId_);
+        } else {
+            DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName, userId_);
+        }
     }
     return result;
 }
