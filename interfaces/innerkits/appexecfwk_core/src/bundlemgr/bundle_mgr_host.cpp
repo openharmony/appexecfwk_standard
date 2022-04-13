@@ -44,7 +44,7 @@ void SplitString(const std::string &source, std::vector<std::string> &strings)
     }
 }
 
-inline void ClearAshMem(sptr<Ashmem> &optMem)
+inline void ClearAshmem(sptr<Ashmem> &optMem)
 {
     if (optMem != nullptr) {
         optMem->UnmapAshmem();
@@ -306,6 +306,17 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::SET_MODULE_REMOVABLE):
             errCode = HandleSetModuleRemovable(data, reply);
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK):
+             errCode = HandleQueryAbilityInfoWithCallback(data, reply);
+             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::UPGRADE_ATOMIC_SERVICE):
+             errCode = HandleUpgradeAtomicService(data, reply);
+             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::IS_MODULE_NEED_UPDATE):
+            errCode = HandleIsModuleNeedUpdate(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::SET_MODULE_NEED_UPDATE):
+            errCode = HandleSetModuleNeedUpdate(data, reply);
         case static_cast<uint32_t>(IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID):
             errCode = HandleGetHapModuleInfoWithUserId(data, reply);
             break;
@@ -1855,6 +1866,36 @@ ErrCode BundleMgrHost::HandleSetModuleRemovable(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleIsModuleNeedUpdate(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+
+    APP_LOGD("bundleName %{public}s, moduleName %{public}s", bundleName.c_str(), moduleName.c_str());
+    bool ret = IsModuleNeedUpdate(bundleName, moduleName);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleSetModuleNeedUpdate(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+    bool isEnable = data.ReadBool();
+    APP_LOGD("bundleName %{public}s, moduleName %{public}s", bundleName.c_str(), moduleName.c_str());
+    bool ret = SetModuleNeedUpdate(bundleName, moduleName, isEnable);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleImplicitQueryInfoByPriority(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
@@ -1980,7 +2021,7 @@ bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
         ret = ashmem->WriteToAshmem(std::to_string(itemLen).c_str(), ASHMEM_LEN, offset);
         if (!ret) {
             APP_LOGE("Write itemLen to shared memory fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -1988,7 +2029,7 @@ bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
         ret = ashmem->WriteToAshmem(infoStr.c_str(), itemLen, offset);
         if (!ret) {
             APP_LOGE("Write info to shared memory fail");
-            ClearAshMem(ashmem);
+            ClearAshmem(ashmem);
             return false;
         }
 
@@ -1996,7 +2037,7 @@ bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
     }
 
     ret = messageParcel->WriteAshmem(ashmem);
-    ClearAshMem(ashmem);
+    ClearAshmem(ashmem);
     if (!ret) {
         APP_LOGE("Write ashmem to parcel fail");
         return false;
@@ -2010,6 +2051,44 @@ int32_t BundleMgrHost::AllocatAshmemNum()
 {
     std::lock_guard<std::mutex> lock(bundleAshmemMutex_);
     return ashmemNum_++;
+}
+
+ErrCode BundleMgrHost::HandleQueryAbilityInfoWithCallback(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("ReadParcelable<want> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    int32_t flags = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    AbilityInfo info;
+    bool ret = QueryAbilityInfo(*want, flags, userId, info, object);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write ret failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write info failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+ErrCode BundleMgrHost::HandleUpgradeAtomicService(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("read parcelable want failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    int32_t userId = data.ReadInt32();
+    UpgradeAtomicService(*want, userId);
+    return ERR_OK;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

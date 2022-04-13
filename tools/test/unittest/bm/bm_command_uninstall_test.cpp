@@ -287,7 +287,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_0900, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_UNINSTALL);
 }
 
 /**
@@ -336,7 +336,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_1100, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_REQUIRE_CORRECT_VALUE + HELP_MSG_UNINSTALL);
 }
 
 /**

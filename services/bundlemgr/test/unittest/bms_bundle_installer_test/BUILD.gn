@@ -52,6 +52,7 @@ ohos_unittest("BmsBundleInstallerTest") {
   ]
 
   sources += bundle_install_sources
+  sources += free_install
 
   sources += [ "bms_bundle_installer_test.cpp" ]
 
@@ -75,7 +76,9 @@ ohos_unittest("BmsBundleInstallerTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ability_base:task_dispatcher",
     "ability_base:want",
+    "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",
@@ -165,6 +168,7 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
   ]
 
   sources += bundle_install_sources
+  sources += free_install
 
   sources += [ "bms_multiple_installer_test.cpp" ]
 
@@ -188,7 +192,9 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ability_base:task_dispatcher",
     "ability_base:want",
+    "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",

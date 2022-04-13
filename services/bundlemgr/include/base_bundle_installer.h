@@ -24,6 +24,7 @@
 #include "appexecfwk_errors.h"
 #include "bundle_clone_mgr.h"
 #include "bundle_data_mgr.h"
+#include "bundle_pack_info.h"
 #include "bundle_verify_mgr.h"
 #include "inner_bundle_info.h"
 #include "install_param.h"
@@ -222,7 +223,7 @@ private:
      * @param InnerBundleInfo Indicates the InnerBundleInfo object of a bundle.
      * @return Returns ERR_OK if the bundle parsed successfully; returns error code otherwise.
      */
-    ErrCode ParseBundleInfo(const std::string &bundleFilePath, InnerBundleInfo &info) const;
+    ErrCode ParseBundleInfo(const std::string &bundleFilePath, InnerBundleInfo &info, BundlePackInfo &packInfo) const;
     /**
      * @brief Remove the current installing module directory.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
@@ -366,12 +367,23 @@ private:
      */
     bool GetInnerBundleInfo(InnerBundleInfo &info, bool &isAppExist);
     /**
-     * @brief To check whether the version code is compatible or not.
+     * @brief To check whether the version code is compatible for application or not.
      * @param oldInfo Indicates the original innerBundleInfo of the bundle.
-     * @param newInfo Indicates the innerBundleInfo of the hap needs to be installed or updated.
      * @return Returns ERR_OK if version code is checked successfully; returns error code otherwise.
      */
     ErrCode CheckVersionCompatibility(const InnerBundleInfo &oldInfo);
+    /**
+     * @brief To check whether the version code is compatible for application or not.
+     * @param oldInfo Indicates the original innerBundleInfo of the bundle.
+     * @return Returns ERR_OK if version code is checked successfully; returns error code otherwise.
+     */
+    ErrCode CheckVersionCompatibilityForApplication(const InnerBundleInfo &oldInfo);
+    /**
+     * @brief To check whether the version code is compatible for openharmony service or not.
+     * @param info Indicates the original innerBundleInfo of the bundle.
+     * @return Returns ERR_OK if version code is checked successfully; returns error code otherwise.
+     */
+    ErrCode CheckVersionCompatibilityForHmService(const InnerBundleInfo &oldInfo);
     /**
      * @brief To uninstall lower version feature haps.
      * @param info Indicates the innerBundleInfo of the bundle.
@@ -406,6 +418,10 @@ private:
      */
     ErrCode CreateBundleUserData(InnerBundleInfo &innerBundleInfo);
     bool verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate = false) const;
+    ErrCode CheckHapModleOrType(const InnerBundleInfo &innerBundleInfo,
+        const std::unordered_map<std::string, InnerBundleInfo> &infos) const;
+    void SetEntryInstallationFree(const BundlePackInfo &bundlePackInfo, InnerBundleInfo &innerBundleInfo);
+
 private:
     ErrCode CreateBundleCodeDir(InnerBundleInfo &info) const;
     ErrCode CreateBundleDataDir(InnerBundleInfo &info) const;
@@ -441,7 +457,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(BaseBundleInstaller);
 
-#define CHECK_RESULT_WITHOUT_ROLLBACK(errcode, errmsg)                             \
+#define CHECK_RESULT(errcode, errmsg)                                              \
     do {                                                                           \
         if (errcode != ERR_OK) {                                                   \
             APP_LOGE(errmsg, errcode);                                             \

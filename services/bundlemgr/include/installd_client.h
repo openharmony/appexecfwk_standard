@@ -114,6 +114,14 @@ public:
      */
     ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl);
 
+    /**
+     * @brief Get all cache file path.
+     * @param dir Indicates the data dir.
+     * @param cachesPath Indicates the cache file path.
+     * @return Returns ERR_OK if get cache file path successfully; returns error code otherwise.
+     */
+    ErrCode GetBundleCachePath(const std::string &dir, std::vector<std::string> &cachePath);
+
 private:
     /**
      * @brief Get the installd proxy object.

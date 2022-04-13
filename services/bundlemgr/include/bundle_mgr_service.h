@@ -29,6 +29,7 @@
 #endif
 #include "bundle_clone_mgr.h"
 #include "bundle_constants.h"
+#include "bundle_connect_ability_mgr.h"
 #include "bundle_data_mgr.h"
 #include "bundle_installer_host.h"
 #include "bundle_mgr_host_impl.h"
@@ -67,6 +68,12 @@ public:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgr() const;
 
     const std::shared_ptr<BundleDataMgr> GetDataMgr() const;
+    /**
+     * @brief Get a util object for FA  Distribution center
+     * @return Returns the pointer of BundleConnectAbility object.
+     */
+    const std::shared_ptr<BundleConnectAbilityMgr> GetConnectAbility() const;
+
 #ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
     const std::shared_ptr<BundleAgingMgr> GetAgingMgr() const;
 #endif
@@ -138,6 +145,7 @@ private:
     sptr<BundleInstallerHost> installer_;
     sptr<BundleUserMgrHostImpl> userMgrHost_;
     std::shared_ptr<BundlePermissionsChangedMonitor> perChangeSub_;
+    std::shared_ptr<BundleConnectAbilityMgr> connectAbilityMgr_;
     std::shared_ptr<DistributedMonitor> distributedSub_;
 
     DISALLOW_COPY_AND_MOVE(BundleMgrService);

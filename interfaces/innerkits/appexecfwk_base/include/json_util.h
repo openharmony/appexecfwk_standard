@@ -168,13 +168,13 @@ template<typename T>
 bool ParseInfoFromJsonStr(const char *data, T &t)
 {
     if (data == nullptr) {
-        APP_LOGE("%{public}s faile due to data is nullptr", __func__);
+        APP_LOGE("%{public}s failed due to data is nullptr", __func__);
         return false;
     }
 
     nlohmann::json jsonObject = nlohmann::json::parse(data, nullptr, false);
     if (jsonObject.is_discarded()) {
-        APP_LOGE("%{public}s faile due to data is discarded", __func__);
+        APP_LOGE("%{public}s failed due to data is discarded", __func__);
         return false;
     }
 

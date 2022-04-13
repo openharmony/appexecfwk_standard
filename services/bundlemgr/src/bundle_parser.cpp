@@ -91,7 +91,8 @@ bool ReadFileIntoJson(const std::string &filePath, nlohmann::json &jsonBuf)
 
     return true;
 }
-}
+} // namespace
+
 ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerBundleInfo) const
 {
     APP_LOGI("parse from %{private}s", pathName.c_str());
@@ -101,6 +102,7 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
         return ERR_APPEXECFWK_PARSE_UNEXPECTED;
     }
 
+    // to extract config.json
     std::ostringstream outStream;
     if (!bundleExtractor.ExtractProfile(outStream)) {
         APP_LOGE("extract profile file failed");
@@ -117,6 +119,10 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
     innerBundleInfo.SetIsNewVersion(false);
     BundleProfile bundleProfile;
     ErrCode ret = bundleProfile.TransformTo(outStream, bundleExtractor, innerBundleInfo);
+    if (ret != ERR_OK) {
+        APP_LOGE("transform stream to innerBundleInfo failed %{public}d", ret);
+        return ret;
+    }
     auto& abilityInfos = innerBundleInfo.FetchAbilityInfos();
     for (auto& info : abilityInfos) {
         info.second.isStageBasedModel = bundleExtractor.IsStageBasedModel(info.second.name);
@@ -125,7 +131,36 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
             iter->second.isStageBasedModel = info.second.isStageBasedModel;
         }
     }
-    return ret;
+
+    return ERR_OK;
+}
+
+ErrCode BundleParser::ParsePackInfo(const std::string &pathName, BundlePackInfo &bundlePackInfo) const
+{
+    APP_LOGI("parse from %{private}s", pathName.c_str());
+    BundleExtractor bundleExtractor(pathName);
+    if (!bundleExtractor.Init()) {
+        APP_LOGE("bundle extractor init failed");
+        return ERR_APPEXECFWK_PARSE_UNEXPECTED;
+    }
+
+    // to extract pack.info
+    if (!bundleExtractor.HasEntry(Constants::BUNDLE_PACKFILE_NAME)) {
+        APP_LOGW("cannot find pack.info in the hap file");
+        return ERR_OK;
+    }
+    std::ostringstream outStreamForPackInfo;
+    if (!bundleExtractor.ExtractPackFile(outStreamForPackInfo)) {
+        APP_LOGE("extract profile file failed");
+        return ERR_APPEXECFWK_PARSE_NO_PROFILE;
+    }
+    BundleProfile bundleProfile;
+    ErrCode ret = bundleProfile.TransformTo(outStreamForPackInfo, bundlePackInfo);
+    if (ret != ERR_OK) {
+        APP_LOGE("transform stream to bundlePackinfo failed %{public}d", ret);
+        return ret;
+    }
+    return ERR_OK;
 }
 
 ErrCode BundleParser::ParseSysCap(const std::string &pathName, std::vector<std::string> &sysCaps) const

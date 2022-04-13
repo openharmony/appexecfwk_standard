@@ -32,6 +32,7 @@ const std::string STRING_BUNDLE_INSTALL_PATH2 = "../../test/bundle_test2/";
 const std::string STRING_BUNDLE_NAME = "name";
 const std::string STRING_MODULE_NAME = "module";
 const std::string STRING_ABILITY_NAME = "ability";
+const std::string DEFAULT_USER_ID = "100";
 }  // namespace
 
 class MockBundleInstallerHost : public BundleInstallerHost {
