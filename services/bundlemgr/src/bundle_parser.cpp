@@ -15,19 +15,24 @@
 
 #include "bundle_parser.h"
 
+#include <fstream>
 #include <sstream>
+#include <unistd.h>
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
 #include "bundle_profile.h"
 #include "module_profile.h"
+#include "pre_bundle_profile.h"
 #include "rpcid_decode/syscap_tool.h"
 #include "securec.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+const std::string INSTALL_ABILITY_CONFIGS = "install_ability_configs";
+
 bool ParseStr(const char *buf, const int itemLen, int totalLen, std::vector<std::string> &sysCaps)
 {
     APP_LOGD("Parse rpcid output start, itemLen:%{public}d  totalLen:%{public}d.", itemLen, totalLen);
@@ -46,6 +51,42 @@ bool ParseStr(const char *buf, const int itemLen, int totalLen, std::vector<std:
 
         sysCaps.emplace_back((std::string)item, 0, itemLen);
         index += itemLen;
+    }
+
+    return true;
+}
+
+bool ReadFileIntoJson(const std::string &filePath, nlohmann::json &jsonBuf)
+{
+    if (access(filePath.c_str(), F_OK) != 0) {
+        APP_LOGE("can not access the file: %{public}s", filePath.c_str());
+        return false;
+    }
+
+    std::fstream in;
+    char errBuf[256];
+    errBuf[0] = '\0';
+    in.open(filePath, std::ios_base::in);
+    if (!in.is_open()) {
+        strerror_r(errno, errBuf, sizeof(errBuf));
+        APP_LOGE("the file cannot be open due to  %{public}s", errBuf);
+        return false;
+    }
+
+    in.seekg(0, std::ios::end);
+    int64_t size = in.tellg();
+    if (size <= 0) {
+        APP_LOGE("the file is an empty file");
+        in.close();
+        return false;
+    }
+
+    in.seekg(0, std::ios::beg);
+    jsonBuf = nlohmann::json::parse(in, nullptr, false);
+    if (jsonBuf.is_discarded()) {
+        APP_LOGE("bad profile file");
+        in.close();
+        return false;
     }
 
     return true;
@@ -165,6 +206,48 @@ ErrCode BundleParser::ParseSysCap(const std::string &pathName, std::vector<std::
     APP_LOGD("Parse sysCaps str success");
     free(outBuffer);
     return ERR_OK;
+}
+
+ErrCode BundleParser::ParsePreInstallConfig(
+    const std::string &configFile, std::set<PreScanInfo> &scanInfos) const
+{
+    APP_LOGD("Parse preInstallConfig from %{public}s", configFile.c_str());
+    nlohmann::json jsonBuf;
+    if (!ReadFileIntoJson(configFile, jsonBuf)) {
+        APP_LOGE("Parse preInstallConfig file failed");
+        return ERR_APPEXECFWK_PARSE_FILE_FAILED;
+    }
+
+    PreBundleProfile preBundleProfile;
+    return preBundleProfile.TransformTo(jsonBuf, scanInfos);
+}
+
+ErrCode BundleParser::ParsePreUnInstallConfig(
+    const std::string &configFile, std::set<std::string> &bundleNames) const
+{
+    APP_LOGD("Parse PreUnInstallConfig from %{public}s", configFile.c_str());
+    nlohmann::json jsonBuf;
+    if (!ReadFileIntoJson(configFile, jsonBuf)) {
+        APP_LOGE("Parse preUnInstallConfig file failed");
+        return ERR_APPEXECFWK_PARSE_FILE_FAILED;
+    }
+
+    PreBundleProfile preBundleProfile;
+    return preBundleProfile.TransformTo(jsonBuf, bundleNames);
+}
+
+ErrCode BundleParser::ParsePreInstallAbilityConfig(
+    const std::string &configFile, std::set<PreBundleConfigInfo> &preBundleConfigInfos) const
+{
+    APP_LOGD("Parse PreInstallAbilityConfig from %{public}s", configFile.c_str());
+    nlohmann::json jsonBuf;
+    if (!ReadFileIntoJson(configFile, jsonBuf)) {
+        APP_LOGE("Parse preInstallAbilityConfig file failed");
+        return ERR_APPEXECFWK_PARSE_FILE_FAILED;
+    }
+
+    PreBundleProfile preBundleProfile;
+    return preBundleProfile.TransformTo(jsonBuf, preBundleConfigInfos);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

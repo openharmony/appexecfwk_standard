@@ -20,6 +20,7 @@ services_path = "${appexecfwk_path}/services"
 kits_path = "${appexecfwk_path}/kits"
 innerkits_path = "${appexecfwk_path}/interfaces/innerkits"
 tools_path = "${appexecfwk_path}/tools"
+use_pre_bundle_profile = false
 declare_args() {
   bundle_framework_graphics = true
   bundle_framework_free_install = true
