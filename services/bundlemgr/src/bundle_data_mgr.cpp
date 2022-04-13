@@ -195,7 +195,9 @@ bool BundleDataMgr::AddNewModuleInfo(
     if (statusItem->second == InstallState::UPDATING_SUCCESS) {
         APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
         oldInfo.UpdateBaseBundleInfo(newInfo.GetBaseBundleInfo(), newInfo.HasEntry());
+        oldInfo.UpdateBaseApplicationInfo(newInfo.GetBaseApplicationInfo());
         oldInfo.updateCommonHapInfo(newInfo);
+        oldInfo.SetBundlePackInfo(newInfo.GetBundlePackInfo());
         oldInfo.AddModuleInfo(newInfo);
         oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
         oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
