@@ -348,23 +348,6 @@ bool BundleDataMgr::QueryAbilityInfo(const Want &want, int32_t flags, int32_t us
         return false;
     }
 
-    // for launcher
-    if (want.HasEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM)) {
-        std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-        for (const auto &item : bundleInfos_) {
-            const InnerBundleInfo &info = item.second;
-            if (HasInitialUserCreated() && info.GetIsLauncherApp()) {
-                APP_LOGI("find launcher app %{public}s", info.GetBundleName().c_str());
-                info.GetMainAbilityInfo(abilityInfo);
-                int32_t responseUserId = info.GetResponseUserId(requestUserId);
-                info.GetApplicationInfo(
-                    ApplicationFlag::GET_BASIC_APPLICATION_INFO, responseUserId, abilityInfo.applicationInfo);
-                return true;
-            }
-        }
-        return false;
-    }
-
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
