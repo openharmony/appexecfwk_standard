@@ -46,12 +46,16 @@ ohos_unittest("BmsBundleParserTest") {
 
   external_deps = [
     "ability_base:want",
-    "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "resmgr_standard:global_resmgr",
   ]
+  defines = []
+  if (ability_runtime_enable) {
+    external_deps += [ "ability_runtime:ability_manager" ]
+    defines += [ "ABILITY_RUNTIME_ENABLE" ]
+  }
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
 

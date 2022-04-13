@@ -139,5 +139,7 @@ ohos_unittest("BmsBundleUninstallerTest") {
 group("unittest") {
   testonly = true
 
-  deps = [ ":BmsBundleUninstallerTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsBundleUninstallerTest" ]
+  }
 }

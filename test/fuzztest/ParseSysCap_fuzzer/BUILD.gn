@@ -44,8 +44,8 @@ ohos_fuzztest("ParseSysCapFuzzTest") {
     "//third_party/googletest:gtest_main",
   ]
   external_deps = [
-    "ability_runtime:app_manager",
     "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_single",
     "resmgr_standard:global_resmgr",
   ]
 }

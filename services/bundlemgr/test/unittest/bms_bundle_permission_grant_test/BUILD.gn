@@ -140,5 +140,7 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
 
 group("unittest") {
   testonly = true
-  deps = [ ":BmsBundlePermissionGrantTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsBundlePermissionGrantTest" ]
+  }
 }

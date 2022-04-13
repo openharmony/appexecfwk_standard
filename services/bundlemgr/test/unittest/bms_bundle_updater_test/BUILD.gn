@@ -143,5 +143,7 @@ ohos_unittest("BmsBundleUpdaterTest") {
 group("unittest") {
   testonly = true
 
-  deps = [ ":BmsBundleUpdaterTest" ]
+  if (ability_runtime_enable) {
+    deps = [ ":BmsBundleUpdaterTest" ]
+  }
 }
