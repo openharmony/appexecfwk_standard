@@ -617,13 +617,11 @@ public:
     /**
      * @brief Obtains the DistributedBundleInfo based on a given bundle name and networkId.
      * @param networkId Indicates the networkId of remote device.
-     * @param userId Indicates the user id.
      * @param bundleName Indicates the application bundle name to be queried.
      * @param distributedBundleInfo Indicates the obtained DistributedBundleInfo object.
      * @return Returns true if the DistributedBundleInfo is successfully obtained; returns false otherwise.
      */
-    bool GetDistributedBundleInfo(
-        const std::string &networkId, int32_t userId, const std::string &bundleName,
+    bool GetDistributedBundleInfo(const std::string &networkId, const std::string &bundleName,
         DistributedBundleInfo &distributedBundleInfo);
     /**
      * @brief Has initial user created.

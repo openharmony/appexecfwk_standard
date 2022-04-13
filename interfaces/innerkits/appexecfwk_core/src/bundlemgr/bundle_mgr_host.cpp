@@ -1652,10 +1652,9 @@ ErrCode BundleMgrHost::HandleRemoveClonedBundle(Parcel &data, Parcel &reply)
 ErrCode BundleMgrHost::HandleGetDistributedBundleInfo(Parcel &data, Parcel &reply)
 {
     std::string networkId = data.ReadString();
-    int32_t userId = data.ReadInt32();
     std::string bundleName = data.ReadString();
     DistributedBundleInfo distributedBundleInfo;
-    bool ret = GetDistributedBundleInfo(networkId, userId, bundleName, distributedBundleInfo);
+    bool ret = GetDistributedBundleInfo(networkId, bundleName, distributedBundleInfo);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
