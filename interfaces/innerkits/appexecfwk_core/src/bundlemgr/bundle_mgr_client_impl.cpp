@@ -26,7 +26,9 @@
 #include "nlohmann/json.hpp"
 #include "system_ability_definition.h"
 
+#ifdef GLOBAL_RESMGR_ENABLE
 using namespace OHOS::Global::Resource;
+#endif
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -146,6 +148,7 @@ std::vector<std::string> BundleMgrClientImpl::GetAccessibleAppCodePaths(int32_t 
 bool BundleMgrClientImpl::GetResProfileByMetadata(const std::vector<Metadata> &metadata,
     const std::string &metadataName, const std ::string &resourcePath, std::vector<std::string> &profileInfos) const
 {
+#ifdef GLOBAL_RESMGR_ENABLE
     if (metadata.empty()) {
         APP_LOGE("GetResProfileByMetadata failed due to empty metadata");
         return false;
@@ -176,8 +179,13 @@ bool BundleMgrClientImpl::GetResProfileByMetadata(const std::vector<Metadata> &m
     }
 
     return true;
+#else
+    APP_LOGW("GLOBAL_RESMGR_ENABLE is false");
+    return false;
+#endif
 }
 
+#ifdef GLOBAL_RESMGR_ENABLE
 std::shared_ptr<ResourceManager> BundleMgrClientImpl::InitResMgr(const std::string &resourcePath) const
 {
     APP_LOGD("InitResMgr begin");
@@ -234,6 +242,7 @@ bool BundleMgrClientImpl::GetResFromResMgr(const std::string &resName, const std
     profileInfos.emplace_back(profile);
     return true;
 }
+#endif
 
 bool BundleMgrClientImpl::IsFileExisted(const std::string &filePath, const std::string &suffix) const
 {

@@ -29,6 +29,7 @@ declare_args() {
   account_enable = true
   configpolicy_enable = true
   device_manager_enable = true
+  global_resmgr_enable = true
   hicollie_enable = true
 
   if (defined(global_parts_info) &&
@@ -54,6 +55,11 @@ declare_args() {
   }
 
   if (defined(global_parts_info) &&
+      !defined(global_parts_info.global_resmgr_standard)) {
+    global_resmgr_enable = false
+  }
+
+  if (defined(global_parts_info) &&
       !defined(global_parts_info.hiviewdfx_hicollie_native)) {
     hicollie_enable = false
   }
@@ -71,6 +77,7 @@ declare_args() {
   print("account_enable = " + "$account_enable")
   print("configpolicy_enable = " + "$configpolicy_enable")
   print("device_manager_enable = " + "$device_manager_enable")
+  print("global_resmgr_enable = " + "$global_resmgr_enable")
   print("hicollie_enable = " + "$hicollie_enable")
   print("support_jsapi = " + "$support_jsapi")
 }

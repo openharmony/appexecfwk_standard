@@ -41,7 +41,9 @@
 #include "pixel_map.h"
 #endif
 #include "preinstall_data_storage.h"
+#ifdef GLOBAL_RESMGR_ENABLE
 #include "resource_manager.h"
+#endif
 #include "target_ability_info.h"
 
 namespace OHOS {
@@ -818,8 +820,10 @@ private:
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;
     void GetMatchExtensionInfos(const Want &want, int32_t flags, const int32_t &userId, const InnerBundleInfo &info,
         std::vector<ExtensionAbilityInfo> &einfos) const;
+#ifdef GLOBAL_RESMGR_ENABLE
     std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(
         const AppExecFwk::BundleInfo &bundleInfo) const;
+#endif
 #ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> LoadImageFile(const std::string &path) const;
 #endif
