@@ -39,6 +39,7 @@ public:
     bool QueryAllDeviceIds(std::vector<std::string> &deviceIds);
     void UpdateDistributedData(const std::vector<BundleInfo> &bundleInfos);
     void SyncDistributedData(const std::vector<std::string> &deviceList);
+    void RemoveDeviceData(const std::string &networkId);
 
 private:
     void DeviceAndNameToKey(const std::string &udid, const std::string &bundleName, std::string &key) const;
