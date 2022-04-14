@@ -72,15 +72,18 @@ ohos_shared_library("appexecfwk_core") {
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
 
   if (bundle_framework_graphics) {
     defines += [ "SUPPORT_GRAPHICS" ]
-
     external_deps += [ "multimedia_image_standard:image_native" ]
+  }
+
+  if (global_resmgr_enable) {
+    defines += [ "GLOBAL_RESMGR_ENABLE" ]
+    external_deps += [ "resmgr_standard:global_resmgr" ]
   }
 
   subsystem_name = "appexecfwk"
