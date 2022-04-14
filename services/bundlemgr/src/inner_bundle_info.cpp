@@ -1530,41 +1530,8 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
         APP_LOGE("no package in new info");
         return;
     }
-    innerModuleInfos_.erase(newInfo.currentPackage_);
-    std::string key;
-    key.append(newInfo.baseApplicationInfo_.bundleName).append(".").append(newInfo.currentPackage_).append(".");
-    for (auto it = baseAbilityInfos_.begin(); it != baseAbilityInfos_.end();) {
-        if (it->first.find(key) == 0) {
-            skillInfos_.erase(it->first);
-            formInfos_.erase(it->first);
-            it = baseAbilityInfos_.erase(it);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = baseExtensionInfos_.begin(); it != baseExtensionInfos_.end();) {
-        if (it->first.find(key) == 0) {
-            extensionSkillInfos_.erase(it->first);
-            it = baseExtensionInfos_.erase(it);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = shortcutInfos_.begin(); it != shortcutInfos_.end();) {
-        if (it->first.find(key) == 0) {
-            shortcutInfos_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = commonEvents_.begin(); it != commonEvents_.end();) {
-        if (it->first.find(key) == 0) {
-            commonEvents_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
 
+    RemoveModuleInfo(newInfo.currentPackage_);
     AddInnerModuleInfo(newInfo.innerModuleInfos_);
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
@@ -1575,61 +1542,38 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
     AddModuleCommonEvent(newInfo.commonEvents_);
 }
 
-void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
+void InnerBundleInfo::ClearMainAbility(const std::string &modulePackage)
 {
-    if (innerModuleInfos_.find(modulePackage) == innerModuleInfos_.end()) {
-        APP_LOGE("can not find module %{public}s", modulePackage.c_str());
+    auto it = innerModuleInfos_.find(modulePackage);
+    if (it == innerModuleInfos_.end()) {
+        APP_LOGE("The module(%{public}s) infomation does not exist", modulePackage.c_str());
         return;
     }
+
+    auto abilityKeys = it->second.abilityKeys;
+    if (std::find(abilityKeys.begin(), abilityKeys.end(), mainAbility_) == abilityKeys.end()) {
+        APP_LOGE("The module(%{public}s) does not have mainability",
+            modulePackage.c_str());
+        return;
+    }
+
+    mainAbility_.clear();
+    hasEntry_ = false;
+    mainAbilityName_.clear();
+}
+
+void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
+{
+    auto it = innerModuleInfos_.find(modulePackage);
+    if (it == innerModuleInfos_.end()) {
+        APP_LOGE("The module(%{public}s) infomation does not exist", modulePackage.c_str());
+        return;
+    }
+
+    auto oldModuleInfo = it->second;
+    innerModuleInfos_.erase(it);
     std::string key;
     key.append(".").append(modulePackage).append(".");
-    if (mainAbility_.find(key) != std::string::npos) {
-        mainAbility_.clear();
-        hasEntry_ = false;
-        mainAbilityName_.clear();
-    }
-    for (auto it = innerModuleInfos_.begin(); it != innerModuleInfos_.end();) {
-        if (it->first == modulePackage) {
-            innerModuleInfos_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = baseAbilityInfos_.begin(); it != baseAbilityInfos_.end();) {
-        if (it->first.find(key) != std::string::npos) {
-            baseAbilityInfos_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = skillInfos_.begin(); it != skillInfos_.end();) {
-        if (it->first.find(key) != std::string::npos) {
-            skillInfos_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = baseExtensionInfos_.begin(); it != baseExtensionInfos_.end();) {
-        if (it->first.find(key) != std::string::npos) {
-            baseExtensionInfos_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = extensionSkillInfos_.begin(); it != extensionSkillInfos_.end();) {
-        if (it->first.find(key) != std::string::npos) {
-            extensionSkillInfos_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = formInfos_.begin(); it != formInfos_.end();) {
-        if (it->first.find(key) != std::string::npos) {
-            formInfos_.erase(it++);
-        } else {
-            ++it;
-        }
-    }
     for (auto it = shortcutInfos_.begin(); it != shortcutInfos_.end();) {
         if (it->first.find(key) != std::string::npos) {
             shortcutInfos_.erase(it++);
@@ -1637,12 +1581,54 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
             ++it;
         }
     }
+
     for (auto it = commonEvents_.begin(); it != commonEvents_.end();) {
         if (it->first.find(key) != std::string::npos) {
             commonEvents_.erase(it++);
         } else {
             ++it;
         }
+    }
+
+    // delete old abilityInfos
+    for (auto abilityKey : oldModuleInfo.abilityKeys) {
+        auto abilityItem = baseAbilityInfos_.find(abilityKey);
+        if (abilityItem == baseAbilityInfos_.end()) {
+            continue;
+        }
+
+        baseAbilityInfos_.erase(abilityItem);
+        formInfos_.erase(abilityKey);
+    }
+
+    // delete old skillInfos
+    for (auto skillKey : oldModuleInfo.skillKeys) {
+        auto skillItem = skillInfos_.find(skillKey);
+        if (skillItem == skillInfos_.end()) {
+            continue;
+        }
+
+        skillInfos_.erase(skillItem);
+    }
+
+    // delete old extensionInfos
+    for (auto extensionKey : oldModuleInfo.extensionKeys) {
+        auto extensionItem = baseExtensionInfos_.find(extensionKey);
+        if (extensionItem == baseExtensionInfos_.end()) {
+            continue;
+        }
+
+        baseExtensionInfos_.erase(extensionItem);
+    }
+
+    // delete old extensionSkillInfos
+    for (auto extensionSkillKey : oldModuleInfo.extensionSkillKeys) {
+        auto extensionSkillItem = extensionSkillInfos_.find(extensionSkillKey);
+        if (extensionSkillItem == extensionSkillInfos_.end()) {
+            continue;
+        }
+
+        extensionSkillInfos_.erase(extensionSkillItem);
     }
 }
 
