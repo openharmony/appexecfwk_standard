@@ -169,17 +169,34 @@ void BundleConnectAbilityMgr::DisconnectAbility()
     }
 }
 
+void BundleConnectAbilityMgr::WaitFormConnecting(std::unique_lock<std::mutex> &lock)
+{
+    APP_LOGI("ConnectAbility await start SERVICE_CENTER_CONNECTING");
+    while (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_CONNECTING) {
+            cv_.wait(lock);
+    }
+    APP_LOGI("ConnectAbility await end SERVICE_CENTER_CONNECTING");
+}
+
+void BundleConnectAbilityMgr::WaitFormConnected(std::unique_lock<std::mutex> &lock)
+{
+    APP_LOGI("ConnectAbility await start SERVICE_CENTER_CONNECTED");
+    while (connectState_ != ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
+        cv_.wait(lock);
+    }
+    APP_LOGI("ConnectAbility await end SERVICE_CENTER_CONNECTED");
+}
+
 bool BundleConnectAbilityMgr::ConnectAbility(const Want &want, const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGI("ConnectAbility start target bundle = %{public}s", want.GetBundle().c_str());
     std::unique_lock<std::mutex> lock(mutex_);
     if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_CONNECTING) {
-        APP_LOGI("ConnectAbility await start SERVICE_CENTER_CONNECTING");
-        cv_.wait(lock);
-        APP_LOGI("ConnectAbility await end SERVICE_CENTER_CONNECTING");
+        WaitFormConnecting(lock);
     } else if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED) {
         connectState_ = ServiceCenterConnectState::SERVICE_CENTER_CONNECTING;
         if (!GetAbilityMgrProxy()) {
+            connectState_ = ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED;
             cv_.notify_all();
             return false;
         }
@@ -188,6 +205,7 @@ bool BundleConnectAbilityMgr::ConnectAbility(const Want &want, const sptr<IRemot
             cv_, freeInstallParamsMap_);
         if (serviceCenterConnection_ == nullptr) {
             APP_LOGE("mServiceCenterConnection is nullptr");
+            connectState_ = ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED;
             cv_.notify_all();
             return false;
         }
@@ -195,9 +213,7 @@ bool BundleConnectAbilityMgr::ConnectAbility(const Want &want, const sptr<IRemot
         int result = abilityMgrProxy_->ConnectAbility(want, serviceCenterConnection_, callerToken);
         if (result == ERR_OK) {
             if (connectState_ != ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
-                APP_LOGI("ConnectAbility await start SERVICE_CENTER_CONNECTED");
-                cv_.wait(lock);
-                APP_LOGI("ConnectAbility await end SERVICE_CENTER_CONNECTED");
+                WaitFormConnected(lock);
                 serviceCenterRemoteObject_ = serviceCenterConnection_->GetRemoteObject();
             }
         } else {
@@ -286,7 +302,7 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
     }
     freeInstallParams = node->second;
     freeInstallParams.handler.reset();
-    int32_t resultCode = installResult.result.retCode;
+    uint32_t resultCode = installResult.result.retCode;
     if (resultCode == ServiceCenterResultCode::FREE_INSTALL_DOWNLOADING) {
         APP_LOGD("ServiceCenter is downloading, downloadSize = %{public}d, totalSize = %{public}d",
             installResult.progress.downloadSize, installResult.progress.totalSize);
@@ -338,7 +354,11 @@ void BundleConnectAbilityMgr::SendRequest(
         return;
     }
     if (serviceCenterCallback == nullptr) {
-        serviceCenterCallback = new ServiceCenterStatusCallback(weak_from_this());
+        serviceCenterCallback = new(std::nothrow) ServiceCenterStatusCallback(weak_from_this());
+        if (serviceCenterCallback == nullptr) {
+            APP_LOGE("serviceCenterCallback is nullptr");
+            return;
+        }
     }
     if (!data.WriteRemoteObject(serviceCenterCallback)) {
         APP_LOGE("%{public}s failed to WriteRemoteObject callbcak", __func__);
@@ -454,13 +474,25 @@ bool BundleConnectAbilityMgr::CheckIsModuleNeedUpdate(
     InnerBundleInfo &innerBundleInfo, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack)
 {
     if (innerBundleInfo.IsModuleNeedUpdate(want.GetStringParam("moduleName"))) {
-        sptr<TargetAbilityInfo> targetAbilityInfo = new TargetAbilityInfo();
-        sptr<TargetInfo> targetInfo = new TargetInfo();
+        sptr<TargetAbilityInfo> targetAbilityInfo = new(std::nothrow) TargetAbilityInfo();
+        if (targetAbilityInfo == nullptr) {
+            APP_LOGE("targetAbilityInfo is nullptr");
+            return false;
+        }
+        sptr<TargetInfo> targetInfo = new(std::nothrow) TargetInfo();
+        if (targetInfo == nullptr) {
+            APP_LOGE("targetInfo is nullptr");
+            return false;
+        }
         bool targetAbilityInfoResult = GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
         if (!targetAbilityInfoResult) {
             CallAbilityManager(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, callBack);
         } else {
-            sptr<FreeInstallParams> freeInstallParams = new FreeInstallParams();
+            sptr<FreeInstallParams> freeInstallParams = new(std::nothrow) FreeInstallParams();
+            if (freeInstallParams == nullptr) {
+                APP_LOGE("freeInstallParams is nullptr");
+                return false;
+            }
             freeInstallParams->callback = callBack;
             freeInstallParams->want = want;
             freeInstallParams->userId = userId;
@@ -503,12 +535,24 @@ bool BundleConnectAbilityMgr::QueryAbilityInfo(const Want &want, int32_t flags,
         APP_LOGD("QueryAbilityInfo is ok");
         return true;
     }
-    sptr<FreeInstallParams> freeInstallParams = new FreeInstallParams();
+    sptr<FreeInstallParams> freeInstallParams = new(std::nothrow) FreeInstallParams();
+    if (freeInstallParams == nullptr) {
+        APP_LOGD("freeInstallParams is nullptr");
+        return false;
+    }
     freeInstallParams->callback = callBack;
     freeInstallParams->want = want;
     freeInstallParams->userId = userId;
-    sptr<TargetAbilityInfo> targetAbilityInfo = new TargetAbilityInfo();
-    sptr<TargetInfo> targetInfo = new TargetInfo();
+    sptr<TargetAbilityInfo> targetAbilityInfo = new(std::nothrow) TargetAbilityInfo();
+    if (targetAbilityInfo == nullptr) {
+        APP_LOGD("targetAbilityInfo is nullptr");
+        return false;
+    }
+    sptr<TargetInfo> targetInfo = new(std::nothrow) TargetInfo();
+    if (targetInfo == nullptr) {
+        APP_LOGD("targetInfo is nullptr");
+        return false;
+    }
     bool targetAbilityInfoResult = GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
     if (!targetAbilityInfoResult) {
         CallAbilityManager(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, callBack);
@@ -531,9 +575,21 @@ void BundleConnectAbilityMgr::UpgradeAtomicService(const Want &want, int32_t use
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
     InnerBundleInfo innerBundleInfo;
-    sptr<TargetAbilityInfo> targetAbilityInfo = new TargetAbilityInfo();
-    sptr<TargetInfo> targetInfo = new TargetInfo();
-    sptr<FreeInstallParams> freeInstallParams = new FreeInstallParams();
+    sptr<TargetAbilityInfo> targetAbilityInfo = new(std::nothrow) TargetAbilityInfo();
+    if (targetAbilityInfo == nullptr) {
+        APP_LOGD("targetAbilityInfo is nullptr");
+        return;
+    }
+    sptr<TargetInfo> targetInfo = new(std::nothrow) TargetInfo();
+    if (targetInfo == nullptr) {
+        APP_LOGD("targetInfo is nullptr");
+        return;
+    }
+    sptr<FreeInstallParams> freeInstallParams = new(std::nothrow) FreeInstallParams();
+    if (freeInstallParams == nullptr) {
+        APP_LOGD("freeInstallParams is nullptr");
+        return;
+    }
     bundleDataMgr_->GetInnerBundleInfoWithFlags(bundleName, want.GetFlags(), innerBundleInfo, userId);
     GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
     freeInstallParams->want = want;
