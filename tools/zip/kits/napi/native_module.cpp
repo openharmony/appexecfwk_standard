@@ -20,7 +20,7 @@
 #include "napi/native_node_api.h"
 #include "napi_zlib.h"
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 
 EXTERN_C_START
@@ -60,5 +60,5 @@ extern "C" __attribute__((constructor)) void RegisterModule(void)
     napi_module_register(&_module);
 }
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS

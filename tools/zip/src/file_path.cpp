@@ -24,10 +24,12 @@
 using namespace std;
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 namespace {
 const std::string SEPARATOR = "/";
+const std::string ZIP = ".zip";
+
 }
 const FilePath::CharType FilePath::kSeparators[] = FILE_PATH_LITERAL("/");
 const size_t FilePath::kSeparatorsLength = arraysize(kSeparators);
@@ -401,6 +403,15 @@ bool FilePath::GetZipAllDirFiles(const std::string &path, std::vector<std::strin
     closedir(dir);
     return result;
 }
+
+std::string FilePath::CheckDestDirTail()
+{
+    if (path_.substr(path_.size()-4, 4) == ZIP) {
+        return path_;
+    } else {
+        return path_ + ZIP;
+    }
+}
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS

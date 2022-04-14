@@ -25,7 +25,7 @@
 using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 namespace {
 // Numbers of pending entries that trigger writting them to the ZIP file.
@@ -240,5 +240,5 @@ bool ZipWriter::FlushEntriesIfNeeded(bool force, const OPTIONS &options, CALLBAC
 }
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS

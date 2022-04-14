@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_H
-#define FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_H
+#ifndef FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_H
+#define FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_H
 
 #include <vector>
 #include <functional>
@@ -24,7 +24,7 @@
 #include "file_path.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 
 class WriterDelegate;
@@ -161,6 +161,6 @@ bool Zip(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &option
 bool Unzip(const FilePath &zipFile, const FilePath &destDir, const OPTIONS &options, CALLBACK callback);
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_H
+#endif  // FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_H

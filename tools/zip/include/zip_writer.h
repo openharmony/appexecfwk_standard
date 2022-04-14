@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_WRITER_H
-#define FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_WRITER_H
+#ifndef FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_WRITER_H
+#define FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_WRITER_H
 
 #include <memory>
 #include <vector>
@@ -23,7 +23,7 @@
 #include "contrib/minizip/zip.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 // A class used to write entries to a ZIP file and buffering the reading of
 // files to limit the number of calls to the FileAccessor. This is for
@@ -76,7 +76,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN(ZipWriter);
 };
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
 
-#endif  // FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_WRITER_H
+#endif  // FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_WRITER_H

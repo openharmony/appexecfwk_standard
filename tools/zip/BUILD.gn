@@ -24,7 +24,7 @@ config("zip_config") {
   ]
 
   defines = [
-    "APP_LOG_TAG = \"BundleMgrService\"",
+    "APP_LOG_TAG = \"Zlib\"",
     "LOG_DOMAIN = 0xD001120",
   ]
 }
