@@ -23,8 +23,8 @@
 
 #include "app_log_wrapper.h"
 #include "directory_ex.h"
+#include "event_handler.h"
 #include "file_path.h"
-#include "runnable.h"
 #include "zip_internal.h"
 #include "zip_reader.h"
 #include "zip_writer.h"
@@ -287,14 +287,14 @@ bool Unzip(const FilePath &srcFile, const FilePath &destDir, const OPTIONS &opti
         srcFileDir.Value().c_str(),
         destDirTemp.Value().c_str());
 
-    std::shared_ptr<Runnable> innerTask = std::make_shared<Runnable>([srcFile, destDir, options, callback]() {
+    auto innerTask = [srcFile, destDir, options, callback]() {
         UnzipParam unzipParam {
             .callback = callback,
             .filterCB = ExcludeNoFilesFilter,
             .logSkippedFiles = true
         };
         UnzipWithFilterCallback(srcFile, destDir, options, unzipParam);
-    });
+    };
 
     PostTask(innerTask);
     return true;
@@ -332,17 +332,16 @@ bool Zip(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &option
 
     FilePath srcdir = srcDir;
 
-    std::shared_ptr<Runnable> innerTask =
-        std::make_shared<Runnable>([srcDir, destFile, includeHiddenFiles, callback]() {
-            OPTIONS options;
-            if (includeHiddenFiles) {
-                ZipWithFilterCallback(srcDir, destFile, options, callback, ExcludeNoFilesFilter);
-            } else {
-                ZipWithFilterCallback(srcDir, destFile, options, callback, ExcludeHiddenFilesFilter);
-            }
-        });
-    PostTask(innerTask);
+    auto innerTask = [srcDir, destFile, includeHiddenFiles, callback]() {
+        OPTIONS options;
+        if (includeHiddenFiles) {
+            ZipWithFilterCallback(srcDir, destFile, options, callback, ExcludeNoFilesFilter);
+        } else {
+            ZipWithFilterCallback(srcDir, destFile, options, callback, ExcludeHiddenFilesFilter);
+        }
+    };
 
+    PostTask(innerTask);
     return true;
 }
 }  // namespace LIBZIP
