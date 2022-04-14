@@ -231,6 +231,10 @@ bool BundleDataMgr::RemoveModuleInfo(
     }
     if (statusItem->second == InstallState::UNINSTALL_START || statusItem->second == InstallState::ROLL_BACK) {
         APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
+        // Judge whether the mainability of oldinfo is in the removed module.
+        // If so, clear the mainability in oldinfo.
+        // It should be called before RemoveModuleInfo.
+        oldInfo.ClearMainAbility(modulePackage);
         oldInfo.RemoveModuleInfo(modulePackage);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(oldInfo)) {
