@@ -55,12 +55,12 @@ declare_args() {
 
   if (defined(global_parts_info) &&
       !defined(global_parts_info.global_resmgr_standard)) {
-    device_manager_enable = false
+    global_resmgr_enable = false
   }
 
   if (defined(global_parts_info) &&
       !defined(global_parts_info.hiviewdfx_hicollie_native)) {
-    global_resmgr_enable = false
+    hicollie_enable = false
   }
 
   if (defined(global_parts_info) &&
