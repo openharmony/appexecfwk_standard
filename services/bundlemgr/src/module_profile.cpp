@@ -1447,7 +1447,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtrac
     }
 
     ApplicationInfo applicationInfo;
-    applicationInfo.isSystemApp = innerBundleInfo.IsPreInstallApp();
+    applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
     ToApplicationInfo(moduleJson.app, applicationInfo, bundleExtractor);
 
     InnerModuleInfo innerModuleInfo;
