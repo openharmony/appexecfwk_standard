@@ -1212,7 +1212,7 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
     }
 #else
     APP_LOGW("GLOBAL_RESMGR_ENABLE is false");
-    return nullptr;
+    return Constants::EMPTY_STRING;
 #endif
 }
 
