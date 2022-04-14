@@ -75,6 +75,7 @@ void BundleExceptionHandler::HandleInvalidBundle(InnerBundleInfo &info, bool &is
             return;
         }
         if (RemoveBundleAndDataDir(moduleDir, moduleDataDir, info.GetUserId())) {
+            info.ClearMainAbility(mark.packageName);
             info.RemoveModuleInfo(mark.packageName);
             info.SetInstallMark(mark.bundleName, mark.packageName, InstallExceptionStatus::INSTALL_FINISH);
             info.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);

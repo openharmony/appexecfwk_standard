@@ -182,6 +182,12 @@ public:
      */
     void RemoveModuleInfo(const std::string &modulePackage);
     /**
+     * @brief clear mainAbility before remove module info.
+     * @param modulePackage Indicates the module package to be remove.
+     * @return
+     */
+    void ClearMainAbility(const std::string &modulePackage);
+    /**
      * @brief Find hap module info by module package.
      * @param modulePackage Indicates the module package.
      * @param userId Indicates the user ID.
