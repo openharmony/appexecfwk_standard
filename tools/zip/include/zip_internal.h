@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_INTERNAL_H
-#define FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_INTERNAL_H
+#ifndef FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_INTERNAL_H
+#define FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_INTERNAL_H
 
 #include <string>
 #include <time.h>
@@ -23,7 +23,7 @@
 #include "zip_utils.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 namespace {
 const int kZipMaxPath = 256;
@@ -67,7 +67,7 @@ bool ZipOpenNewFileInZip(
     zipFile zipFile, const std::string &strPath, const OPTIONS &options, const struct tm *lastModifiedTime);
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
 
-#endif  // FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_INTERNAL_H
+#endif  // FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_INTERNAL_H

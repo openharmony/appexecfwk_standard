@@ -17,7 +17,7 @@
 #include "securec.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 namespace {
 const int E_OK = 0;
@@ -97,5 +97,5 @@ void SetNamedProperty(napi_env env, napi_value obj, const char *propName, const 
     napi_set_named_property(env, obj, propName, prop);
 }
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS

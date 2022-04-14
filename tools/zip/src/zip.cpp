@@ -32,7 +32,7 @@
 using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 namespace {
 using FilterCallback = std::function<bool(const FilePath &)>;
@@ -41,6 +41,7 @@ using WriterFactory = std::function<std::unique_ptr<WriterDelegate>(FilePath &, 
 
 const std::string SEPARATOR = "/";
 const char HIDDEN_SEPARATOR = '.';
+const std::string ZIP = ".zip";
 
 #define CALLING_CALL_BACK(callback, result) \
     if (callback != nullptr) {              \
@@ -286,6 +287,34 @@ bool Unzip(const FilePath &srcFile, const FilePath &destDir, const OPTIONS &opti
         __func__,
         srcFileDir.Value().c_str(),
         destDirTemp.Value().c_str());
+    if (destDirTemp.Value().size() == 0
+        || srcFileDir.Value().size() == 0 || srcFileDir.Value().size() <= 4) {
+        APP_LOGI("%{public}s called fail, srcFile isn't Exist.", __func__);
+        CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+        return false;
+    }
+    if (srcFileDir.Value().substr(srcFileDir.Value().size()-4, 4) == ZIP) {
+        if (!FilePath::PathIsValid(srcFile)) {
+            APP_LOGI("%{public}s called fail, srcFile isn't Exist.", __func__);
+            CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+            return false;
+        }
+    } else {
+        APP_LOGI("%{public}s called fail, The file format of srcFile is incorrect .", __func__);
+        CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+        return false;
+    }
+
+    if (FilePath::DirectoryExists(destDir)) {
+        if (!FilePath::PathIsValid(destDir)) {
+            APP_LOGI("%{public}s called, FilePath::PathIsValid(destDir) fail.", __func__);
+            CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+        }
+    } else {
+        APP_LOGI("%{public}s called fail, destDir isn't path.", __func__);
+        CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+        return false;
+    }
 
     auto innerTask = [srcFile, destDir, options, callback]() {
         UnzipParam unzipParam {
@@ -303,19 +332,33 @@ bool Unzip(const FilePath &srcFile, const FilePath &destDir, const OPTIONS &opti
 bool ZipWithFilterCallback(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &options, CALLBACK callback,
     FilterCallback filterCB)
 {
-    FilePath srcPath = srcDir;
-    if (!EndsWith(srcPath.Value(), SEPARATOR)) {
-        if (!FilePath::DirectoryExists(srcPath.DirName())) {
-            APP_LOGI("%{public}s called, FilePath::DirectoryExists(srcPath) ReturnValue is false.", __func__);
+    FilePath destPath = destFile;
+
+    if (FilePath::DirectoryExists(destFile)) {
+        if (!FilePath::PathIsValid(destFile)) {
+            APP_LOGI("%{public}s called fail, destFile isn't Exist.", __func__);
             CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
             return false;
         }
-    } else if (!FilePath::DirectoryExists(srcDir)) {
-        APP_LOGI("%{public}s called, FilePath::DirectoryExists(srcDir) ReturnValue is false.", __func__);
+    } else if (!FilePath::PathIsValid(destPath.DirName())) {
+        APP_LOGI("%{public}s called fail, The path where destFile is located doesn't exist.", __func__);
         CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
         return false;
     }
-    ZipParams params(srcDir, destFile);
+    
+    if (FilePath::DirectoryExists(srcDir)) {
+        if (!FilePath::PathIsValid(srcDir)) {
+            APP_LOGI("%{public}s called fail, srcDir isn't Exist.", __func__);
+            CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+            return false;
+        }
+    } else if (!FilePath::PathIsValid(srcDir)) {
+        APP_LOGI("%{public}s called fail, The path where srcDir is located doesn't exist.", __func__);
+        CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+        return false;
+    }
+
+    ZipParams params(srcDir, FilePath(destPath.CheckDestDirTail()));
     params.SetFilterCallback(filterCB);
     return Zip(params, options, callback);
 }
@@ -323,15 +366,19 @@ bool ZipWithFilterCallback(const FilePath &srcDir, const FilePath &destFile, con
 bool Zip(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &options, CALLBACK callback,
     bool includeHiddenFiles)
 {
-    FilePath srctemp = srcDir;
-    FilePath desttemp = destFile;
+    FilePath srcTemp = srcDir;
+    FilePath destTemp = destFile;
     APP_LOGI("%{public}s called,  srcDir=%{public}s, destFile=%{public}s",
         __func__,
-        srctemp.Value().c_str(),
-        desttemp.Value().c_str());
+        srcTemp.Value().c_str(),
+        destTemp.Value().c_str());
 
-    FilePath srcdir = srcDir;
-
+    if (srcTemp.Value().size() == 0 || destTemp.Value().size() == 0) {
+        APP_LOGI("%{public}s called fail, the path is empty.", __func__);
+        CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+        return false;
+    }
+    
     auto innerTask = [srcDir, destFile, includeHiddenFiles, callback]() {
         OPTIONS options;
         if (includeHiddenFiles) {
@@ -345,5 +392,5 @@ bool Zip(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &option
     return true;
 }
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS

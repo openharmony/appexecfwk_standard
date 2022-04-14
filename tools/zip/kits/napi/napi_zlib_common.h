@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef OHOS_AAFwk_LIBZIP_COMMON_H
-#define OHOS_AAFwk_LIBZIP_COMMON_H
+#ifndef OHOS_APPEXECFWK_LIBZIP_COMMON_H
+#define OHOS_APPEXECFWK_LIBZIP_COMMON_H
 #include <memory>
 #include <string>
 
@@ -23,7 +23,7 @@
 #include "zip_utils.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 #define NAPI_CALL_BASE_BOOL(theCall, retVal) \
     do {                                     \
@@ -58,6 +58,6 @@ napi_value GetCallbackErrorValue(napi_env env, int errCode);
 void SetNamedProperty(napi_env env, napi_value obj, const char *propName, const int propValue);
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // OHOS_AAFwk_LIBZIP_COMMON_H
+#endif  // OHOS_APPEXECFWK_LIBZIP_COMMON_H

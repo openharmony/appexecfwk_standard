@@ -19,7 +19,7 @@
 #include "event_handler.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 namespace {
 const std::string SEPARATOR = "/";
@@ -94,5 +94,5 @@ bool FilePathCheckValid(const std::string &str)
 }
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
