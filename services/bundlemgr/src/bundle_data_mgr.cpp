@@ -1172,6 +1172,7 @@ bool BundleDataMgr::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInf
 
 std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const std::string &className) const
 {
+#ifdef GLOBAL_RESMGR_ENABLE
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
         APP_LOGW("bundleInfos_ data is empty");
@@ -1209,6 +1210,10 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
     } else {
         return abilityLabel;
     }
+#else
+    APP_LOGW("GLOBAL_RESMGR_ENABLE is false");
+    return nullptr;
+#endif
 }
 
 bool BundleDataMgr::GetHapModuleInfo(
@@ -1606,6 +1611,7 @@ std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const s
 std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName) const
 {
+#ifdef GLOBAL_RESMGR_ENABLE
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
         APP_LOGW("bundleInfos_ data is empty");
@@ -1644,6 +1650,10 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std
         return nullptr;
     }
     return pixelMapPtr;
+#else
+    APP_LOGW("GLOBAL_RESMGR_ENABLE is false");
+    return nullptr;
+#endif
 }
 #endif
 
@@ -2827,6 +2837,7 @@ void BundleDataMgr::GetAllUriPrefix(std::vector<std::string> &uriPrefixList, int
     }
 }
 
+#ifdef GLOBAL_RESMGR_ENABLE
 std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceManager(
     const AppExecFwk::BundleInfo &bundleInfo) const
 {
@@ -2845,6 +2856,7 @@ std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceMan
     resourceManager->UpdateResConfig(*resConfig);
     return resourceManager;
 }
+#endif
 
 #ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
 bool BundleDataMgr::GetRemovableBundleNameVec(std::map<std::string, int>& bundlenameAndUids)
