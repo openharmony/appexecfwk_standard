@@ -654,6 +654,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0500, Function | SmallTest | Level0)
     ApplicationInfo applicationInfo2;
     applicationInfo2.name = BUNDLE_NAME;
     applicationInfo2.deviceId = DEVICE_ID;
+    applicationInfo2.bundleName = BUNDLE_NAME;
     info2.SetBaseBundleInfo(bundleInfo2);
     info2.SetBaseApplicationInfo(applicationInfo2);
 
