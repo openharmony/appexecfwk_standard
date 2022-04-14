@@ -28,9 +28,9 @@ struct TargetInfo : public Parcelable {
     std::string bundleName;
     std::string moduleName;
     std::string abilityName;
-    uint32_t flags;
-    uint32_t callingUid;
-    uint32_t callingAppType;
+    int32_t flags;
+    int32_t callingUid;
+    int32_t callingAppType;
     std::vector<std::string> callingBundleNames;
     std::vector<std::string> callingAppIds;
     bool ReadFromParcel(Parcel &parcel);
