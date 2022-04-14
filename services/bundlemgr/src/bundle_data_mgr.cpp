@@ -2494,15 +2494,10 @@ std::set<int32_t> BundleDataMgr::GetAllUser() const
     return multiUserIdsSet_;
 }
 
-bool BundleDataMgr::GetDistributedBundleInfo(
-    const std::string &networkId, int32_t userId, const std::string &bundleName,
+bool BundleDataMgr::GetDistributedBundleInfo(const std::string &networkId, const std::string &bundleName,
     DistributedBundleInfo &distributedBundleInfo)
 {
-    if (userId == Constants::INVALID_USERID) {
-        return false;
-    }
-    return distributedDataStorage_->QueryStroageDistributeInfo(
-        bundleName, userId, networkId, distributedBundleInfo);
+    return distributedDataStorage_->QueryStroageDistributeInfo(bundleName, networkId, distributedBundleInfo);
 }
 
 bool BundleDataMgr::GetInnerBundleUserInfos(

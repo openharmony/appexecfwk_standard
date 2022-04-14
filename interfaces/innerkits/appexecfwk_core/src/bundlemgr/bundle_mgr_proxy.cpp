@@ -2271,8 +2271,7 @@ bool BundleMgrProxy::RemoveClonedBundle(const std::string &bundleName, const int
     return reply.ReadBool();
 }
 
-bool BundleMgrProxy::GetDistributedBundleInfo(
-    const std::string &networkId, int32_t userId, const std::string &bundleName,
+bool BundleMgrProxy::GetDistributedBundleInfo(const std::string &networkId, const std::string &bundleName,
     DistributedBundleInfo &distributedBundleInfo)
 {
     APP_LOGI("begin to GetDistributedBundleInfo of %{public}s", bundleName.c_str());
@@ -2288,11 +2287,6 @@ bool BundleMgrProxy::GetDistributedBundleInfo(
 
     if (!data.WriteString(networkId)) {
         APP_LOGE("fail to GetDistributedBundleInfo due to write networkId fail");
-        return false;
-    }
-
-    if (!data.WriteInt32(userId)) {
-        APP_LOGE("fail to GetDistributedBundleInfo due to write userId fail");
         return false;
     }
 

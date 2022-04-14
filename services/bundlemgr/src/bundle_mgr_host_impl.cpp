@@ -1192,18 +1192,17 @@ bool BundleMgrHostImpl::CheckBundleNameInAllowList(const std::string &bundleName
     return result;
 }
 
-bool BundleMgrHostImpl::GetDistributedBundleInfo(
-    const std::string &networkId, int32_t userId, const std::string &bundleName,
+bool BundleMgrHostImpl::GetDistributedBundleInfo(const std::string &networkId, const std::string &bundleName,
     DistributedBundleInfo &distributedBundleInfo)
 {
-    APP_LOGD("start GetDistributedBundleInfo, networkId : %{public}s, userId : %{public}d, bundleName : %{public}s",
-        networkId.c_str(), userId, bundleName.c_str());
+    APP_LOGD("start GetDistributedBundleInfo, networkId : %{public}s, bundleName : %{public}s",
+        networkId.c_str(), bundleName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->GetDistributedBundleInfo(networkId, userId, bundleName, distributedBundleInfo);
+    return dataMgr->GetDistributedBundleInfo(networkId, bundleName, distributedBundleInfo);
 }
 
 bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32_t &flag, const int32_t &userId,
