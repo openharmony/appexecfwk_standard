@@ -34,8 +34,7 @@ public:
 
     bool SaveStorageDistributeInfo(const std::string &bundleName, int32_t userId);
     bool DeleteStorageDistributeInfo(const std::string &bundleName, int32_t userId);
-    bool QueryStroageDistributeInfo(
-        const std::string &bundleName, int32_t userId, const std::string &networkId,
+    bool QueryStroageDistributeInfo(const std::string &bundleName, const std::string &networkId,
         DistributedBundleInfo &info);
     bool QueryAllDeviceIds(std::vector<std::string> &deviceIds);
     void UpdateDistributedData(const std::vector<BundleInfo> &bundleInfos);

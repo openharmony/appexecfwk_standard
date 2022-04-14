@@ -1012,7 +1012,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
         if (bundleDumpShortcut) {
             dumpResults = DumpShortcutInfos(bundleName, userId);
         } else if (bundleDumpDistributedBundleInfo) {
-            dumpResults = DumpDistributedBundleInfo(deviceId, userId, bundleName);
+            dumpResults = DumpDistributedBundleInfo(deviceId, bundleName);
         } else if (bundleDumpAll) {
             dumpResults = DumpBundleList(userId);
         } else if (bundleDumpInfos) {
@@ -1835,18 +1835,18 @@ std::string BundleManagerShellCommand::DumpShortcutInfos(const std::string &bund
     return dumpResults;
 }
 
-std::string BundleManagerShellCommand::DumpDistributedBundleInfo(const std::string &deviceId,
-    int32_t userId, const std::string &bundleName)
+std::string BundleManagerShellCommand::DumpDistributedBundleInfo(
+    const std::string &deviceId, const std::string &bundleName)
 {
     std::string dumpResults = "";
-    DistributedBundleInfo bundleInfo;
-    bool dumpRet = bundleMgrProxy_->GetDistributedBundleInfo(deviceId, userId, bundleName, bundleInfo);
+    DistributedBundleInfo distributedBundleInfo;
+    bool dumpRet = bundleMgrProxy_->GetDistributedBundleInfo(deviceId, bundleName, distributedBundleInfo);
     if (!dumpRet) {
         APP_LOGE("failed to dump distributed bundleInfo.");
     } else {
         dumpResults.append("distributed bundleInfo");
         dumpResults.append(":\n");
-        dumpResults.append(bundleInfo.ToString());
+        dumpResults.append(distributedBundleInfo.ToString());
         dumpResults.append("\n");
     }
     return dumpResults;
