@@ -22,6 +22,7 @@
 #include "aging/aging_constants.h"
 #include "aging/aging_handler_chain.h"
 #include "aging/aging_request.h"
+#include "bundle_active_client.h"
 #include "bundle_data_mgr.h"
 #include "event_handler.h"
 #include "singleton.h"
@@ -51,6 +52,8 @@ private:
     void ProcessEvent(const InnerEvent::Pointer &event) override;
     bool CheckPrerequisite(AgingTriggertype type) const;
     bool ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &dataMgr);
+    int AgingQueryFormStatistics(std::vector<DeviceUsageStats::BundleActiveModuleRecord>& results,
+        const std::shared_ptr<BundleDataMgr> &dataMgr);
 
 private:
     std::mutex mutex_;
