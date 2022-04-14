@@ -1452,7 +1452,8 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
         Security::Verify::ProvisionInfo provisionInfo;
         if (!installParam.noCheckSignature) {
             provisionInfo = hapVerifyRes[i].GetProvisionInfo();
-            bool isSystemApp = installParam.isPreInstallApp;
+            bool isSystemApp = (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
+                provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP);
             if (isSystemApp) {
                 newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
             }
