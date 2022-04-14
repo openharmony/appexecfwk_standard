@@ -21,13 +21,13 @@
 #include <errno.h>
 #include <stddef.h>
 #include <functional>
-#include "runnable.h"
+
+#include "event_handler.h"
 
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
 
-using Runnable = OHOS::AppExecFwk::Runnable;
 using CALLBACK = std::function<void(int)>;
 
 #if !defined(DISALLOW_ASSIGN)
@@ -131,7 +131,7 @@ constexpr PlatformFile kInvalidPlatformFile = -1;
 struct tm *GetCurrentSystemTime(void);
 bool StartsWith(const std::string &str, const std::string &searchFor);
 bool EndsWith(const std::string &str, const std::string &searchFor);
-void PostTask(const std::shared_ptr<Runnable> &runnable);
+void PostTask(const OHOS::AppExecFwk::InnerEvent::Callback &callback);
 bool FilePathCheckValid(const std::string &str);
 }  // namespace LIBZIP
 }  // namespace AAFwk

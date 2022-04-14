@@ -16,9 +16,7 @@
 
 #include <regex>
 
-#include "parallel_task_dispatcher.h"
-#include "runnable.h"
-#include "task_dispatcher_context.h"
+#include "event_handler.h"
 
 namespace OHOS {
 namespace AAFwk {
@@ -29,17 +27,16 @@ const std::regex FILE_PATH_REGEX("([0-9A-Za-z/+_=\\-,.])+");
 }  // namespace
 using namespace OHOS::AppExecFwk;
 
-std::shared_ptr<ParallelTaskDispatcher> g_TaskDispatcher = nullptr;
-void PostTask(const std::shared_ptr<Runnable> &runnable)
+std::shared_ptr<EventHandler> g_handler = nullptr;
+void PostTask(const InnerEvent::Callback &callback)
 {
-    static TaskDispatcherContext taskContext;
-
-    if (g_TaskDispatcher == nullptr) {
-        g_TaskDispatcher = taskContext.CreateParallelDispatcher(std::string("toolszip"), TaskPriority::DEFAULT);
+    if (g_handler == nullptr) {
+        auto runner = EventRunner::Create(true);
+        g_handler = std::make_shared<EventHandler>(runner);
     }
 
-    if (g_TaskDispatcher != nullptr) {
-        g_TaskDispatcher->AsyncDispatch(runnable);
+    if (g_handler != nullptr) {
+        g_handler->PostTask(callback);
     }
 }
 
