@@ -90,7 +90,6 @@ ohos_unittest("BmsDataMgrTest") {
     "distributeddatamgr:distributeddata_inner",
     "eventhandler:libeventhandler",
     "init:libbegetutil",
-    "resmgr_standard:global_resmgr",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
@@ -123,6 +122,10 @@ ohos_unittest("BmsDataMgrTest") {
     sources += [ "${services_path}/bundlemgr/src/bms_device_manager.cpp" ]
     external_deps += [ "device_manager_base:devicemanagersdk" ]
     defines += [ "DEVICE_MANAGER_ENABLE" ]
+  }
+  if (global_resmgr_enable) {
+    defines += [ "GLOBAL_RESMGR_ENABLE" ]
+    external_deps += [ "resmgr_standard:global_resmgr" ]
   }
   if (hicollie_enable) {
     external_deps += [ "hicollie_native:libhicollie" ]

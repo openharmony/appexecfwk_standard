@@ -46,6 +46,10 @@ ohos_fuzztest("ParseSysCapFuzzTest") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
-    "resmgr_standard:global_resmgr",
   ]
+  defines = []
+  if (global_resmgr_enable) {
+    defines += [ "GLOBAL_RESMGR_ENABLE" ]
+    external_deps += [ "resmgr_standard:global_resmgr" ]
+  }
 }

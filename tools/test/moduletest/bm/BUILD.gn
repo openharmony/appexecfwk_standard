@@ -70,11 +70,15 @@ ohos_moduletest("bm_command_dump_module_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
     "utils_base:utils",
   ]
+  defines = []
+  if (global_resmgr_enable) {
+    defines += [ "GLOBAL_RESMGR_ENABLE" ]
+    external_deps += [ "resmgr_standard:global_resmgr" ]
+  }
 }
 
 ohos_moduletest("bm_command_install_module_test") {
@@ -115,11 +119,15 @@ ohos_moduletest("bm_command_install_module_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
     "utils_base:utils",
   ]
+  defines = []
+  if (global_resmgr_enable) {
+    defines += [ "GLOBAL_RESMGR_ENABLE" ]
+    external_deps += [ "resmgr_standard:global_resmgr" ]
+  }
 }
 
 ohos_moduletest("bm_command_uninstall_module_test") {
@@ -160,11 +168,15 @@ ohos_moduletest("bm_command_uninstall_module_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
     "utils_base:utils",
   ]
+  defines = []
+  if (global_resmgr_enable) {
+    defines += [ "GLOBAL_RESMGR_ENABLE" ]
+    external_deps += [ "resmgr_standard:global_resmgr" ]
+  }
 }
 
 group("moduletest") {
