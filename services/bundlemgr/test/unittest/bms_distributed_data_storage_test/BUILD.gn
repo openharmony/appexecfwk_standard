@@ -51,8 +51,6 @@ ohos_unittest("BmsDistributedDataStorageTest") {
 
   external_deps = [
     "ability_base:want",
-    "ability_runtime:ability_manager",
-    "ability_runtime:app_manager",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",
