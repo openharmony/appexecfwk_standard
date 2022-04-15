@@ -2104,8 +2104,8 @@ bool ToInnerModuleInfo(const ProfileReader::ConfigJson &configJson, InnerModuleI
     return true;
 }
 
-bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
-    const ProfileReader::Ability &ability, AbilityInfo &abilityInfo, bool isSystemApp)
+bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson, const ProfileReader::Ability &ability,
+    AbilityInfo &abilityInfo, bool isSystemApp,  bool isPreInstallApp)
 {
     abilityInfo.name = ability.name;
     if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
@@ -2122,7 +2122,7 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     abilityInfo.kind = ability.type;
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
-    if (isSystemApp) {
+    if (isSystemApp && isPreInstallApp) {
         abilityInfo.priority = ability.priority;
     }
 
@@ -2252,7 +2252,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {
         AbilityInfo abilityInfo;
-        if (!ToAbilityInfo(configJson, ability, abilityInfo, applicationInfo.isSystemApp)) {
+        if (!ToAbilityInfo(configJson, ability, abilityInfo, applicationInfo.isSystemApp, isPreInstallApp)) {
             APP_LOGE("parse to abilityInfo failed");
             return false;
         }
