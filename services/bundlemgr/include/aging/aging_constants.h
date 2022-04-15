@@ -25,9 +25,9 @@ const std::string SYSTEM_PARAM_DATA_SIZE_THRESHOLD = "persist.sys.bms.aging.poli
 const std::string SYSTEM_PARAM_RECENILY_USED_THRESHOLD = "persist.sys.bms.aging.policy.recently.used.threshold";
 const std::string SYSTEM_PARAM_AGING_TIMER_INTERVAL = "persist.sys.bms.aging.policy.timer.interval";
 const std::string SYSTEM_PARAM_AGING_BATTER_THRESHOLD = "persist.sys.bms.aging.policy.battery.threshold";
-const int64_t ONE_MS = 1000;
+const int64_t ONE_SECOND_MS = 1000;
 const float AGING_SIZE_RATIO = 0.8F;
-const int64_t ONE_HOUR_MS = (int64_t)60 * 60 * ONE_MS;
+const int64_t ONE_HOUR_MS = (int64_t)60 * 60 * ONE_SECOND_MS;
 const int64_t DEFAULT_AGING_TIMER_INTERVAL = (int64_t)8 * ONE_HOUR_MS;
 const int64_t ONE_DAYS_MS = (int64_t)24 * ONE_HOUR_MS;
 const int64_t ONE_KB = (int64_t)1024;
@@ -38,7 +38,7 @@ const int64_t THRESHOLD_VAL_LEN = 20;
 const int32_t TIME_30_DAYS = 30;
 const int32_t TIME_20_DAYS = 20;
 const int32_t TIME_10_DAYS = 10;
-const int32_t COUNT_MODULE_RECODES_GET = 0x7FFFFFFF;
+const int32_t COUNT_MODULE_RECODES_GET = 1000;
 
 const std::string AGING_THREAD = "aging_thread";
 
