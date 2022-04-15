@@ -14,6 +14,7 @@
  */
 #include "aging/bundle_aging_mgr.h"
 
+#include "account_helper.h"
 #include "battery_srv_client.h"
 #include "bundle_active_period_stats.h"
 #include "bundle_mgr_service.h"
@@ -87,8 +88,8 @@ int BundleAgingMgr::AgingQueryFormStatistics(std::vector<DeviceUsageStats::Bundl
         APP_LOGE("bundleActiveClient is nullptr");
         return -1;
     }
-    int ret = bundleActiveClient->QueryFormStatistics(AgingConstants::COUNT_MODULE_RECODES_GET, results,
-        dataMgr->GetActiveUserId());
+    int32_t userId = AccountHelper::GetCurrentActiveUserId();
+    int ret = bundleActiveClient->QueryFormStatistics(AgingConstants::COUNT_MODULE_RECODES_GET, results, userId);
     APP_LOGD("activeModuleRecord size %{public}zu, ret:%{public}d", results.size(), ret);
     return ret;
 }
