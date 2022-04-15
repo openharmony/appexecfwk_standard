@@ -29,7 +29,7 @@ namespace LIBZIP {
 namespace {
 const std::string SEPARATOR = "/";
 const std::string ZIP = ".zip";
-
+const std::int32_t ZIP_SIZE = 4;
 }
 const FilePath::CharType FilePath::kSeparators[] = FILE_PATH_LITERAL("/");
 const size_t FilePath::kSeparatorsLength = arraysize(kSeparators);
@@ -406,7 +406,7 @@ bool FilePath::GetZipAllDirFiles(const std::string &path, std::vector<std::strin
 
 std::string FilePath::CheckDestDirTail()
 {
-    if (path_.substr(path_.size()-4, 4) == ZIP) {
+    if (path_.substr(path_.size()-ZIP_SIZE, ZIP_SIZE) == ZIP) {
         return path_;
     } else {
         return path_ + ZIP;
