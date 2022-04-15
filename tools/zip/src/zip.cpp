@@ -42,6 +42,7 @@ using WriterFactory = std::function<std::unique_ptr<WriterDelegate>(FilePath &, 
 const std::string SEPARATOR = "/";
 const char HIDDEN_SEPARATOR = '.';
 const std::string ZIP = ".zip";
+const std::int32_t ZIP_SIZE = 4;
 
 #define CALLING_CALL_BACK(callback, result) \
     if (callback != nullptr) {              \
@@ -288,12 +289,12 @@ bool Unzip(const FilePath &srcFile, const FilePath &destDir, const OPTIONS &opti
         srcFileDir.Value().c_str(),
         destDirTemp.Value().c_str());
     if (destDirTemp.Value().size() == 0
-        || srcFileDir.Value().size() == 0 || srcFileDir.Value().size() <= 4) {
+        || srcFileDir.Value().size() == 0 || srcFileDir.Value().size() <= ZIP_SIZE) {
         APP_LOGI("%{public}s called fail, srcFile isn't Exist.", __func__);
         CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
         return false;
     }
-    if (srcFileDir.Value().substr(srcFileDir.Value().size()-4, 4) == ZIP) {
+    if (srcFileDir.Value().substr(srcFileDir.Value().size()-ZIP_SIZE, ZIP_SIZE) == ZIP) {
         if (!FilePath::PathIsValid(srcFile)) {
             APP_LOGI("%{public}s called fail, srcFile isn't Exist.", __func__);
             CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
