@@ -332,7 +332,7 @@ uint32_t BaseBundleInstaller::CreateAccessTokenId(const InnerBundleInfo &info)
 ErrCode BaseBundleInstaller::GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId)
 {
     if (!BundlePermissionMgr::GrantRequestPermissions(info, tokenId)) {
-        APP_LOGE("GrantRequestPermissions failed");
+        APP_LOGE("GrantRequestPermissions failed, bundleName: %{public}s", info.GetBundleName().c_str());
         return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIONS_FAILED;
     }
     return ERR_OK;
