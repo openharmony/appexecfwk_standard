@@ -609,13 +609,6 @@ public:
      * @return Returns all userId.
      */
     std::set<int32_t> GetAllUser() const;
-#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
-    /**
-     * @brief Get active user.
-     * @return Returns active userId.
-     */
-    int32_t GetActiveUserId() const;
-#endif
     /**
      * @brief Obtains the DistributedBundleInfo based on a given bundle name and networkId.
      * @param networkId Indicates the networkId of remote device.
