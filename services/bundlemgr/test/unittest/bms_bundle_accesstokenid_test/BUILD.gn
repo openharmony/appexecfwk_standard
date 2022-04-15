@@ -54,7 +54,6 @@ ohos_unittest("BmsBundleAccessTokenIdTest") {
   ]
 
   sources += bundle_install_sources
-  sources += free_install
 
   sources += [ "bms_bundle_accesstokenid_test.cpp" ]
 
@@ -77,8 +76,6 @@ ohos_unittest("BmsBundleAccessTokenIdTest") {
 
   external_deps = [
     "ability_base:want",
-    "ability_runtime:ability_manager",
-    "ability_runtime:app_manager",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",
@@ -105,10 +102,13 @@ ohos_unittest("BmsBundleAccessTokenIdTest") {
   }
   if (bundle_framework_free_install) {
     sources += aging
+    sources += free_install
     include_dirs +=
         [ "${aafwk_path}/frameworks/kits/appkit/native/app/include" ]
     deps += [ "${aafwk_path}/frameworks/kits/appkit:appkit_native" ]
     external_deps += [
+      "ability_runtime:ability_manager",
+      "ability_runtime:app_manager",
       "battery_manager_native:batterysrv_client",
       "device_usage_statistics:usagestatsinner",
       "display_manager_native:displaymgr",
