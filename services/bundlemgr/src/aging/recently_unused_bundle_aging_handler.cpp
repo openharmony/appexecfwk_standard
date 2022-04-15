@@ -16,6 +16,7 @@
 #include <cinttypes>
 
 #include "ability_manager.h"
+#include "account_helper.h"
 #include "aging/aging_handler.h"
 #include "app_log_wrapper.h"
 #include "bundle_data_mgr.h"
@@ -39,7 +40,7 @@ bool RecentlyUnuseBundleAgingHandler::Process(AgingRequest &request) const
             break;
         }
         APP_LOGD("found matching bundle: %{public}s.", iter->GetBundleName().c_str());
-        bool isBundlerunning = isRunning(iter->GetBundleName(), iter->GetBundleUid());
+        bool isBundlerunning = IsRunning(iter->GetBundleName(), iter->GetBundleUid());
         if (!isBundlerunning) {
             bool isBundleUnistalled = UnInstallBundle(iter->GetBundleName());
             if (isBundleUnistalled) {
@@ -81,12 +82,12 @@ bool RecentlyUnuseBundleAgingHandler::UnInstallBundle(const std::string &bundlen
 
     sptr<AgingUninstallReceiveImpl> userReceiverImpl(new (std::nothrow) AgingUninstallReceiveImpl());
     InstallParam installParam;
-    installParam.userId = bundleDataMgr->GetActiveUserId();
+    installParam.userId = AccountHelper::GetCurrentActiveUserId();
     bundleInstaller->Uninstall(bundlename, installParam, userReceiverImpl);
     return true;
 }
 
-bool RecentlyUnuseBundleAgingHandler::isRunning(const std::string bundleName, const int bundleuid) const
+bool RecentlyUnuseBundleAgingHandler::IsRunning(const std::string bundleName, const int bundleuid) const
 {
     if (bundleuid < 0) {
         APP_LOGE("bundleuid is error.");
