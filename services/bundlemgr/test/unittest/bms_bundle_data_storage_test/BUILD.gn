@@ -56,12 +56,15 @@ ohos_unittest("BmsBundleDataStorageDatabaseTest") {
     "access_token:libaccesstoken_sdk",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
   ]
   defines = []
   if (ability_runtime_enable) {
     external_deps += [ "ability_runtime:ability_manager" ]
     defines += [ "ABILITY_RUNTIME_ENABLE" ]
+  }
+  if (global_resmgr_enable) {
+    defines += [ "GLOBAL_RESMGR_ENABLE" ]
+    external_deps += [ "resmgr_standard:global_resmgr" ]
   }
 }
 
