@@ -1913,7 +1913,7 @@ bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
 }
 
 bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
-    ApplicationInfo &applicationInfo, const BundleExtractor &bundleExtractor)
+    ApplicationInfo &applicationInfo, bool isPreInstallApp, const BundleExtractor &bundleExtractor)
 {
     APP_LOGD("transform ConfigJson to ApplicationInfo");
     applicationInfo.name = configJson.app.bundleName;
@@ -1932,7 +1932,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
 
     // if there is main ability, it's icon label description will be set to applicationInfo.
 
-    if (applicationInfo.isSystemApp) {
+    if (applicationInfo.isSystemApp && isPreInstallApp) {
         applicationInfo.keepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
         applicationInfo.singleton = configJson.app.singleton;
         applicationInfo.userDataClearable = configJson.app.userDataClearable;
@@ -2203,16 +2203,17 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
         APP_LOGE("module infos is invalid");
         return false;
     }
+    bool isPreInstallApp = innerBundleInfo.IsPreInstallApp();
 
     ApplicationInfo applicationInfo;
     applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
-    ToApplicationInfo(configJson, applicationInfo, bundleExtractor);
+    ToApplicationInfo(configJson, applicationInfo, isPreInstallApp, bundleExtractor);
 
     InnerModuleInfo innerModuleInfo;
     ToInnerModuleInfo(configJson, innerModuleInfo);
 
     BundleInfo bundleInfo;
-    ToBundleInfo(configJson, applicationInfo, innerModuleInfo, innerBundleInfo.IsPreInstallApp(), bundleInfo);
+    ToBundleInfo(configJson, applicationInfo, innerModuleInfo, isPreInstallApp, bundleInfo);
 
     for (const auto &info : configJson.module.shortcuts) {
         ShortcutInfo shortcutInfo;
@@ -2302,7 +2303,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
                     find = true;
                 }
                 if (std::find(skill.entities.begin(), skill.entities.end(), Constants::FLAG_HOME_INTENT_FROM_SYSTEM) !=
-                    skill.entities.end() && applicationInfo.isSystemApp) {
+                    skill.entities.end() && isPreInstallApp) {
                     applicationInfo.isLauncherApp = true;
                     abilityInfo.isLauncherAbility = true;
                 }
