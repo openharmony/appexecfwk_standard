@@ -1280,7 +1280,7 @@ uint32_t GetBackgroundModes(const std::vector<std::string> &backgroundModes)
 }
 
 bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability &ability,
-    AbilityInfo &abilityInfo, bool isSystemApp)
+    AbilityInfo &abilityInfo, bool isSystemApp, bool isPreInstallApp)
 {
     APP_LOGD("transform ModuleJson to AbilityInfo");
     abilityInfo.name = ability.name;
@@ -1291,7 +1291,7 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     abilityInfo.iconId = ability.iconId;
     abilityInfo.label = ability.label;
     abilityInfo.labelId = ability.labelId;
-    if (isSystemApp) {
+    if (isSystemApp && isPreInstallApp) {
         abilityInfo.priority = ability.priority;
     }
     abilityInfo.permissions = ability.permissions;
@@ -1462,7 +1462,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtrac
     bool findEntry = false;
     for (const Profile::Ability &ability : moduleJson.module.abilities) {
         AbilityInfo abilityInfo;
-        ToAbilityInfo(moduleJson, ability, abilityInfo, applicationInfo.isSystemApp);
+        ToAbilityInfo(moduleJson, ability, abilityInfo, applicationInfo.isSystemApp, isPreInstallApp);
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")
             .append(moduleJson.module.name).append(".").append(abilityInfo.name);
