@@ -15,13 +15,14 @@
 
 #include "aging/aging_constants.h"
 #include "aging/aging_handler.h"
+#include "aging/aging_request.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 bool Over30DaysUnusedBundleAgingHandler::CheckBundle(const AgingBundleInfo &bundle) const
 {
     return (AgingUtil::GetNowSysTimeMs() - bundle.GetRecentlyUsedTime()) >
-        (AgingConstants::TIME_30_DAYS * AgingConstants::ONE_DAYS_MS);
+        (AgingConstants::TIME_30_DAYS * AgingRequest::GetOneDayTimeMs());
 }
 
 const std::string &Over30DaysUnusedBundleAgingHandler::GetName() const

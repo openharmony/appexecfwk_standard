@@ -15,10 +15,10 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_AGING_UTIL_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_AGING_UTIL_H
 
+#include <chrono>
 #include <vector>
 
 #include "aging/aging_bundle_info.h"
-#include "bundle_util.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -26,7 +26,8 @@ class AgingUtil {
 public:
     static inline int64_t GetNowSysTimeMs()
     {
-        return BundleUtil::GetCurrentTime();
+        return std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
     }
     static void SortAgingBundles(std::vector<AgingBundleInfo> &bundles);
     static bool SortTwoAgingBundleinfos(AgingBundleInfo &bundle1, AgingBundleInfo &bundle2);

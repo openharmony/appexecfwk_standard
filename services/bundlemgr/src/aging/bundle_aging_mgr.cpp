@@ -15,7 +15,6 @@
 #include "aging/bundle_aging_mgr.h"
 
 #include "battery_srv_client.h"
-#include "bundle_active_client.h"
 #include "bundle_active_period_stats.h"
 #include "bundle_mgr_service.h"
 #include "bundle_util.h"
@@ -80,6 +79,20 @@ void BundleAgingMgr::InitAgingtTimer()
     APP_LOGD("BundleAgingMgr init aging timer success");
 }
 
+int BundleAgingMgr::AgingQueryFormStatistics(std::vector<DeviceUsageStats::BundleActiveModuleRecord>& results,
+    const std::shared_ptr<BundleDataMgr> &dataMgr)
+{
+    DeviceUsageStats::BundleActiveClient* bundleActiveClient = new(std::nothrow) DeviceUsageStats::BundleActiveClient();
+    if (bundleActiveClient == nullptr) {
+        APP_LOGE("bundleActiveClient is nullptr");
+        return -1;
+    }
+    int ret = bundleActiveClient->QueryFormStatistics(AgingConstants::COUNT_MODULE_RECODES_GET, results,
+        dataMgr->GetActiveUserId());
+    APP_LOGD("activeModuleRecord size %{public}zu, ret:%{public}d", results.size(), ret);
+    return ret;
+}
+
 bool BundleAgingMgr::ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &dataMgr)
 {
     if (!dataMgr) {
@@ -96,28 +109,28 @@ bool BundleAgingMgr::ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &da
     APP_LOGD("ReInitAgingRequest: removable bundles size %{public}zu", bundleNamesAndUid.size());
 
     std::vector<DeviceUsageStats::BundleActiveModuleRecord> activeModuleRecord;
-    DeviceUsageStats::BundleActiveClient* bundleActiveClient = new(std::nothrow) DeviceUsageStats::BundleActiveClient();
-    if (bundleActiveClient == nullptr) {
-        APP_LOGD("bundleActiveClient is nullptr");
+    int ret = AgingQueryFormStatistics(activeModuleRecord, dataMgr);
+    if (ret != 0) {
+        APP_LOGE("ReInitAgingRequest: can not get bundle active module record");
         return false;
     }
-    int ret = bundleActiveClient->QueryFormStatistics(AgingConstants::COUNT_MODULE_RECODES_GET, activeModuleRecord);
-    APP_LOGD("activeModuleRecord size %{public}zu, ret:%{public}d", activeModuleRecord.size(), ret);
-    delete(bundleActiveClient);
-
+    int64_t lastLaunchTimesMs = AgingUtil::GetNowSysTimeMs();
+    APP_LOGD("now: %{public}" PRId64, lastLaunchTimesMs);
     for (auto iter : bundleNamesAndUid) {
         int64_t dataBytes = dataMgr->GetBundleSpaceSize(iter.first);
         // the value of lastLaunchTimesMs get from lastLaunchTimesMs interface
-        // which is not exist, init lastLaunchTimesMs to 0 firstly
-        int64_t lastLaunchTimesMs = AgingUtil::GetNowSysTimeMs();
-        if (ret == 0) {
-            for (const auto &moduleRecord : activeModuleRecord) {
-                if (moduleRecord.bundleName_ == iter.first && lastLaunchTimesMs > moduleRecord.lastModuleUsedTime_) {
-                    lastLaunchTimesMs = moduleRecord.lastModuleUsedTime_;
-                }
+        int64_t lastBundleUsedTime = 0;
+        for (const auto &moduleRecord : activeModuleRecord) {
+            APP_LOGD("%{public}s: %{public}" PRId64, moduleRecord.bundleName_.c_str(),
+                moduleRecord.lastModuleUsedTime_);
+            if (moduleRecord.bundleName_ == iter.first && lastBundleUsedTime < moduleRecord.lastModuleUsedTime_) {
+                lastBundleUsedTime = moduleRecord.lastModuleUsedTime_;
             }
-            APP_LOGD("%{public}s: %{public}" PRId64, iter.first.c_str(), lastLaunchTimesMs);
         }
+        if (lastBundleUsedTime) {
+            lastLaunchTimesMs = lastBundleUsedTime;
+        }
+        APP_LOGD("%{public}s: %{public}" PRId64, iter.first.c_str(), lastLaunchTimesMs);
         AgingBundleInfo agingBundleInfo(iter.first, lastLaunchTimesMs, dataBytes, iter.second);
         request.AddAgingBundle(agingBundleInfo);
     }
