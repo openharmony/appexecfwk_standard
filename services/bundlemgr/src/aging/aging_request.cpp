@@ -65,7 +65,7 @@ void AgingRequest::AddAgingBundle(AgingBundleInfo &bundleInfo)
     agingBundles.emplace_back(bundleInfo);
 }
 
-void AgingRequest::reset()
+void AgingRequest::RequestReset()
 {
     agingBundles.clear();
     tatalDataBytes = 0;

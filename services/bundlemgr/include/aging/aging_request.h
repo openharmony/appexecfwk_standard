@@ -50,7 +50,7 @@ public:
     {
         tatalDataBytes = allBundleDataBytes;
     };
-    void reset();
+    void RequestReset();
 
 public:
     static int64_t GetTotalDataBytesThreshold()

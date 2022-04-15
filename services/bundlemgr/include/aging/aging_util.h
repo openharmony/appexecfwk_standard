@@ -30,7 +30,7 @@ public:
             std::chrono::system_clock::now().time_since_epoch()).count();
     }
     static void SortAgingBundles(std::vector<AgingBundleInfo> &bundles);
-    static bool SortTwoAgingBundleinfos(AgingBundleInfo &bundle1, AgingBundleInfo &bundle2);
+    static bool SortTwoAgingBundleInfos(AgingBundleInfo &bundle1, AgingBundleInfo &bundle2);
     static int64_t GetUnusedTimeMsBaseOnCurrentTime(int64_t currentTimeMs, int32_t days);
 };
 }  //  namespace AppExecFwk
