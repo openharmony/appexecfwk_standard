@@ -56,7 +56,7 @@ void ServiceCenterDeathRecipient::SendCallBack(FreeInstallParams &freeInstallPar
         APP_LOGE("Write interface token failed");
         return;
     }
-    int32_t resultCode = FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR;
+    int32_t resultCode = FreeInstallErrorCode::FREE_INSTALL_SERVICE_CENTER_CRASH;
     if (!data.WriteInt32(resultCode)) {
         APP_LOGE("Write result code error");
         return;

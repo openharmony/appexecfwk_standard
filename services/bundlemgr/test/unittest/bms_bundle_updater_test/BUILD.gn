@@ -85,7 +85,6 @@ ohos_unittest("BmsBundleUpdaterTest") {
   sources += free_install
 
   external_deps = [
-    "ability_base:task_dispatcher",
     "ability_base:want",
     "ability_runtime:ability_manager",
     "ability_runtime:app_manager",

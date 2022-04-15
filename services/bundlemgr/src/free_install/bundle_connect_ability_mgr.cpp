@@ -16,7 +16,6 @@
 #include "bundle_connect_ability_mgr.h"
 
 #include "app_log_wrapper.h"
-#include "base_task_dispatcher.h"
 #include "bundle_mgr_service.h"
 #include "event_handler.h"
 #include "event_runner.h"
@@ -26,8 +25,6 @@
 #include "service_center_death_recipient.h"
 #include "service_center_status_callback.h"
 #include "string_ex.h"
-#include "task_dispatcher.h"
-#include "task_dispatcher_context.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -52,37 +49,42 @@ sptr<ServiceCenterStatusCallback> serviceCenterCallback;
 
 BundleConnectAbilityMgr::BundleConnectAbilityMgr()
 {
+    runner_ = EventRunner::Create(true);
+    if (runner_ == nullptr) {
+        APP_LOGE("Create runner failed");
+    } else {
+        handler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
+        if (handler_ == nullptr) {
+            APP_LOGE("Create handler failed");
+        }
+    }
 }
 
 BundleConnectAbilityMgr::~BundleConnectAbilityMgr()
 {
+    if (handler_ != nullptr) {
+        handler_.reset();
+    }
+    if (runner_ != nullptr) {
+        runner_.reset();
+    }
 }
 
 bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
     APP_LOGI("SilentInstallSafely");
-    std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
-    TaskPriority defaultPriority = TaskPriority::DEFAULT;
-    std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
-
-    if (!ptrGlobalTaskDispatcher) {
-        APP_LOGE("BundleConnectAbilityMgr::SilentInstallSafely ptrGlobalTaskDispatcher is nullptr");
-        SendCallBack(
-            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+    if (handler_ == nullptr) {
+        SendCallBack(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want,
+            userId, targetAbilityInfo.targetInfo.transactId);
+        APP_LOGE("handler is null");
         return false;
     }
-    std::shared_ptr<Runnable> func = std::make_shared<Runnable>([&]() {
+    auto SilentInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::SERVICE_CENTER_CONNECT_SILENT_INSTALL;
-        return RunnableFun(flag, targetAbilityInfo, want, userId, callerToken);
-    });
-    auto task = ptrGlobalTaskDispatcher->AsyncDispatch(func);
-    if (!task) {
-        APP_LOGE("BundleConnectAbilityMgr::SilentInstallSafely Asunc task is nullptr");
-        SendCallBack(
-            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
-        return false;
-    }
+        this->CheckReusableConnection(flag, targetAbilityInfo, want, userId, callerToken);
+    };
+    handler_->PostTask(SilentInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
@@ -90,27 +92,17 @@ bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &target
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
     APP_LOGI("UpgradeCheckSafely");
-    std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
-    TaskPriority defaultPriority = TaskPriority::DEFAULT;
-    std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
-    if (!ptrGlobalTaskDispatcher) {
-        APP_LOGE("BundleConnectAbilityMgr::UpgradeCheckSafely ptrGlobalTaskDispatcher is nullptr");
-        SendCallBack(
-            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+    if (handler_ == nullptr) {
+        SendCallBack(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want,
+            userId, targetAbilityInfo.targetInfo.transactId);
+        APP_LOGE("handler is null");
         return false;
     }
-    std::shared_ptr<Runnable> func = std::make_shared<Runnable>([&]() {
+    auto UpgradeCheckSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::SERVICE_CENTER_CONNECT_UPGRADE_CHECK;
-        return RunnableFun(flag, targetAbilityInfo, want, userId, callerToken);
-    });
-
-    auto task = ptrGlobalTaskDispatcher->AsyncDispatch(func);
-    if (!task) {
-        APP_LOGE("BundleConnectAbilityMgr::UpgradeCheckSafely Async task is nullptr");
-        SendCallBack(
-            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
-        return false;
-    }
+        this->CheckReusableConnection(flag, targetAbilityInfo, want, userId, callerToken);
+    };
+    handler_->PostTask(UpgradeCheckSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
@@ -118,40 +110,30 @@ bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targ
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
     APP_LOGI("UpgradeInstallSafely");
-    std::shared_ptr<TaskDispatcherContext> context = std::make_shared<TaskDispatcherContext>();
-    TaskPriority defaultPriority = TaskPriority::DEFAULT;
-    std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(defaultPriority);
-
-    if (!ptrGlobalTaskDispatcher) {
-        APP_LOGE("BundleConnectAbilityMgr::UpgradeInstallSafely ptrGlobalTaskDispatcher is nullptr");
-        SendCallBack(
-            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+    if (handler_ == nullptr) {
+        SendCallBack(FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want,
+            userId, targetAbilityInfo.targetInfo.transactId);
+        APP_LOGE("handler is null");
         return false;
     }
-
-    std::shared_ptr<Runnable> func = std::make_shared<Runnable>([&]() {
+    auto UpgradeInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::SERVICE_CENTER_CONNECT_UPGRADE_INSTALL;
-        return RunnableFun(flag, targetAbilityInfo, want, userId, callerToken);
-    });
-    auto task = ptrGlobalTaskDispatcher->AsyncDispatch(func);
-    if (!task) {
-        APP_LOGE("BundleConnectAbilityMgr::UpgradeInstallSafely Async task is nullptr");
-        SendCallBack(
-            FreeInstallErrorCode::FREE_INSTALL_UNDEFINED_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
-        return false;
-    }
+        this->CheckReusableConnection(flag, targetAbilityInfo, want, userId, callerToken);
+    };
+    handler_->PostTask(UpgradeInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
-bool BundleConnectAbilityMgr::RunnableFun(int32_t flag, const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+bool BundleConnectAbilityMgr::CheckReusableConnection(int32_t flag,
+    const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     int32_t userId, const sptr<IRemoteObject> &callerToken)
 {
-    APP_LOGI("RunnableFun start");
+    APP_LOGI("CheckReusableConnection");
     Want serviceCenterWant;
     serviceCenterWant.SetElementName(serviceCenterBundleName, serviceCenterAbilityName);
     bool isConnectSuccess = ConnectAbility(serviceCenterWant, callerToken);
     if (!isConnectSuccess) {
-        APP_LOGE("fail to connect ServiceCenter");
+        APP_LOGE("Fail to connect ServiceCenter");
         SendCallBack(FreeInstallErrorCode::FREE_INSTALL_CONNECT_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
         return false;
@@ -277,7 +259,8 @@ void BundleConnectAbilityMgr::SendCallBack(
         APP_LOGE("BundleConnectAbilityMgr::SendCallBack SendRequest failed");
     }
 
-    if (freeInstallParamsMap_.erase(transactId) && freeInstallParamsMap_.size() == 0) {
+    freeInstallParamsMap_.erase(transactId);
+    if (freeInstallParamsMap_.size() == 0) {
         if (connectState_ == ServiceCenterConnectState::SERVICE_CENTER_CONNECTED) {
             APP_LOGD("Disconnect Ability.");
             DisconnectAbility();
@@ -412,10 +395,6 @@ bool ExistBundleNameInCallingBundles(std::string &bundleName, std::vector<std::s
 bool BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundleInfo &innerBundleInfo,
     sptr<TargetAbilityInfo> &targetAbilityInfo, sptr<TargetInfo> &targetInfo)
 {
-    if (targetAbilityInfo == nullptr) {
-        APP_LOGE("QueryAbilityInfo targetAbilityInfo is nullptr");
-        return false;
-    }
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
@@ -436,7 +415,7 @@ bool BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundle
     targetInfo->callingAppType = CALLING_TYPE_HARMONY;
     targetAbilityInfo->targetInfo = *targetInfo;
     this->GetCallingInfo(innerBundleInfo, callingBundleNames, callingAppids);
-    targetAbilityInfo->version = innerBundleInfo.GetVersionCode();
+    targetAbilityInfo->version = std::to_string(innerBundleInfo.GetVersionCode());
     targetInfo->callingBundleNames = callingBundleNames;
     targetInfo->callingAppIds = callingAppids;
     return true;
