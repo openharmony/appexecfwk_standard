@@ -21,8 +21,8 @@
 #ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
 #include "installd/installd_operator.h"
 #include "os_account_info.h"
-#include "os_account_manager.h"
 #endif
+#include "account_helper.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_data_storage_database.h"
@@ -1031,15 +1031,16 @@ bool BundleDataMgr::GetInnerBundleInfoByUid(const int uid, InnerBundleInfo &inne
     APP_LOGD("the uid(%{public}d) is not exists.", uid);
     return false;
 }
+
 #ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
 int64_t BundleDataMgr::GetBundleSpaceSize(const std::string &bundleName) const
 {
-    int32_t userId;
+    int32_t userId = AccountHelper::GetCurrentActiveUserId();
     int64_t curSize = 0;
     int64_t spaceSize = 0;
     BundleInfo bundleInfo;
 
-    if ((userId = GetActiveUserId()) != Constants::INVALID_USERID
+    if (userId != Constants::INVALID_USERID
         && GetBundleInfo(bundleName, GET_ALL_APPLICATION_INFO, bundleInfo, userId) == true) {
         if (!bundleInfo.applicationInfo.codePath.empty()) {
             curSize = InstalldOperator::GetDiskUsage(bundleInfo.applicationInfo.codePath);
@@ -1059,12 +1060,12 @@ int64_t BundleDataMgr::GetBundleSpaceSize(const std::string &bundleName) const
 
 int64_t BundleDataMgr::GetAllFreeInstallBundleSpaceSize() const
 {
-    int32_t userId;
+    int32_t userId = AccountHelper::GetCurrentActiveUserId();
     int64_t allSize = 0;
     int64_t curSize = 0;
     std::vector<BundleInfo> bundleInfos;
 
-    if ((userId = GetActiveUserId()) != Constants::INVALID_USERID
+    if (userId != Constants::INVALID_USERID
         && GetBundleInfos(GET_ALL_APPLICATION_INFO, bundleInfos, userId) == true) {
         for (const auto &item : bundleInfos) {
             APP_LOGI("%{public}s freeInstall:%{public}d", item.name.c_str(), item.applicationInfo.isFreeInstallApp);
@@ -2474,20 +2475,6 @@ int32_t BundleDataMgr::GetUserIdByCallingUid() const
     return BundleUtil::GetUserIdByCallingUid();
 }
 
-#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
-int32_t BundleDataMgr::GetActiveUserId() const
-{
-    std::vector<int> activeIds;
-    int32_t ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(activeIds);
-    if (ret != 0 || activeIds.empty()) {
-        APP_LOGE("QueryActiveOsAccountIds ret = %{public}d. activeIds empty:%{public}d",
-            ret, activeIds.empty());
-        return Constants::INVALID_USERID;
-    }
-    return activeIds[0];
-}
-#endif
-
 std::set<int32_t> BundleDataMgr::GetAllUser() const
 {
     std::lock_guard<std::mutex> lock(multiUserIdSetMutex_);
@@ -2850,7 +2837,7 @@ bool BundleDataMgr::GetRemovableBundleNameVec(std::map<std::string, int>& bundle
     }
     for (auto &it : bundleInfos_) {
         APP_LOGD("bundleName: %{public}s", it.first.c_str());
-        int32_t userId = GetActiveUserId();
+        int32_t userId = AccountHelper::GetCurrentActiveUserId();
         APP_LOGD("bundle userId is %{public}d, userId= %{public}d", it.second.GetUserId(), userId);
         if (!it.second.HasInnerBundleUserInfo(userId)) {
             continue;
