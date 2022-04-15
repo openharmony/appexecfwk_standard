@@ -15,30 +15,29 @@ import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 ohos_shared_library("distributedbundle") {
-  if (bundle_framework_graphics) {
-    include_dirs = []
-    defines = [
-      "APP_LOG_TAG = \"DistributedBundleMgrService\"",
-      "LOG_DOMAIN = 0xD001120",
-    ]
-    sources = [
-      "distributed_bundle_mgr.cpp",
-      "native_module.cpp",
-    ]
+  include_dirs = []
+  defines = [
+    "APP_LOG_TAG = \"DistributedBundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
+  ]
+  sources = [
+    "distributed_bundle_mgr.cpp",
+    "native_module.cpp",
+  ]
 
-    deps = [ "${common_path}:libappexecfwk_common" ]
+  deps = [ "${common_path}:libappexecfwk_common" ]
 
-    external_deps = [
-      "ability_base:want",
-      "bundle_framework:appexecfwk_base",
-      "distributed_bundle_framework:libdbms",
-      "hiviewdfx_hilog_native:libhilog",
-      "ipc:ipc_core",
-      "napi:ace_napi",
-      "samgr_standard:samgr_proxy",
-      "utils_base:utils",
-    ]
-  }
+  external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "distributed_bundle_framework:libdbms",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "napi:ace_napi",
+    "samgr_standard:samgr_proxy",
+    "utils_base:utils",
+  ]
+
   relative_install_dir = "module"
   subsystem_name = "appexecfwk"
   part_name = "distributed_bundle_framework"
@@ -47,7 +46,7 @@ ohos_shared_library("distributedbundle") {
 group("jsapi_target") {
   deps = []
 
-  if (support_jsapi) {
+  if (support_jsapi && bundle_framework_graphics) {
     deps += [ ":distributedbundle" ]
   }
 }
