@@ -87,6 +87,7 @@ namespace AppExecFwk {
             return;
         }
         AsyncCallbackInfo* callbackInner = eventDataInner->callbackInfo;
+        HILOGI("Prepare to process callbackInner %{public}p", callbackInner);
         if (callbackInner->isDeleted) {
             HILOGI("ProcessEvent isDeleted callbackInfo = %{public}p", callbackInner);
             napi_delete_reference(callbackInner->env, callbackInner->callback);
@@ -109,18 +110,19 @@ namespace AppExecFwk {
     void EventHandlerInstance::ProcessEvent([[maybe_unused]] const InnerEvent::Pointer& event)
     {
         uint32_t eventId = event->GetInnerEventId();
-        HILOGI("ProcessEvent, eventId = %d", eventId);
+        HILOGI("ProcessEvent, eventId = %{public}d", eventId);
         auto subscribe = emitterInstances.find(eventId);
         if (subscribe == emitterInstances.end()) {
             HILOGW("ProcessEvent has no callback");
             return;
         }
 
-        CallbackInfos callbackInfos = subscribe->second;
-        HILOGI("ProcessEvent, size = %zu", callbackInfos.asyncCallbackInfo.size());
+        CallbackInfos& callbackInfos = subscribe->second;
+        HILOGI("ProcessEvent, size = %{public}zu", callbackInfos.asyncCallbackInfo.size());
         EventData eventData = *(event->GetUniqueObject<EventData>());
         for (auto iter = callbackInfos.asyncCallbackInfo.begin(); iter != callbackInfos.asyncCallbackInfo.end();) {
             AsyncCallbackInfo* callbackInfo = *iter;
+            HILOGI("Prepare to process callbackInfo %{public}p", callbackInfo);
             EventDataWorker* eventDataWorker = new EventDataWorker();
             eventDataWorker->data = eventData;
             eventDataWorker->callbackInfo = callbackInfo;
@@ -183,7 +185,7 @@ namespace AppExecFwk {
             }
             if (!once) {
                 if (callbackInfo[i]->once) {
-                    HILOGI("JS_On change once to on");
+                    HILOGI("JS_On callbackInfo %{public}p change once to on", callbackInfo[i]);
                     callbackInfo[i]->once = false;
                 } else {
                     HILOGI("JS_On already on");
@@ -192,7 +194,7 @@ namespace AppExecFwk {
                 if (callbackInfo[i]->once) {
                     HILOGI("JS_Once already once");
                 } else {
-                    HILOGI("JS_Once change on to once");
+                    HILOGI("JS_Once callbackInfo %{public}p change on to once", callbackInfo[i]);
                     callbackInfo[i]->once = true;
                 }
             }
