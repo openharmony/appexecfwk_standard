@@ -83,9 +83,9 @@ bool ReadFileIntoJson(const std::string &filePath, nlohmann::json &jsonBuf)
 
     in.seekg(0, std::ios::beg);
     jsonBuf = nlohmann::json::parse(in, nullptr, false);
+    in.close();
     if (jsonBuf.is_discarded()) {
         APP_LOGE("bad profile file");
-        in.close();
         return false;
     }
 

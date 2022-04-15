@@ -43,6 +43,7 @@ std::string GetScanBundleName(const std::string &str)
     return "";
 }
 }
+
 BMSEventHandler::BMSEventHandler(const std::shared_ptr<EventRunner> &runner) : EventHandler(runner)
 {
     APP_LOGD("instance is created");
