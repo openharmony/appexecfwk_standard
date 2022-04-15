@@ -338,10 +338,10 @@ bool FilePath::AppendRelativePath(const FilePath &child, FilePath *path)
     std::vector<std::string> childComponentsReverse;
 
     std::vector<std::string>::reverse_iterator riter;
-    for (riter = parentComponents.rbegin(); riter != parentComponents.rend(); riter++) {
+    for (riter = parentComponents.rbegin(); riter != parentComponents.rend(); ++riter) {
         parentComponentsReverse.push_back(*riter);
     }
-    for (riter = childComponents.rbegin(); riter != childComponents.rend(); riter++) {
+    for (riter = childComponents.rbegin(); riter != childComponents.rend(); ++riter) {
         childComponentsReverse.push_back(*riter);
     }
     std::vector<std::string>::const_iterator parentIt = parentComponentsReverse.begin();
@@ -359,7 +359,7 @@ bool FilePath::AppendRelativePath(const FilePath &child, FilePath *path)
             ++childIt;
         }
 
-        for (; childIt != childComponentsReverse.end(); childIt++) {
+        for (; childIt != childComponentsReverse.end(); ++childIt) {
             *path = path->Append(*childIt);
         }
     }

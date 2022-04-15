@@ -150,11 +150,11 @@ HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_unzip_0100_zip1file, Function | MediumTest |
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0100
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0100
  * @tc.name: Checkzip_0100
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0100, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0100, Function | MediumTest | Level1)
 {
     std::string src = BASE_PATH + APP_PATH + "test";
     std::string dest = BASE_PATH + APP_PATH + "check";
@@ -170,11 +170,11 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0100, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0200
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0200
  * @tc.name: Checkzip_0200
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0200, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0200, Function | MediumTest | Level1)
 {
     std::string src = BASE_PATH + APP_PATH + "test";
     std::string dest = BASE_PATH + APP_PATH + "error/check.zip";
@@ -187,11 +187,11 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0200, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0300
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0300
  * @tc.name: Checkzip_0300
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0300, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0300, Function | MediumTest | Level1)
 {
     std::string src = BASE_PATH + APP_PATH + "error";
     std::string src1 = BASE_PATH + APP_PATH + "#%#@$%";
@@ -210,11 +210,11 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0300, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0400
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0400
  * @tc.name: Checkzip_0400
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0400, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0400, Function | MediumTest | Level1)
 {
     std::string src1 = BASE_PATH + APP_PATH + "error.txt";
     std::string dest = BASE_PATH + APP_PATH + "check.zip";
@@ -229,11 +229,11 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0400, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0500
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0500
  * @tc.name: Checkzip_0500
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0500, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0500, Function | MediumTest | Level1)
 {
     std::string src = BASE_PATH + APP_PATH + "error";
     std::string dest = BASE_PATH + APP_PATH + "error1";
@@ -246,11 +246,11 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0500, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0600
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0600
  * @tc.name: Checkzip_0600
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0600, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0600, Function | MediumTest | Level1)
 {
     std::string src = BASE_PATH + APP_PATH + "test";
     std::string dest = "";
@@ -264,11 +264,11 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0600, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0700
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0700
  * @tc.name: Checkzip_0700
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0700, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0700, Function | MediumTest | Level1)
 {
     std::string src = "";
     std::string dest = BASE_PATH + APP_PATH;
@@ -284,11 +284,11 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0700, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_Checkzip_0800
+ * @tc.number: APPEXECFWK_LIBZIP_Checkzip_0800
  * @tc.name: Checkzip_0800
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_Checkzip_0800, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, APPEXECFWK_LIBZIP_Checkzip_0800, Function | MediumTest | Level1)
 {
     std::string src = "";
     std::string dest = BASE_PATH + APP_PATH;
