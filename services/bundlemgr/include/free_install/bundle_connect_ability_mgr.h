@@ -206,6 +206,8 @@ private:
      */
     void CallAbilityManager(int32_t resultCode, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack);
     bool GetAbilityMgrProxy();
+    void WaitFormConnecting(std::unique_lock<std::mutex> &lock);
+    void WaitFormConnected(std::unique_lock<std::mutex> &lock);
 
     mutable std::atomic<int> transactId_ = 0;
     std::condition_variable cv_;

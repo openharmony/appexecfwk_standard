@@ -25,7 +25,7 @@ namespace AppExecFwk {
 struct Result : public Parcelable {
     std::string transactId;
     std::string resultMsg;
-    uint32_t retCode;
+    int32_t retCode;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
@@ -33,8 +33,8 @@ struct Result : public Parcelable {
 };
 
 struct Progress : public Parcelable {
-    uint32_t downloadSize;
-    uint32_t totalSize;
+    int32_t downloadSize;
+    int32_t totalSize;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

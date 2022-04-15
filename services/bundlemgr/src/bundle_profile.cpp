@@ -2280,7 +2280,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
             for (const auto &skill : ability.skills) {
                 if (std::find(skill.actions.begin(), skill.actions.end(), Constants::INTENT_ACTION_HOME) !=
                         skill.actions.end() &&
-                    std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
+                        std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
                         skill.entities.end() &&
                     (!find)) {
                     innerBundleInfo.SetMainAbility(keyName);
