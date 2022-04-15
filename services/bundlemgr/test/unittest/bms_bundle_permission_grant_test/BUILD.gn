@@ -57,7 +57,6 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
   ]
 
   sources += bundle_install_sources
-  sources += free_install
 
   sources += [ "bms_bundle_permission_grant_test.cpp" ]
 
@@ -83,8 +82,6 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
 
   external_deps = [
     "ability_base:want",
-    "ability_runtime:ability_manager",
-    "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",
@@ -112,10 +109,13 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
   }
   if (bundle_framework_free_install) {
     sources += aging
+    sources += free_install
     include_dirs +=
         [ "${aafwk_path}/frameworks/kits/appkit/native/app/include" ]
     deps += [ "${aafwk_path}/frameworks/kits/appkit:appkit_native" ]
     external_deps += [
+      "ability_runtime:ability_manager",
+      "ability_runtime:app_manager",
       "battery_manager_native:batterysrv_client",
       "device_usage_statistics:usagestatsinner",
       "display_manager_native:displaymgr",

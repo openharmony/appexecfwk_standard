@@ -49,6 +49,8 @@ void ServiceCenterConnection::OnAbilityConnectDone(
     deathRecipient_ = (new (std::nothrow) ServiceCenterDeathRecipient(freeInstallParamsMap_));
     if (deathRecipient_ == nullptr) {
         APP_LOGE("Failed to create ServiceCenterDeathRecipient");
+        cv_.notify_all();
+        return;
     }
     APP_LOGI("Add death recipient for service center");
     if (!serviceCenterRemoteObject_->AddDeathRecipient(deathRecipient_)) {

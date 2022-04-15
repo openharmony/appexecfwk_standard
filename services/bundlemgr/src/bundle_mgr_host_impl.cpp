@@ -227,6 +227,7 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, AbilityInfo &abilityI
     return QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, Constants::UNSPECIFIED_USERID, abilityInfo);
 }
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
     AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack)
 {
@@ -246,6 +247,7 @@ void BundleMgrHostImpl::UpgradeAtomicService(const Want &want, int32_t userId)
     }
     connectAbilityMgr->UpgradeAtomicService(want, userId);
 }
+#endif
 
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
 {
@@ -1296,10 +1298,12 @@ const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
 }
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
 const std::shared_ptr<BundleConnectAbilityMgr> BundleMgrHostImpl::GetConnectAbilityMgrFromService()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetConnectAbility();
 }
+#endif
 
 std::set<int32_t> BundleMgrHostImpl::GetExistsCommonUserIs()
 {
