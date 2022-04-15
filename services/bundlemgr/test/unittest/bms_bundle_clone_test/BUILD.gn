@@ -85,7 +85,6 @@ ohos_unittest("BmsBundleCloneTest") {
   deps += bundle_install_deps
 
   external_deps = [
-    "ability_base:task_dispatcher",
     "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
     "bytrace_standard:bytrace_core",
