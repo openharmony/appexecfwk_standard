@@ -153,7 +153,6 @@ ohos_shared_library("libbms") {
   ]
 
   sources += bundle_install_sources
-  sources += free_install
 
   defines = [
     "APP_LOG_TAG = \"BundleMgrService\"",
@@ -173,8 +172,6 @@ ohos_shared_library("libbms") {
 
   external_deps = [
     "ability_base:want",
-    "ability_runtime:ability_manager",
-    "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",
@@ -204,6 +201,7 @@ ohos_shared_library("libbms") {
 
   if (bundle_framework_free_install) {
     sources += aging
+    sources += free_install
     sources += [ "src/installd/installd_operator.cpp" ]
     deps += [ "${aafwk_path}/frameworks/kits/appkit:appkit_native" ]
     external_deps += [

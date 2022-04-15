@@ -16,8 +16,10 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_MGR_HOST_IMPL_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_MGR_HOST_IMPL_H
 
-#include "bundle_clone_mgr.h"
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
 #include "bundle_connect_ability_mgr.h"
+#endif
+#include "bundle_clone_mgr.h"
 #include "bundle_data_mgr.h"
 #include "bundle_mgr_host.h"
 #include "bundle_mgr_service_event_handler.h"
@@ -170,6 +172,7 @@ public:
      */
     virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) override;
 
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
     /**
      * @brief Query the AbilityInfo by the given Want.
      * @param want Indicates the information of the ability.
@@ -178,6 +181,7 @@ public:
      */
     virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
         AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack) override;
+#endif
     /**
      * @brief Obtains the AbilityInfo based on a given bundle name through the proxy object.
      * @param bundleName Indicates the application bundle name to be queried.
@@ -196,12 +200,14 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo) override;
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
     /**
      * @brief Upgrade atomic service
      * @param want Indicates the information of the ability.
      * @param userId Indicates the user ID.
      */
     virtual void UpgradeAtomicService(const Want &want, int32_t userId) override;
+#endif
     /**
      * @brief Query the AbilityInfo of list by the given Want.
      * @param want Indicates the information of the ability.
@@ -703,7 +709,9 @@ public:
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
     const std::shared_ptr<BundleConnectAbilityMgr> GetConnectAbilityMgrFromService();
+#endif
     bool GetBundleUserInfo(
         const std::string &bundleName, int32_t userId, InnerBundleUserInfo &innerBundleUserInfo);
     bool GetBundleUserInfos(

@@ -54,9 +54,11 @@ BundleMgrService::~BundleMgrService()
     if (cloneMgr_) {
         cloneMgr_.reset();
     }
+#ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
     if (connectAbilityMgr_ != nullptr) {
         connectAbilityMgr_.reset();
     }
+#endif
     if (perChangeSub_) {
         perChangeSub_.reset();
     }
@@ -222,12 +224,13 @@ bool BundleMgrService::Init()
             agingMgr_->InitAgingtTimer();
         }
     }
-#endif
     if (!connectAbilityMgr_) {
         APP_LOGI("Create BundleConnectAbility");
         connectAbilityMgr_ = std::make_shared<BundleConnectAbilityMgr>();
     }
     APP_LOGI("create BundleConnectAbility success");
+#endif
+
     CheckAllUser();
     ready_ = true;
     APP_LOGI("init end success");
@@ -249,16 +252,16 @@ const std::shared_ptr<BundleAgingMgr> BundleMgrService::GetAgingMgr() const
 {
     return agingMgr_;
 }
+
+const std::shared_ptr<BundleConnectAbilityMgr> BundleMgrService::GetConnectAbility() const
+{
+    return connectAbilityMgr_;
+}
 #endif
 
 const std::shared_ptr<BundleCloneMgr> BundleMgrService::GetCloneMgr() const
 {
     return cloneMgr_;
-}
-
-const std::shared_ptr<BundleConnectAbilityMgr> BundleMgrService::GetConnectAbility() const
-{
-    return connectAbilityMgr_;
 }
 
 void BundleMgrService::SelfClean()
