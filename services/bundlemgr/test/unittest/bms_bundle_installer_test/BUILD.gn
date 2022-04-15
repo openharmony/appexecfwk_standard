@@ -76,7 +76,6 @@ ohos_unittest("BmsBundleInstallerTest") {
   deps += bundle_install_deps
 
   external_deps = [
-    "ability_base:task_dispatcher",
     "ability_base:want",
     "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
@@ -194,7 +193,6 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
   deps += bundle_install_deps
 
   external_deps = [
-    "ability_base:task_dispatcher",
     "ability_base:want",
     "ability_runtime:ability_manager",
     "ability_runtime:app_manager",

@@ -23,6 +23,8 @@
 
 #include "ability_connect_callback_interface.h"
 #include "ability_manager_interface.h"
+#include "event_handler.h"
+#include "event_runner.h"
 #include "free_install_params.h"
 #include "inner_bundle_info.h"
 #include "install_result.h"
@@ -161,8 +163,8 @@ public:
      * @param callerToken Caller form extension token.
      * @return Returns true if successfully Send request with RemoteObject
      */
-    bool RunnableFun(int32_t flag, const TargetAbilityInfo &targetAbilityInfo, const Want &want, int32_t userId,
-        const sptr<IRemoteObject> &callerToken);
+    bool CheckReusableConnection(int32_t flag, const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+        int32_t userId, const sptr<IRemoteObject> &callerToken);
 
     /**
      * @brief Send request with RemoteObject;
@@ -217,6 +219,8 @@ private:
     std::map<std::string, FreeInstallParams> freeInstallParamsMap_;
     sptr<IRemoteObject> serviceCenterRemoteObject_;
     int32_t connectState_ = ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED;
+    std::shared_ptr<AppExecFwk::EventHandler> handler_;
+    std::shared_ptr<EventRunner> runner_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
