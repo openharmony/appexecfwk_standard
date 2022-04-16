@@ -423,6 +423,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
             BundleAgingMgr::AgingTriggertype::FREE_INSTALL);
     }
 #endif
+    OnSingletonChange();
     return result;
 }
 
@@ -923,12 +924,19 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
         APP_LOGE("get current package failed");
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
+
     if (isFeatureNeedUninstall_) {
         uninstallModuleVec_.emplace_back(modulePackage_);
     }
+
+    if (oldInfo.IsSingleton() && !newInfo.IsSingleton()) {
+        singletonState_ = SingletonState::SINGLETON_TO_NON;
+    } else if (!oldInfo.IsSingleton() && newInfo.IsSingleton()) {
+        singletonState_ = SingletonState::NON_TO_SINGLETON;
+    }
+
     APP_LOGD("ProcessBundleUpdateStatus with bundleName %{public}s and packageName %{public}s",
         newInfo.GetBundleName().c_str(), modulePackage_.c_str());
-
     if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UPDATING_START)) {
         APP_LOGE("update already start");
         return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
@@ -1844,6 +1852,45 @@ void BaseBundleInstaller::ResetInstallProperties()
     uninstallModuleVec_.clear();
     installedModules_.clear();
     state_ = InstallerState::INSTALL_START;
+    singletonState_ = SingletonState::DEFAULT;
+}
+
+void BaseBundleInstaller::OnSingletonChange()
+{
+    if (singletonState_ == SingletonState::DEFAULT) {
+        return;
+    }
+
+    InnerBundleInfo info;
+    bool isExist = false;
+    if (!GetInnerBundleInfo(info, isExist) || !isExist) {
+        APP_LOGE("Get innerBundleInfo failed when singleton changed");
+        return;
+    }
+
+    InstallParam installParam;
+    installParam.needSendEvent = false;
+    installParam.forceExecuted = true;
+    installParam.noSkipsKill = false;
+    if (singletonState_ == SingletonState::SINGLETON_TO_NON) {
+        APP_LOGD("Bundle changes from singleton app to non singleton app");
+        installParam.userId = Constants::DEFAULT_USERID;
+        UninstallBundle(bundleName_, installParam);
+        return;
+    }
+
+    if (singletonState_ == SingletonState::NON_TO_SINGLETON) {
+        APP_LOGD("Bundle changes from non singleton app to singleton app");
+        for (auto infoItem : info.GetInnerBundleUserInfos()) {
+            int32_t installedUserId = infoItem.second.bundleUserInfo.userId;
+            if (installedUserId == Constants::DEFAULT_USERID) {
+                continue;
+            }
+
+            installParam.userId = installedUserId;
+            UninstallBundle(bundleName_, installParam);
+        }
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
