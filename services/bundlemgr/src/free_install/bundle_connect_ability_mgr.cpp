@@ -285,14 +285,13 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
     }
     freeInstallParams = node->second;
     freeInstallParams.handler.reset();
-    uint32_t resultCode = installResult.result.retCode;
-    if (resultCode == ServiceCenterResultCode::FREE_INSTALL_DOWNLOADING) {
+    if (installResult.result.retCode == ServiceCenterResultCode::FREE_INSTALL_DOWNLOADING) {
         APP_LOGD("ServiceCenter is downloading, downloadSize = %{public}d, totalSize = %{public}d",
             installResult.progress.downloadSize, installResult.progress.totalSize);
         return;
     }
     APP_LOGD("serviceCenterFunction = %{public}d", freeInstallParams.serviceCenterFunction);
-    SendCallBack(resultCode, freeInstallParams.want, freeInstallParams.userId,
+    SendCallBack(installResult.result.retCode, freeInstallParams.want, freeInstallParams.userId,
         installResult.result.transactId);
     APP_LOGD("OnServiceCenterCall end");
 }
