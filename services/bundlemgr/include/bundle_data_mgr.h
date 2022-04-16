@@ -694,7 +694,7 @@ public:
 #endif
 
     /**
-     * @brief Set Module isRemovable by bundleName and moduleName.
+     * @brief Sets whether to enable isRemovable based on given bundle name, module name and isEnable.
      * @param bundleName Indicates the bundleName.
      * @param moduleName Indicates the moduleName.
      * @param isEnable Set module isRemovable is enable.

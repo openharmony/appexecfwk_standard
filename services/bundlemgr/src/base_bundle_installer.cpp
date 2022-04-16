@@ -183,6 +183,57 @@ void BaseBundleInstaller::UpdateInstallerState(const InstallerState state)
     SetInstallerState(state);
 }
 
+void BaseBundleInstaller::SaveOldRemovableInfo(
+    InnerModuleInfo &newModuleInfo, InnerBundleInfo &oldInfo, bool existModule)
+{
+    if (existModule) {
+        // save old module useId isRemovable info to new module
+        auto oldModule = oldInfo.FetchInnerModuleInfos().find(newModuleInfo.modulePackage);
+        if (oldModule == oldInfo.FetchInnerModuleInfos().end()) {
+            APP_LOGE("can not find module %{public}s in oldInfo", newModuleInfo.modulePackage.c_str());
+            return;
+        }
+        for (const auto &remove : oldModule->second.isRemovable) {
+            auto result = newModuleInfo.isRemovable.try_emplace(remove.first, remove.second);
+            if (!result.second) {
+                APP_LOGE("%{public}s removable add %{public}s from old:%{public}d failed",
+                    newModuleInfo.modulePackage.c_str(), remove.first.c_str(), remove.second);
+            }
+            APP_LOGD("%{public}s removable add %{public}s from old:%{public}d",
+                newModuleInfo.modulePackage.c_str(), remove.first.c_str(), remove.second);
+        }
+    }
+}
+
+void BaseBundleInstaller::CheckEnableRemovable(std::unordered_map<std::string, InnerBundleInfo> &newInfos,
+    InnerBundleInfo &oldInfo, int32_t &userId, bool isFreeInstallFlag, bool isAppExist)
+{
+    bool existModule = false;
+    for (auto &item : newInfos) {
+        std::map<std::string, InnerModuleInfo> &moduleInfo = item.second.FetchInnerModuleInfos();
+        bool hasInstalledInUser = oldInfo.HasInnerBundleUserInfo(userId);
+        // now there are three cases for set haps isRemovable true:
+        // 1. FREE_INSTALL flag
+        // 2. bundle not exist in current user
+        // 3. bundle exist, hap not exist
+        // 4. hap exist not in current userId
+        for (auto &iter : moduleInfo) {
+            APP_LOGD("modulePackage:(%{public}s), userId:%{public}d, flag:%{public}d, isAppExist:%{public}d",
+                iter.second.modulePackage.c_str(), userId, isFreeInstallFlag, isAppExist);
+            existModule = oldInfo.FindModule(iter.second.modulePackage);
+            bool hasModuleInUser = item.second.IsUserExistModule(iter.second.moduleName, userId);
+            APP_LOGD("hasInstalledInUser:%{public}d, existModule:(%{public}d), hasModuleInUser:(%{public}d)",
+                hasInstalledInUser, existModule, hasModuleInUser);
+            if (isFreeInstallFlag && (!isAppExist || !hasInstalledInUser || !existModule || !hasModuleInUser)) {
+                APP_LOGD("hasInstalledInUser:%{public}d, isAppExist:%{public}d existModule:(%{public}d)",
+                    hasInstalledInUser, isAppExist, existModule);
+                item.second.SetModuleRemovable(iter.second.moduleName, true, userId);
+                SaveOldRemovableInfo(iter.second, oldInfo, existModule);
+            }
+        }
+    }
+}
+
 ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::string, InnerBundleInfo> &newInfos,
     InnerBundleInfo &oldInfo, const InstallParam &installParam, int32_t &uid)
 {
@@ -214,18 +265,10 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     if (!GetInnerBundleInfo(oldInfo, isAppExist_)) {
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
-
-    // set newInfos all haps isRemovable is true
-    if (!isAppExist_ && (InstallFlag::FREE_INSTALL == installParam.installFlag)) {
-        for (auto &item : newInfos) {
-            std::map<std::string, InnerModuleInfo> &moduleInfo = item.second.FetchInnerModuleInfos();
-            for (auto iter = moduleInfo.begin(); iter != moduleInfo.end(); iter++) {
-                APP_LOGD("set bundleName:(%{public}s) hap modulePackage:(%{public}s) isRemovable true.",
-                    bundleName_.c_str(), iter->second.modulePackage.c_str());
-                iter->second.isRemovable = true;
-            }
-        }
-    }
+    APP_LOGI("flag:%{public}d, userId:%{public}d, isAppExist:%{public}d",
+        installParam.installFlag, userId_, isAppExist_);
+    bool isFreeInstallFlag = (installParam.installFlag == InstallFlag::FREE_INSTALL);
+    CheckEnableRemovable(newInfos, oldInfo, userId_, isFreeInstallFlag, isAppExist_);
 
     ErrCode result = ERR_OK;
     if (isAppExist_) {

@@ -69,7 +69,7 @@ struct HapModuleInfo : public Parcelable {
     bool installationFree = false;
     bool isModuleJson = false;
     bool isStageBasedModel = false;
-    bool isRemovable = false;
+    std::map<std::string, bool> isRemovable;
     ModuleType moduleType = ModuleType::UNKNOWN;
     std::vector<ExtensionAbilityInfo> extensionInfos;
     std::vector<Metadata> metadata;

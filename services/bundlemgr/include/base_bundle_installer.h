@@ -433,6 +433,25 @@ private:
     ErrCode GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId);
     ErrCode UpdateDefineAndRequestPermissions(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo);
     ErrCode SetDirApl(const InnerBundleInfo &info);
+    /**
+     * @brief Check to set isRemovable true when install.
+     * @param newInfos Indicates all innerBundleInfo for all haps need to be installed.
+     * @param oldInfo Indicates the original innerBundleInfo of the bundle.
+     * @param userId Indicates the userId.
+     * @param isFreeInstallFlag Indicates whether is FREE_INSTALL flag.
+     * @param isAppExist Indicates whether app is exist.
+     * @return
+     */
+    void CheckEnableRemovable(std::unordered_map<std::string, InnerBundleInfo> &newInfos,
+        InnerBundleInfo &oldInfo, int32_t &userId, bool isFreeInstallFlag, bool isAppExist);
+    /**
+     * @brief Save oldInfo isRemovable to newInfo isRemovable.
+     * @param newModuleInfo Indicates the old innerModuleInfo of the bundle..
+     * @param oldInfo Indicates the old innerBundleInfo of the bundle.
+     * @param existModule Indicates whether module is exist.
+     * @return
+     */
+    void SaveOldRemovableInfo(InnerModuleInfo &newModuleInfo, InnerBundleInfo &oldInfo, bool existModule);
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
