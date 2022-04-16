@@ -95,6 +95,10 @@ public:
      */
     void RegisterService();
     /**
+     * @brief send bundle scan finished common event
+     */
+    void NotifyBundleScanStatus();
+    /**
      * @brief Process hidump.
      * @param args Indicates the args.
      * @param result Indicates the result.
