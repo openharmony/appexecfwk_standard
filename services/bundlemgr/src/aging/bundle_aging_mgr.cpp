@@ -83,7 +83,7 @@ void BundleAgingMgr::InitAgingtTimer()
 int BundleAgingMgr::AgingQueryFormStatistics(std::vector<DeviceUsageStats::BundleActiveModuleRecord>& results,
     const std::shared_ptr<BundleDataMgr> &dataMgr)
 {
-    DeviceUsageStats::BundleActiveClient* bundleActiveClient = new(std::nothrow) DeviceUsageStats::BundleActiveClient();
+    auto bundleActiveClient = std::make_unique<DeviceUsageStats::BundleActiveClient>();
     if (bundleActiveClient == nullptr) {
         APP_LOGE("bundleActiveClient is nullptr");
         return -1;
@@ -100,7 +100,7 @@ bool BundleAgingMgr::ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &da
         APP_LOGE("ReInitAgingRequest: dataMgr is null");
         return false;
     }
-    request.reset();
+    request.RequestReset();
     std::map<std::string, int> bundleNamesAndUid;
     dataMgr->GetRemovableBundleNameVec(bundleNamesAndUid);
     if (bundleNamesAndUid.empty()) {
@@ -115,12 +115,13 @@ bool BundleAgingMgr::ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &da
         APP_LOGE("ReInitAgingRequest: can not get bundle active module record");
         return false;
     }
+    int64_t lastBundleUsedTime = 0;
     int64_t lastLaunchTimesMs = AgingUtil::GetNowSysTimeMs();
     APP_LOGD("now: %{public}" PRId64, lastLaunchTimesMs);
     for (auto iter : bundleNamesAndUid) {
         int64_t dataBytes = dataMgr->GetBundleSpaceSize(iter.first);
         // the value of lastLaunchTimesMs get from lastLaunchTimesMs interface
-        int64_t lastBundleUsedTime = 0;
+        lastBundleUsedTime = 0;
         for (const auto &moduleRecord : activeModuleRecord) {
             APP_LOGD("%{public}s: %{public}" PRId64, moduleRecord.bundleName_.c_str(),
                 moduleRecord.lastModuleUsedTime_);
@@ -129,11 +130,14 @@ bool BundleAgingMgr::ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &da
             }
         }
         if (lastBundleUsedTime) {
-            lastLaunchTimesMs = lastBundleUsedTime;
+            APP_LOGD("%{public}s: %{public}" PRId64, iter.first.c_str(), lastBundleUsedTime);
+            AgingBundleInfo agingBundleInfo(iter.first, lastBundleUsedTime, dataBytes, iter.second);
+            request.AddAgingBundle(agingBundleInfo);
+        } else {
+            APP_LOGD("%{public}s: %{public}" PRId64, iter.first.c_str(), lastLaunchTimesMs);
+            AgingBundleInfo agingBundleInfo(iter.first, lastLaunchTimesMs, dataBytes, iter.second);
+            request.AddAgingBundle(agingBundleInfo);
         }
-        APP_LOGD("%{public}s: %{public}" PRId64, iter.first.c_str(), lastLaunchTimesMs);
-        AgingBundleInfo agingBundleInfo(iter.first, lastLaunchTimesMs, dataBytes, iter.second);
-        request.AddAgingBundle(agingBundleInfo);
     }
     request.SetTotalDataBytes(dataMgr->GetAllFreeInstallBundleSpaceSize());
     return request.SortAgingBundles() > 0;
@@ -199,10 +203,10 @@ bool BundleAgingMgr::CheckPrerequisite(AgingTriggertype type) const
         APP_LOGD("current Displaystate is DisplayState::DISPLAY_ON");
         return false;
     }
-    int32_t currentbatteryCap = OHOS::PowerMgr::BatterySrvClient::GetInstance().GetCapacity();
+    int32_t currentBatteryCap = OHOS::PowerMgr::BatterySrvClient::GetInstance().GetCapacity();
     APP_LOGD("current GetCapacity is %{public}d agingBatteryThresold: %{public}" PRId64,
-        currentbatteryCap, agingBatteryThresold);
-    return currentbatteryCap > agingBatteryThresold;
+        currentBatteryCap, agingBatteryThresold);
+    return currentBatteryCap > agingBatteryThresold;
 }
 
 void BundleAgingMgr::ProcessEvent(const InnerEvent::Pointer &event)
