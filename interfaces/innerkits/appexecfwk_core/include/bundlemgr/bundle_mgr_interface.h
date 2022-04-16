@@ -385,10 +385,22 @@ public:
     /**
      * @brief Obtains the label of a specified ability.
      * @param bundleName Indicates the bundle name.
-     * @param className Indicates the ability class name.
+     * @param abilityName Indicates the ability name.
      * @return Returns the label of the ability if exist; returns empty string otherwise.
      */
-    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &className)
+    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &abilityName)
+    {
+        return Constants::EMPTY_STRING;
+    }
+    /**
+     * @brief Obtains the label of a specified ability.
+     * @param bundleName Indicates the bundle name.
+     * @param moduleName Indicates the module name.
+     * @param abilityName Indicates the ability name.
+     * @return Returns the label of the ability if exist; returns empty string otherwise.
+     */
+    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName)
     {
         return Constants::EMPTY_STRING;
     }
@@ -646,10 +658,22 @@ public:
     /**
      * @brief Obtains the icon of a specified ability.
      * @param bundleName Indicates the bundle name.
-     * @param className Indicates the ability class name.
+     * @param abilityName Indicates the ability name.
      * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
      */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &className)
+    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &abilityName)
+    {
+        return Constants::EMPTY_STRING;
+    }
+    /**
+     * @brief Obtains the icon of a specified ability.
+     * @param bundleName Indicates the bundle name.
+     * @param moduleName Indicates the module name.
+     * @param abilityName Indicates the ability name.
+     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
+     */
+    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName)
     {
         return Constants::EMPTY_STRING;
     }
@@ -916,6 +940,12 @@ public:
     {
         return nullptr;
     }
+
+    virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
+        const std::string &moduleName, const std::string &abilityName)
+    {
+        return nullptr;
+    }
 #endif
 
     /**
@@ -927,6 +957,21 @@ public:
      */
     virtual bool GetAbilityInfo(
         const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
+    {
+        return false;
+    }
+    /**
+     * @brief Obtains the AbilityInfo based on a given bundle name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param abilityName Indicates the ability name to be queried.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the abilityInfo is successfully obtained; returns false otherwise.
+
+     */
+    virtual bool GetAbilityInfo(
+        const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName, AbilityInfo &abilityInfo)
     {
         return false;
     }
@@ -1026,6 +1071,7 @@ public:
         QUERY_ABILITY_INFOS_BY_URI,
         QUERY_KEEPALIVE_BUNDLE_INFOS,
         GET_ABILITY_LABEL,
+        GET_ABILITY_LABEL_WITH_MODULE_NAME,
         GET_BUNDLE_ARCHIVE_INFO,
         GET_HAP_MODULE_INFO,
         GET_LAUNCH_WANT_FOR_BUNDLE,
@@ -1049,8 +1095,11 @@ public:
         IS_ABILITY_ENABLED,
         SET_ABILITY_ENABLED,
         GET_ABILITY_INFO,
+        GET_ABILITY_INFO_WITH_MODULE_NAME,
         GET_ABILITY_ICON,
+        GET_ABILITY_ICON_WITH_MODULE_NAME,
         GET_ABILITY_PIXELMAP_ICON,
+        GET_ABILITY_PIXELMAP_ICON_WITH_MODULE_NAME,
         CAN_REQUEST_PERMISSION,
         REQUEST_PERMISSION_FROM_USER,
         REGISTER_ALL_PERMISSIONS_CHANGED,

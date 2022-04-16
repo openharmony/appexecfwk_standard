@@ -1345,7 +1345,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0100, Function | SmallTest | L
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
-    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, EMPTY_STRING, ABILITY_NAME_TEST);
     EXPECT_EQ(LABEL, testRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -1359,7 +1359,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0100, Function | SmallTest | L
  */
 HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0200, Function | SmallTest | Level1)
 {
-    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, EMPTY_STRING, ABILITY_NAME_TEST);
     EXPECT_EQ(EMPTY_STRING, testRet);
 }
 
@@ -1373,7 +1373,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0300, Function | SmallTest | L
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
-    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_DEMO, EMPTY_STRING, ABILITY_NAME_TEST);
     EXPECT_EQ(EMPTY_STRING, testRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -1389,7 +1389,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0400, Function | SmallTest | L
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
-    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, ABILITY_NAME_DEMO);
+    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, EMPTY_STRING, ABILITY_NAME_DEMO);
     EXPECT_EQ(EMPTY_STRING, testRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -2985,7 +2985,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0100, Function | SmallTest | Le
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
-    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_TEST, EMPTY_STRING, ABILITY_NAME_TEST);
     EXPECT_EQ(ICON_PATH, icon);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -2999,7 +2999,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0100, Function | SmallTest | Le
  */
 HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0200, Function | SmallTest | Level1)
 {
-    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_TEST, EMPTY_STRING, ABILITY_NAME_TEST);
     EXPECT_EQ(EMPTY_STRING, icon);
 }
 
@@ -3013,7 +3013,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0300, Function | SmallTest | Le
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
-    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_DEMO, EMPTY_STRING, ABILITY_NAME_TEST);
     EXPECT_EQ(EMPTY_STRING, icon);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -3029,7 +3029,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0400, Function | SmallTest | Le
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
-    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_TEST, ABILITY_NAME_DEMO);
+    std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_TEST, EMPTY_STRING, ABILITY_NAME_DEMO);
     EXPECT_EQ(EMPTY_STRING, icon);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);

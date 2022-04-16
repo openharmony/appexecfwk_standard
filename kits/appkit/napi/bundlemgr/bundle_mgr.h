@@ -64,6 +64,7 @@ struct AsyncAbilityInfosCallbackInfo : public AsyncWorkData {
     int32_t flags = 0;
     std::string bundleName;
     std::string abilityName;
+    std::string moduleName = "";
     OHOS::AppExecFwk::AbilityInfo abilityInfo;
     bool ret = false;
     int32_t err = 0;
@@ -125,6 +126,7 @@ struct AsyncAbilityLabelCallbackInfo : public AsyncWorkData {
     explicit AsyncAbilityLabelCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::string className;
+    std::string moduleName = "";
     std::string abilityLabel;
     int32_t err = 0;
     std::string message;
@@ -281,6 +283,7 @@ struct AsyncAbilityInfo : public AsyncWorkData {
     explicit AsyncAbilityInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::string abilityName;
+    std::string moduleName = "";
 #ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> pixelMap;
 #endif

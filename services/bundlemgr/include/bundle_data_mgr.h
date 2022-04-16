@@ -300,10 +300,12 @@ public:
     /**
      * @brief Obtains the label of a specified ability.
      * @param bundleName Indicates the bundle name.
-     * @param className Indicates the ability class name.
+     * @param moduleName Indicates the module name.
+     * @param abilityName Indicates the ability name.
      * @return Returns the label of the ability if exist; returns empty string otherwise.
      */
-    std::string GetAbilityLabel(const std::string &bundleName, const std::string &className) const;
+    std::string GetAbilityLabel(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName) const;
     /**
      * @brief Obtains the Want for starting the main ability of an application based on the given bundle name.
      * @param bundleName Indicates the bundle name.
@@ -380,10 +382,12 @@ public:
     /**
      * @brief Obtains the icon of a specified ability through the proxy object.
      * @param bundleName Indicates the bundle name.
-     * @param className Indicates the ability class name.
+     * @param moduleName Indicates the module name.
+     * @param abilityName Indicates the ability name.
      * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
      */
-    std::string GetAbilityIcon(const std::string &bundleName, const std::string &className) const;
+    std::string GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName) const;
     /**
      * @brief Register the bundle status callback function.
      * @param bundleStatusCallback Indicates the callback object that using for notifing the bundle status.
@@ -696,7 +700,7 @@ public:
         AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo);
 #ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
-        const std::string &abilityName) const;
+        const std::string &moduleName, const std::string &abilityName) const;
 #endif
 
     /**
