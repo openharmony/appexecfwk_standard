@@ -68,7 +68,10 @@ struct InnerModuleInfo {
     std::string srcPath;
     bool isEntry = false;
     bool installationFree = false;
-    bool isRemovable = false;
+    // all user's value of isRemovable
+    // key:userId
+    // value:isRemovable true or flase
+    std::map<std::string, bool> isRemovable;
     MetaData metaData;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     Distro distro;
@@ -1382,23 +1385,55 @@ public:
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
         const std::string &excludeModule = "") const;
     /**
-     * @brief module is removed.
-     * @param moduleName Indicates the moduleName.
-     * @return Return get module removed result.
+     * @brief Whether bundle of userId should be removed.
+     * @param userId Indicates the userId.
+     * @return Return get bundle isRemoved result
      */
-    bool isModuleRemovable(const std::string &moduleName) const;
+    bool IsBundleRemovable(int32_t userId) const;
     /**
-     * @brief module is removed.
+     * @brief Whether module of userId is exist.
+     * @param moduleName Indicates the moduleName.
+     * @param userId Indicates the userId.
+     * @return Return get module exist result.
+     */
+    bool IsUserExistModule(const std::string &moduleName, int32_t userId) const;
+    /**
+     * @brief whether userId's module should be removed.
+     * @param moduleName Indicates the moduleName.
+     * @param userId Indicates the userId.
+     * @return Return get module isRemoved result.
+     */
+    bool IsModuleRemovable(const std::string &moduleName, int32_t userId) const;
+    /**
+     * @brief Add module removable info
+     * @param info Indicates the innerModuleInfo of module.
+     * @param stringUserId Indicates the string userId add to isRmovable map.
+     * @param isEnable Indicates the value of enable module is removed.
+     * @return Return add module isRemovable info result.
+     */
+    bool AddModuleRemovableInfo(InnerModuleInfo &info, const std::string &stringUserId, bool isEnable) const;
+    /**
+     * @brief Set userId's module value of isRemoved.
      * @param moduleName Indicates the moduleName.
      * @param isEnable Indicates the module isRemovable is enable.
-     * @return Return set module removed result.
+     * @param userId Indicates the userId.
+     * @return Return set module isRemoved result.
      */
-    bool SetModuleRemovable(const std::string &moduleName, bool isEnable);
+    bool SetModuleRemovable(const std::string &moduleName, bool isEnable, int32_t userId);
     /**
-     * @brief bundle is removed.
-     * @return Return get bundle removed result
+     * @brief Delete userId isRemoved info from module.
+     * @param moduleName Indicates the moduleName.
+     * @param userId Indicates the userId.
+     * @return
      */
-    bool IsBundleRemovable() const;
+    void DeleteModuleRemovable(const std::string &moduleName, int32_t userId);
+    /**
+     * @brief Delete removable info.
+     * @param info Indicates the innerModuleInfo of module.
+     * @param stringUserId Indicates the string userId of isRmovable map.
+     * @return
+     */
+    void DeleteModuleRemovableInfo(InnerModuleInfo &info, const std::string &stringUserId);
 
     void SetEntryInstallationFree(bool installationFree)
     {
