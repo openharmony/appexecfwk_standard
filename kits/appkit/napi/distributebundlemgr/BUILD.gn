@@ -25,12 +25,16 @@ ohos_shared_library("distributedbundle") {
     "native_module.cpp",
   ]
 
-  deps = [ "${common_path}:libappexecfwk_common" ]
+  configs = [ "${services_path}/dbms:distributed_bms_config" ]
+
+  deps = [
+    "${common_path}:libappexecfwk_common",
+    "${services_path}/dbms:libdbms",
+  ]
 
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
-    "distributed_bundle_framework:libdbms",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "napi:ace_napi",
