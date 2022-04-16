@@ -21,7 +21,6 @@
 #include "aging/bundle_aging_mgr.h"
 #endif
 #include "ability_manager_helper.h"
-#include "ability_manager_interface.h"
 #include "app_log_wrapper.h"
 #include "bundle_clone_mgr.h"
 #include "bundle_constants.h"
