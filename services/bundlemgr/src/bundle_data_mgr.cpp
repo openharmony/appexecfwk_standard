@@ -565,7 +565,7 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
     }
     // sort by priority, descending order.
     if (abilityInfos.size() > 1) {
-        std::sort(abilityInfos.begin(), abilityInfos.end(),
+        std::stable_sort(abilityInfos.begin(), abilityInfos.end(),
             [](AbilityInfo a, AbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
@@ -2643,7 +2643,7 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
     }
     // sort by priority, descending order.
     if (extensionInfos.size() > 1) {
-        std::sort(extensionInfos.begin(), extensionInfos.end(),
+        std::stable_sort(extensionInfos.begin(), extensionInfos.end(),
             [](ExtensionAbilityInfo a, ExtensionAbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
