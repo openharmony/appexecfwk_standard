@@ -31,14 +31,14 @@ public:
     {
     }
     void OnRemoteDied(const wptr<IRemoteObject> &wptrDeath) override;
+
+private:
     /**
      * @brief Send atomic service status callback to ability manager service.
      * @param freeInstallParams Relevant information sent to ability manager service.
      * @param transactId The key of ability manager service Call Back Map.
      */
     void SendCallBack(FreeInstallParams &freeInstallParams, std::string transactId);
-
-private:
     std::map<std::string, FreeInstallParams> &freeInstallParamsMap_;
 };
 }  // namespace AppExecFwk

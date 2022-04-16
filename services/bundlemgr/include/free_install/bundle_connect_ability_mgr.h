@@ -44,6 +44,30 @@ public:
     ~BundleConnectAbilityMgr();
 
     /**
+     * @brief Query the AbilityInfo by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @param callBack Indicates the callback object for ability manager service.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
+        AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack);
+    /**
+     * @brief Upgrade atomic service status
+     * @param want Query the AbilityInfo by the given Want.
+     * @param userId Indicates the user ID.
+     */
+    void UpgradeAtomicService(const Want &want, int32_t userId);
+    /**
+     * @brief Executed when a service callback is retrieved
+     * @param installResult The json string of InstallResult
+     */
+    void OnServiceCenterCall(std::string installResult);
+
+private:
+    /**
      * @brief Notify the service center center to start the installation free process.
      * @param targetAbilityInfo Indicates the information which will be send to service center.
      * @param want Indicates the information of the need start ability.
@@ -92,9 +116,8 @@ public:
      * @param innerBundleInfo Indicates the innerBundleInfo of the bundle which will be using.
      * @param targetAbilityInfo Indicates the targetAbilityInfo of the bundle which will be returned.
      * @param targetInfo Indicates the targetInfo of the bundle which will be returned.
-     * @return Returns true if get target ability info successfully; returns false otherwise.
      */
-    bool GetTargetAbilityInfo(const Want &want, InnerBundleInfo &innerBundleInfo,
+    void GetTargetAbilityInfo(const Want &want, InnerBundleInfo &innerBundleInfo,
         sptr<TargetAbilityInfo> &targetAbilityInfo, sptr<TargetInfo> &targetInfo);
 
     /**
@@ -107,25 +130,6 @@ public:
      */
     bool CheckIsModuleNeedUpdate(
         InnerBundleInfo &innerBundleInfo, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack);
-
-    /**
-     * @brief Query the AbilityInfo by the given Want.
-     * @param want Indicates the information of the ability.
-     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
-     * @param userId Indicates the user ID.
-     * @param abilityInfo Indicates the obtained AbilityInfo object.
-     * @param callBack Indicates the callback object for ability manager service.
-     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
-     */
-    bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId,
-        AbilityInfo &abilityInfo, const sptr<IRemoteObject> &callBack);
-
-    /**
-     * @brief Upgrade atomic service status
-     * @param want Query the AbilityInfo by the given Want.
-     * @param userId Indicates the user ID.
-     */
-    void UpgradeAtomicService(const Want &want, int32_t userId);
 
     /**
      * @brief Connecte service center
@@ -149,12 +153,6 @@ public:
     void SendCallBack(int32_t resultCode, const Want &want, int32_t userId, std::string transactId);
 
     /**
-     * @brief Executed when a service callback is retrieved
-     * @param installResult The json string of InstallResult
-     */
-    void OnServiceCenterCall(std::string installResult);
-
-    /**
      * @brief Determine whether there are reusable connection
      * @param flag Indicates service function
      * @param targetAbilityInfo Indicates the information of the ability.
@@ -167,7 +165,7 @@ public:
         int32_t userId, const sptr<IRemoteObject> &callerToken);
 
     /**
-     * @brief Send request with RemoteObject;
+     * @brief Send request with RemoteObject,this is a asynchronous function.
      * @param flag Indicates service function
      * @param targetAbilityInfo Indicates the information of the ability.
      * @param want Indicates the information of the need start ability.
@@ -188,17 +186,12 @@ public:
      */
     void OutTimeMonitor(std::string transactId);
 
-    /**
-     * @brief Get transactId_
-     * @return transactId_
-     */
     int GetTransactId() const
     {
         transactId_++;
         return transactId_.load();
     }
 
-private:
     /**
      * @brief Send callback to ability manager service
      * @param resultCode The result code to ability manager service call back
@@ -207,6 +200,19 @@ private:
      * @param callBack Indicates the callback object for ability manager service.
      */
     void CallAbilityManager(int32_t resultCode, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack);
+
+    /**
+     * @brief Judge whether the ability information has been queried
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @param callBack Indicates the callback object for ability manager service.
+     * @return Returns true if the ability information has been queried; returns false otherwise.
+     */
+    bool IsObtainAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo,
+        const sptr<IRemoteObject> &callBack, InnerBundleInfo &innerBundleInfo);
+
     bool GetAbilityMgrProxy();
     void WaitFormConnecting(std::unique_lock<std::mutex> &lock);
     void WaitFormConnected(std::unique_lock<std::mutex> &lock);
