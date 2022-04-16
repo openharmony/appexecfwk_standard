@@ -287,9 +287,6 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
         return;
     }
     freeInstallParams = node->second;
-    if (freeInstallParams.handler != nullptr) {
-        freeInstallParams.handler.reset();
-    }
     if (installResult.result.retCode == ServiceCenterResultCode::FREE_INSTALL_DOWNLOADING) {
         APP_LOGI("ServiceCenter is downloading, downloadSize = %{public}d, totalSize = %{public}d",
             installResult.progress.downloadSize, installResult.progress.totalSize);
@@ -311,8 +308,7 @@ void BundleConnectAbilityMgr::OutTimeMonitor(std::string transactId)
         return;
     }
     freeInstallParams = node->second;
-    std::shared_ptr<AppExecFwk::EventHandler> handler = freeInstallParams.handler;
-    if (handler == nullptr) {
+    if (handler_ == nullptr) {
         APP_LOGE("OutTimeMonitor, handler is nullptr");
         return;
     }
@@ -321,7 +317,7 @@ void BundleConnectAbilityMgr::OutTimeMonitor(std::string transactId)
             freeInstallParams.want, freeInstallParams.userId, transactId);
         APP_LOGI("RegisterEventListenerFunc");
     };
-    handler->PostTask(RegisterEventListenerFunc, OUT_TIME, AppExecFwk::EventQueue::Priority::LOW);
+    handler_->PostTask(RegisterEventListenerFunc, OUT_TIME, AppExecFwk::EventQueue::Priority::LOW);
 }
 
 void BundleConnectAbilityMgr::SendRequest(
@@ -481,8 +477,6 @@ bool BundleConnectAbilityMgr::CheckIsModuleNeedUpdate(
         freeInstallParams->want = want;
         freeInstallParams->userId = userId;
         freeInstallParams->serviceCenterFunction = ServiceCenterFunction::SERVICE_CENTER_CONNECT_UPGRADE_INSTALL;
-        auto runner = EventRunner::Create(true);
-        freeInstallParams->handler = std::make_shared<AppExecFwk::EventHandler>(runner);
         auto ret = freeInstallParamsMap_.emplace(targetInfo->transactId, *freeInstallParams);
         if (!ret.second) {
             APP_LOGE("BundleConnectAbilityMgr::QueryAbilityInfo map emplace error");
@@ -548,8 +542,6 @@ bool BundleConnectAbilityMgr::QueryAbilityInfo(const Want &want, int32_t flags,
         return false;
     }
     GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
-    auto runner = EventRunner::Create(true);
-    freeInstallParams->handler = std::make_shared<AppExecFwk::EventHandler>(runner);
     freeInstallParams->serviceCenterFunction = ServiceCenterFunction::SERVICE_CENTER_CONNECT_SILENT_INSTALL;
     auto ret = freeInstallParamsMap_.emplace(targetInfo->transactId, *freeInstallParams);
     if (!ret.second) {
@@ -589,8 +581,6 @@ void BundleConnectAbilityMgr::UpgradeAtomicService(const Want &want, int32_t use
     freeInstallParams->want = want;
     freeInstallParams->userId = userId;
     freeInstallParams->serviceCenterFunction = ServiceCenterFunction::SERVICE_CENTER_CONNECT_UPGRADE_CHECK;
-    auto runner = EventRunner::Create(true);
-    freeInstallParams->handler = std::make_shared<AppExecFwk::EventHandler>(runner);
     auto ret = freeInstallParamsMap_.emplace(targetInfo->transactId, *freeInstallParams);
     if (!ret.second) {
         APP_LOGE("BundleConnectAbilityMgr::QueryAbilityInfo map emplace error");
