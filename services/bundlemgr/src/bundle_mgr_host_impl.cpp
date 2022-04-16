@@ -512,7 +512,14 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
     const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
     int32_t userId)
 {
+    if (userId == Constants::UNSPECIFIED_USERID) {
+        userId = BundleUtil::GetUserIdByCallingUid();
+    }
     APP_LOGD("start CleanBundleCacheFiles, bundleName : %{public}s, userId : %{public}d", bundleName.c_str(), userId);
+    if (userId < 0) {
+        APP_LOGE("userId is invalid");
+        return false;
+    }
     if (bundleName.empty() || !cleanCacheCallback) {
         APP_LOGE("the cleanCacheCallback is nullptr or bundleName empty");
         return false;
