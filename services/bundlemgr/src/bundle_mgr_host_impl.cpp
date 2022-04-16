@@ -358,10 +358,10 @@ bool BundleMgrHostImpl::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundl
     return dataMgr->QueryKeepAliveBundleInfos(bundleInfos);
 }
 
-std::string BundleMgrHostImpl::GetAbilityLabel(const std::string &bundleName, const std::string &className)
+std::string BundleMgrHostImpl::GetAbilityLabel(const std::string &bundleName, const std::string &abilityName)
 {
-    APP_LOGD("start GetAbilityLabel, bundleName : %{public}s, className : %{public}s",
-        bundleName.c_str(), className.c_str());
+    APP_LOGD("start GetAbilityLabel, bundleName : %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), abilityName.c_str());
     if (!VerifyQueryPermission(bundleName)) {
         APP_LOGE("verify permission failed");
         return Constants::EMPTY_STRING;
@@ -371,7 +371,24 @@ std::string BundleMgrHostImpl::GetAbilityLabel(const std::string &bundleName, co
         APP_LOGE("DataMgr is nullptr");
         return Constants::EMPTY_STRING;
     }
-    return dataMgr->GetAbilityLabel(bundleName, className);
+    return dataMgr->GetAbilityLabel(bundleName, Constants::EMPTY_STRING, abilityName);
+}
+
+std::string BundleMgrHostImpl::GetAbilityLabel(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName)
+{
+    APP_LOGD("start GetAbilityLabel, bundleName : %{public}s, moduleName : %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
+    if (!VerifyQueryPermission(bundleName)) {
+        APP_LOGE("verify permission failed");
+        return Constants::EMPTY_STRING;
+    }
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return Constants::EMPTY_STRING;
+    }
+    return dataMgr->GetAbilityLabel(bundleName, moduleName, abilityName);
 }
 
 bool BundleMgrHostImpl::GetBundleArchiveInfo(
@@ -991,16 +1008,29 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
     return true;
 }
 
-std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &className)
+std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &abilityName)
 {
-    APP_LOGD("start GetAbilityIcon, bundleName : %{public}s, className : %{public}s",
-        bundleName.c_str(), className.c_str());
+    APP_LOGD("start GetAbilityIcon, bundleName : %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), abilityName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return Constants::EMPTY_STRING;
     }
-    return dataMgr->GetAbilityIcon(bundleName, className);
+    return dataMgr->GetAbilityIcon(bundleName, Constants::EMPTY_STRING, abilityName);
+}
+
+std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName)
+{
+    APP_LOGD("start GetAbilityIcon, bundleName : %{public}s, moduleName : %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return Constants::EMPTY_STRING;
+    }
+    return dataMgr->GetAbilityIcon(bundleName, moduleName, abilityName);
 }
 
 #ifdef SUPPORT_GRAPHICS
@@ -1018,7 +1048,24 @@ std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const
         APP_LOGE("DataMgr is nullptr");
         return nullptr;
     }
-    return dataMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
+    return dataMgr->GetAbilityPixelMapIcon(bundleName, Constants::EMPTY_STRING, abilityName);
+}
+
+std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const std::string &bundleName,
+    const std::string &moduleName, const std::string &abilityName)
+{
+    APP_LOGD("start GetAbilityPixelMapIcon, bundleName : %{public}s, moduleName: %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
+    if (!VerifyQueryPermission(bundleName)) {
+        APP_LOGE("verify permission failed");
+        return nullptr;
+    }
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return nullptr;
+    }
+    return dataMgr->GetAbilityPixelMapIcon(bundleName, moduleName, abilityName);
 }
 #endif
 
@@ -1470,6 +1517,18 @@ bool BundleMgrHostImpl::GetAbilityInfo(
 {
     APP_LOGD("start GetAbilityInfo, bundleName : %{public}s, abilityName : %{public}s",
         bundleName.c_str(), abilityName.c_str());
+    ElementName elementName("", bundleName, abilityName);
+    Want want;
+    want.SetElement(elementName);
+    return QueryAbilityInfo(want, abilityInfo);
+}
+
+bool BundleMgrHostImpl::GetAbilityInfo(
+    const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName, AbilityInfo &abilityInfo)
+{
+    APP_LOGD("start GetAbilityInfo, bundleName : %{public}s, moduleName : %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
     ElementName elementName("", bundleName, abilityName);
     Want want;
     want.SetElement(elementName);

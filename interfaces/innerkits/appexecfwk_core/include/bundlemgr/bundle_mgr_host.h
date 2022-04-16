@@ -228,6 +228,13 @@ private:
      */
     ErrCode HandleGetAbilityLabel(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the GetAbilityLabel function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetAbilityLabelWithModuleName(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the CheckIsSystemAppByUid function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -416,7 +423,6 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleSetAbilityEnabled(Parcel &data, Parcel &reply);
-#ifdef SUPPORT_GRAPHICS
     /**
      * @brief Handles the GetAbilityIcon function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -424,7 +430,13 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleGetAbilityIcon(Parcel &data, Parcel &reply);
-#endif
+    /**
+     * @brief Handles the GetAbilityIcon function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetAbilityIconWithModuleName(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the CanRequestPermission function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -559,8 +571,12 @@ private:
     ErrCode HandleGetUidByBundleName(Parcel &data, Parcel &reply);
 #ifdef SUPPORT_GRAPHICS
     ErrCode HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply);
+
+    ErrCode HandleGetAbilityPixelMapIconWithModuleName(Parcel &data, Parcel &reply);
 #endif
     ErrCode HandleGetAbilityInfo(Parcel &data, Parcel &reply);
+
+    ErrCode HandleGetAbilityInfoWithModuleName(Parcel &data, Parcel &reply);
 
     /**
      * @brief Handles the HandleIsModuleNeedUpdate function called from a IBundleMgr proxy object.

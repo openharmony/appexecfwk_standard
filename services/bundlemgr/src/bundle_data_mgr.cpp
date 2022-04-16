@@ -435,7 +435,8 @@ bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, cons
     }
 
     int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
-    auto ability = innerBundleInfo.FindAbilityInfo(bundleName, abilityName, responseUserId);
+    const std::string moduleName = "";
+    auto ability = innerBundleInfo.FindAbilityInfo(bundleName, moduleName, abilityName, responseUserId);
     if (!ability) {
         APP_LOGE("ability not found");
         return false;
@@ -1161,7 +1162,8 @@ bool BundleDataMgr::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInf
     return !(bundleInfos.empty());
 }
 
-std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const std::string &className) const
+std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName) const
 {
 #ifdef GLOBAL_RESMGR_ENABLE
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
@@ -1179,7 +1181,7 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
         APP_LOGW("app %{public}s is disabled", innerBundleInfo.GetBundleName().c_str());
         return Constants::EMPTY_STRING;
     }
-    auto ability = innerBundleInfo.FindAbilityInfo(bundleName, className, GetUserId());
+    auto ability = innerBundleInfo.FindAbilityInfo(bundleName, moduleName, abilityName, GetUserId());
     if (!ability) {
         return Constants::EMPTY_STRING;
     }
@@ -1579,7 +1581,8 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
     return false;
 }
 
-std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const std::string &className) const
+std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
@@ -1591,7 +1594,7 @@ std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const s
     if (infoItem == bundleInfos_.end()) {
         return Constants::EMPTY_STRING;
     }
-    auto ability = infoItem->second.FindAbilityInfo(bundleName, className, GetUserId());
+    auto ability = infoItem->second.FindAbilityInfo(bundleName, moduleName, abilityName, GetUserId());
     if (!ability) {
         return Constants::EMPTY_STRING;
     }
@@ -1600,7 +1603,7 @@ std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const s
 
 #ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std::string &bundleName,
-    const std::string &abilityName) const
+    const std::string &moduleName, const std::string &abilityName) const
 {
 #ifdef GLOBAL_RESMGR_ENABLE
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
@@ -1614,7 +1617,7 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std
         APP_LOGE("can not find bundle %{public}s", bundleName.c_str());
         return nullptr;
     }
-    auto ability = infoItem->second.FindAbilityInfo(bundleName, abilityName, GetUserId());
+    auto ability = infoItem->second.FindAbilityInfo(bundleName, moduleName, abilityName, GetUserId());
     if (!ability) {
         APP_LOGE("abilityName:%{public}s not find", abilityName.c_str());
         return nullptr;

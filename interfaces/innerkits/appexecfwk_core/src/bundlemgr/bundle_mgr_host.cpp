@@ -140,6 +140,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case IBundleMgr::Message::GET_ABILITY_LABEL:
             errCode = HandleGetAbilityLabel(data, reply);
             break;
+        case IBundleMgr::Message::GET_ABILITY_LABEL_WITH_MODULE_NAME:
+            errCode = HandleGetAbilityLabelWithModuleName(data, reply);
+            break;
         case IBundleMgr::Message::CHECK_IS_SYSTEM_APP_BY_UID:
             errCode = HandleCheckIsSystemAppByUid(data, reply);
             break;
@@ -212,12 +215,15 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case IBundleMgr::Message::GET_ABILITY_INFO:
             errCode = HandleGetAbilityInfo(data, reply);
             break;
-#ifdef SUPPORT_GRAPHICS
-        case IBundleMgr::Message::GET_ABILITY_ICON:
-            errCode = HandleGetAbilityIcon(data, reply);
+        case IBundleMgr::Message::GET_ABILITY_INFO_WITH_MODULE_NAME:
+            errCode = HandleGetAbilityInfoWithModuleName(data, reply);
             break;
+#ifdef SUPPORT_GRAPHICS
         case IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON:
             errCode = HandleGetAbilityPixelMapIcon(data, reply);
+            break;
+        case IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON_WITH_MODULE_NAME:
+            errCode = HandleGetAbilityPixelMapIconWithModuleName(data, reply);
             break;
 #endif
         case IBundleMgr::Message::DUMP_INFOS:
@@ -852,11 +858,29 @@ ErrCode BundleMgrHost::HandleGetAbilityLabel(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
-    std::string className = data.ReadString();
+    std::string abilityName = data.ReadString();
 
-    APP_LOGI("bundleName %{public}s, className %{public}s", bundleName.c_str(), className.c_str());
+    APP_LOGI("bundleName %{public}s, abilityName %{public}s", bundleName.c_str(), abilityName.c_str());
     BundleInfo info;
-    std::string label = GetAbilityLabel(bundleName, className);
+    std::string label = GetAbilityLabel(bundleName, abilityName);
+    if (!reply.WriteString(label)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAbilityLabelWithModuleName(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+    std::string abilityName = data.ReadString();
+
+    APP_LOGI("bundleName %{public}s, moduleName %{public}s, abilityName %{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
+    BundleInfo info;
+    std::string label = GetAbilityLabel(bundleName, moduleName, abilityName);
     if (!reply.WriteString(label)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1334,16 +1358,37 @@ ErrCode BundleMgrHost::HandleGetAbilityInfo(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
-#ifdef SUPPORT_GRAPHICS
+ErrCode BundleMgrHost::HandleGetAbilityInfoWithModuleName(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    AbilityInfo info;
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+    std::string abilityName = data.ReadString();
+    bool ret = GetAbilityInfo(bundleName, moduleName, abilityName, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+
 ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
-    std::string className = data.ReadString();
+    std::string abilityName = data.ReadString();
 
-    APP_LOGI("bundleName %{public}s, className %{public}s", bundleName.c_str(), className.c_str());
+    APP_LOGI("bundleName %{public}s, abilityName %{public}s", bundleName.c_str(), abilityName.c_str());
     BundleInfo info;
-    std::string icon = GetAbilityIcon(bundleName, className);
+    std::string icon = GetAbilityIcon(bundleName, abilityName);
     if (!reply.WriteString(icon)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1351,6 +1396,25 @@ ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleGetAbilityIconWithModuleName(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+    std::string abilityName = data.ReadString();
+
+    APP_LOGI("bundleName %{public}s, moduleName %{public}s, abilityName %{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
+    BundleInfo info;
+    std::string icon = GetAbilityIcon(bundleName, moduleName, abilityName);
+    if (!reply.WriteString(icon)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+#ifdef SUPPORT_GRAPHICS
 ErrCode BundleMgrHost::HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
@@ -1359,6 +1423,31 @@ ErrCode BundleMgrHost::HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply)
 
     APP_LOGI("HandleGetAbilityPixelMapIcon:%{public}s, %{public}s", bundleName.c_str(), abilityName.c_str());
     std::shared_ptr<Media::PixelMap> pixelMap = GetAbilityPixelMapIcon(bundleName, abilityName);
+    if (!pixelMap) {
+        APP_LOGE("GetAbilityPixelMapIcon failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (!reply.WriteBool(true)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (!reply.WriteParcelable(pixelMap.get())) {
+        APP_LOGE("pixelMap write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAbilityPixelMapIconWithModuleName(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string moduleName = data.ReadString();
+    std::string abilityName = data.ReadString();
+
+    APP_LOGI("HandleGetAbilityPixelMapIcon:%{public}s, %{public}s, %{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
+    std::shared_ptr<Media::PixelMap> pixelMap = GetAbilityPixelMapIcon(bundleName, moduleName, abilityName);
     if (!pixelMap) {
         APP_LOGE("GetAbilityPixelMapIcon failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

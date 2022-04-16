@@ -278,10 +278,19 @@ public:
     /**
      * @brief Obtains the label of a specified ability through the proxy object.
      * @param bundleName Indicates the bundle name.
-     * @param className Indicates the ability class name.
+     * @param abilityName Indicates the ability name.
      * @return Returns the label of the ability if exist; returns empty string otherwise.
      */
-    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &className) override;
+    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &abilityName) override;
+    /**
+     * @brief Obtains the label of a specified ability through the proxy object.
+     * @param bundleName Indicates the bundle name.
+     * @param moduleName Indicates the module name.
+     * @param abilityName Indicates the ability name.
+     * @return Returns the label of the ability if exist; returns empty string otherwise.
+     */
+    virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName) override;
     /**
      * @brief Obtains information about an application bundle contained
      *          in an ohos Ability Package (HAP) through the proxy object.
@@ -468,10 +477,19 @@ public:
     /**
      * @brief Obtains the icon of a specified ability through the proxy object.
      * @param bundleName Indicates the bundle name.
-     * @param className Indicates the ability class name.
+     * @param abilityName Indicates the ability class name.
      * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
      */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &className) override;
+    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &abilityName) override;
+    /**
+     * @brief Obtains the icon of a specified ability through the proxy object.
+     * @param bundleName Indicates the bundle name.
+     * @param moduleName Indicates the module name.
+     * @param abilityName Indicates the ability name.
+     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
+     */
+    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName) override;
     /**
      * @brief Obtains the interface used to install and uninstall bundles through the proxy object.
      * @return Returns a pointer to IBundleInstaller class if exist; returns nullptr otherwise.
@@ -655,6 +673,9 @@ public:
 #ifdef SUPPORT_GRAPHICS
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) override;
+
+    virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
+        const std::string &moduleName, const std::string &abilityName) override;
 #endif
     /**
      * @brief Obtains the AbilityInfo based on a given bundle name through the proxy object.
@@ -665,6 +686,18 @@ public:
      */
     virtual bool GetAbilityInfo(
         const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo) override;
+
+    /**
+     * @brief Obtains the AbilityInfo based on a given bundle name through the proxy object.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param abilityName Indicates the ability name to be queried.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetAbilityInfo(
+        const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName, AbilityInfo &abilityInfo) override;
 
     /**
      * @brief Obtains the value of isRemovable based on a given bundle name through the proxy object.
