@@ -15,6 +15,8 @@
 
 #include "bundle_mgr_service.h"
 
+#include "ohos/aafwk/content/want.h"
+
 #include "account_helper.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
@@ -315,6 +317,19 @@ void BundleMgrService::RegisterService()
         registerToService_ = true;
     }
     AfterRegisterToService();
+}
+
+void BundleMgrService::NotifyBundleScanStatus()
+{
+    APP_LOGD("PublishCommonEvent for bundle scan finished");
+    AAFwk::Want want;
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_BUNDLE_SCAN_FINISHED);
+    EventFwk::CommonEventData commonEventData { want };
+    if (!EventFwk::CommonEventManager::PublishCommonEvent(commonEventData)) {
+        APP_LOGE("PublishCommonEvent for bundle scan finished failed.");
+    } else {
+        APP_LOGD("PublishCommonEvent for bundle scan finished succeed.");
+    }
 }
 
 #ifdef DEVICE_MANAGER_ENABLE
