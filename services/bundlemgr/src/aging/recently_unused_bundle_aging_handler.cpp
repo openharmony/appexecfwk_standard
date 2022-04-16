@@ -48,7 +48,8 @@ bool RecentlyUnuseBundleAgingHandler::Process(AgingRequest &request) const
             }
         }
         iter = agingBundles.erase(iter);
-        if (GetName() == AgingConstants::BUNDLE_DATA_SIZE_AGING_HANDLER) {
+        if (GetName() == AgingConstants::UNUSED_FOR_10_DAYS_BUNDLE_AGING_HANDLER
+            || GetName() == AgingConstants::BUNDLE_DATA_SIZE_AGING_HANDLER) {
             if (!NeedContinue(request)) {
                 APP_LOGD("there is no need to continue now.");
                 needContinue = false;
@@ -65,12 +66,12 @@ bool RecentlyUnuseBundleAgingHandler::Process(AgingRequest &request) const
     return needContinue;
 }
 
-bool RecentlyUnuseBundleAgingHandler::NeedContinue(const AgingRequest &requese) const
+bool RecentlyUnuseBundleAgingHandler::NeedContinue(const AgingRequest &request) const
 {
-    return !requese.IsReachEndAgingThreshold();
+    return !request.IsReachEndAgingThreshold();
 }
 
-bool RecentlyUnuseBundleAgingHandler::UnInstallBundle(const std::string &bundlename) const
+bool RecentlyUnuseBundleAgingHandler::UnInstallBundle(const std::string &bundleName) const
 {
     auto bms = DelayedSingleton<BundleMgrService>::GetInstance();
     auto bundleInstaller = bms->GetBundleInstaller();
@@ -83,14 +84,14 @@ bool RecentlyUnuseBundleAgingHandler::UnInstallBundle(const std::string &bundlen
     sptr<AgingUninstallReceiveImpl> userReceiverImpl(new (std::nothrow) AgingUninstallReceiveImpl());
     InstallParam installParam;
     installParam.userId = AccountHelper::GetCurrentActiveUserId();
-    bundleInstaller->Uninstall(bundlename, installParam, userReceiverImpl);
+    bundleInstaller->Uninstall(bundleName, installParam, userReceiverImpl);
     return true;
 }
 
-bool RecentlyUnuseBundleAgingHandler::IsRunning(const std::string bundleName, const int bundleuid) const
+bool RecentlyUnuseBundleAgingHandler::IsRunning(const std::string bundleName, const int bundleUid) const
 {
-    if (bundleuid < 0) {
-        APP_LOGE("bundleuid is error.");
+    if (bundleUid < 0) {
+        APP_LOGE("bundleUid is error.");
         return false;
     }
     std::vector<RunningProcessInfo> runningList = AbilityManager::GetInstance().GetAllRunningProcesses();
@@ -99,7 +100,7 @@ bool RecentlyUnuseBundleAgingHandler::IsRunning(const std::string bundleName, co
         return false;
     }
     for (RunningProcessInfo info : runningList) {
-        if (info.uid_ == bundleuid) {
+        if (info.uid_ == bundleUid) {
             APP_LOGD("bundleName: %{public}s is running.", bundleName.c_str());
             return true;
         }

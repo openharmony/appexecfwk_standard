@@ -24,19 +24,21 @@ namespace OHOS {
 namespace AppExecFwk {
 void AgingUtil::SortAgingBundles(std::vector<AgingBundleInfo> &bundles)
 {
-    sort(bundles.begin(), bundles.end(), SortTwoAgingBundleinfos);
+    sort(bundles.begin(), bundles.end(), SortTwoAgingBundleInfos);
 }
-bool AgingUtil::SortTwoAgingBundleinfos(AgingBundleInfo &bundle1, AgingBundleInfo &bundle2)
+bool AgingUtil::SortTwoAgingBundleInfos(AgingBundleInfo &bundle1, AgingBundleInfo &bundle2)
 {
     int64_t currentTimeMs = GetNowSysTimeMs();
-    int64_t unusedTime = GetUnusedTimeMsBaseOnCurrentTime(currentTimeMs, AgingConstants::TIME_10_DAYS);
-    if (bundle1.GetRecentlyUsedTime() > unusedTime && bundle2.GetRecentlyUsedTime() > unusedTime) {
+    int64_t time10DaysAgo = GetUnusedTimeMsBaseOnCurrentTime(currentTimeMs, AgingConstants::TIME_10_DAYS);
+    int64_t time20DaysAgo = GetUnusedTimeMsBaseOnCurrentTime(currentTimeMs, AgingConstants::TIME_20_DAYS);
+    /*
+    * bundle1 in [10,20) days and bundle2 in [10,20) order by spaceSize;
+    * other order by lastUsedTime;
+    */
+    if (bundle1.GetRecentlyUsedTime() <= time10DaysAgo && bundle1.GetRecentlyUsedTime() > time20DaysAgo
+        && bundle2.GetRecentlyUsedTime() <= time10DaysAgo && bundle2.GetRecentlyUsedTime() > time20DaysAgo) {
         return bundle1.GetDataBytes() > bundle2.GetDataBytes();
-    } else if (bundle1.GetRecentlyUsedTime() > unusedTime && bundle2.GetRecentlyUsedTime() < unusedTime) {
-        return false;
-    } else if (bundle1.GetRecentlyUsedTime() < unusedTime && bundle2.GetRecentlyUsedTime() > unusedTime) {
-        return true;
-    } else if (bundle1.GetRecentlyUsedTime() < unusedTime && bundle2.GetRecentlyUsedTime() < unusedTime) {
+    } else {
         return bundle1.GetRecentlyUsedTime()  < bundle2.GetRecentlyUsedTime();
     }
     return false;
