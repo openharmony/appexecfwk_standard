@@ -42,18 +42,6 @@
                 "//foundation/appexecfwk/standard/services/dbms:dbms_target",
                 "//foundation/appexecfwk/standard/services/dbms/sa_profile:distributedbms"
             ],
-            "inner_kits": [
-                {
-                    "header": {
-                      "header_base": "//foundation/appexecfwk/standard/services/dbms/include",
-                      "header_files": [
-                        "distributed_bms_interface.h",
-                        "distributed_bms_proxy.h"
-                      ]
-                    },
-                    "name": "//foundation/appexecfwk/standard/services/dbms:libdbms"
-                }
-            ],
             "test": []
         }
     }
