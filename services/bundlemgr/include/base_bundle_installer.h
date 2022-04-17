@@ -53,6 +53,12 @@ protected:
         INSTALL_FAILED,
     };
 
+    enum SingletonState {
+        DEFAULT,
+        SINGLETON_TO_NON = 1,
+        NON_TO_SINGLETON = 2,
+    };
+
     /**
      * @brief The main function for system and normal bundle install.
      * @param bundlePath Indicates the path for storing the HAP file of the application
@@ -452,6 +458,7 @@ private:
      * @return
      */
     void SaveOldRemovableInfo(InnerModuleInfo &newModuleInfo, InnerBundleInfo &oldInfo, bool existModule);
+    void OnSingletonChange();
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
@@ -473,6 +480,7 @@ private:
 
     int32_t userId_ = Constants::INVALID_USERID;
     bool hasInstalledInUser_ = false;
+    SingletonState singletonState_ = SingletonState::DEFAULT;
 
     DISALLOW_COPY_AND_MOVE(BaseBundleInstaller);
 

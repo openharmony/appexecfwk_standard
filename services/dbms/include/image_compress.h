@@ -16,10 +16,10 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_DBMS_INCLUDE_IMAGE_COMPRESS_H
 #define FOUNDATION_APPEXECFWK_SERVICES_DBMS_INCLUDE_IMAGE_COMPRESS_H
 
-#include<stdio.h>
+#include <stdio.h>
 #include <cstdlib>
-#include<string>
-#include<cmath>
+#include <string>
+#include <cmath>
 
 #include "png.h"
 #include "jpeglib.h"

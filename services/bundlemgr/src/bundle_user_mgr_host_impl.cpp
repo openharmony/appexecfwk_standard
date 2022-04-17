@@ -100,6 +100,9 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
     if (static_cast<int32_t>(g_installedHapNum) < totalHapNum) {
         bundlePromise->WaitForAllTasksExecute();
     }
+    if (userId == Constants::START_USERID) {
+        DelayedSingleton<BundleMgrService>::GetInstance()->NotifyBundleScanStatus();
+    }
     APP_LOGD("CreateNewUser end userId: (%{public}d)", userId);
 }
 
