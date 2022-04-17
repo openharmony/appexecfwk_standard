@@ -71,6 +71,7 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
             OnRebootStartScanning();
             SetAllInstallFlag();
             DelayedSingleton<BundleMgrService>::GetInstance()->RegisterService();
+            DelayedSingleton<BundleMgrService>::GetInstance()->NotifyBundleScanStatus();
             break;
         }
         default:

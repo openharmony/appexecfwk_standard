@@ -4174,7 +4174,8 @@ static bool InnerCleanBundleCacheCallback(
         APP_LOGE("callback nullptr");
         return false;
     }
-    auto result = iBundleMgr->CleanBundleCacheFiles(bundleName, cleanCacheCallback);
+    int32_t userId = IPCSkeleton::GetCallingUid() / Constants::BASE_USER_RANGE;
+    auto result = iBundleMgr->CleanBundleCacheFiles(bundleName, cleanCacheCallback, userId);
     if (!result) {
         APP_LOGE("CleanBundleDataFiles call error");
         return result;
