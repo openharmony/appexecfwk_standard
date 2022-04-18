@@ -1581,26 +1581,6 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
     return false;
 }
 
-std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
-    const std::string &abilityName) const
-{
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    if (bundleInfos_.empty()) {
-        APP_LOGW("bundleInfos_ data is empty");
-        return Constants::EMPTY_STRING;
-    }
-    APP_LOGD("GetAbilityIcon %{public}s", bundleName.c_str());
-    auto infoItem = bundleInfos_.find(bundleName);
-    if (infoItem == bundleInfos_.end()) {
-        return Constants::EMPTY_STRING;
-    }
-    auto ability = infoItem->second.FindAbilityInfo(bundleName, moduleName, abilityName, GetUserId());
-    if (!ability) {
-        return Constants::EMPTY_STRING;
-    }
-    return (*ability).iconPath;
-}
-
 #ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &moduleName, const std::string &abilityName) const
@@ -1611,7 +1591,7 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std
         APP_LOGW("bundleInfos_ data is empty");
         return nullptr;
     }
-    APP_LOGD("GetAbilityIcon %{public}s", bundleName.c_str());
+    APP_LOGD("GetAbilityPixelMapIcon %{public}s", bundleName.c_str());
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         APP_LOGE("can not find bundle %{public}s", bundleName.c_str());

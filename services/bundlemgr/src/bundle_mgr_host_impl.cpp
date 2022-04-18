@@ -1008,31 +1008,6 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
     return true;
 }
 
-std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &abilityName)
-{
-    APP_LOGD("start GetAbilityIcon, bundleName : %{public}s, abilityName : %{public}s",
-        bundleName.c_str(), abilityName.c_str());
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return Constants::EMPTY_STRING;
-    }
-    return dataMgr->GetAbilityIcon(bundleName, Constants::EMPTY_STRING, abilityName);
-}
-
-std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
-    const std::string &abilityName)
-{
-    APP_LOGD("start GetAbilityIcon, bundleName : %{public}s, moduleName : %{public}s, abilityName : %{public}s",
-        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return Constants::EMPTY_STRING;
-    }
-    return dataMgr->GetAbilityIcon(bundleName, moduleName, abilityName);
-}
-
 #ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName)

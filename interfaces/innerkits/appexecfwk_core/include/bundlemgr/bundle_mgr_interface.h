@@ -658,22 +658,10 @@ public:
     /**
      * @brief Obtains the icon of a specified ability.
      * @param bundleName Indicates the bundle name.
-     * @param abilityName Indicates the ability name.
+     * @param className Indicates the ability class name.
      * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
      */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &abilityName)
-    {
-        return Constants::EMPTY_STRING;
-    }
-    /**
-     * @brief Obtains the icon of a specified ability.
-     * @param bundleName Indicates the bundle name.
-     * @param moduleName Indicates the module name.
-     * @param abilityName Indicates the ability name.
-     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
-     */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
-        const std::string &abilityName)
+    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &className)
     {
         return Constants::EMPTY_STRING;
     }
@@ -1096,8 +1084,6 @@ public:
         SET_ABILITY_ENABLED,
         GET_ABILITY_INFO,
         GET_ABILITY_INFO_WITH_MODULE_NAME,
-        GET_ABILITY_ICON,
-        GET_ABILITY_ICON_WITH_MODULE_NAME,
         GET_ABILITY_PIXELMAP_ICON,
         GET_ABILITY_PIXELMAP_ICON_WITH_MODULE_NAME,
         CAN_REQUEST_PERMISSION,

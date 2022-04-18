@@ -424,20 +424,6 @@ private:
      */
     ErrCode HandleSetAbilityEnabled(Parcel &data, Parcel &reply);
     /**
-     * @brief Handles the GetAbilityIcon function called from a IBundleMgr proxy object.
-     * @param data Indicates the data to be read.
-     * @param reply Indicates the reply to be sent;
-     * @return Returns ERR_OK if called successfully; returns error code otherwise.
-     */
-    ErrCode HandleGetAbilityIcon(Parcel &data, Parcel &reply);
-    /**
-     * @brief Handles the GetAbilityIcon function called from a IBundleMgr proxy object.
-     * @param data Indicates the data to be read.
-     * @param reply Indicates the reply to be sent;
-     * @return Returns ERR_OK if called successfully; returns error code otherwise.
-     */
-    ErrCode HandleGetAbilityIconWithModuleName(Parcel &data, Parcel &reply);
-    /**
      * @brief Handles the CanRequestPermission function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
