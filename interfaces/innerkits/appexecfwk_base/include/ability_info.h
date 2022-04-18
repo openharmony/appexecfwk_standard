@@ -201,6 +201,12 @@ struct AbilityInfo : public Parcelable {
     bool continuable = false;
     int32_t priority = 0;
 
+    // configuration fields on startup page
+    std::string startWindowIcon;
+    int32_t startWindowIconId;
+    std::string startWindowBackground;
+    int32_t startWindowBackgroundId;
+
     // unused
     std::string originalBundleName;
     std::string appName;
