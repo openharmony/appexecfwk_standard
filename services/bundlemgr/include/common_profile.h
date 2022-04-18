@@ -186,10 +186,6 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_MULTIUSER_SHARED = "multiUserShared"
 const std::string BUNDLE_MODULE_PROFILE_KEY_SUPPORT_PIP_MODE = "supportPipMode";
 const std::string BUNDLE_MODULE_PROFILE_KEY_FORMS_ENABLED = "formsEnabled";
 const std::string BUNDLE_MODULE_PROFILE_KEY_FORMS = "forms";
-const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_ICON = "startWindowIcon";
-const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_ICON_ID = "startWindowIconId";
-const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_BACKGROUND = "startWindowBackground";
-const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_BACKGROUND_ID = "startWindowBackgroundId";
 // sub BUNDLE_MODULE_PROFILE_KEY_FORM
 const std::string BUNDLE_MODULE_PROFILE_KEY_MODE = "mode";
 // sub BUNDLE_MODULE_PROFILE_KEY_FORM
@@ -387,10 +383,6 @@ const std::string ABILITY_LAUNCH_TYPE = "launchType";
 const std::string ABILITY_LAUNCH_TYPE_DEFAULT_VALUE = "standard";
 const std::string ABILITY_BACKGROUNDMODES = "backgroundModes";
 const std::string ABILITY_CONTINUABLE = "continuable";
-const std::string ABILITY_START_WINDOW_ICON = "startWindowIcon";
-const std::string ABILITY_START_WINDOW_ICON_ID = "startWindowIconId";
-const std::string ABILITY_START_WINDOW_BACKGROUND = "startWindowBackground";
-const std::string ABILITY_START_WINDOW_BACKGROUND_ID = "startWindowBackgroundId";
 // extension ability
 const std::string EXTENSION_ABILITY_NAME = "name";
 const std::string EXTENSION_ABILITY_TYPE = "type";
