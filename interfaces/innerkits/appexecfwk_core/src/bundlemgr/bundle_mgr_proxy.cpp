@@ -886,11 +886,11 @@ bool BundleMgrProxy::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleIn
     return true;
 }
 
-std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const std::string &className)
+std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const std::string &abilityName)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to get bundle info of %{public}s", bundleName.c_str());
-    if (bundleName.empty()) {
+    APP_LOGI("begin to GetAbilityLabel of %{public}s", bundleName.c_str());
+    if (bundleName.empty() || abilityName.empty()) {
         APP_LOGE("fail to GetAbilityLabel due to params empty");
         return Constants::EMPTY_STRING;
     }
@@ -904,13 +904,49 @@ std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const
         APP_LOGE("fail to GetAbilityLabel due to write bundleName fail");
         return Constants::EMPTY_STRING;
     }
-    if (!data.WriteString(className)) {
-        APP_LOGE("fail to GetAbilityLabel due to write className fail");
+    if (!data.WriteString(abilityName)) {
+        APP_LOGE("fail to GetAbilityLabel due to write abilityName fail");
         return Constants::EMPTY_STRING;
     }
 
     MessageParcel reply;
     if (!SendTransactCmd(IBundleMgr::Message::GET_ABILITY_LABEL, data, reply)) {
+        APP_LOGE("fail to GetAbilityLabel from server");
+        return Constants::EMPTY_STRING;
+    }
+    return reply.ReadString();
+}
+
+std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to GetAbilityLabel of %{public}s", bundleName.c_str());
+    if (bundleName.empty() || moduleName.empty() || abilityName.empty()) {
+        APP_LOGE("fail to GetAbilityLabel due to params empty");
+        return Constants::EMPTY_STRING;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAbilityLabel due to write InterfaceToken fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetAbilityLabel due to write bundleName fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to GetAbilityLabel due to write moduleName fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(abilityName)) {
+        APP_LOGE("fail to GetAbilityLabel due to write abilityName fail");
+        return Constants::EMPTY_STRING;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_ABILITY_LABEL_WITH_MODULE_NAME, data, reply)) {
         APP_LOGE("fail to GetAbilityLabel from server");
         return Constants::EMPTY_STRING;
     }
@@ -1745,7 +1781,7 @@ bool BundleMgrProxy::GetAbilityInfo(
     const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGD("bundleName :%{public}s, abilityName :%{public}s", bundleName.c_str(), abilityName.c_str());
+    APP_LOGD("GetAbilityInfo bundleName :%{public}s, abilityName :%{public}s", bundleName.c_str(), abilityName.c_str());
     if (bundleName.empty() || abilityName.empty()) {
         APP_LOGE("fail to GetAbilityInfo due to params empty");
         return false;
@@ -1761,7 +1797,7 @@ bool BundleMgrProxy::GetAbilityInfo(
         return false;
     }
     if (!data.WriteString(abilityName)) {
-        APP_LOGE("fail to GetAbilityInfo due to write flag fail");
+        APP_LOGE("fail to GetAbilityInfo due to write abilityName fail");
         return false;
     }
 
@@ -1772,35 +1808,41 @@ bool BundleMgrProxy::GetAbilityInfo(
     return true;
 }
 
-std::string BundleMgrProxy::GetAbilityIcon(const std::string &bundleName, const std::string &className)
+bool BundleMgrProxy::GetAbilityInfo(
+    const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName, AbilityInfo &abilityInfo)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to get bundle info of %{public}s", bundleName.c_str());
-    if (bundleName.empty()) {
-        APP_LOGE("fail to GetAbilityIcon due to params empty");
-        return Constants::EMPTY_STRING;
+    APP_LOGD("GetAbilityInfo:bundleName :%{public}s, moduleName :%{public}s, abilityName :%{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
+    if (bundleName.empty() || moduleName.empty() || abilityName.empty()) {
+        APP_LOGE("fail to GetAbilityInfo due to params empty");
+        return false;
     }
 
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to GetAbilityIcon due to write InterfaceToken fail");
-        return Constants::EMPTY_STRING;
+        APP_LOGE("fail to GetAbilityInfo due to write MessageParcel fail");
+        return false;
     }
     if (!data.WriteString(bundleName)) {
-        APP_LOGE("fail to GetAbilityIcon due to write bundleName fail");
-        return Constants::EMPTY_STRING;
+        APP_LOGE("fail to GetAbilityInfo due to write bundleName fail");
+        return false;
     }
-    if (!data.WriteString(className)) {
-        APP_LOGE("fail to GetAbilityIcon due to write className fail");
-        return Constants::EMPTY_STRING;
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to GetAbilityInfo due to write moduleName fail");
+        return false;
+    }
+    if (!data.WriteString(abilityName)) {
+        APP_LOGE("fail to GetAbilityInfo due to write abilityName fail");
+        return false;
     }
 
-    MessageParcel reply;
-    if (!SendTransactCmd(IBundleMgr::Message::GET_ABILITY_ICON, data, reply)) {
-        APP_LOGE("fail to GetAbilityIcon from server");
-        return Constants::EMPTY_STRING;
+    if (!GetParcelableInfo<AbilityInfo>(IBundleMgr::Message::GET_ABILITY_INFO_WITH_MODULE_NAME, data, abilityInfo)) {
+        APP_LOGE("fail to GetAbilityInfo from server");
+        return false;
     }
-    return reply.ReadString();
+    return true;
 }
 
 #ifdef SUPPORT_GRAPHICS
@@ -1829,6 +1871,51 @@ std::shared_ptr<Media::PixelMap> BundleMgrProxy::GetAbilityPixelMapIcon(const st
     }
     MessageParcel reply;
     if (!SendTransactCmd(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON, data, reply)) {
+        APP_LOGE("SendTransactCmd result false");
+        return nullptr;
+    }
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return nullptr;
+    }
+    std::shared_ptr<Media::PixelMap> info(reply.ReadParcelable<Media::PixelMap>());
+    if (!info) {
+        APP_LOGE("readParcelableInfo failed");
+        return nullptr;
+    }
+    APP_LOGD("get ability pixelmap icon success");
+    return info;
+}
+
+std::shared_ptr<Media::PixelMap> BundleMgrProxy::GetAbilityPixelMapIcon(const std::string &bundleName,
+    const std::string &moduleName, const std::string &abilityName)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to get ability pixelmap icon of %{public}s, %{public}s", bundleName.c_str(), abilityName.c_str());
+    if (bundleName.empty() || moduleName.empty() || abilityName.empty()) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to params empty");
+        return nullptr;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to write InterfaceToken fail");
+        return nullptr;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to write bundleName fail");
+        return nullptr;
+    }
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to write moduleName fail");
+        return nullptr;
+    }
+    if (!data.WriteString(abilityName)) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to write abilityName fail");
+        return nullptr;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON_WITH_MODULE_NAME, data, reply)) {
         APP_LOGE("SendTransactCmd result false");
         return nullptr;
     }

@@ -1412,22 +1412,6 @@ static void BenchmarkTestSetAbilityEnabled(benchmark::State &state)
 }
 
 /**
- * @tc.name: BenchmarkTestGetAbilityIcon
- * @tc.desc: Testcase for testing GetAbilityIcon.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestGetAbilityIcon(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->GetAbilityIcon(bundleName, abilityName);
-    }
-}
-
-/**
  * @tc.name: BenchmarkTestGetBundleInstaller
  * @tc.desc: Testcase for testing GetBundleInstaller.
  * @tc.type: FUNC
@@ -2026,7 +2010,6 @@ BENCHMARK(BenchmarkTestIsApplicationEnabled)->Iterations(1000);
 BENCHMARK(BenchmarkTestSetApplicationEnabled)->Iterations(1000);
 BENCHMARK(BenchmarkTestIsAbilityEnabled)->Iterations(1000);
 BENCHMARK(BenchmarkTestSetAbilityEnabled)->Iterations(1000);
-BENCHMARK(BenchmarkTestGetAbilityIcon)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetBundleInstaller)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetBundleUserMgr)->Iterations(1000);
 BENCHMARK(BenchmarkTestCanRequestPermission)->Iterations(1000);

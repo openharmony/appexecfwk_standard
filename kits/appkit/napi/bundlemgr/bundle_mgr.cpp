@@ -1169,14 +1169,18 @@ static bool InnerGetApplicationInfos(napi_env env, int32_t flags, const int user
     return iBundleMgr->GetApplicationInfos(flags, userId, appInfos);
 }
 
-static std::string InnerGetAbilityLabel(napi_env env, std::string &bundleName, std::string &className)
+static std::string InnerGetAbilityLabel(napi_env env, std::string &bundleName, std::string &moduleName,
+    std::string &abilityName)
 {
     auto iBundleMgr = GetBundleMgr();
     if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return "";
     }
-    return iBundleMgr->GetAbilityLabel(bundleName, className);
+    if (moduleName.empty()) {
+        return iBundleMgr->GetAbilityLabel(bundleName, abilityName);
+    }
+    return iBundleMgr->GetAbilityLabel(bundleName, moduleName, abilityName);
 }
 
 static void ProcessApplicationInfos(
@@ -1626,14 +1630,18 @@ static napi_value ParseString(napi_env env, std::string &param, napi_value args)
     return result;
 }
 
-static bool InnerGetAbilityInfo(const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
+static bool InnerGetAbilityInfo(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName, AbilityInfo &abilityInfo)
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
-    return iBundleMgr->GetAbilityInfo(bundleName, abilityName, abilityInfo);
+    if (moduleName.empty()) {
+        return iBundleMgr->GetAbilityInfo(bundleName, abilityName, abilityInfo);
+    }
+    return iBundleMgr->GetAbilityInfo(bundleName, moduleName, abilityName, abilityInfo);
 }
 
 void StartGetAbilityInfoExecuteCB(napi_env env, void *data)
@@ -1646,7 +1654,8 @@ void StartGetAbilityInfoExecuteCB(napi_env env, void *data)
     }
     if (!asyncCallbackInfo->err) {
         asyncCallbackInfo->ret = InnerGetAbilityInfo(
-            asyncCallbackInfo->bundleName, asyncCallbackInfo->abilityName, asyncCallbackInfo->abilityInfo);
+            asyncCallbackInfo->bundleName, asyncCallbackInfo->moduleName,
+            asyncCallbackInfo->abilityName, asyncCallbackInfo->abilityInfo);
     }
     APP_LOGI("%{public}s end.", __func__);
 }
@@ -1687,12 +1696,29 @@ void StartGetAbilityInfoCompletedCB(napi_env env, napi_status status, void *data
     APP_LOGI("%{public}s end.", __func__);
 }
 
+static bool HasModuleName(napi_env env, size_t argc, napi_value *argv)
+{
+    bool hasModuleName = false;
+    if (argc > 0) {
+        napi_valuetype valueType = napi_undefined;
+        NAPI_CALL(env, napi_typeof(env, argv[argc - 1], &valueType));
+        if (valueType == napi_function) {
+            hasModuleName = (argc == ARGS_SIZE_FOUR) ? true : false;
+        } else {
+            hasModuleName = (argc == ARGS_SIZE_THREE) ? true : false;
+        }
+    } else {
+        APP_LOGE("%{public}s error : argc < 0", __func__);
+    }
+    return hasModuleName;
+}
+
 napi_value GetAbilityInfo(napi_env env, napi_callback_info info)
 {
     APP_LOGD("NAPI_GetAbilityInfo called");
     size_t requireArgc = ARGS_SIZE_TWO;
-    size_t argc = ARGS_SIZE_THREE;
-    napi_value argv[ARGS_SIZE_THREE] = { 0 };
+    size_t argc = ARGS_SIZE_FOUR;
+    napi_value argv[ARGS_SIZE_FOUR] = { 0 };
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
@@ -1703,17 +1729,25 @@ napi_value GetAbilityInfo(napi_env env, napi_callback_info info)
         return nullptr;
     }
     std::unique_ptr<AsyncAbilityInfosCallbackInfo> callbackPtr {asyncCallbackInfo};
+    bool hasModuleName = HasModuleName(env, argc, argv);
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[i], &valueType));
-        if ((i == 0) && (valueType == napi_string)) {
+        if ((i == PARAM0) && (valueType == napi_string)) {
             ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
-        } else if (i == ARGS_SIZE_ONE && (valueType == napi_string)) {
+        } else if ((i == PARAM1) && (valueType == napi_string)) {
+            if (hasModuleName) {
+                ParseString(env, asyncCallbackInfo->moduleName, argv[i]);
+            } else {
+                ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
+            }
+        } else if ((i == PARAM2) && (valueType == napi_string)) {
             ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
-        } else if (i == ARGS_SIZE_TWO && (valueType == napi_function)) {
+        } else if (((i == PARAM2) || (i == PARAM3)) && (valueType == napi_function)) {
             NAPI_CALL(env, napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
         } else {
             asyncCallbackInfo->err = INVALID_PARAM;
+            asyncCallbackInfo->message = "type misMatch";
         }
     }
 
@@ -5198,7 +5232,8 @@ void GetAbilityLabelExecute(napi_env env, void *data)
     }
     if (!asyncCallbackInfo->err) {
         asyncCallbackInfo->abilityLabel =
-        InnerGetAbilityLabel(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->className);
+        InnerGetAbilityLabel(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->moduleName,
+            asyncCallbackInfo->className);
         if (asyncCallbackInfo->abilityLabel == "") {
             asyncCallbackInfo->err = OPERATION_FAILED;
         }
@@ -5215,9 +5250,7 @@ void GetAbilityLabelAsyncComplete(napi_env env, napi_status status, void *data)
     napi_value result[ARGS_SIZE_TWO] = {nullptr};
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
-    if (asyncCallbackInfo->err) {
-        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, asyncCallbackInfo->err, &result[PARAM0]));
-    }
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, asyncCallbackInfo->err, &result[PARAM0]));
 
     if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
         NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, asyncCallbackInfo->abilityLabel.c_str(),
@@ -5251,24 +5284,16 @@ void GetAbilityLabelPromiseComplete(napi_env env, napi_status status, void *data
 }
 
 napi_value GetAbilityLabelAsync(
-    napi_env env, napi_value *args, const size_t argCallback, AsyncAbilityLabelCallbackInfo *asyncCallbackInfo)
+    napi_env env, AsyncAbilityLabelCallbackInfo *asyncCallbackInfo)
 {
     APP_LOGI("%{public}s, asyncCallback.", __func__);
-    if (args == nullptr || asyncCallbackInfo == nullptr) {
+    if (asyncCallbackInfo == nullptr) {
         APP_LOGE("%{public}s, param == nullptr.", __func__);
         return nullptr;
     }
 
     napi_value resourceName = nullptr;
     NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName));
-
-    napi_valuetype valuetype = napi_undefined;
-    NAPI_CALL(env, napi_typeof(env, args[argCallback], &valuetype));
-    if (valuetype == napi_function) {
-        NAPI_CALL(env, napi_create_reference(env, args[argCallback], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
-    } else {
-        return nullptr;
-    }
 
     NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, GetAbilityLabelExecute,
                        GetAbilityLabelAsyncComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
@@ -5308,8 +5333,8 @@ napi_value GetAbilityLabelWrap(napi_env env, napi_callback_info info, AsyncAbili
         return nullptr;
     }
 
-    size_t argcAsync = ARGS_SIZE_THREE;
-    const size_t argcPromise = ARGS_SIZE_TWO;
+    size_t argcAsync = ARGS_SIZE_FOUR;
+    const size_t argcPromise = ARGS_SIZE_THREE;
     const size_t argCountWithAsync = argcPromise + ARGS_ASYNC_COUNT;
     napi_value args[ARGS_MAX_COUNT] = {nullptr};
     napi_value ret = nullptr;
@@ -5319,25 +5344,29 @@ napi_value GetAbilityLabelWrap(napi_env env, napi_callback_info info, AsyncAbili
         APP_LOGE("%{public}s, Wrong argument count.", __func__);
         return nullptr;
     }
-
-    napi_valuetype firstValueType = napi_undefined;
-    NAPI_CALL(env, napi_typeof(env, args[PARAM0], &firstValueType));
-    if (firstValueType == napi_string) {
-        ParseString(env, asyncCallbackInfo->bundleName, args[PARAM0]);
-    } else {
-        asyncCallbackInfo->err = INVALID_PARAM;
+    bool hasModuleName = HasModuleName(env, argcAsync, args);
+    for (size_t i = 0; i < argcAsync; ++i) {
+        napi_valuetype valueType = napi_undefined;
+        NAPI_CALL(env, napi_typeof(env, args[i], &valueType));
+        if ((i == PARAM0) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->bundleName, args[i]);
+        } else if ((i == PARAM1) && (valueType == napi_string)) {
+            if (hasModuleName) {
+                ParseString(env, asyncCallbackInfo->moduleName, args[i]);
+            } else {
+                ParseString(env, asyncCallbackInfo->className, args[i]);
+            }
+        } else if ((i == PARAM2) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->className, args[i]);
+        } else if (((i == PARAM2) || (i == PARAM3)) && (valueType == napi_function)) {
+            NAPI_CALL(env, napi_create_reference(env, args[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+        } else {
+            asyncCallbackInfo->err = INVALID_PARAM;
+            asyncCallbackInfo->message = "type misMatch";
+        }
     }
-
-    napi_valuetype secondValueType = napi_undefined;
-    NAPI_CALL(env, napi_typeof(env, args[PARAM1], &secondValueType));
-    if (secondValueType == napi_string) {
-        ParseString(env, asyncCallbackInfo->className, args[PARAM1]);
-    } else {
-        asyncCallbackInfo->err = INVALID_PARAM;
-    }
-
-    if (argcAsync > argcPromise) {
-        ret = GetAbilityLabelAsync(env, args, argcAsync - 1, asyncCallbackInfo);
+    if (asyncCallbackInfo->callback) {
+        ret = GetAbilityLabelAsync(env, asyncCallbackInfo);
     } else {
         ret = GetAbilityLabelPromise(env, asyncCallbackInfo);
     }
@@ -5480,7 +5509,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
 
 #ifdef SUPPORT_GRAPHICS
 static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
-    napi_env env, std::string &bundleName, std::string &abilityName)
+    napi_env env, const std::string &bundleName, const std::string &moduleName, const std::string &abilityName)
 {
     if (bundleName.empty() || abilityName.empty()) {
         APP_LOGE("bundleName or abilityName is invalid param");
@@ -5491,14 +5520,17 @@ static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
         APP_LOGE("can not get iBundleMgr");
         return nullptr;
     }
-    return iBundleMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
+    if (moduleName.empty()) {
+        return iBundleMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
+    }
+    return iBundleMgr->GetAbilityPixelMapIcon(bundleName, moduleName, abilityName);
 }
 
 napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
 {
     size_t requireArgc = ARGS_SIZE_TWO;
-    size_t argc = ARGS_SIZE_THREE;
-    napi_value argv[ARGS_SIZE_THREE] = { 0 };
+    size_t argc = ARGS_SIZE_FOUR;
+    napi_value argv[ARGS_SIZE_FOUR] = { 0 };
     napi_value thisArg = nullptr;
     void *data = nullptr;
 
@@ -5510,14 +5542,21 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
         return nullptr;
     }
     std::unique_ptr<AsyncAbilityInfo> callbackPtr {asyncCallbackInfo};
+    bool hasModuleName = HasModuleName(env, argc, argv);
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[i], &valueType));
         if ((i == PARAM0) && (valueType == napi_string)) {
             ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
         } else if ((i == PARAM1) && (valueType == napi_string)) {
+            if (hasModuleName) {
+                ParseString(env, asyncCallbackInfo->moduleName, argv[i]);
+            } else {
+                ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
+            }
+        } else if ((i == PARAM2) && (valueType == napi_string)) {
             ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
-        } else if ((i == PARAM2) && (valueType == napi_function)) {
+        } else if (((i == PARAM2) || (i == PARAM3)) && (valueType == napi_function)) {
             NAPI_CALL(env, napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
         } else {
             asyncCallbackInfo->errCode = INVALID_PARAM;
@@ -5540,6 +5579,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
             if (!asyncCallbackInfo->errCode) {
                 asyncCallbackInfo->pixelMap = InnerGetAbilityIcon(asyncCallbackInfo->env,
                                                                   asyncCallbackInfo->bundleName,
+                                                                  asyncCallbackInfo->moduleName,
                                                                   asyncCallbackInfo->abilityName);
                 if (!asyncCallbackInfo->pixelMap) {
                     asyncCallbackInfo->errCode = OPERATION_FAILED;
