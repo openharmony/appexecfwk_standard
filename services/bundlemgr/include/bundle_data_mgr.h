@@ -30,6 +30,7 @@
 #include "application_info.h"
 #include "bundle_data_storage_interface.h"
 #include "bundle_promise.h"
+#include "bundle_sandbox_data_mgr.h"
 #include "bundle_status_callback_interface.h"
 #include "common_event_manager.h"
 #include "distributed_data_storage.h"
@@ -128,6 +129,11 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool GenerateUidAndGid(InnerBundleUserInfo &innerBundleUserInfo);
+    /**
+     * @brief Recycle uid and gid .
+     * @param info Indicates the InnerBundleInfo object.
+     */
+    void RecycleUidAndGid(const InnerBundleInfo &info);
     /**
      * @brief Generate cloned uid by cloned bundle.
      * @param info Indicates the InnerBundleInfo object.
@@ -743,6 +749,8 @@ public:
     bool GetInnerBundleInfoWithFlags(const std::string &bundleName, const int32_t flags,
         InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
 
+    std::shared_ptr<BundleSandboxDataMgr> GetSandboxDataMgr() const;
+
 private:
     /**
      * @brief Init transferStates.
@@ -780,11 +788,6 @@ private:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool RestoreUidAndGid();
-    /**
-     * @brief Recycle uid and gid .
-     * @param info Indicates the InnerBundleInfo object.
-     */
-    void RecycleUidAndGid(const InnerBundleInfo &info);
     /**
      * @brief Implicit query abilityInfos by the given Want.
      * @param want Indicates the information of the ability.
@@ -856,6 +859,7 @@ private:
     // map<uid, callback>.
     std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;
     std::shared_ptr<BundlePromise> bundlePromise_ = nullptr;
+    std::shared_ptr<BundleSandboxDataMgr> sandboxDataMgr_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

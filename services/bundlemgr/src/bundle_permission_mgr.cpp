@@ -95,7 +95,7 @@ AccessToken::AccessTokenID BundlePermissionMgr::CreateAccessTokenId(
     AccessToken::HapInfoParams hapInfo;
     hapInfo.userID = userId;
     hapInfo.bundleName = bundleName;
-    hapInfo.instIndex = 0;
+    hapInfo.instIndex = innerBundleInfo.GetAppIndex();
     hapInfo.appIDDesc = innerBundleInfo.GetProvisionId();
     AccessToken::HapPolicyParams hapPolicy = CreateHapPolicyParam(innerBundleInfo);
     AccessToken::AccessTokenIDEx accessToken = AccessToken::AccessTokenKit::AllocHapToken(hapInfo, hapPolicy);

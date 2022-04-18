@@ -77,9 +77,24 @@ public:
      */
     virtual bool Uninstall(const std::string &bundleName, const std::string &modulePackage,
         const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver) override;
+    /**
+     * @brief Install sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param userId Indicates the sandbox application will be installed under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    virtual bool InstallSandboxApp(const std::string &bundleName, int32_t userId) override;
+    /**
+     * @brief Uninstall sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param appIndex Indicates application index of the sandbox application.
+     * @param userId Indicates the sandbox application will be uninstall under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    virtual bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
 
 private:
-    bool SendInstallRequest(const int32_t& code, MessageParcel& data, MessageParcel& reply,
+    bool SendInstallRequest(const uint32_t& code, MessageParcel& data, MessageParcel& reply,
         MessageOption& option);
     static inline BrokerDelegator<BundleInstallerProxy> delegator_;
 };

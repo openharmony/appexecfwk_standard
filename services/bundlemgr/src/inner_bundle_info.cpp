@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const std::string IS_SUPPORT_BACKUP = "isSupportBackup";
 const std::string APP_TYPE = "appType";
 const std::string UID = "uid";
@@ -99,6 +98,8 @@ const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos";
 const std::string BUNDLE_PACK_INFO = "bundlePackInfo";
 const std::string ALLOWED_ACLS = "allowedAcls";
 const std::string META_DATA_SHORTCUTS_NAME = "ohos.ability.shortcuts";
+const std::string APP_INDEX = "appIndex";
+const std::string BUNDLE_IS_SANDBOX_APP = "isSandboxApp";
 
 const std::string NameAndUserIdToKey(const std::string &bundleName, int32_t userId)
 {
@@ -433,6 +434,8 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
     jsonObject[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
     jsonObject[BUNDLE_PACK_INFO] = bundlePackInfo_;
+    jsonObject[APP_INDEX] = appIndex_;
+    jsonObject[BUNDLE_IS_SANDBOX_APP] = isSandboxApp_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -1227,6 +1230,22 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         JsonType::OBJECT,
         false,
         parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        APP_INDEX,
+        appIndex_,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_IS_SANDBOX_APP,
+        isSandboxApp_,
+        JsonType::BOOLEAN,
+        false,
+        ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
         APP_LOGE("read InnerBundleInfo from database error, error code : %{public}d", parseResult);

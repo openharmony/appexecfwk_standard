@@ -52,6 +52,7 @@ public:
      * @param info Indicates the bundle info of the application.
      */
     void DeleteBundleInfoFromStorage(const InnerBundleInfo &info);
+
 private:
     std::weak_ptr<BundleDataStorageDatabase> dataStorage_;
 };

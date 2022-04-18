@@ -126,5 +126,5 @@ void BundleExceptionHandler::DeleteBundleInfoFromStorage(const InnerBundleInfo &
         APP_LOGE(" fail to remove bundle info of %{public}s from the storage", info.GetBundleName().c_str());
     }
 }
-}  // namespace AppExecFwk
+}  // namespace AppExecFwkConstants
 }  // namespace OHOS
