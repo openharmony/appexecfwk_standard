@@ -1339,11 +1339,13 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
 }
 
 std::optional<AbilityInfo> InnerBundleInfo::FindAbilityInfo(
-    const std::string &bundleName, const std::string &abilityName, int32_t userId) const
+    const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName, int32_t userId) const
 {
     for (const auto &ability : baseAbilityInfos_) {
         auto abilityInfo = ability.second;
-        if ((abilityInfo.bundleName == bundleName) && (abilityInfo.name == abilityName)) {
+        if ((abilityInfo.bundleName == bundleName) && (abilityInfo.name == abilityName) &&
+            (moduleName.empty() || (abilityInfo.moduleName == moduleName))) {
             GetApplicationInfo(
                 ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
             return abilityInfo;
