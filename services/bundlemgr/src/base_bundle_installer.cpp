@@ -26,6 +26,7 @@
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
 #include "bundle_mgr_service.h"
+#include "bundle_sandbox_installer.h"
 #include "bundle_parser.h"
 #include "bundle_permission_mgr.h"
 #include "bundle_util.h"
@@ -135,6 +136,9 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
     APP_LOGD("begin to process %{public}s bundle uninstall", bundleName.c_str());
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
 
+    // uninstall all sandbox app before
+    UninstallAllSandboxApps(bundleName);
+
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
     if (installParam.needSendEvent && dataMgr_) {
@@ -155,6 +159,9 @@ ErrCode BaseBundleInstaller::UninstallBundle(
 {
     APP_LOGD("begin to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
+
+    // uninstall all sandbox app before
+    UninstallAllSandboxApps(bundleName);
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
@@ -187,7 +194,6 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     InnerBundleInfo &oldInfo, const InstallParam &installParam, int32_t &uid)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    bundleName_ = newInfos.begin()->second.GetBundleName();
     APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s, userId is %{public}d", bundleName_.c_str(),
         userId_);
     if (installParam.needSavePreInstallInfo) {
@@ -349,7 +355,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
         }
     }
 
-    userId_ = GetUserId(installParam);
+    userId_ = GetUserId(installParam.userId);
     if (userId_ == Constants::INVALID_USERID) {
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
@@ -387,6 +393,10 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     result = CheckAppLabelInfo(newInfos);
     CHECK_RESULT(result, "verisoncode or bundleName is different in all haps %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_VERSION_AND_BUNDLENAME_CHECKED);  // ---- 30%
+
+    // uninstall all sandbox app before
+    UninstallAllSandboxApps(bundleName_);
+    UpdateInstallerState(InstallerState::INSTALL_REMOVE_SANDBOX_APP);              // ---- 50%
 
     // this state should always be set when return
     ScopeGuard stateGuard([&] { dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::INSTALL_SUCCESS); });
@@ -545,7 +555,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    userId_ = GetUserId(installParam);
+    userId_ = GetUserId(installParam.userId);
     if (userId_ == Constants::INVALID_USERID) {
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
@@ -638,7 +648,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    userId_ = GetUserId(installParam);
+    userId_ = GetUserId(installParam.userId);
     if (userId_ == Constants::INVALID_USERID) {
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
@@ -765,7 +775,7 @@ ErrCode BaseBundleInstaller::InnerProcessInstallByPreInstallInfo(
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    userId_ = GetUserId(installParam);
+    userId_ = GetUserId(installParam.userId);
     if (userId_ == Constants::INVALID_USERID) {
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
@@ -1187,7 +1197,7 @@ ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info) const
         return ERR_APPEXECFWK_INSTALL_GENERATE_UID_ERROR;
     }
 
-    auto result = InstalldClient::GetInstance()->CreateBundleDataDir(info.GetBundleName(), userId_,
+    auto result = InstalldClient::GetInstance()->CreateBundleDataDir(bundleName_, userId_,
         newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, info.GetAppPrivilegeLevel());
     if (result != ERR_OK) {
         APP_LOGE("fail to create bundle data dir, error is %{public}d", result);
@@ -1195,7 +1205,7 @@ ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info) const
     }
 
     std::string dataBaseDir = Constants::BUNDLE_APP_DATA_BASE_DIR + Constants::BUNDLE_EL[1] +
-        Constants::DATABASE + info.GetBundleName();
+        Constants::DATABASE + bundleName_;
     info.SetAppDataBaseDir(dataBaseDir);
     info.AddInnerBundleUserInfo(newInnerBundleUserInfo);
     return ERR_OK;
@@ -1546,6 +1556,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
             return ERR_APPEXECFWK_INSTALL_APPTYPE_NOT_SAME;
         }
     }
+    bundleName_ = bundleName;
     APP_LOGD("finish check APP label");
     return ret;
 }
@@ -1685,9 +1696,8 @@ ErrCode BaseBundleInstaller::CheckSystemSize(const std::string &bundlePath, cons
     return ERR_APPEXECFWK_INSTALL_DISK_MEM_INSUFFICIENT;
 }
 
-int32_t BaseBundleInstaller::GetUserId(const InstallParam& installParam) const
+int32_t BaseBundleInstaller::GetUserId(const int32_t &userId) const
 {
-    int32_t userId = installParam.userId;
     if (userId < Constants::DEFAULT_USERID) {
         APP_LOGE("userId(%{public}d) is invalid.", userId);
         return Constants::INVALID_USERID;
@@ -1727,7 +1737,28 @@ ErrCode BaseBundleInstaller::CreateBundleUserData(InnerBundleInfo &innerBundleIn
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleInfo, bool isKeepData)
+ErrCode BaseBundleInstaller::UninstallAllSandboxApps(const std::string &bundleName)
+{
+    // All sandbox will be uninstalled when the original application is updated or uninstalled
+    APP_LOGD("UninstallAllSandboxApps begin");
+    if (bundleName.empty()) {
+        APP_LOGE("UninstallAllSandboxApps failed due to empty bundle name");
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
+    }
+    std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
+    if (installer == nullptr) {
+        APP_LOGE("UninstallAllSandboxApps failed due to installer nullptr");
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    if (installer->UninstallAllSandboxApps(bundleName) != ERR_OK) {
+        APP_LOGE("UninstallAllSandboxApps failed");
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    APP_LOGD("UninstallAllSandboxApps finish");
+    return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleInfo, bool needRemoveData)
 {
     auto bundleName = innerBundleInfo.GetBundleName();
     APP_LOGD("remove user(%{public}d) in bundle(%{public}s).", userId_, bundleName.c_str());
@@ -1735,7 +1766,7 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
         return ERR_APPEXECFWK_USER_NOT_EXIST;
     }
 
-    if (!isKeepData) {
+    if (!needRemoveData) {
         ErrCode result = RemoveBundleDataDir(innerBundleInfo);
         if (result != ERR_OK) {
             APP_LOGE("remove user data directory failed.");

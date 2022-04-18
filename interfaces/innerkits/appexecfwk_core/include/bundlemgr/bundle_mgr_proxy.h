@@ -712,6 +712,9 @@ public:
     virtual bool SetModuleNeedUpdate(
         const std::string &bundleName, const std::string &moduleName, bool isEnable) override;
 
+    virtual bool GetSandboxAppBundleInfo(
+        const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info) override;
+
 private:
     /**
      * @brief Send a command message from the proxy object.

@@ -92,12 +92,31 @@ public:
         return false;
     }
 
-    enum class Message {
+    /**
+     * @brief Install sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param userId Indicates the sandbox application will be installed under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    virtual bool InstallSandboxApp(const std::string &bundleName, int32_t userId) = 0;
+
+    /**
+     * @brief Uninstall sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param appIndex Indicates application index of the sandbox application.
+     * @param userId Indicates the sandbox application will be uninstall under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    virtual bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) = 0;
+
+    enum Message : uint32_t {
         INSTALL = 0,
         INSTALL_MULTIPLE_HAPS,
         UNINSTALL,
         UNINSTALL_MODULE,
         RECOVER,
+        INSTALL_SANDBOX_APP,
+        UNINSTALL_SANDBOX_APP,
     };
 };
 

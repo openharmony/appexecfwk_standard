@@ -20,6 +20,7 @@ config("tools_bm_config_moduletest") {
   include_dirs = [
     "${appexecfwk_path}/services/bundlemgr/include/installd",
     "${appexecfwk_path}/services/bundlemgr/include",
+    "${appexecfwk_path}/services/bundlemgr/include/sandbox_app",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//third_party/json/include",
     "//third_party/zlib",

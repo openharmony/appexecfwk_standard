@@ -214,7 +214,7 @@ bool BundleMgrProxy::GetBundleInfo(
         APP_LOGE("fail to GetBundleInfo due to write flag fail");
         return false;
     }
-    if (!data.WriteInt32(static_cast<int>(userId))) {
+    if (!data.WriteInt32(userId)) {
         APP_LOGE("fail to GetBundleInfo due to write userId fail");
         return false;
     }
@@ -249,7 +249,7 @@ bool BundleMgrProxy::GetBundleInfo(
         APP_LOGE("fail to GetBundleInfo due to write flag fail");
         return false;
     }
-    if (!data.WriteInt32(static_cast<int>(userId))) {
+    if (!data.WriteInt32(userId)) {
         APP_LOGE("fail to GetBundleInfo due to write userId fail");
         return false;
     }
@@ -275,7 +275,7 @@ bool BundleMgrProxy::GetBundleInfos(
         APP_LOGE("fail to GetBundleInfos due to write flag fail");
         return false;
     }
-    if (!data.WriteInt32(static_cast<int>(userId))) {
+    if (!data.WriteInt32(userId)) {
         APP_LOGE("fail to GetBundleInfo due to write userId fail");
         return false;
     }
@@ -302,7 +302,7 @@ bool BundleMgrProxy::GetBundleInfos(
         APP_LOGE("fail to GetBundleInfos due to write flag fail");
         return false;
     }
-    if (!data.WriteInt32(static_cast<int>(userId))) {
+    if (!data.WriteInt32(userId)) {
         APP_LOGE("fail to GetBundleInfo due to write userId fail");
         return false;
     }
@@ -1459,7 +1459,7 @@ bool BundleMgrProxy::DumpInfos(
         APP_LOGE("fail to dump due to write bundleName fail");
         return false;
     }
-    if (!data.WriteInt32(static_cast<int>(userId))) {
+    if (!data.WriteInt32(userId)) {
         APP_LOGE("fail to dump due to write userId fail");
         return false;
     }
@@ -2590,6 +2590,39 @@ bool BundleMgrProxy::GetAllDependentModuleNames(const std::string &bundleName, c
     return true;
 }
 
+bool BundleMgrProxy::GetSandboxAppBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId,
+    BundleInfo &info)
+{
+    if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
+        APP_LOGE("GetSandboxAppBundleInfo params are invalid");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to GetSandboxAppBundleInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("failed to GetSandboxAppBundleInfo due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteInt32(appIndex)) {
+        APP_LOGE("failed to GetSandboxAppBundleInfo due to write appIndex fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to GetSandboxAppBundleInfo due to write userId fail");
+        return false;
+    }
+    if (!GetParcelableInfo<BundleInfo>(
+        IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO, data, info)) {
+        APP_LOGE("failed to GetSandboxAppBundleInfo from server");
+        return false;
+    }
+    return true;
+}
+
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
@@ -2720,7 +2753,7 @@ bool BundleMgrProxy::SendTransactCmd(IBundleMgr::Message code, MessageParcel &da
         APP_LOGE("fail to send transact cmd %{public}d due to remote object", code);
         return false;
     }
-    int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
+    int32_t result = remote->SendRequest(code, data, reply, option);
     if (result != NO_ERROR) {
         APP_LOGE("receive error transact code %{public}d in transact cmd %{public}d", result, code);
         return false;

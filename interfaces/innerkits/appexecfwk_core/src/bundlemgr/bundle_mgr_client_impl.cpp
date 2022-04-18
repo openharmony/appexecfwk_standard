@@ -304,10 +304,58 @@ bool BundleMgrClientImpl::TransformFileToJsonString(const std::string &resPath, 
     return true;
 }
 
+bool BundleMgrClientImpl::InstallSandboxApp(const std::string &bundleName, int32_t userId)
+{
+    APP_LOGD("InstallSandboxApp begin");
+    if (bundleName.empty()) {
+        APP_LOGE("InstallSandboxApp bundleName is empty");
+        return false;
+    }
+    ErrCode result = Connect();
+    if (result != ERR_OK) {
+        APP_LOGE("failed to connect");
+        return false;
+    }
+
+    return bundleInstaller_->InstallSandboxApp(bundleName, userId);
+}
+
+bool BundleMgrClientImpl::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+{
+    APP_LOGD("UninstallSandboxApp begin");
+    if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
+        APP_LOGE("UninstallSandboxApp params are invalid");
+        return false;
+    }
+    ErrCode result = Connect();
+    if (result != ERR_OK) {
+        APP_LOGE("failed to connect");
+        return false;
+    }
+
+    return bundleInstaller_->UninstallSandboxApp(bundleName, appIndex, userId);
+}
+
+bool BundleMgrClientImpl::GetSandboxAppBundleInfo(
+    const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
+{
+    APP_LOGD("GetSandboxAppBundleInfo begin");
+    if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
+        APP_LOGE("UninstallSandboxApp params are invalid");
+        return false;
+    }
+
+    ErrCode result = Connect();
+    if (result != ERR_OK) {
+        APP_LOGE("failed to connect");
+        return false;
+    }
+    return bundleMgr_->GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
+}
+
 ErrCode BundleMgrClientImpl::Connect()
 {
-    APP_LOGI("enter");
-
+    APP_LOGI("connect begin");
     std::lock_guard<std::mutex> lock(mutex_);
     if (bundleMgr_ == nullptr) {
         sptr<ISystemAbilityManager> systemAbilityManager =
@@ -324,8 +372,14 @@ ErrCode BundleMgrClientImpl::Connect()
         }
     }
 
-    APP_LOGI("end");
-
+    if (bundleInstaller_ == nullptr) {
+        bundleInstaller_ = bundleMgr_->GetBundleInstaller();
+        if ((bundleInstaller_ == nullptr) || (bundleInstaller_->AsObject() == nullptr)) {
+            APP_LOGE("failed to get bundle installer proxy");
+            return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        }
+    }
+    APP_LOGI("connect end");
     return ERR_OK;
 }
 }  // namespace AppExecFwk

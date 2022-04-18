@@ -94,6 +94,21 @@ public:
      */
     virtual bool InstallByBundleName(const std::string &bundleName, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver) override;
+    /**
+     * @brief Install sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param userId Indicates the sandbox application will be installed under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    virtual bool InstallSandboxApp(const std::string &bundleName, int32_t userId) override;
+    /**
+     * @brief Uninstall sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param appIndex Indicates application index of the sandbox application.
+     * @param userId Indicates the sandbox application will be uninstall under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    virtual bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
 
 private:
     /**
@@ -130,6 +145,20 @@ private:
      * @return
      */
     void HandleUninstallModuleMessage(Parcel &data);
+    /**
+     * @brief Handles the InstallSandboxApp function called from a IBundleInstaller proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    void HandleInstallSandboxApp(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the UninstallSandboxApp function called from a IBundleInstaller proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    void HandleUninstallSandboxApp(Parcel &data, Parcel &reply);
     /**
      * @brief Check whether the statusReceiver object is valid.
      * @param statusReceiver Indicates the IStatusReceiver object.
