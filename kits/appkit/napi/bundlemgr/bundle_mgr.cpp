@@ -4954,37 +4954,37 @@ napi_value IsModuleRemovable(napi_env env, napi_callback_info info)
     return ret;
 }
 
-static bool InnerSetModuleNeedUpdateExecute(napi_env env,
-    const std::string &bundleName, const std::string &moduleName, bool needUpdate)
+static bool InnerSetModuleUpgradeFlagExecute(napi_env env,
+    const std::string &bundleName, const std::string &moduleName, int32_t upgradeFlag)
 {
     auto iBundleMgr = GetBundleMgr();
     if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
-    auto result = iBundleMgr->SetModuleNeedUpdate(bundleName, moduleName, needUpdate);
+    auto result = iBundleMgr->SetModuleUpgradeFlag(bundleName, moduleName, upgradeFlag);
     if (result) {
-        APP_LOGI("InnerSetModuleNeedUpdateExecute::SetModuleNeedUpdate");
+        APP_LOGI("InnerSetModuleUpgradeFlagExecute::SetModuleUpgradeFlag");
     }
     return result;
 }
 
-void SetModuleNeedUpdateExecute(napi_env env, void *data)
+void SetModuleUpgradeFlagExecute(napi_env env, void *data)
 {
-    APP_LOGI("NAPI_SetModuleNeedUpdate, worker pool thread execute.");
-    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleNeedUpdateCallbackInfo *>(data);
+    APP_LOGI("NAPI_SetModuleUpgradeFlag, worker pool thread execute.");
+    AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleUpgradeFlagCallbackInfo *>(data);
     if (asyncCallbackInfo == nullptr) {
-        APP_LOGE("NAPI_SetModuleNeedUpdate, asyncCallbackInfo == nullptr");
+        APP_LOGE("NAPI_SetModuleUpgradeFlag, asyncCallbackInfo == nullptr");
         return;
     }
-    asyncCallbackInfo->result = InnerSetModuleNeedUpdateExecute(env, asyncCallbackInfo->bundleName,
-        asyncCallbackInfo->moduleName, asyncCallbackInfo->needUpdate);
+    asyncCallbackInfo->result = InnerSetModuleUpgradeFlagExecute(env, asyncCallbackInfo->bundleName,
+        asyncCallbackInfo->moduleName, asyncCallbackInfo->upgradeFlag);
 }
 
-void SetModuleNeedUpdateAsyncComplete(napi_env env, napi_status status, void *data)
+void SetModuleUpgradeFlagAsyncComplete(napi_env env, napi_status status, void *data)
 {
-    APP_LOGI("NAPI_SetModuleNeedUpdate, main event thread complete.");
-    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleNeedUpdateCallbackInfo *>(data);
+    APP_LOGI("NAPI_SetModuleUpgradeFlag, main event thread complete.");
+    AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleUpgradeFlagCallbackInfo *>(data);
     napi_value callback = nullptr;
     napi_value undefined = nullptr;
     napi_value result[ARGS_SIZE_THREE] = {nullptr};
@@ -5010,13 +5010,13 @@ void SetModuleNeedUpdateAsyncComplete(napi_env env, napi_status status, void *da
     NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, asyncCallbackInfo->asyncWork));
     delete asyncCallbackInfo;
     asyncCallbackInfo = nullptr;
-    APP_LOGI("NAPI_ModuleNeedUpdate, main event thread complete end.");
+    APP_LOGI("NAPI_ModuleUpgradeFlag, main event thread complete end.");
 }
 
-void SetModuleNeedUpdatePromiseComplete(napi_env env, napi_status status, void *data)
+void SetModuleUpgradeFlagPromiseComplete(napi_env env, napi_status status, void *data)
 {
-    APP_LOGI("NAPI_SetModuleNeedUpdate, main event thread complete.");
-    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleNeedUpdateCallbackInfo *>(data);
+    APP_LOGI("NAPI_SetModuleUpgradeFlag, main event thread complete.");
+    AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo = static_cast<AsyncModuleUpgradeFlagCallbackInfo *>(data);
     napi_value result = nullptr;
     if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
         NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result));
@@ -5029,11 +5029,11 @@ void SetModuleNeedUpdatePromiseComplete(napi_env env, napi_status status, void *
     napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
     delete asyncCallbackInfo;
     asyncCallbackInfo = nullptr;
-    APP_LOGI("NAPI_SetModuleNeedUpdate, main event thread complete end.");
+    APP_LOGI("NAPI_SetModuleUpgradeFlag, main event thread complete end.");
 }
 
-napi_value SetModuleNeedUpdateAsync(
-    napi_env env, napi_value *args, const size_t argCallback, AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo)
+napi_value SetModuleUpgradeFlagAsync(
+    napi_env env, napi_value *args, const size_t argCallback, AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo)
 {
     APP_LOGI("%{public}s, asyncCallback.", __func__);
     if (args == nullptr || asyncCallbackInfo == nullptr) {
@@ -5052,8 +5052,8 @@ napi_value SetModuleNeedUpdateAsync(
         return nullptr;
     }
 
-    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, SetModuleNeedUpdateExecute,
-                       SetModuleNeedUpdateAsyncComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, SetModuleUpgradeFlagExecute,
+                       SetModuleUpgradeFlagAsyncComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
     NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
     napi_value result = nullptr;
     NAPI_CALL(env, napi_get_null(env, &result));
@@ -5061,7 +5061,7 @@ napi_value SetModuleNeedUpdateAsync(
     return result;
 }
 
-napi_value SetModuleNeedUpdatePromise(napi_env env, AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo)
+napi_value SetModuleUpgradeFlagPromise(napi_env env, AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo)
 {
     APP_LOGI("%{public}s, promise.", __func__);
     if (asyncCallbackInfo == nullptr) {
@@ -5075,15 +5075,15 @@ napi_value SetModuleNeedUpdatePromise(napi_env env, AsyncModuleNeedUpdateCallbac
     NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
     asyncCallbackInfo->deferred = deferred;
 
-    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, SetModuleNeedUpdateExecute,
-                       SetModuleNeedUpdatePromiseComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, SetModuleUpgradeFlagExecute,
+                       SetModuleUpgradeFlagPromiseComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
     NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
     APP_LOGI("%{public}s, promise end.", __func__);
     return promise;
 }
 
 napi_value UpdateModuleUpgradeFlagWrap(
-    napi_env env, napi_callback_info info, AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo)
+    napi_env env, napi_callback_info info, AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo)
 {
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -5114,10 +5114,8 @@ napi_value UpdateModuleUpgradeFlagWrap(
     }
     napi_valuetype thirdValueType = napi_undefined;
     napi_typeof(env, args[PARAM2], &thirdValueType);
-    if (thirdValueType == napi_boolean) {
-        bool isEnable = false;
-        NAPI_CALL(env, napi_get_value_bool(env, args[PARAM2], &isEnable));
-        asyncCallbackInfo->needUpdate = isEnable;
+    if (thirdValueType == napi_number) {
+        ParseInt(env, asyncCallbackInfo->upgradeFlag,  args[PARAM2]);
     } else {
         asyncCallbackInfo->err = PARAM_TYPE_ERROR;
         asyncCallbackInfo->errMssage = "type misMatch";
@@ -5127,16 +5125,16 @@ napi_value UpdateModuleUpgradeFlagWrap(
         asyncCallbackInfo->errMssage = "invalid param";
     }
     if (argcAsync > argcPromise) {
-        return SetModuleNeedUpdateAsync(env, args, argcAsync - 1, asyncCallbackInfo);
+        return SetModuleUpgradeFlagAsync(env, args, argcAsync - 1, asyncCallbackInfo);
     } else {
-        return SetModuleNeedUpdatePromise(env, asyncCallbackInfo);
+        return SetModuleUpgradeFlagPromise(env, asyncCallbackInfo);
     }
 }
 
-AsyncModuleNeedUpdateCallbackInfo *CreateModuleNeedUpdateCallbackInfo(napi_env env)
+AsyncModuleUpgradeFlagCallbackInfo *CreateModuleUpgradeFlagCallbackInfo(napi_env env)
 {
     APP_LOGI("%{public}s called.", __func__);
-    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = new AsyncModuleNeedUpdateCallbackInfo {
+    AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo = new AsyncModuleUpgradeFlagCallbackInfo {
         .env = env,
         .asyncWork = nullptr,
         .deferred = nullptr,
@@ -5154,7 +5152,7 @@ AsyncModuleNeedUpdateCallbackInfo *CreateModuleNeedUpdateCallbackInfo(napi_env e
 napi_value UpdateModuleUpgradeFlag(napi_env env, napi_callback_info info)
 {
     APP_LOGI("NAPI_UpdateModuleUpgradeFlag start");
-    AsyncModuleNeedUpdateCallbackInfo *asyncCallbackInfo = CreateModuleNeedUpdateCallbackInfo(env);
+    AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo = CreateModuleUpgradeFlagCallbackInfo(env);
     if (asyncCallbackInfo == nullptr) {
         return WrapVoidToJS(env);
     }

@@ -1757,25 +1757,25 @@ bool BundleDataMgr::GenerateBundleId(const std::string &bundleName, int32_t &bun
     return true;
 }
 
-bool BundleDataMgr::SetModuleNeedUpdate(const std::string &bundleName,
-    const std::string &moduleName, const bool isNeedUpdate)
+bool BundleDataMgr::SetModuleUpgradeFlag(const std::string &bundleName,
+    const std::string &moduleName, const int32_t upgradeFlag)
 {
-    APP_LOGD("SetModuleNeedUpdate %{public}d", isNeedUpdate);
+    APP_LOGD("SetModuleUpgradeFlag %{public}d", upgradeFlag);
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         return false;
     }
     InnerBundleInfo newInfo = infoItem->second;
-    newInfo.SetModuleNeedUpdate(moduleName, isNeedUpdate);
+    newInfo.SetModuleUpgradeFlag(moduleName, upgradeFlag);
     if (dataStorage_->SaveStorageBundleInfo(newInfo)) {
-        return infoItem->second.SetModuleNeedUpdate(moduleName, isNeedUpdate);
+        return infoItem->second.SetModuleUpgradeFlag(moduleName, upgradeFlag);
     }
-    APP_LOGD("dataStorage SetModuleNeedUpdate %{public}s failed", bundleName.c_str());
+    APP_LOGD("dataStorage SetModuleUpgradeFlag %{public}s failed", bundleName.c_str());
     return false;
 }
 
-bool BundleDataMgr::IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName) const
+int32_t BundleDataMgr::GetModuleUpgradeFlag(const std::string &bundleName, const std::string &moduleName) const
 {
     APP_LOGD("bundleName is bundleName:%{public}s, moduleName:%{public}s", bundleName.c_str(), moduleName.c_str());
     if (bundleName.empty() || moduleName.empty()) {
@@ -1789,8 +1789,7 @@ bool BundleDataMgr::IsModuleNeedUpdate(const std::string &bundleName, const std:
         return false;
     }
     InnerBundleInfo newInfo = infoItem->second;
-
-    return newInfo.IsModuleNeedUpdate(moduleName);
+    return newInfo.GetModuleUpgradeFlag(moduleName);
 }
 
 void BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)

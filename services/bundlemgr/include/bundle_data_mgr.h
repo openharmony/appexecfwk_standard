@@ -730,14 +730,8 @@ public:
 #endif
     bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
         std::vector<std::string> &dependentModuleNames);
-    bool SetModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName, bool isEnable);
-    /**
-     * @brief Get Module isNeedUpdate by bundleName and moduleName.
-     * @param bundleName Indicates the application bundle name to be queried.
-     * @param moduleName Indicates the moduleName.
-     * @return Returns true if the module isNeedUpdate is successfully obtained; returns false otherwise.
-     */
-    bool IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName) const;
+    bool SetModuleUpgradeFlag(const std::string &bundleName, const std::string &moduleName, int32_t upgradeFlag);
+    int32_t GetModuleUpgradeFlag(const std::string &bundleName, const std::string &moduleName) const;
     /**
      * @brief Get the Inner Bundle Info With Flags object
      * @param bundleName Indicates the application bundle name to be queried.

@@ -52,7 +52,7 @@ const std::string MODULE_LABEL = "label";
 const std::string MODULE_LABEL_ID = "labelId";
 const std::string MODULE_DESCRIPTION_INSTALLATION_FREE = "installationFree";
 const std::string MODULE_IS_REMOVABLE = "isRemovable";
-const std::string MODULE_IS_NEED_UPDATE = "isNeedUpdate";
+const std::string MODULE_UPGRADE_FLAG = "upgradeFlag";
 const std::string MODULE_IS_ENTRY = "isEntry";
 const std::string MODULE_METADATA = "metaData";
 const std::string MODULE_COLOR_MODE = "colorMode";
@@ -92,7 +92,7 @@ const std::string MODULE_EXTENSION_SKILL_KEYS = "extensionSkillKeys";
 const std::string MODULE_IS_MODULE_JSON = "isModuleJson";
 const std::string MODULE_IS_STAGE_BASED_MODEL = "isStageBasedModel";
 const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion";
-const std::string BUNDLE_IS_NEED_UPDATE = "isNeedUpdate_";
+const std::string BUNDLE_IS_NEED_UPDATE = "upgradeFlag";
 const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos";
 const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos";
 const std::string BUNDLE_PACK_INFO = "bundlePackInfo";
@@ -351,7 +351,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_LABEL_ID, info.labelId},
         {MODULE_DESCRIPTION_INSTALLATION_FREE, info.installationFree},
         {MODULE_IS_REMOVABLE, info.isRemovable},
-        {MODULE_IS_NEED_UPDATE, info.isNeedUpdate},
+        {MODULE_UPGRADE_FLAG, info.upgradeFlag},
         {MODULE_REQ_CAPABILITIES, info.reqCapabilities},
         {MODULE_ABILITY_KEYS, info.abilityKeys},
         {MODULE_SKILL_KEYS, info.skillKeys},
@@ -430,7 +430,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[INSTALL_MARK] = mark_;
     jsonObject[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
     jsonObject[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
-    jsonObject[BUNDLE_IS_NEED_UPDATE] = isNeedUpdate_;
+    jsonObject[BUNDLE_IS_NEED_UPDATE] = upgradeFlag_;
     jsonObject[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
     jsonObject[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
     jsonObject[BUNDLE_PACK_INFO] = bundlePackInfo_;
@@ -578,11 +578,11 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
+    GetValueIfFindKey<int32_t>(jsonObject,
         jsonObjectEnd,
-        MODULE_IS_NEED_UPDATE,
-        info.isNeedUpdate,
-        JsonType::BOOLEAN,
+        MODULE_UPGRADE_FLAG,
+        info.upgradeFlag,
+        JsonType::NUMBER,
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
@@ -1199,11 +1199,11 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
+    GetValueIfFindKey<int32_t>(jsonObject,
         jsonObjectEnd,
         BUNDLE_IS_NEED_UPDATE,
-        isNeedUpdate_,
-        JsonType::BOOLEAN,
+        upgradeFlag_,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -1289,7 +1289,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.reqCapabilities = it->second.reqCapabilities;
     hapInfo.colorMode = it->second.colorMode;
     hapInfo.isRemovable = it->second.isRemovable;
-    hapInfo.isNeedUpdate = it->second.isNeedUpdate;
+    hapInfo.upgradeFlag = it->second.upgradeFlag;
 
     hapInfo.bundleName = baseApplicationInfo_.bundleName;
     hapInfo.mainElementName = it->second.mainAbility;
@@ -2258,15 +2258,15 @@ void InnerBundleInfo::DeleteModuleRemovable(const std::string &moduleName, int32
     }
 }
 
-bool InnerBundleInfo::SetModuleNeedUpdate(std::string moduleName, bool isNeedUpdate)
+bool InnerBundleInfo::SetModuleUpgradeFlag(std::string moduleName, int32_t upgradeFlag)
 {
-    isNeedUpdate_ = isNeedUpdate;
+    upgradeFlag_ = upgradeFlag;
     return true;
 }
 
-bool InnerBundleInfo::IsModuleNeedUpdate(std::string moduleName) const
+int32_t InnerBundleInfo::GetModuleUpgradeFlag(std::string moduleName) const
 {
-    return isNeedUpdate_;
+    return upgradeFlag_;
 }
 
 int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
