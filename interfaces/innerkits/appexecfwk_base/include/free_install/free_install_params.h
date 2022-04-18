@@ -18,7 +18,6 @@
 
 #include <string>
 
-#include "event_handler.h"
 #include "iremote_object.h"
 #include "service_center_code.h"
 #include "want.h"
@@ -30,7 +29,6 @@ struct FreeInstallParams : public virtual RefBase {
     OHOS::AAFwk::Want want;
     int32_t userId;
     ServiceCenterFunction serviceCenterFunction;
-    std::shared_ptr<AppExecFwk::EventHandler> handler;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
