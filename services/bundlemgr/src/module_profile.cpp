@@ -149,10 +149,6 @@ struct Ability {
     bool continuable = false;
     std::vector<Skill> skills;
     std::vector<std::string> backgroundModes;
-    std::string startWindowIcon;
-    int32_t startWindowIconId = 0;
-    std::string startWindowBackground;
-    int32_t startWindowBackgroundId = 0;
 };
 
 struct Extension {
@@ -391,38 +387,6 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::STRING);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ABILITY_START_WINDOW_ICON,
-        ability.startWindowIcon,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        ABILITY_START_WINDOW_ICON_ID,
-        ability.startWindowIconId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ABILITY_START_WINDOW_BACKGROUND,
-        ability.startWindowBackground,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        ABILITY_START_WINDOW_BACKGROUND_ID,
-        ability.startWindowBackgroundId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, Extension &extension)
@@ -1354,10 +1318,6 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
             abilityInfo.deviceTypes.emplace_back(deviceType);
         }
     }
-    abilityInfo.startWindowIcon = ability.startWindowIcon;
-    abilityInfo.startWindowIconId = ability.startWindowIconId;
-    abilityInfo.startWindowBackground = ability.startWindowBackground;
-    abilityInfo.startWindowBackgroundId = ability.startWindowBackgroundId;
     return true;
 }
 
