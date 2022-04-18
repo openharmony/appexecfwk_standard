@@ -1499,11 +1499,17 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
 
 bool BundleDataMgr::SetModuleRemovable(const std::string &bundleName, const std::string &moduleName, bool isEnable)
 {
-    APP_LOGD("bundleName:%{public}s, moduleName:%{public}s", bundleName.c_str(), moduleName.c_str());
     if (bundleName.empty() || moduleName.empty()) {
         APP_LOGE("bundleName or moduleName is empty");
         return false;
     }
+    int32_t userId = AccountHelper::GetCurrentActiveUserId();
+    if (userId == Constants::INVALID_USERID) {
+        APP_LOGE("get a invalid userid");
+        return false;
+    }
+    APP_LOGD("bundleName:%{public}s, moduleName:%{public}s, userId:%{public}d",
+        bundleName.c_str(), moduleName.c_str(), userId);
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -1511,9 +1517,9 @@ bool BundleDataMgr::SetModuleRemovable(const std::string &bundleName, const std:
         return false;
     }
     InnerBundleInfo newInfo = infoItem->second;
-    bool ret = newInfo.SetModuleRemovable(moduleName, isEnable);
+    bool ret = newInfo.SetModuleRemovable(moduleName, isEnable, userId);
     if (ret && dataStorage_->SaveStorageBundleInfo(newInfo)) {
-        ret = infoItem->second.SetModuleRemovable(moduleName, isEnable);
+        ret = infoItem->second.SetModuleRemovable(moduleName, isEnable, userId);
 #ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
         if (isEnable) {
             // call clean task
@@ -1532,11 +1538,17 @@ bool BundleDataMgr::SetModuleRemovable(const std::string &bundleName, const std:
 
 bool BundleDataMgr::IsModuleRemovable(const std::string &bundleName, const std::string &moduleName) const
 {
-    APP_LOGD("bundleName is bundleName:%{public}s, moduleName:%{public}s", bundleName.c_str(), moduleName.c_str());
     if (bundleName.empty() || moduleName.empty()) {
         APP_LOGE("bundleName or moduleName is empty");
         return false;
     }
+    int32_t userId = AccountHelper::GetCurrentActiveUserId();
+    if (userId == Constants::INVALID_USERID) {
+        APP_LOGE("get a invalid userid");
+        return false;
+    }
+    APP_LOGD("bundleName:%{public}s, moduleName:%{public}s, userId:%{public}d",
+        bundleName.c_str(), moduleName.c_str(), userId);
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -1544,8 +1556,7 @@ bool BundleDataMgr::IsModuleRemovable(const std::string &bundleName, const std::
         return false;
     }
     InnerBundleInfo newInfo = infoItem->second;
-
-    return newInfo.isModuleRemovable(moduleName);
+    return newInfo.IsModuleRemovable(moduleName, userId);
 }
 
 
@@ -2847,7 +2858,7 @@ bool BundleDataMgr::GetRemovableBundleNameVec(std::map<std::string, int>& bundle
         if (!it.second.HasInnerBundleUserInfo(userId)) {
             continue;
         }
-        if (it.second.IsBundleRemovable()) {
+        if (it.second.IsBundleRemovable(userId)) {
             bundlenameAndUids.emplace(it.first, it.second.GetUid(it.second.GetUserId()));
         }
     }

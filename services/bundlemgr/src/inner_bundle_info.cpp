@@ -570,11 +570,11 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
+    GetValueIfFindKey<std::map<std::string, bool>>(jsonObject,
         jsonObjectEnd,
         MODULE_IS_REMOVABLE,
         info.isRemovable,
-        JsonType::BOOLEAN,
+        JsonType::OBJECT,
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
@@ -1931,7 +1931,13 @@ void InnerBundleInfo::RemoveInnerBundleUserInfo(int32_t userId)
         return;
     }
 
-    innerBundleUserInfos_.erase(key);
+    auto result = innerBundleUserInfos_.erase(key);
+    if (result == 0) {
+        APP_LOGE("remove userId:%{public}d key:%{public}s info failed", userId, key.c_str());
+    }
+    for (auto &innerModuleInfo : innerModuleInfos_) {
+        DeleteModuleRemovable(innerModuleInfo.second.moduleName, userId);
+    }
 }
 
 void InnerBundleInfo::AddInnerBundleUserInfo(
@@ -2137,41 +2143,119 @@ void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)
     infoItem->second.bundleUserInfo.enabled = enabled;
 }
 
-bool InnerBundleInfo::IsBundleRemovable() const
+bool InnerBundleInfo::IsBundleRemovable(int32_t userId) const
 {
+    APP_LOGD("userId is %{public}d", userId);
     if (IsPreInstallApp()) {
         APP_LOGE("PreInstallApp should not be cleaned");
         return false;
     }
     for (const auto &innerModuleInfo : innerModuleInfos_) {
-        if (!innerModuleInfo.second.isRemovable) {
+        if (!IsModuleRemovable(innerModuleInfo.second.moduleName, userId)) {
+            APP_LOGE("not all haps should be cleaned");
             return false;
         }
     }
+    APP_LOGD("this bundle should be cleaned");
     return true;
 }
 
-bool InnerBundleInfo::isModuleRemovable(const std::string &moduleName) const
+bool InnerBundleInfo::IsUserExistModule(const std::string &moduleName, int32_t userId) const
 {
+    std::string stringUserId = "";
+    stringUserId.append(std::to_string(userId));
+    APP_LOGD("userId:%{public}d moduleName:%{public}s", userId, moduleName.c_str());
     auto modInfoItem = GetInnerModuleInfoByModuleName(moduleName);
     if (!modInfoItem) {
         APP_LOGE("get InnerModuleInfo by moduleName(%{public}s) failed", moduleName.c_str());
         return false;
     }
-    APP_LOGD("isRemovable = %{public}d, moduleName= %{public}s", modInfoItem->isRemovable, moduleName.c_str());
-    return modInfoItem->isRemovable;
+    auto item = modInfoItem->isRemovable.find(stringUserId);
+    if (item == modInfoItem->isRemovable.end()) {
+        APP_LOGE("userId:%{public}d has not moduleName:%{public}s", userId, moduleName.c_str());
+        return false;
+    }
+    APP_LOGD("userId:%{public}d exist moduleName:%{public}s", userId, moduleName.c_str());
+    return true;
 }
 
-bool InnerBundleInfo::SetModuleRemovable(const std::string &moduleName, bool isEnable)
+bool InnerBundleInfo::IsModuleRemovable(const std::string &moduleName, int32_t userId) const
 {
-    for (auto &innerModuleInfo : innerModuleInfos_) {
-        if (innerModuleInfo.second.moduleName == moduleName) {
-            innerModuleInfo.second.isRemovable = isEnable;
-            APP_LOGD("moduleName = %{public}s, isEnable = %{public}d", moduleName.c_str(), isEnable);
+    std::string stringUserId = "";
+    stringUserId.append(std::to_string(userId));
+    APP_LOGD("userId:%{public}d moduleName:%{public}s", userId, moduleName.c_str());
+    auto modInfoItem = GetInnerModuleInfoByModuleName(moduleName);
+    if (!modInfoItem) {
+        APP_LOGE("get InnerModuleInfo by moduleName(%{public}s) failed", moduleName.c_str());
+        return false;
+    }
+    auto item = modInfoItem->isRemovable.find(stringUserId);
+    if (item == modInfoItem->isRemovable.end()) {
+        APP_LOGE("userId:%{public}d has not moduleName:%{public}s", userId, moduleName.c_str());
+        return false;
+    }
+    bool ret = item->second;
+    APP_LOGD("userId:%{public}d, moduleName:%{public}s, ret:%{public}d,", userId, moduleName.c_str(), ret);
+    return ret;
+}
+
+bool InnerBundleInfo::AddModuleRemovableInfo(
+    InnerModuleInfo &info, const std::string &stringUserId, bool isEnable) const
+{
+    auto item = info.isRemovable.find(stringUserId);
+    if (item == info.isRemovable.end()) {
+        auto result = info.isRemovable.try_emplace(stringUserId, isEnable);
+        if (!result.second) {
+            APP_LOGE("add userId:%{public}s isRemovable:%{public}d failed", stringUserId.c_str(), isEnable);
+            return false;
+        } else {
+            APP_LOGD("add userId:%{public}s isRemovable:%{public}d into map", stringUserId.c_str(), isEnable);
             return true;
         }
     }
+    item->second = isEnable;
+    APP_LOGD("set userId:%{public}s isEnable:%{public}d ok", stringUserId.c_str(), isEnable);
+    return true;
+}
+
+bool InnerBundleInfo::SetModuleRemovable(const std::string &moduleName, bool isEnable, int32_t userId)
+{
+    std::string stringUserId = "";
+    stringUserId.append(std::to_string(userId));
+    APP_LOGD("userId:%{public}d moduleName:%{public}s isEnable:%{public}d", userId, moduleName.c_str(), isEnable);
+    for (auto &innerModuleInfo : innerModuleInfos_) {
+        if (innerModuleInfo.second.moduleName == moduleName) {
+            return AddModuleRemovableInfo(innerModuleInfo.second, stringUserId, isEnable);
+        }
+    }
     return false;
+}
+
+void InnerBundleInfo::DeleteModuleRemovableInfo(InnerModuleInfo &info, const std::string &stringUserId)
+{
+    auto item = info.isRemovable.find(stringUserId);
+    if (item != info.isRemovable.end()) {
+        auto result = info.isRemovable.erase(stringUserId);
+        if (result == 0) {
+            APP_LOGE("del userId:%{public}s from map failed", stringUserId.c_str());
+            return;
+        }
+        APP_LOGD("del userId:%{public}s from map", stringUserId.c_str());
+        return;
+    }
+}
+
+void InnerBundleInfo::DeleteModuleRemovable(const std::string &moduleName, int32_t userId)
+{
+    std::string stringUserId = "";
+    stringUserId.append(std::to_string(userId));
+    APP_LOGD("userId:%{public}d moduleName:%{public}s", userId, moduleName.c_str());
+    for (auto &innerModuleInfo : innerModuleInfos_) {
+        if (innerModuleInfo.second.moduleName == moduleName) {
+            DeleteModuleRemovableInfo(innerModuleInfo.second, stringUserId);
+            return;
+        }
+    }
 }
 
 bool InnerBundleInfo::SetModuleNeedUpdate(std::string moduleName, bool isNeedUpdate)
