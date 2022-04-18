@@ -690,22 +690,22 @@ public:
     virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
         std::vector<std::string> &dependentModuleNames) override;
     /**
-     * @brief Obtains the value of isNeedUpdate based on a given bundle name and module name.
+     * @brief Obtains the value of upgradeFlag based on a given bundle name and module name.
      * @param bundleName Indicates the bundle name to be queried.
      * @param moduleName Indicates the module name to be queried.
-     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     * @return Returns true if the upgradeFlag is successfully obtained; returns false otherwise.
      */
-    virtual bool IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName) override;
+    virtual bool GetModuleUpgradeFlag(const std::string &bundleName, const std::string &moduleName) override;
     /**
-     * @brief Sets whether to enable isNeedUpdate based on a given bundle name and module name.
+     * @brief Sets whether to enable upgradeFlag based on a given bundle name and module name.
      * @param bundleName Indicates the bundle name to be queried.
      * @param moduleName Indicates the module name to be queried.
-     * @param isEnable Specifies whether to enable the isNeedUpdate of InnerModuleInfo.
+     * @param isEnable Specifies whether to enable the upgradeFlag of InnerModuleInfo.
      *                 The value true means to enable it, and the value false means to disable it
-     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     * @return Returns true if the UpgradeFlag is successfully obtained; returns false otherwise.
      */
-    virtual bool SetModuleNeedUpdate(
-        const std::string &bundleName, const std::string &moduleName, bool isEnable) override;
+    virtual bool SetModuleUpgradeFlag(
+        const std::string &bundleName, const std::string &moduleName, int32_t upgradeFlag) override;
     virtual bool GetSandboxAppBundleInfo(
         const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info) override;
 

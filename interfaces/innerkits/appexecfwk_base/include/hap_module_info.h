@@ -73,7 +73,7 @@ struct HapModuleInfo : public Parcelable {
     ModuleType moduleType = ModuleType::UNKNOWN;
     std::vector<ExtensionAbilityInfo> extensionInfos;
     std::vector<Metadata> metadata;
-    bool isNeedUpdate = false;
+    int32_t upgradeFlag = 0;
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static HapModuleInfo *Unmarshalling(Parcel &parcel);
