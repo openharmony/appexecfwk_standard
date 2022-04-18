@@ -77,6 +77,10 @@ const std::string JSON_KEY_ICON_ID = "iconId";
 const std::string JSON_KEY_FORM_ENABLED = "formEnabled";
 const std::string JSON_KEY_SRC_PATH = "srcPath";
 const std::string JSON_KEY_SRC_LANGUAGE = "srcLanguage";
+const std::string JSON_KEY_START_WINDOW_ICON = "startWindowIcon";
+const std::string JSON_KEY_START_WINDOW_ICON_ID = "startWindowIconId";
+const std::string JSON_KEY_START_WINDOW_BACKGROUND = "startWindowBackground";
+const std::string JSON_KEY_START_WINDOW_BACKGROUND_ID = "startWindowBackgroundId";
 const std::string META_DATA = "metadata";
 const std::string META_DATA_NAME = "name";
 const std::string META_DATA_VALUE = "value";
@@ -250,7 +254,11 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {IS_MODULE_JSON, abilityInfo.isModuleJson},
         {IS_STAGE_BASED_MODEL, abilityInfo.isStageBasedModel},
         {CONTINUABLE, abilityInfo.continuable},
-        {PRIORITY, abilityInfo.priority}
+        {PRIORITY, abilityInfo.priority},
+        {JSON_KEY_START_WINDOW_ICON, abilityInfo.startWindowIcon},
+        {JSON_KEY_START_WINDOW_ICON_ID, abilityInfo.startWindowIconId},
+        {JSON_KEY_START_WINDOW_BACKGROUND, abilityInfo.startWindowBackground},
+        {JSON_KEY_START_WINDOW_BACKGROUND_ID, abilityInfo.startWindowBackgroundId}
     };
 }
 
@@ -732,6 +740,38 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         jsonObjectEnd,
         PRIORITY,
         abilityInfo.priority,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_START_WINDOW_ICON,
+        abilityInfo.startWindowIcon,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_START_WINDOW_ICON_ID,
+        abilityInfo.startWindowIconId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_START_WINDOW_BACKGROUND,
+        abilityInfo.startWindowBackground,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_START_WINDOW_BACKGROUND_ID,
+        abilityInfo.startWindowBackgroundId,
         JsonType::NUMBER,
         false,
         parseResult,

@@ -265,6 +265,10 @@ struct Ability {
     bool supportPipMode = false;
     bool formsEnabled = false;
     std::vector<Forms> formses;
+    std::string startWindowIcon;
+    int32_t startWindowIconId = 0;
+    std::string startWindowBackground;
+    int32_t startWindowBackgroundId = 0;
 };
 
 struct Js {
@@ -1410,6 +1414,38 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_ICON,
+        ability.startWindowIcon,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_ICON_ID,
+        ability.startWindowIconId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_BACKGROUND,
+        ability.startWindowBackground,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_BACKGROUND_ID,
+        ability.startWindowBackgroundId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, Js &js)
@@ -2188,6 +2224,10 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson, const ProfileRea
     abilityInfo.formEnabled = ability.formsEnabled;
     abilityInfo.backgroundModes = GetBackgroundModes(ability.backgroundModes);
     abilityInfo.isModuleJson = false;
+    abilityInfo.startWindowIcon = ability.startWindowIcon;
+    abilityInfo.startWindowIconId = ability.startWindowIconId;
+    abilityInfo.startWindowBackground = ability.startWindowBackground;
+    abilityInfo.startWindowBackgroundId = ability.startWindowBackgroundId;
     return true;
 }
 
