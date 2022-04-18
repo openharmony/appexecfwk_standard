@@ -968,25 +968,25 @@ public:
         return false;
     }
     /**
-     * @brief Obtains the value of isNeedUpdate based on a given bundle name and module name.
+     * @brief Obtains the value of upgradeFlag based on a given bundle name and module name.
      * @param bundleName Indicates the bundle name to be queried.
      * @param moduleName Indicates the module name to be queried.
      * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
      */
-    virtual bool IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName)
+    virtual bool GetModuleUpgradeFlag(const std::string &bundleName, const std::string &moduleName)
     {
         return false;
     }
     /**
-     * @brief Sets whether to enable isNeedUpdate based on a given bundle name and module name.
+     * @brief Sets whether to enable upgradeFlag based on a given bundle name and module name.
      * @param bundleName Indicates the bundle name to be queried.
      * @param moduleName Indicates the module name to be queried.
      * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
      *                 The value true means to enable it, and the value false means to disable it
      * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
      */
-    virtual bool SetModuleNeedUpdate(
-        const std::string &bundleName, const std::string &moduleName, bool isEnable)
+    virtual bool SetModuleUpgradeFlag(
+        const std::string &bundleName, const std::string &moduleName, int32_t upgradeFlag)
     {
         return false;
     }

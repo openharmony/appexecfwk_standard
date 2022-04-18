@@ -93,7 +93,7 @@ struct InnerModuleInfo {
     std::vector<std::string> extensionKeys;
     std::vector<std::string> extensionSkillKeys;
     std::vector<Metadata> metadata;
-    bool isNeedUpdate = false;
+    int32_t upgradeFlag = 0;
     std::vector<std::string> dependencies;
 };
 
@@ -1135,17 +1135,18 @@ public:
     /**
      * @brief Set the Application Need Recover object
      * @param moduleName Indicates the module name of the application.
-     * @param isNeedUpdate Indicates the module is need update or not.
+     * @param upgradeFlag Indicates the module is need update or not.
      * @return Return true if set data successfully.
      */
-    bool SetModuleNeedUpdate(std::string moduleName, bool isNeedUpdate);
+    bool SetModuleUpgradeFlag(std::string moduleName, int32_t upgradeFlag);
 
     /**
      * @brief Get the Application Need Recover object
      * @param moduleName Indicates the module name of the application.
-     * @return Returns true if the isNeedUpdate is successfully obtained; returns false otherwise.
+     * @return upgradeFlag type,NOT_UPGRADE means not need to be upgraded,SINGLE_UPGRADE means
+     *         single module need to be upgraded,RELATION_UPGRADE means relation module need to be upgraded.
      */
-    bool IsModuleNeedUpdate(std::string moduleName) const;
+    int32_t GetModuleUpgradeFlag(std::string moduleName) const;
 
     /**
      * @brief Obtains configuration information about an application.
@@ -1529,7 +1530,7 @@ private:
     BundlePackInfo bundlePackInfo_;
     // new version fields
     bool isNewVersion_ = false;
-    bool isNeedUpdate_ = false;
+    int32_t upgradeFlag_ = 0;
     std::map<std::string, ExtensionAbilityInfo> baseExtensionInfos_;
     std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
 };
