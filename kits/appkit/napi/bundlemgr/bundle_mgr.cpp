@@ -1713,13 +1713,13 @@ static bool HasModuleName(napi_env env, size_t argc, napi_value *argv)
 napi_value GetAbilityInfo(napi_env env, napi_callback_info info)
 {
     APP_LOGD("NAPI_GetAbilityInfo called");
-    size_t requireArgc = ARGS_SIZE_THREE;
+    size_t requireArgc = ARGS_SIZE_TWO;
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = { 0 };
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    NAPI_ASSERT(env, argc >= requireArgc, "requires 3 parameter");
+    NAPI_ASSERT(env, argc >= requireArgc, "requires 2 parameter");
     AsyncAbilityInfosCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncAbilityInfosCallbackInfo(env);
     if (asyncCallbackInfo == nullptr) {
         APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
@@ -5527,14 +5527,14 @@ static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
 
 napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
 {
-    size_t requireArgc = ARGS_SIZE_THREE;
+    size_t requireArgc = ARGS_SIZE_TWO;
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = { 0 };
     napi_value thisArg = nullptr;
     void *data = nullptr;
 
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    NAPI_ASSERT(env, argc >= requireArgc, "requires 3 parameter");
+    NAPI_ASSERT(env, argc >= requireArgc, "requires 2 parameter");
 
     AsyncAbilityInfo *asyncCallbackInfo = new (std::nothrow) AsyncAbilityInfo(env);
     if (asyncCallbackInfo == nullptr) {
