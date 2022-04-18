@@ -43,6 +43,10 @@ public:
     bool GetResConfigFile(const AbilityInfo &abilityInfo, const std::string &metadataName,
         std::vector<std::string> &profileInfos) const;
     std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId);
+    bool InstallSandboxApp(const std::string &bundleName, int32_t userId);
+    bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId);
+    bool GetSandboxAppBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info);
+
 private:
     ErrCode Connect();
     bool GetResProfileByMetadata(const std::vector<Metadata> &metadata, const std::string &metadataName,
@@ -58,6 +62,7 @@ private:
 private:
     std::mutex mutex_;
     sptr<IBundleMgr> bundleMgr_;
+    sptr<IBundleInstaller> bundleInstaller_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

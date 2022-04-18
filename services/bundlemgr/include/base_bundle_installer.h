@@ -46,6 +46,7 @@ protected:
         INSTALL_PERMS_REQ = 25,
         INSTALL_VERSION_AND_BUNDLENAME_CHECKED = 30,
         INSTALL_CREATDIR = 40,
+        INSTALL_REMOVE_SANDBOX_APP = 50,
         INSTALL_EXTRACTED = 60,
         INSTALL_INFO_SAVED = 80,
         INSTALL_RENAMED = 90,
@@ -137,6 +138,7 @@ protected:
      * @brief Reset install properties.
      */
     void ResetInstallProperties();
+
 private:
     /**
      * @brief The real procedure for system and normal bundle install.
@@ -409,7 +411,7 @@ private:
      * @param installParam Indicates the installParam of the bundle.
      * @return Returns userId.
      */
-    int32_t GetUserId(const InstallParam& installParam) const;
+    int32_t GetUserId(const int32_t &userId) const;
     /**
      * @brief Remove bundle user data.
      * @param innerBundleInfo Indicates the innerBundleInfo of the bundle.
@@ -423,7 +425,9 @@ private:
      * @return Returns ERR_OK if result is ok; returns error code otherwise.
      */
     ErrCode CreateBundleUserData(InnerBundleInfo &innerBundleInfo);
+
     bool verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate = false) const;
+
     ErrCode CheckHapModleOrType(const InnerBundleInfo &innerBundleInfo,
         const std::unordered_map<std::string, InnerBundleInfo> &infos) const;
     void SetEntryInstallationFree(const BundlePackInfo &bundlePackInfo, InnerBundleInfo &innerBundleInfo);
@@ -440,6 +444,7 @@ private:
     ErrCode UpdateDefineAndRequestPermissions(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo);
     ErrCode SetDirApl(const InnerBundleInfo &info);
     void OnSingletonChange();
+    ErrCode UninstallAllSandboxApps(const std::string &bundleName);
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called

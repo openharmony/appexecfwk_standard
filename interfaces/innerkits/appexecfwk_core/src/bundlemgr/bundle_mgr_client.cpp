@@ -101,5 +101,33 @@ std::vector<std::string> BundleMgrClient::GetAccessibleAppCodePaths(int32_t user
     }
     return impl_->GetAccessibleAppCodePaths(userId);
 }
+
+bool BundleMgrClient::InstallSandboxApp(const std::string &bundleName, int32_t userId)
+{
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
+    return impl_->InstallSandboxApp(bundleName, userId);
+}
+
+bool BundleMgrClient::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+{
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
+    return impl_->UninstallSandboxApp(bundleName, appIndex, userId);
+}
+
+bool BundleMgrClient::GetSandboxAppBundleInfo(
+    const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
+{
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
+    return impl_->GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -924,7 +924,6 @@ public:
      * @param abilityName Indicates the ability name to be queried.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the abilityInfo is successfully obtained; returns false otherwise.
-
      */
     virtual bool GetAbilityInfo(
         const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
@@ -992,7 +991,20 @@ public:
         return false;
     }
 
-    enum class Message {
+    /**
+     * @brief Obtain sandbox application bundleInfo.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param appIndex Indicates application index of the sandbox application.
+     * @param userId Indicates the sandbox application is installed under which user id.
+     * @return Returns true if the get sandbox application budnelInfo successfully; returns false otherwise.
+     */
+    virtual bool GetSandboxAppBundleInfo(
+        const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
+    {
+        return false;
+    }
+
+    enum Message : uint32_t {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
         GET_BUNDLE_INFO,
@@ -1080,6 +1092,7 @@ public:
         GET_HAP_MODULE_INFO_WITH_USERID,
         IMPLICIT_QUERY_INFO_BY_PRIORITY,
         GET_ALL_DEPENDENT_MODULE_NAMES,
+        GET_SANDBOX_APP_BUNDLE_INFO,
     };
 };
 }  // namespace AppExecFwk

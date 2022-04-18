@@ -1419,6 +1419,32 @@ public:
     {
         return bundlePackInfo_;
     }
+
+    void SetAppIndex(int32_t appIndex)
+    {
+        appIndex_ = appIndex;
+    }
+
+    int32_t GetAppIndex() const
+    {
+        return appIndex_;
+    }
+
+    void SetIsSandbox(bool isSandbox)
+    {
+        isSandboxApp_ = isSandbox;
+    }
+
+    bool GetIsSandbox() const
+    {
+        return isSandboxApp_;
+    }
+
+    void CleanInnerBundleUserInfos()
+    {
+        innerBundleUserInfos_.clear();
+    }
+
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
@@ -1444,6 +1470,8 @@ private:
     bool hasEntry_ = false;
     std::vector<std::string> allowedAcls_;
     InstallMark mark_;
+    int32_t appIndex_ = Constants::INITIAL_APP_INDEX;
+    bool isSandboxApp_ = false;
 
     // only using for install or update progress, doesn't need to save to database
     std::string currentPackage_;

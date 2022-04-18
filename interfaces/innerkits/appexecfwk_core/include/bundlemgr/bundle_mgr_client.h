@@ -71,6 +71,25 @@ public:
         std::vector<std::string> &profileInfos) const;
 
     std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId);
+
+    /**
+     * @brief Install sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param userId Indicates the sandbox application will be installed under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    bool InstallSandboxApp(const std::string &bundleName, int32_t userId);
+
+    /**
+     * @brief Uninstall sandbox application.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param appIndex Indicates application index of the sandbox application.
+     * @param userId Indicates the sandbox application will be uninstall under which user id.
+     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     */
+    bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId);
+
+    bool GetSandboxAppBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info);
 private:
     std::shared_ptr<BundleMgrClientImpl> impl_;
 };

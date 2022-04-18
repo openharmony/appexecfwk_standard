@@ -685,7 +685,6 @@ bool BundleMgrHostImpl::UnregisterBundleStatusCallback()
 bool BundleMgrHostImpl::DumpInfos(
     const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
 {
-    APP_LOGD("dump infos begin");
     bool ret = false;
     switch (flag) {
         case DumpFlag::DUMP_BUNDLE_LIST: {
@@ -713,6 +712,7 @@ bool BundleMgrHostImpl::DumpInfos(
 
 bool BundleMgrHostImpl::DumpAllBundleInfoNames(int32_t userId, std::string &result)
 {
+    APP_LOGD("DumpAllBundleInfoNames begin");
     if (userId != Constants::ALL_USERID) {
         return DumpAllBundleInfoNamesByUserId(userId, result);
     }
@@ -722,12 +722,13 @@ bool BundleMgrHostImpl::DumpAllBundleInfoNames(int32_t userId, std::string &resu
         DumpAllBundleInfoNamesByUserId(userId, result);
     }
 
-    APP_LOGI("get installed bundles success");
+    APP_LOGD("DumpAllBundleInfoNames success");
     return true;
 }
 
 bool BundleMgrHostImpl::DumpAllBundleInfoNamesByUserId(int32_t userId, std::string &result)
 {
+    APP_LOGI("DumpAllBundleInfoNamesByUserId begin");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -748,11 +749,13 @@ bool BundleMgrHostImpl::DumpAllBundleInfoNamesByUserId(int32_t userId, std::stri
         result.append(name);
         result.append("\n");
     }
+    APP_LOGI("DumpAllBundleInfoNamesByUserId successfully");
     return true;
 }
 
 bool BundleMgrHostImpl::DumpAllBundleInfos(int32_t userId, std::string &result)
 {
+    APP_LOGD("DumpAllBundleInfos begin");
     std::vector<BundleInfo> bundleInfos;
     if (!GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO,
         bundleInfos, userId)) {
@@ -783,14 +786,14 @@ bool BundleMgrHostImpl::DumpAllBundleInfos(int32_t userId, std::string &result)
         result.append(jsonObject.dump(Constants::DUMP_INDENT));
         result.append("\n");
     }
-    APP_LOGI("get all bundle info success");
+    APP_LOGD("DumpAllBundleInfos successfully");
     return true;
 }
 
 bool BundleMgrHostImpl::DumpBundleInfo(
     const std::string &bundleName, int32_t userId, std::string &result)
 {
-    APP_LOGD("dump bundle info begin");
+    APP_LOGD("DumpBundleInfo begin");
     std::vector<InnerBundleUserInfo> innerBundleUserInfos;
     if (userId == Constants::ALL_USERID) {
         if (!GetBundleUserInfos(bundleName, innerBundleUserInfos)) {
@@ -821,13 +824,14 @@ bool BundleMgrHostImpl::DumpBundleInfo(
     jsonObject["userInfo"] = innerBundleUserInfos;
     result.append(jsonObject.dump(Constants::DUMP_INDENT));
     result.append("\n");
-    APP_LOGI("get %{public}s bundle info success", bundleName.c_str());
+    APP_LOGI("DumpBundleInfo success with bundleName %{public}s", bundleName.c_str());
     return true;
 }
 
 bool BundleMgrHostImpl::DumpShortcutInfo(
     const std::string &bundleName, int32_t userId, std::string &result)
 {
+    APP_LOGD("DumpShortcutInfo begin");
     std::vector<ShortcutInfo> shortcutInfos;
     if (userId == Constants::ALL_USERID) {
         std::vector<InnerBundleUserInfo> innerBundleUserInfos;
@@ -852,7 +856,7 @@ bool BundleMgrHostImpl::DumpShortcutInfo(
         result.append(jsonObject.dump(Constants::DUMP_INDENT));
         result.append("\n");
     }
-    APP_LOGI("get %{public}s shortcut info success", bundleName.c_str());
+    APP_LOGD("DumpShortcutInfo success with bundleName %{public}s", bundleName.c_str());
     return true;
 }
 
@@ -909,7 +913,7 @@ bool BundleMgrHostImpl::SetModuleNeedUpdate(const std::string &bundleName, const
 
 bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
-    APP_LOGD("start SetApplicationEnabled");
+    APP_LOGD("SetApplicationEnabled begin");
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -938,6 +942,7 @@ bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, boo
                                 ERR_OK,
                                 NotifyType::APPLICATION_ENABLE,
                                 innerBundleUserInfo.uid);
+    APP_LOGD("SetApplicationEnabled finish");
     return true;
 }
 
@@ -1338,16 +1343,13 @@ bool BundleMgrHostImpl::VerifyQueryPermission(const std::string &queryBundleName
         APP_LOGD("query own info, verify success");
         return true;
     }
-    if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO)) {
-        APP_LOGD("verify PERMISSION_GET_BUNDLE_INFO success");
-        return true;
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO) &&
+        !BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
+        APP_LOGE("verify query permission failed");
+        return false;
     }
-    if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
-        APP_LOGD("verify GET_BUNDLE_INFO_PRIVILEGED success");
-        return true;
-    }
-    APP_LOGE("verify query permission failed");
-    return false;
+    APP_LOGD("verify query permission successfully");
+    return true;
 }
 
 std::string BundleMgrHostImpl::GetAppPrivilegeLevel(const std::string &bundleName, int32_t userId)
@@ -1519,6 +1521,24 @@ bool BundleMgrHostImpl::GetAllDependentModuleNames(const std::string &bundleName
         return false;
     }
     return dataMgr->GetAllDependentModuleNames(bundleName, moduleName, dependentModuleNames);
+}
+
+bool BundleMgrHostImpl::GetSandboxAppBundleInfo(
+    const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
+{
+    APP_LOGD("start GetSandboxAppBundleInfo, bundleName : %{public}s, appindex : %{public}d, userId : %{public}d",
+        bundleName.c_str(), appIndex, userId);
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    auto sandboxDataMgr = dataMgr->GetSandboxDataMgr();
+    if (sandboxDataMgr == nullptr) {
+        APP_LOGE("sandDataMgr is nullptr");
+        return false;
+    }
+    return sandboxDataMgr->GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

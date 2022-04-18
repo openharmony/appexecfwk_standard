@@ -39,6 +39,9 @@ bundle_install_sources = [
   "${services_path}/bundlemgr/src/ipc/installd_host.cpp",
   "${services_path}/bundlemgr/src/ipc/installd_proxy.cpp",
   "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
+  "${services_path}/bundlemgr/src/sandbox_app/bundle_sandbox_data_mgr.cpp",
+  "${services_path}/bundlemgr/src/sandbox_app/bundle_sandbox_exception_handler.cpp",
+  "${services_path}/bundlemgr/src/sandbox_app/bundle_sandbox_installer.cpp",
   "${services_path}/bundlemgr/src/system_bundle_installer.cpp",
   "${services_path}/bundlemgr/src/xcollie_helper.cpp",
 ]

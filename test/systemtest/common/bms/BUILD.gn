@@ -81,6 +81,7 @@ group("systemtest_bms") {
     "bms_compatible_system_test:systemtest",
     "bms_install_system_test:systemtest",
     "bms_launcher_service_system_test:systemtest",
+    "bms_sandbox_app_system_test:systemtest",
     "bms_search_system_test:systemtest",
     "bms_uninstall_system_test:systemtest",
   ]
