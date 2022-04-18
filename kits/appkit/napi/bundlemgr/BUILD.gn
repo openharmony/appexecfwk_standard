@@ -49,7 +49,7 @@ ohos_shared_library("bundle") {
   ]
 
   if (bundle_framework_graphics) {
-    defines += [ "SUPPORT_GRAPHICS" ]
+    defines += [ "BUNDLE_FRAMEWORK_GRAPHICS" ]
 
     external_deps += [
       "multimedia_image_standard:image",

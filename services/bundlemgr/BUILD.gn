@@ -223,7 +223,7 @@ ohos_shared_library("libbms") {
 
   if (bundle_framework_graphics) {
     external_deps += [ "multimedia_image_standard:image_native" ]
-    defines += [ "SUPPORT_GRAPHICS" ]
+    defines += [ "BUNDLE_FRAMEWORK_GRAPHICS" ]
   }
 
   if (device_manager_enable) {

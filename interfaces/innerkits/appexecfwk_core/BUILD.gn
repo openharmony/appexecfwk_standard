@@ -19,10 +19,12 @@ config("bundlemgr_sdk_config") {
 }
 
 config("appexecfwk_core_config") {
-  include_dirs = [
-    "include",
-    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
-  ]
+  include_dirs = [ "include" ]
+  if (bundle_framework_graphics) {
+    include_dirs += [
+      "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    ]
+  }
 }
 
 ohos_shared_library("appexecfwk_core") {
@@ -77,7 +79,7 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   if (bundle_framework_graphics) {
-    defines += [ "SUPPORT_GRAPHICS" ]
+    defines += [ "BUNDLE_FRAMEWORK_GRAPHICS" ]
     external_deps += [ "multimedia_image_standard:image_native" ]
   }
 
