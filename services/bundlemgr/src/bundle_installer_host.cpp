@@ -22,6 +22,7 @@
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "bundle_permission_mgr.h"
+#include "bundle_sandbox_installer.h"
 #include "bundle_util.h"
 
 namespace OHOS {
@@ -29,6 +30,7 @@ namespace AppExecFwk {
 namespace {
 const std::string INSTALL_THREAD = "install_thread";
 const std::string GET_MANAGER_FAIL = "fail to get bundle installer manager";
+int32_t INVALID_APP_INDEX = 0;
 }  // namespace
 
 BundleInstallerHost::BundleInstallerHost()
@@ -66,20 +68,26 @@ int BundleInstallerHost::OnRemoteRequest(
     }
 
     switch (code) {
-        case static_cast<uint32_t>(IBundleInstaller::Message::INSTALL):
+        case IBundleInstaller::Message::INSTALL:
             HandleInstallMessage(data);
             break;
-        case static_cast<uint32_t>(IBundleInstaller::Message::INSTALL_MULTIPLE_HAPS):
+        case IBundleInstaller::Message::INSTALL_MULTIPLE_HAPS:
             HandleInstallMultipleHapsMessage(data);
             break;
-        case static_cast<uint32_t>(IBundleInstaller::Message::UNINSTALL):
+        case IBundleInstaller::Message::UNINSTALL:
             HandleUninstallMessage(data);
             break;
-        case static_cast<uint32_t>(IBundleInstaller::Message::UNINSTALL_MODULE):
+        case IBundleInstaller::Message::UNINSTALL_MODULE:
             HandleUninstallModuleMessage(data);
             break;
-        case static_cast<uint32_t>(IBundleInstaller::Message::RECOVER):
+        case IBundleInstaller::Message::RECOVER:
             HandleRecoverMessage(data);
+            break;
+        case IBundleInstaller::Message::INSTALL_SANDBOX_APP:
+            HandleInstallSandboxApp(data, reply);
+            break;
+        case IBundleInstaller::Message::UNINSTALL_SANDBOX_APP:
+            HandleUninstallSandboxApp(data, reply);
             break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -200,6 +208,51 @@ void BundleInstallerHost::HandleUninstallModuleMessage(Parcel &data)
     APP_LOGD("handle uninstall message finished");
 }
 
+void BundleInstallerHost::HandleInstallSandboxApp(Parcel &data, Parcel &reply)
+{
+    APP_LOGD("handle install sandbox app message");
+    std::string bundleName = Str16ToStr8(data.ReadString16());
+    int32_t userId = data.ReadInt32();
+    if (bundleName.empty()) {
+        APP_LOGE("handle install sandbox failed due to empty bundleName");
+        if (!reply.WriteBool(false)) {
+            APP_LOGE("write failed");
+        }
+        return;
+    }
+    auto ret = InstallSandboxApp(bundleName, userId);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+    }
+    APP_LOGD("handle install sandbox app message finished");
+}
+
+void BundleInstallerHost::HandleUninstallSandboxApp(Parcel &data, Parcel &reply)
+{
+    APP_LOGD("handle install sandbox app message");
+    std::string bundleName = Str16ToStr8(data.ReadString16());
+    int32_t appIndex = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+    // check bundle name
+    if (bundleName.empty()) {
+        APP_LOGE("handle install sandbox failed due to empty bundleName");
+        if (!reply.WriteBool(false)) {
+            APP_LOGE("write failed");
+        }
+        return;
+    }
+    // check appIndex
+    if (appIndex <= INVALID_APP_INDEX) {
+        APP_LOGE("the appIndex %{public}d is invalid", appIndex);
+        return;
+    }
+    auto ret = UninstallSandboxApp(bundleName, appIndex, userId);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+    }
+    APP_LOGD("handle install sandbox app message finished");
+}
+
 bool BundleInstallerHost::Install(
     const std::string &bundleFilePath, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
@@ -299,6 +352,24 @@ bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
 
     manager_->CreateInstallByBundleNameTask(bundleName, CheckInstallParam(installParam), statusReceiver);
     return true;
+}
+
+bool BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t userId)
+{
+    std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
+    if (installer == nullptr) {
+        return false;
+    }
+    return (installer->InstallSandboxApp(bundleName, userId) == ERR_OK) ? true : false;
+}
+
+bool BundleInstallerHost::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+{
+    std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
+    if (installer == nullptr) {
+        return false;
+    }
+    return (installer->UninstallSandboxApp(bundleName, appIndex, userId) == ERR_OK) ? true : false;
 }
 
 bool BundleInstallerHost::CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const

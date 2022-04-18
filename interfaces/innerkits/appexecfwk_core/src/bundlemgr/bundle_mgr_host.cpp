@@ -65,266 +65,268 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
 
     ErrCode errCode = ERR_OK;
     switch (code) {
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFO):
+        case IBundleMgr::Message::GET_APPLICATION_INFO:
             errCode = HandleGetApplicationInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFO_WITH_INT_FLAGS):
+        case IBundleMgr::Message::GET_APPLICATION_INFO_WITH_INT_FLAGS:
             errCode = HandleGetApplicationInfoWithIntFlags(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFOS):
+        case IBundleMgr::Message::GET_APPLICATION_INFOS:
             errCode = HandleGetApplicationInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFOS_WITH_INT_FLAGS):
+        case IBundleMgr::Message::GET_APPLICATION_INFOS_WITH_INT_FLAGS:
             errCode = HandleGetApplicationInfosWithIntFlags(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFO):
+        case IBundleMgr::Message::GET_BUNDLE_INFO:
             errCode = HandleGetBundleInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS):
+        case IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS:
             errCode = HandleGetBundleInfoWithIntFlags(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFOS):
+        case IBundleMgr::Message::GET_BUNDLE_INFOS:
             errCode = HandleGetBundleInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS):
+        case IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS:
             errCode = HandleGetBundleInfosWithIntFlags(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_NAME_FOR_UID):
+        case IBundleMgr::Message::GET_BUNDLE_NAME_FOR_UID:
             errCode = HandleGetBundleNameForUid(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLES_FOR_UID):
+        case IBundleMgr::Message::GET_BUNDLES_FOR_UID:
             errCode = HandleGetBundlesForUid(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_NAME_FOR_UID):
+        case IBundleMgr::Message::GET_NAME_FOR_UID:
             errCode = HandleGetNameForUid(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_GIDS):
+        case IBundleMgr::Message::GET_BUNDLE_GIDS:
             errCode = HandleGetBundleGids(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_GIDS_BY_UID):
+        case IBundleMgr::Message::GET_BUNDLE_GIDS_BY_UID:
             errCode = HandleGetBundleGidsByUid(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFOS_BY_METADATA):
+        case IBundleMgr::Message::GET_BUNDLE_INFOS_BY_METADATA:
             errCode = HandleGetBundleInfosByMetaData(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO):
+        case IBundleMgr::Message::QUERY_ABILITY_INFO:
             errCode = HandleQueryAbilityInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_MUTI_PARAM):
+        case IBundleMgr::Message::QUERY_ABILITY_INFO_MUTI_PARAM:
             errCode = HandleQueryAbilityInfoMutiparam(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS):
+        case IBundleMgr::Message::QUERY_ABILITY_INFOS:
             errCode = HandleQueryAbilityInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_MUTI_PARAM):
+        case IBundleMgr::Message::QUERY_ABILITY_INFOS_MUTI_PARAM:
             errCode = HandleQueryAbilityInfosMutiparam(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE):
+        case IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE:
             errCode = HandleQueryAbilityInfosForClone(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ALL_ABILITY_INFOS):
+        case IBundleMgr::Message::QUERY_ALL_ABILITY_INFOS:
             errCode = HandleQueryAllAbilityInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI):
+        case IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI:
             errCode = HandleQueryAbilityInfoByUri(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_BY_URI):
+        case IBundleMgr::Message::QUERY_ABILITY_INFOS_BY_URI:
             errCode = HandleQueryAbilityInfosByUri(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI_FOR_USERID):
+        case IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI_FOR_USERID:
             errCode = HandleQueryAbilityInfoByUriForUserId(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_KEEPALIVE_BUNDLE_INFOS):
+        case IBundleMgr::Message::QUERY_KEEPALIVE_BUNDLE_INFOS:
             errCode = HandleQueryKeepAliveBundleInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_LABEL):
+        case IBundleMgr::Message::GET_ABILITY_LABEL:
             errCode = HandleGetAbilityLabel(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CHECK_IS_SYSTEM_APP_BY_UID):
+        case IBundleMgr::Message::CHECK_IS_SYSTEM_APP_BY_UID:
             errCode = HandleCheckIsSystemAppByUid(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO):
+        case IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO:
             errCode = HandleGetBundleArchiveInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS):
+        case IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS:
             errCode = HandleGetBundleArchiveInfoWithIntFlags(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_HAP_MODULE_INFO):
+        case IBundleMgr::Message::GET_HAP_MODULE_INFO:
             errCode = HandleGetHapModuleInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_LAUNCH_WANT_FOR_BUNDLE):
+        case IBundleMgr::Message::GET_LAUNCH_WANT_FOR_BUNDLE:
             errCode = HandleGetLaunchWantForBundle(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CHECK_PUBLICKEYS):
+        case IBundleMgr::Message::CHECK_PUBLICKEYS:
             errCode = HandleCheckPublicKeys(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CHECK_PERMISSION):
+        case IBundleMgr::Message::CHECK_PERMISSION:
             errCode = HandleCheckPermission(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CHECK_PERMISSION_BY_UID):
+        case IBundleMgr::Message::CHECK_PERMISSION_BY_UID:
             errCode = HandleCheckPermissionByUid(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_PERMISSION_DEF):
+        case IBundleMgr::Message::GET_PERMISSION_DEF:
             errCode = HandleGetPermissionDef(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_PERMISSION_GROUP_DEFS):
+        case IBundleMgr::Message::GET_ALL_PERMISSION_GROUP_DEFS:
             errCode = HandleGetAllPermissionGroupDefs(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPS_GRANTED_PERMISSIONS):
+        case IBundleMgr::Message::GET_APPS_GRANTED_PERMISSIONS:
             errCode = HandleGetAppsGrantedPermissions(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::HAS_SYSTEM_CAPABILITY):
+        case IBundleMgr::Message::HAS_SYSTEM_CAPABILITY:
             errCode = HandleHasSystemCapability(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_SYSTEM_AVAILABLE_CAPABILITIES):
+        case IBundleMgr::Message::GET_SYSTEM_AVAILABLE_CAPABILITIES:
             errCode = HandleGetSystemAvailableCapabilities(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::IS_SAFE_MODE):
+        case IBundleMgr::Message::IS_SAFE_MODE:
             errCode = HandleIsSafeMode(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CLEAN_BUNDLE_CACHE_FILES):
+        case IBundleMgr::Message::CLEAN_BUNDLE_CACHE_FILES:
             errCode = HandleCleanBundleCacheFiles(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CLEAN_BUNDLE_DATA_FILES):
+        case IBundleMgr::Message::CLEAN_BUNDLE_DATA_FILES:
             errCode = HandleCleanBundleDataFiles(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::REGISTER_BUNDLE_STATUS_CALLBACK):
+        case IBundleMgr::Message::REGISTER_BUNDLE_STATUS_CALLBACK:
             errCode = HandleRegisterBundleStatusCallback(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CLEAR_BUNDLE_STATUS_CALLBACK):
+        case IBundleMgr::Message::CLEAR_BUNDLE_STATUS_CALLBACK:
             errCode = HandleClearBundleStatusCallback(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::UNREGISTER_BUNDLE_STATUS_CALLBACK):
+        case IBundleMgr::Message::UNREGISTER_BUNDLE_STATUS_CALLBACK:
             errCode = HandleUnregisterBundleStatusCallback(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::IS_APPLICATION_ENABLED):
+        case IBundleMgr::Message::IS_APPLICATION_ENABLED:
             errCode = HandleIsApplicationEnabled(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::SET_APPLICATION_ENABLED):
+        case IBundleMgr::Message::SET_APPLICATION_ENABLED:
             errCode = HandleSetApplicationEnabled(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::IS_ABILITY_ENABLED):
+        case IBundleMgr::Message::IS_ABILITY_ENABLED:
             errCode = HandleIsAbilityEnabled(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::SET_ABILITY_ENABLED):
+        case IBundleMgr::Message::SET_ABILITY_ENABLED:
             errCode = HandleSetAbilityEnabled(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_INFO):
+        case IBundleMgr::Message::GET_ABILITY_INFO:
             errCode = HandleGetAbilityInfo(data, reply);
             break;
 #ifdef SUPPORT_GRAPHICS
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_ICON):
+        case IBundleMgr::Message::GET_ABILITY_ICON:
             errCode = HandleGetAbilityIcon(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON):
+        case IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON:
             errCode = HandleGetAbilityPixelMapIcon(data, reply);
             break;
 #endif
-        case static_cast<uint32_t>(IBundleMgr::Message::DUMP_INFOS):
+        case IBundleMgr::Message::DUMP_INFOS:
             errCode = HandleDumpInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INSTALLER):
+        case IBundleMgr::Message::GET_BUNDLE_INSTALLER:
             errCode = HandleGetBundleInstaller(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CAN_REQUEST_PERMISSION):
+        case IBundleMgr::Message::CAN_REQUEST_PERMISSION:
             errCode = HandleCanRequestPermission(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::REQUEST_PERMISSION_FROM_USER):
+        case IBundleMgr::Message::REQUEST_PERMISSION_FROM_USER:
             errCode = HandleRequestPermissionFromUser(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::REGISTER_ALL_PERMISSIONS_CHANGED):
+        case IBundleMgr::Message::REGISTER_ALL_PERMISSIONS_CHANGED:
             errCode = HandleRegisterAllPermissionsChanged(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::REGISTER_PERMISSIONS_CHANGED):
+        case IBundleMgr::Message::REGISTER_PERMISSIONS_CHANGED:
             errCode = HandleRegisterPermissionsChanged(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::UNREGISTER_PERMISSIONS_CHANGED):
+        case IBundleMgr::Message::UNREGISTER_PERMISSIONS_CHANGED:
             errCode = HandleUnregisterPermissionsChanged(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_FORMS_INFO):
+        case IBundleMgr::Message::GET_ALL_FORMS_INFO:
             errCode = HandleGetAllFormsInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_APP):
+        case IBundleMgr::Message::GET_FORMS_INFO_BY_APP:
             errCode = HandleGetFormsInfoByApp(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE):
+        case IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE:
             errCode = HandleGetFormsInfoByModule(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_SHORTCUT_INFO):
+        case IBundleMgr::Message::GET_SHORTCUT_INFO:
             errCode = HandleGetShortcutInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_COMMON_EVENT_INFO):
+        case IBundleMgr::Message::GET_ALL_COMMON_EVENT_INFO:
             errCode = HandleGetAllCommonEventInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::CHECK_BUNDLE_NAME_IN_ALLOWLIST):
+        case IBundleMgr::Message::CHECK_BUNDLE_NAME_IN_ALLOWLIST:
             errCode = HandleCheckBundleNameInAllowList(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::BUNDLE_CLONE):
+        case IBundleMgr::Message::BUNDLE_CLONE:
             errCode = HandleBundleClone(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::REMOVE_CLONED_BUNDLE):
+        case IBundleMgr::Message::REMOVE_CLONED_BUNDLE:
             errCode = HandleRemoveClonedBundle(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_USER_MGR):
+        case IBundleMgr::Message::GET_BUNDLE_USER_MGR:
             errCode = HandleGetBundleUserMgr(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_DISTRIBUTE_BUNDLE_INFO):
+        case IBundleMgr::Message::GET_DISTRIBUTE_BUNDLE_INFO:
             errCode = HandleGetDistributedBundleInfo(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_PRIVILEGE_LEVEL):
+        case IBundleMgr::Message::GET_APPLICATION_PRIVILEGE_LEVEL:
             errCode = HandleGetAppPrivilegeLevel(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_INFO_WITHOUT_TYPE):
+        case IBundleMgr::Message::QUERY_EXTENSION_INFO_WITHOUT_TYPE:
             errCode = HandleQueryExtAbilityInfosWithoutType(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_INFO):
+        case IBundleMgr::Message::QUERY_EXTENSION_INFO:
             errCode = HandleQueryExtAbilityInfos(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_INFO_BY_TYPE):
+        case IBundleMgr::Message::QUERY_EXTENSION_INFO_BY_TYPE:
             errCode = HandleQueryExtAbilityInfosByType(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::VERIFY_CALLING_PERMISSION):
+        case IBundleMgr::Message::VERIFY_CALLING_PERMISSION:
             errCode = HandleVerifyCallingPermission(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ACCESSIBLE_APP_CODE_PATH):
+        case IBundleMgr::Message::GET_ACCESSIBLE_APP_CODE_PATH:
             errCode = HandleGetAccessibleAppCodePaths(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_ABILITY_INFO_BY_URI):
+        case IBundleMgr::Message::QUERY_EXTENSION_ABILITY_INFO_BY_URI:
             errCode = HandleQueryExtensionAbilityInfoByUri(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPID_BY_BUNDLE_NAME):
+        case IBundleMgr::Message::GET_APPID_BY_BUNDLE_NAME:
             errCode = HandleGetAppIdByBundleName(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_APP_TYPE):
+        case IBundleMgr::Message::GET_APP_TYPE:
             errCode = HandleGetAppType(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME):
+        case IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME:
             errCode = HandleGetUidByBundleName(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::IS_MODULE_REMOVABLE):
+        case IBundleMgr::Message::IS_MODULE_REMOVABLE:
             errCode = HandleIsModuleRemovable(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::SET_MODULE_REMOVABLE):
+        case IBundleMgr::Message::SET_MODULE_REMOVABLE:
             errCode = HandleSetModuleRemovable(data, reply);
-        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK):
+        case IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK:
              errCode = HandleQueryAbilityInfoWithCallback(data, reply);
              break;
-        case static_cast<uint32_t>(IBundleMgr::Message::UPGRADE_ATOMIC_SERVICE):
+        case IBundleMgr::Message::UPGRADE_ATOMIC_SERVICE:
              errCode = HandleUpgradeAtomicService(data, reply);
              break;
-        case static_cast<uint32_t>(IBundleMgr::Message::IS_MODULE_NEED_UPDATE):
+        case IBundleMgr::Message::IS_MODULE_NEED_UPDATE:
             errCode = HandleIsModuleNeedUpdate(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::SET_MODULE_NEED_UPDATE):
+        case IBundleMgr::Message::SET_MODULE_NEED_UPDATE:
             errCode = HandleSetModuleNeedUpdate(data, reply);
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID):
+        case IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID:
             errCode = HandleGetHapModuleInfoWithUserId(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY):
+        case IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY:
             errCode = HandleImplicitQueryInfoByPriority(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_DEPENDENT_MODULE_NAMES):
+        case IBundleMgr::Message::GET_ALL_DEPENDENT_MODULE_NAMES:
             errCode = HandleGetAllDependentModuleNames(data, reply);
+        case IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO:
+            errCode = HandleGetSandboxAppBundleInfo(data, reply);
             break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -1938,6 +1940,24 @@ ErrCode BundleMgrHost::HandleGetAllDependentModuleNames(Parcel &data, Parcel &re
     }
     if (ret && !reply.WriteStringVector(dependentModuleNames)) {
         APP_LOGE("write dependentModuleNames failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetSandboxAppBundleInfo(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    int32_t appIndex = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+
+    BundleInfo info;
+    auto res = GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
+    if (!reply.WriteBool(res)) {
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (res &&  !reply.WriteParcelable(&info)) {
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return ERR_OK;

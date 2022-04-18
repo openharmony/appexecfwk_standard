@@ -661,6 +661,7 @@ public:
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) override;
 #endif
+
     /**
      * @brief Obtains the value of isRemovable based on a given bundle name and module name.
      * @param bundleName Indicates the bundle name to be queried.
@@ -705,6 +706,8 @@ public:
      */
     virtual bool SetModuleNeedUpdate(
         const std::string &bundleName, const std::string &moduleName, bool isEnable) override;
+    virtual bool GetSandboxAppBundleInfo(
+        const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info) override;
 
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();

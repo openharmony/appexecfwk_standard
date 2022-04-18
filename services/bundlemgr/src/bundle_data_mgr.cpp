@@ -46,6 +46,7 @@ BundleDataMgr::BundleDataMgr()
     dataStorage_ = std::make_shared<BundleDataStorageDatabase>();
     preInstallDataStorage_ = std::make_shared<PreInstallDataStorage>();
     distributedDataStorage_ = DistributedDataStorage::GetInstance();
+    sandboxDataMgr_ = std::make_shared<BundleSandboxDataMgr>();
     APP_LOGI("BundleDataMgr instance is created");
 }
 
@@ -334,13 +335,13 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
-        if (dataStorage_->DeleteStorageBundleInfo(oldInfo)) {
-            if (dataStorage_->SaveStorageBundleInfo(oldInfo)) {
-                APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
-                bundleInfos_.at(bundleName) = oldInfo;
-                return true;
-            }
+        if (!dataStorage_->SaveStorageBundleInfo(oldInfo)) {
+            APP_LOGE("update storage failed bundle:%{public}s", bundleName.c_str());
+            return false;
         }
+        APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
+        bundleInfos_.at(bundleName) = oldInfo;
+        return true;
     }
     return false;
 }
@@ -1647,6 +1648,10 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std
 }
 #endif
 
+std::shared_ptr<BundleSandboxDataMgr> BundleDataMgr::GetSandboxDataMgr() const
+{
+    return sandboxDataMgr_;
+}
 bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
     APP_LOGD("RegisterBundleStatusCallback %{public}s", bundleStatusCallback->GetBundleName().c_str());
@@ -2815,7 +2820,7 @@ std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceMan
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
-            APP_LOGE("DistributedBms::InitResourceManager, moduleResPath: %{private}s", moduleResPath.c_str());
+            APP_LOGD("DistributedBms::InitResourceManager, moduleResPath: %{private}s", moduleResPath.c_str());
             if (!resourceManager->AddResource(moduleResPath.c_str())) {
                 APP_LOGE("DistributedBms::InitResourceManager AddResource failed");
             }

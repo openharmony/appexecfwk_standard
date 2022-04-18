@@ -561,6 +561,7 @@ private:
     ErrCode HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply);
 #endif
     ErrCode HandleGetAbilityInfo(Parcel &data, Parcel &reply);
+
     /**
      * @brief Handles the HandleIsModuleNeedUpdate function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -593,6 +594,8 @@ private:
     ErrCode HandleImplicitQueryInfoByPriority(Parcel &data, Parcel &reply);
 
     ErrCode HandleGetAllDependentModuleNames(Parcel &data, Parcel &reply);
+
+    ErrCode HandleGetSandboxAppBundleInfo(Parcel &data, Parcel &reply);
 
 private:
     /**

@@ -230,6 +230,10 @@ const std::string DEFAULT_PRE_BUNDLE_PROFILE = "/system/etc/bundle";
 const std::string PREINSTALL_CONFIG = "/preinstall_config.json";
 const std::string PREINSTALL_UNINSTALL_CONFIG = "/pre_uninstall_config.json";
 const std::string PREINSTALL_ABILITY_CONFIG = "/preinstall_ability_config.json";
+
+// sandbox application
+const std::string SANDBOX_APP_INDEX = "sandbox_app_index";
+const int32_t INITIAL_APP_INDEX = 0;
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS

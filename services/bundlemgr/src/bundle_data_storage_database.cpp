@@ -19,6 +19,8 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_exception_handler.h"
+#include "bundle_sandbox_exception_handler.h"
+
 #include "kvstore_death_recipient_callback.h"
 
 using namespace OHOS::DistributedKv;
@@ -72,6 +74,8 @@ void BundleDataStorageDatabase::SaveEntries(
         bool isBundleValid = true;
         auto handler = std::make_shared<BundleExceptionHandler>(shared_from_this());
         handler->HandleInvalidBundle(innerBundleInfo, isBundleValid);
+        auto sandboxHandler = std::make_shared<BundleSandboxExceptionHandler>(shared_from_this());
+        sandboxHandler->RemoveSandboxAppDataDir(innerBundleInfo.GetBundleName());
         if (!isBundleValid) {
             continue;
         }

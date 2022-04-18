@@ -56,7 +56,7 @@ bool BundleInstallerProxy::Install(
         return false;
     }
 
-    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::INSTALL), data, reply, option);
+    return SendInstallRequest(IBundleInstaller::Message::INSTALL, data, reply, option);
 }
 
 bool BundleInstallerProxy::Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
@@ -84,7 +84,7 @@ bool BundleInstallerProxy::Install(const std::vector<std::string> &bundleFilePat
         return false;
     }
 
-    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::INSTALL_MULTIPLE_HAPS), data, reply,
+    return SendInstallRequest(IBundleInstaller::Message::INSTALL_MULTIPLE_HAPS, data, reply,
         option);
 }
 
@@ -108,7 +108,7 @@ bool BundleInstallerProxy::Recover(const std::string &bundleName,
         return false;
     }
 
-    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::RECOVER), data, reply,
+    return SendInstallRequest(IBundleInstaller::Message::RECOVER, data, reply,
         option);
 }
 
@@ -132,7 +132,7 @@ bool BundleInstallerProxy::Uninstall(
         return false;
     }
 
-    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL), data, reply, option);
+    return SendInstallRequest(IBundleInstaller::Message::UNINSTALL, data, reply, option);
 }
 
 bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::string &modulePackage,
@@ -156,10 +156,51 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
         return false;
     }
 
-    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL_MODULE), data, reply, option);
+    return SendInstallRequest(IBundleInstaller::Message::UNINSTALL_MODULE, data, reply, option);
 }
 
-bool BundleInstallerProxy::SendInstallRequest(const int32_t& code, MessageParcel& data, MessageParcel& reply,
+bool BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int32_t userId)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    PARCEL_WRITE(data, Int32, userId);
+
+    auto ret =
+        SendInstallRequest(IBundleInstaller::Message::INSTALL_SANDBOX_APP, data, reply, option);
+    if (!ret) {
+        APP_LOGE("install sandbox app failed due to send request fail");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleInstallerProxy::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    PARCEL_WRITE(data, Int32, appIndex);
+    PARCEL_WRITE(data, Int32, userId);
+
+    auto ret =
+        SendInstallRequest(IBundleInstaller::Message::UNINSTALL_SANDBOX_APP, data, reply, option);
+    if (!ret) {
+        APP_LOGE("uninstall sandbox app failed due to send request fail");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleInstallerProxy::SendInstallRequest(const uint32_t& code, MessageParcel& data, MessageParcel& reply,
     MessageOption& option)
 {
     sptr<IRemoteObject> remote = Remote();
