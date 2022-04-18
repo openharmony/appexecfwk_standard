@@ -803,6 +803,9 @@ static void ConvertRequestPermission(napi_env env, napi_value result, const Requ
         env, napi_create_string_utf8(env, requestPermission.reason.c_str(), NAPI_AUTO_LENGTH, &nReason));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "reason", nReason));
 
+    napi_value nReasonId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, requestPermission.reasonId, &nReasonId));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "reasonId", nReasonId));
 
     napi_value nUsedScene;
     NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nUsedScene));
