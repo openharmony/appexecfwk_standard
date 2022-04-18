@@ -380,15 +380,6 @@ public:
     bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled,
         int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
-     * @brief Obtains the icon of a specified ability through the proxy object.
-     * @param bundleName Indicates the bundle name.
-     * @param moduleName Indicates the module name.
-     * @param abilityName Indicates the ability name.
-     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
-     */
-    std::string GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
-        const std::string &abilityName) const;
-    /**
      * @brief Register the bundle status callback function.
      * @param bundleStatusCallback Indicates the callback object that using for notifing the bundle status.
      * @return Returns true if this function is successfully called; returns false otherwise.

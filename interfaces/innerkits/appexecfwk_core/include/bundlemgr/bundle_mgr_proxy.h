@@ -475,22 +475,6 @@ public:
     virtual bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled,
         int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
-     * @brief Obtains the icon of a specified ability through the proxy object.
-     * @param bundleName Indicates the bundle name.
-     * @param abilityName Indicates the ability class name.
-     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
-     */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &abilityName) override;
-    /**
-     * @brief Obtains the icon of a specified ability through the proxy object.
-     * @param bundleName Indicates the bundle name.
-     * @param moduleName Indicates the module name.
-     * @param abilityName Indicates the ability name.
-     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
-     */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &moduleName,
-        const std::string &abilityName) override;
-    /**
      * @brief Obtains the interface used to install and uninstall bundles through the proxy object.
      * @return Returns a pointer to IBundleInstaller class if exist; returns nullptr otherwise.
      */
