@@ -19,7 +19,10 @@ config("bundlemgr_sdk_config") {
 }
 
 config("appexecfwk_core_config") {
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+  ]
 }
 
 ohos_shared_library("appexecfwk_core") {
