@@ -1560,6 +1560,32 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_4600, Function | SmallTes
 }
 
 /**
+ * @tc.number: MultipleHapsInstall_4700
+ * @tc.name: test to install haps with different releaseType in the different input file path array
+ * @tc.desc: 1.the releaseType is differnet in the different input file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_4700, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(firstBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(PACKAGE_NAME_FIRST);
+
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_DIFFERENT_RELEASE_TYPE;
+    filePaths.clear();
+    filePaths.emplace_back(secondBundleFile);
+    installRes = InstallThirdPartyMultipleBundles(filePaths, false);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_RELEASETYPE_NOT_SAME);
+
+    ClearBundleInfo(BUNDLE_NAME);
+}
+
+/**
  * @tc.number: MultipleHapsUpdateData_0100
  * @tc.name: test to update hap.
  * @tc.desc: 1.to install an entry hap of a bundle.

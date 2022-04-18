@@ -18,7 +18,6 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_mgr_service.h"
-#include "ipc_skeleton.h"
 
 namespace OHOS {
 namespace AppExecFwk {

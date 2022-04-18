@@ -1929,6 +1929,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
 
     applicationInfo.apiCompatibleVersion = configJson.app.apiVersion.compatible;
     applicationInfo.apiTargetVersion = configJson.app.apiVersion.target;
+    applicationInfo.apiReleaseType = configJson.app.apiVersion.releaseType;
 
     // if there is main ability, it's icon label description will be set to applicationInfo.
 
@@ -1943,7 +1944,6 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
         }
     }
 
-    applicationInfo.apiReleaseType = configJson.app.apiVersion.releaseType;
     applicationInfo.debug = configJson.deveicConfig.defaultDevice.debug;
     applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID;
     applicationInfo.distributedNotificationEnabled = true;
