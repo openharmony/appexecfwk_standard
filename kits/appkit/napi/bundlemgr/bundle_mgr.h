@@ -142,14 +142,14 @@ struct AsyncModuleRemovableCallbackInfo {
     std::string errMssage;
 };
 
-struct AsyncModuleNeedUpdateCallbackInfo {
+struct AsyncModuleUpgradeFlagCallbackInfo {
     napi_env env;
     napi_async_work asyncWork;
     napi_deferred deferred;
     napi_ref callback = 0;
     std::string bundleName;
     std::string moduleName;
-    bool needUpdate = false;
+    int32_t upgradeFlag = 0;
     bool result = false;
     int32_t err = 0;
     std::string errMssage;

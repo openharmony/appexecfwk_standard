@@ -306,6 +306,7 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             break;
         case IBundleMgr::Message::SET_MODULE_REMOVABLE:
             errCode = HandleSetModuleRemovable(data, reply);
+            break;
         case IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK:
              errCode = HandleQueryAbilityInfoWithCallback(data, reply);
              break;
@@ -313,10 +314,11 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
              errCode = HandleUpgradeAtomicService(data, reply);
              break;
         case IBundleMgr::Message::IS_MODULE_NEED_UPDATE:
-            errCode = HandleIsModuleNeedUpdate(data, reply);
+            errCode = HandleGetModuleUpgradeFlag(data, reply);
             break;
         case IBundleMgr::Message::SET_MODULE_NEED_UPDATE:
-            errCode = HandleSetModuleNeedUpdate(data, reply);
+            errCode = HandleSetModuleUpgradeFlag(data, reply);
+            break;
         case IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID:
             errCode = HandleGetHapModuleInfoWithUserId(data, reply);
             break;
@@ -1867,14 +1869,14 @@ ErrCode BundleMgrHost::HandleSetModuleRemovable(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
-ErrCode BundleMgrHost::HandleIsModuleNeedUpdate(Parcel &data, Parcel &reply)
+ErrCode BundleMgrHost::HandleGetModuleUpgradeFlag(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string moduleName = data.ReadString();
 
     APP_LOGD("bundleName %{public}s, moduleName %{public}s", bundleName.c_str(), moduleName.c_str());
-    bool ret = IsModuleNeedUpdate(bundleName, moduleName);
+    bool ret = GetModuleUpgradeFlag(bundleName, moduleName);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1882,14 +1884,14 @@ ErrCode BundleMgrHost::HandleIsModuleNeedUpdate(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
-ErrCode BundleMgrHost::HandleSetModuleNeedUpdate(Parcel &data, Parcel &reply)
+ErrCode BundleMgrHost::HandleSetModuleUpgradeFlag(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string moduleName = data.ReadString();
-    bool isEnable = data.ReadBool();
+    int32_t upgradeFlag = data.ReadInt32();
     APP_LOGD("bundleName %{public}s, moduleName %{public}s", bundleName.c_str(), moduleName.c_str());
-    bool ret = SetModuleNeedUpdate(bundleName, moduleName, isEnable);
+    bool ret = SetModuleUpgradeFlag(bundleName, moduleName, upgradeFlag);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

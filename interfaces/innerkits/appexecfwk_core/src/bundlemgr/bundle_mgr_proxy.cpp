@@ -1577,67 +1577,68 @@ bool BundleMgrProxy::SetModuleRemovable(const std::string &bundleName, const std
     return reply.ReadBool();
 }
 
-bool BundleMgrProxy::IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName)
+bool BundleMgrProxy::GetModuleUpgradeFlag(const std::string &bundleName, const std::string &moduleName)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to IsModuleNeedUpdate of %{public}s", bundleName.c_str());
+    APP_LOGI("begin to GetModuleUpgradeFlag of %{public}s", bundleName.c_str());
     if (bundleName.empty() || moduleName.empty()) {
-        APP_LOGE("fail to IsModuleNeedUpdate due to params empty");
+        APP_LOGE("fail to GetModuleUpgradeFlag due to params empty");
         return false;
     }
 
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to IsModuleNeedUpdate due to write InterfaceToken fail");
+        APP_LOGE("fail to GetModuleUpgradeFlag due to write InterfaceToken fail");
         return false;
     }
     if (!data.WriteString(bundleName)) {
-        APP_LOGE("fail to IsModuleNeedUpdate due to write bundleName fail");
+        APP_LOGE("fail to GetModuleUpgradeFlag due to write bundleName fail");
         return false;
     }
 
     if (!data.WriteString(moduleName)) {
-        APP_LOGE("fail to IsModuleNeedUpdate due to write moduleName fail");
+        APP_LOGE("fail to GetModuleUpgradeFlag due to write moduleName fail");
         return false;
     }
     MessageParcel reply;
     if (!SendTransactCmd(IBundleMgr::Message::IS_MODULE_NEED_UPDATE, data, reply)) {
-        APP_LOGE("fail to IsModuleNeedUpdate from server");
+        APP_LOGE("fail to GetModuleUpgradeFlag from server");
         return false;
     }
     return reply.ReadBool();
 }
 
-bool BundleMgrProxy::SetModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+bool BundleMgrProxy::SetModuleUpgradeFlag(const std::string &bundleName,
+    const std::string &moduleName, int32_t upgradeFlag)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to SetModuleNeedUpdate of %{public}s", bundleName.c_str());
+    APP_LOGI("begin to SetModuleUpgradeFlag of %{public}s", bundleName.c_str());
     if (bundleName.empty() || moduleName.empty()) {
-        APP_LOGE("fail to SetModuleNeedUpdate due to params empty");
+        APP_LOGE("fail to SetModuleUpgradeFlag due to params empty");
         return false;
     }
 
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to SetModuleNeedUpdate due to write InterfaceToken fail");
+        APP_LOGE("fail to SetModuleUpgradeFlag due to write InterfaceToken fail");
         return false;
     }
     if (!data.WriteString(bundleName)) {
-        APP_LOGE("fail to SetModuleNeedUpdate due to write bundleName fail");
+        APP_LOGE("fail to SetModuleUpgradeFlag due to write bundleName fail");
         return false;
     }
 
     if (!data.WriteString(moduleName)) {
-        APP_LOGE("fail to SetModuleNeedUpdate due to write moduleName fail");
+        APP_LOGE("fail to SetModuleUpgradeFlag due to write moduleName fail");
         return false;
     }
-    if (!data.WriteBool(isEnable)) {
-        APP_LOGE("fail to SetModuleNeedUpdate due to write isEnable fail");
+    if (!data.WriteInt32(upgradeFlag)) {
+        APP_LOGE("fail to SetModuleUpgradeFlag due to write isEnable fail");
         return false;
     }
     MessageParcel reply;
     if (!SendTransactCmd(IBundleMgr::Message::SET_MODULE_NEED_UPDATE, data, reply)) {
-        APP_LOGE("fail to SetModuleNeedUpdate from server");
+        APP_LOGE("fail to SetModuleUpgradeFlag from server");
         return false;
     }
     return reply.ReadBool();

@@ -891,24 +891,25 @@ bool BundleMgrHostImpl::SetModuleRemovable(const std::string &bundleName, const 
     return dataMgr->SetModuleRemovable(bundleName, moduleName, isEnable);
 }
 
-bool BundleMgrHostImpl::IsModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName)
+bool BundleMgrHostImpl::GetModuleUpgradeFlag(const std::string &bundleName, const std::string &moduleName)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->IsModuleNeedUpdate(bundleName, moduleName);
+    return dataMgr->GetModuleUpgradeFlag(bundleName, moduleName);
 }
 
-bool BundleMgrHostImpl::SetModuleNeedUpdate(const std::string &bundleName, const std::string &moduleName, bool isEnable)
+bool BundleMgrHostImpl::SetModuleUpgradeFlag(const std::string &bundleName,
+    const std::string &moduleName, int32_t upgradeFlag)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->SetModuleNeedUpdate(bundleName, moduleName, isEnable);
+    return dataMgr->SetModuleUpgradeFlag(bundleName, moduleName, upgradeFlag);
 }
 
 bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)

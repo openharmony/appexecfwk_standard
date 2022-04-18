@@ -563,19 +563,19 @@ private:
     ErrCode HandleGetAbilityInfo(Parcel &data, Parcel &reply);
 
     /**
-     * @brief Handles the HandleIsModuleNeedUpdate function called from a IBundleMgr proxy object.
+     * @brief Handles the HandleGetModuleUpgradeFlag function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
-    ErrCode HandleIsModuleNeedUpdate(Parcel &data, Parcel &reply);
+    ErrCode HandleGetModuleUpgradeFlag(Parcel &data, Parcel &reply);
     /**
-     * @brief Handles the HandleSetModuleNeedUpdate function called from a IBundleMgr proxy object.
+     * @brief Handles the HandleSetModuleUpgradeFlag function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
-    ErrCode HandleSetModuleNeedUpdate(Parcel &data, Parcel &reply);
+    ErrCode HandleSetModuleUpgradeFlag(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the HandleIsModuleRemovable function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
