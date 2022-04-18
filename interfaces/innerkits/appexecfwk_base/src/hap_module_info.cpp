@@ -375,11 +375,11 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
+    GetValueIfFindKey<std::map<std::string, bool>>(jsonObject,
         jsonObjectEnd,
         HAP_MODULE_INFO_IS_REMOVABLE,
         hapModuleInfo.isRemovable,
-        JsonType::BOOLEAN,
+        JsonType::OBJECT,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
