@@ -30,7 +30,9 @@
 #include "bundle_status_callback_death_recipient.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "image_source.h"
+#endif
 #include "ipc_skeleton.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
