@@ -1135,13 +1135,15 @@ public:
     /**
      * @brief Set ability enabled.
      * @param bundleName Indicates the bundleName.
+     * @param moduleName Indicates the moduleName.
      * @param abilityName Indicates the abilityName.
      * @param isEnabled Indicates the ability enabled.
      * @param userId Indicates the user id.
      * @return Return whether the application is enabled.
      */
     bool SetAbilityEnabled(
-        const std::string &bundleName, const std::string &abilityName, bool isEnabled, int32_t userId);
+        const std::string &bundleName, const std::string &moduleName, const std::string &abilityName,
+        bool isEnabled, int32_t userId);
     /**
      * @brief Set the Application Need Recover object
      * @param moduleName Indicates the module name of the application.

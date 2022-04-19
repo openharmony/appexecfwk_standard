@@ -990,7 +990,7 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
     }
 
     if (!dataMgr->SetAbilityEnabled(abilityInfo, isEnabled, userId)) {
-        APP_LOGE("Set ability(%{public}s) enabled value faile.", abilityInfo.bundleName.c_str());
+        APP_LOGE("Set ability(%{public}s) enabled value failed.", abilityInfo.bundleName.c_str());
         return false;
     }
 
@@ -1505,7 +1505,7 @@ bool BundleMgrHostImpl::GetAbilityInfo(
 {
     APP_LOGD("start GetAbilityInfo, bundleName : %{public}s, moduleName : %{public}s, abilityName : %{public}s",
         bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
-    ElementName elementName("", bundleName, abilityName);
+    ElementName elementName("", bundleName, abilityName, moduleName);
     Want want;
     want.SetElement(elementName);
     return QueryAbilityInfo(want, abilityInfo);
