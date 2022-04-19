@@ -1115,6 +1115,12 @@ static void ConvertWantInfo(napi_env env, napi_value objWantInfo, const Want &wa
 
 static std::string GetStringFromNAPI(napi_env env, napi_value value)
 {
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, value, &valueType);
+    if (valueType != napi_string) {
+        APP_LOGE("GetStringFromNAPI type mismatch!");
+        return "";
+    }
     std::string result;
     size_t size = 0;
 
@@ -1385,6 +1391,7 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
         return false;
     }
     std::string wantBundleName;
+    std::string wantModuleName;
     std::string wantAbilityName;
     std::string wantDeviceId;
     std::string wantType;
@@ -1395,11 +1402,23 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     std::string elementUri;
     std::string elementDeviceId;
     std::string elementBundleName;
+    std::string elementModuleName;
     std::string elementAbilityName;
 
     napi_value prop = nullptr;
     status = napi_get_named_property(env, args, "bundleName", &prop);
     wantBundleName = GetStringFromNAPI(env, prop);
+
+    prop = nullptr;
+    status = napi_get_named_property(env, args, "moduleName", &prop);
+    napi_typeof(env, prop, &valueType);
+    if (valueType == napi_string) {
+        wantModuleName = GetStringFromNAPI(env, prop);
+        if (wantModuleName.empty()) {
+            APP_LOGE("error moduleName is empty!");
+            return false;
+        }
+    }
 
     prop = nullptr;
     status = napi_get_named_property(env, args, "abilityName", &prop);
@@ -1464,6 +1483,10 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
         elementBundleName = GetStringFromNAPI(env, prop);
 
         prop = nullptr;
+        status = napi_get_named_property(env, elementProp, "moduleName", &prop);
+        elementModuleName = GetStringFromNAPI(env, prop);
+
+        prop = nullptr;
         status = napi_get_named_property(env, elementProp, "abilityName", &prop);
         if (status != napi_ok) {
             APP_LOGE("elementName abilityName incorrect!");
@@ -1478,6 +1501,9 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     }
     if (elementBundleName.empty()) {
         elementBundleName = wantBundleName;
+    }
+    if (elementModuleName.empty()) {
+        elementModuleName = wantModuleName;
     }
     if (elementAbilityName.empty()) {
         elementAbilityName = wantAbilityName;
@@ -1496,7 +1522,7 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     want.SetUri(elementUri);
     want.SetType(wantType);
     want.SetFlags(wantFlags);
-    ElementName elementName(elementDeviceId, elementBundleName, elementAbilityName);
+    ElementName elementName(elementDeviceId, elementBundleName, elementAbilityName, elementModuleName);
     want.SetElement(elementName);
     return true;
 }
@@ -4368,9 +4394,7 @@ napi_value SetAbilityEnabled(napi_env env, napi_callback_info info)
             EnabledInfo* asyncCallbackInfo = (EnabledInfo*)data;
             std::unique_ptr<EnabledInfo> callbackPtr {asyncCallbackInfo};
             napi_value result[1] = { 0 };
-            if (asyncCallbackInfo->errCode) {
-                NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]));
-            }
+            NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]));
             if (asyncCallbackInfo->callback) {
                 napi_value callback = nullptr;
                 napi_value placeHolder = nullptr;
@@ -4381,7 +4405,6 @@ napi_value SetAbilityEnabled(napi_env env, napi_callback_info info)
                 if (asyncCallbackInfo->errCode) {
                     NAPI_CALL_RETURN_VOID(env, napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]));
                 } else {
-                    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &result[0]));
                     NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[0]));
                 }
             }
@@ -4441,9 +4464,7 @@ void IsAbilityEnabledAsyncComplete(napi_env env, napi_status status, void *data)
     napi_value result[ARGS_SIZE_TWO] = {nullptr};
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
-    if (asyncCallbackInfo->errCode) {
-        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, asyncCallbackInfo->errCode, &result[PARAM0]));
-    }
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, asyncCallbackInfo->errCode, &result[PARAM0]));
 
     if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
         NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result[PARAM1]));
@@ -5496,6 +5517,18 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     std::string bundleName = GetStringFromNAPI(env, prop);
     abilityInfo.bundleName = bundleName;
 
+    // parse moduleName
+    status = napi_get_named_property(env, param, "moduleName", &prop);
+    napi_typeof(env, prop, &valueType);
+    if (valueType == napi_string) {
+        std::string moduleName = GetStringFromNAPI(env, prop);
+        if (moduleName.empty()) {
+            APP_LOGE("error moduleName is empty!");
+            return false;
+        }
+        abilityInfo.moduleName = moduleName;
+    }
+
     // parse abilityName
     status = napi_get_named_property(env, param, "name", &prop);
     napi_typeof(env, prop, &valueType);
@@ -5504,7 +5537,6 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     }
     std::string name = GetStringFromNAPI(env, prop);
     abilityInfo.name = name;
-
     return true;
 }
 

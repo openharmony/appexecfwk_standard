@@ -789,8 +789,8 @@ private:
         const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
     void GetMatchAbilityInfos(const Want &want, int32_t flags,
         const InnerBundleInfo &info, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
-    bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
-        int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
+    bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName, int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
 
     int32_t GetUserId(int32_t userId = Constants::UNSPECIFIED_USERID) const;
     bool GenerateBundleId(const std::string &bundleName, int32_t &bundleId);
