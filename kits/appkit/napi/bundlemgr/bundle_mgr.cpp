@@ -29,7 +29,7 @@
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "permission_callback.h"
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "pixel_map_napi.h"
 #endif
 #include "securec.h"
@@ -5507,7 +5507,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     return true;
 }
 
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
     napi_env env, const std::string &bundleName, const std::string &moduleName, const std::string &abilityName)
 {

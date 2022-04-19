@@ -24,7 +24,7 @@
 #include "application_info.h"
 #include "bundle_mgr_interface.h"
 #include "cleancache_callback.h"
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "pixel_map.h"
 #endif
 #include "ohos/aafwk/content/want.h"
@@ -284,7 +284,7 @@ struct AsyncAbilityInfo : public AsyncWorkData {
     std::string bundleName;
     std::string abilityName;
     std::string moduleName = "";
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
     std::shared_ptr<Media::PixelMap> pixelMap;
 #endif
     int32_t errCode = 0;
