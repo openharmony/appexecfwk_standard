@@ -35,6 +35,14 @@ int32_t DistributedBmsProxy::GetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
     APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfo");
+    return GetRemoteAbilityInfo(elementName, "", remoteAbilityInfo);
+}
+
+int32_t DistributedBmsProxy::GetRemoteAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName,
+                                                  const std::string &localeInfo,
+                                                  RemoteAbilityInfo &remoteAbilityInfo)
+{
+    APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfoWithLocale");
     MessageParcel data;
     MessageParcel reply;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -45,10 +53,15 @@ int32_t DistributedBmsProxy::GetRemoteAbilityInfo(
         APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfo write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    if (!data.WriteString(localeInfo)) {
+        APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfo write localeInfo error");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
     int32_t result = GetParcelableInfo<RemoteAbilityInfo>(
-        IDistributedBms::Message::GET_REMOTE_ABILITY_INFO, data, remoteAbilityInfo);
+        IDistributedBms::Message::GET_REMOTE_ABILITY_INFO_WITH_LOCALE, data, remoteAbilityInfo);
     if (result != OHOS::NO_ERROR) {
-        APP_LOGE("fail to query ability info mutiparam from server");
+        APP_LOGE("fail to query ability info mutiparam from server, result:%{public}d", result);
     }
     return result;
 }
@@ -57,6 +70,14 @@ int32_t DistributedBmsProxy::GetRemoteAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfos");
+    return GetRemoteAbilityInfos(elementNames, "", remoteAbilityInfos);
+}
+
+int32_t DistributedBmsProxy::GetRemoteAbilityInfos(const std::vector<ElementName> &elementNames,
+                                                   const std::string &localeInfo,
+                                                   std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+{
+    APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfosWithLocale");
     MessageParcel data;
     MessageParcel reply;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -67,9 +88,13 @@ int32_t DistributedBmsProxy::GetRemoteAbilityInfos(
         APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfos write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    if (!data.WriteString(localeInfo)) {
+        APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfos write localeInfo error");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
 
     int32_t result = GetParcelableInfos<RemoteAbilityInfo>(
-        IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS, data, remoteAbilityInfos);
+        IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS_WITH_LOCALE, data, remoteAbilityInfos);
     if (result != OHOS::NO_ERROR) {
         APP_LOGE("fail to query remote ability infos mutiparam from server");
     }
@@ -80,6 +105,14 @@ int32_t DistributedBmsProxy::GetAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
     APP_LOGD("DistributedBmsProxy GetAbilityInfo");
+    return GetAbilityInfo(elementName, "", remoteAbilityInfo);
+}
+
+int32_t DistributedBmsProxy::GetAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName,
+                                            const std::string &localeInfo,
+                                            RemoteAbilityInfo &remoteAbilityInfo)
+{
+    APP_LOGD("DistributedBmsProxy GetAbilityInfoWithLocale");
     MessageParcel data;
     MessageParcel reply;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -90,16 +123,29 @@ int32_t DistributedBmsProxy::GetAbilityInfo(
         APP_LOGE("DistributedBmsProxy GetAbilityInfo write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    if (!data.WriteString(localeInfo)) {
+        APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfos write localeInfo error");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     int32_t result = GetParcelableInfo<RemoteAbilityInfo>(
-        IDistributedBms::Message::GET_ABILITY_INFO, data, remoteAbilityInfo);
-    if (result != OHOS::NO_ERROR) {
-        APP_LOGE("fail to query ability info mutiparam from server");
+        IDistributedBms::Message::GET_ABILITY_INFO_WITH_LOCALE, data, remoteAbilityInfo);
+    if (result == OHOS::IPC_STUB_UNKNOW_TRANS_ERR) {
+        return GetParcelableInfo<RemoteAbilityInfo>(
+            IDistributedBms::Message::GET_ABILITY_INFO, data, remoteAbilityInfo);
     }
     return result;
 }
 
 int32_t DistributedBmsProxy::GetAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+{
+    APP_LOGD("DistributedBmsProxy GetAbilityInfos");
+    return GetAbilityInfos(elementNames, "", remoteAbilityInfos);
+}
+
+int32_t DistributedBmsProxy::GetAbilityInfos(const std::vector<ElementName> &elementNames,
+                                             const std::string &localeInfo,
+                                             std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     APP_LOGD("DistributedBmsProxy GetAbilityInfos");
     MessageParcel data;
@@ -112,10 +158,15 @@ int32_t DistributedBmsProxy::GetAbilityInfos(
         APP_LOGE("DistributedBmsProxy GetAbilityInfos write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    if (!data.WriteString(localeInfo)) {
+        APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfos write localeInfo error");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     int32_t result = GetParcelableInfos<RemoteAbilityInfo>(
-        IDistributedBms::Message::GET_ABILITY_INFOS, data, remoteAbilityInfos);
-    if (result != OHOS::NO_ERROR) {
-        APP_LOGE("fail to query ability infos mutiparam from server");
+        IDistributedBms::Message::GET_ABILITY_INFOS_WITH_LOCALE, data, remoteAbilityInfos);
+    if (result == OHOS::IPC_STUB_UNKNOW_TRANS_ERR) {
+        return GetParcelableInfos<RemoteAbilityInfo>(
+            IDistributedBms::Message::GET_ABILITY_INFOS, data, remoteAbilityInfos);
     }
     return result;
 }
@@ -202,8 +253,7 @@ int32_t DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageP
     }
     int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != OHOS::NO_ERROR) {
-        APP_LOGE("fail to send %{public}d cmd to service due to transact error", code);
-        return ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY;
+        APP_LOGE("fail to send %{public}d cmd to service due to transact error:%{public}d", code, result);
     }
     return result;
 }

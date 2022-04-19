@@ -36,6 +36,17 @@ public:
      */
     int32_t GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
+
+    /**
+     * @brief get remote ability info
+     * @param elementName Indicates the elementName.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns result code when get remote ability info.
+     */
+    int32_t GetRemoteAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName, const std::string &localeInfo,
+        RemoteAbilityInfo &remoteAbilityInfo) override;
+
     /**
      * @brief get remote ability infos
      * @param elementNames Indicates the elementNames.
@@ -44,6 +55,17 @@ public:
      */
     int32_t GetRemoteAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
+
+    /**
+     * @brief get remote ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns result code when get remote ability infos.
+     */
+    int32_t GetRemoteAbilityInfos(const std::vector<ElementName> &elementNames, const std::string &localeInfo,
+        std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
+
     /**
      * @brief get ability info
      * @param elementName Indicates the elementName.
@@ -52,6 +74,17 @@ public:
      */
     int32_t GetAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
+
+    /**
+     * @brief get ability info
+     * @param elementName Indicates the elementName.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns result code when get ability info.
+     */
+    int32_t GetAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName, const std::string &localeInfo,
+        RemoteAbilityInfo &remoteAbilityInfo) override;
+
     /**
      * @brief get ability infos
      * @param elementNames Indicates the elementNames.
@@ -61,6 +94,15 @@ public:
     int32_t GetAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 
+    /**
+     * @brief get ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns result code when get ability infos.
+     */
+    int32_t GetAbilityInfos(const std::vector<ElementName> &elementNames, const std::string &localeInfo,
+        std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 private:
     int32_t SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply);
     template<typename T>
