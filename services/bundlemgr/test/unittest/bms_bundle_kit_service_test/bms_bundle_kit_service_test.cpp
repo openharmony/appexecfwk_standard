@@ -201,9 +201,13 @@ public:
     void MockInstallBundle(
         const std::string &bundleName, const std::string &moduleName, const std::string &abilityName,
         bool userDataClearable = true, bool isSystemApp = false) const;
+    void MockInstallBundle(
+        const std::string &bundleName, const std::vector<std::string> &moduleNameList, const std::string &abilityName,
+        bool userDataClearable = true, bool isSystemApp = false) const;
     void MockUninstallBundle(const std::string &bundleName) const;
     AbilityInfo MockAbilityInfo(
         const std::string &bundleName, const std::string &module, const std::string &abilityName) const;
+    InnerModuleInfo MockModuleInfo(const std::string &moduleName) const;
     FormInfo MockFormInfo(
         const std::string &bundleName, const std::string &module, const std::string &abilityName) const;
     ShortcutInfo MockShortcutInfo(const std::string &bundleName, const std::string &shortcutId) const;
@@ -242,6 +246,8 @@ public:
         bool userDataClearable = true, bool isSystemApp = false) const;
     void AddInnerBundleInfoByTest(const std::string &bundleName, const std::string &moduleName,
         const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
+    void SaveToDatabase(const std::string &bundleName, InnerBundleInfo &innerBundleInfo,
+        bool userDataClearable, bool isSystemApp) const;
 
 public:
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -355,6 +361,38 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     const std::string &bundleName, const std::string &moduleName, const std::string &abilityName,
     bool userDataClearable, bool isSystemApp) const
 {
+    InnerModuleInfo moduleInfo = MockModuleInfo(moduleName);
+    std::string keyName = bundleName + "." + moduleName + "." + abilityName;
+    AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
+    InnerBundleInfo innerBundleInfo;
+    innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
+    innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+    SaveToDatabase(bundleName, innerBundleInfo, userDataClearable, isSystemApp);
+}
+
+InnerModuleInfo BmsBundleKitServiceTest::MockModuleInfo(const std::string &moduleName) const
+{
+    InnerModuleInfo moduleInfo;
+    RequestPermission reqPermission1;
+    reqPermission1.name = "permission1";
+    RequestPermission reqPermission2;
+    reqPermission2.name = "permission2";
+    moduleInfo.requestPermissions = {reqPermission1, reqPermission2};
+    moduleInfo.modulePackage = PACKAGE_NAME;
+    moduleInfo.moduleName = moduleName;
+    moduleInfo.description = BUNDLE_DESCRIPTION;
+    moduleInfo.colorMode = COLOR_MODE;
+    moduleInfo.label = LABEL;
+
+    AppExecFwk::CustomizeData customizeData {"name", "value", "extra"};
+    MetaData metaData {{customizeData}};
+    moduleInfo.metaData = metaData;
+    return moduleInfo;
+}
+
+void BmsBundleKitServiceTest::SaveToDatabase(const std::string &bundleName,
+    InnerBundleInfo &innerBundleInfo, bool userDataClearable, bool isSystemApp) const
+{
     auto dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
 
@@ -374,37 +412,17 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     AddApplicationInfo(bundleName, appInfo, userDataClearable, isSystemApp);
     BundleInfo bundleInfo;
     AddBundleInfo(bundleName, bundleInfo);
-
-    InnerModuleInfo moduleInfo;
-    RequestPermission reqPermission1;
-    reqPermission1.name = "permission1";
-    RequestPermission reqPermission2;
-    reqPermission2.name = "permission2";
-    moduleInfo.requestPermissions = {reqPermission1, reqPermission2};
-    moduleInfo.modulePackage = PACKAGE_NAME;
-    moduleInfo.moduleName = moduleName;
-    moduleInfo.description = BUNDLE_DESCRIPTION;
-    moduleInfo.colorMode = COLOR_MODE;
-    moduleInfo.label = LABEL;
-
-    AppExecFwk::CustomizeData customizeData {"name", "value", "extra"};
-    MetaData metaData {{customizeData}};
-    moduleInfo.metaData = metaData;
-
-    std::string keyName = bundleName + "." + moduleName + "." + abilityName;
-    AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
-    InnerBundleInfo innerBundleInfo;
     innerBundleInfo.SetBaseApplicationInfo(appInfo);
     innerBundleInfo.AddInnerBundleUserInfo(innerBundleUserInfo);
     innerBundleInfo.AddInnerBundleUserInfo(innerBundleUserInfo1);
     innerBundleInfo.SetBaseBundleInfo(bundleInfo);
-    innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
-    innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
-
     auto accessTokenId = BundlePermissionMgr::CreateAccessTokenId(innerBundleInfo, bundleName, DEFAULT_USERID);
     innerBundleInfo.SetAccessTokenId(accessTokenId, DEFAULT_USERID);
-
-    AddInnerBundleInfoByTest(bundleName, moduleName, abilityName, innerBundleInfo);
+    auto moduleNameVec = innerBundleInfo.GetModuleNameVec();
+    auto abilityNameVec = innerBundleInfo.GetAbilityNames();
+    if (!moduleNameVec.empty() && !abilityNameVec.empty()) {
+        AddInnerBundleInfoByTest(bundleName, moduleNameVec[0], abilityNameVec[0], innerBundleInfo);
+    }
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_START);
     bool addRet = dataMgr->AddInnerBundleInfo(bundleName, innerBundleInfo);
     bool endRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
@@ -412,6 +430,24 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     EXPECT_TRUE(startRet);
     EXPECT_TRUE(addRet);
     EXPECT_TRUE(endRet);
+}
+
+void BmsBundleKitServiceTest::MockInstallBundle(
+    const std::string &bundleName, const std::vector<std::string> &moduleNameList, const std::string &abilityName,
+    bool userDataClearable, bool isSystemApp) const
+{
+    if (moduleNameList.empty()) {
+        return;
+    }
+    InnerBundleInfo innerBundleInfo;
+    for (const auto &moduleName : moduleNameList) {
+        InnerModuleInfo moduleInfo = MockModuleInfo(moduleName);
+        std::string keyName = bundleName + "." + moduleName + "." + abilityName;
+        AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
+        innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
+        innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+    }
+    SaveToDatabase(bundleName, innerBundleInfo, userDataClearable, isSystemApp);
 }
 
 FormInfo BmsBundleKitServiceTest::MockFormInfo(
@@ -1396,6 +1432,57 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0400, Function | SmallTest | L
 }
 
 /**
+ * @tc.number: GetAbilityLabel_0500
+ * @tc.name: test can not get the ability's label if module doesn't exist
+ * @tc.desc: 1.system run normally
+ *           2.get empty ability label
+ * @tc.require: SR000H48EM
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0500, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, MODULE_NAME_TEST_1, ABILITY_NAME_TEST);
+    EXPECT_EQ(EMPTY_STRING, testRet);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetAbilityLabel_0600
+ * @tc.name: test can not get the ability's label if module and ability exist
+ * @tc.desc: 1.system run normally
+ *           2.get empty ability label
+ * @tc.require: AR000H4931
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0600, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    EXPECT_EQ(LABEL, testRet);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetAbilityLabel_0700
+ * @tc.name: test can not get the ability's label if module exist and ability doesn't exist
+ * @tc.desc: 1.system run normally
+ *           2.get empty ability label
+ * @tc.require: AR000H4931
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAbilityLabel_0700, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    std::string testRet = GetBundleDataMgr()->GetAbilityLabel(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_DEMO);
+    EXPECT_EQ(EMPTY_STRING, testRet);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
  * @tc.number: QueryAbilityInfo_0100
  * @tc.name: test can get the ability info by want
  * @tc.desc: 1.system run normally
@@ -1458,6 +1545,82 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfo_0300, Function | SmallTest | 
     AbilityInfo result;
     bool testRet = GetBundleDataMgr()->QueryAbilityInfo(want, 0, 0, result);
     EXPECT_EQ(false, testRet);
+}
+
+/**
+ * @tc.number: QueryAbilityInfo_0400
+ * @tc.name: test can not get the ability info by want which bundle doesn't exist
+ * @tc.require: SR000H48EM
+ * @tc.desc: 1.system run normally
+ *           2.get ability info failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfo_0400, Function | SmallTest | Level1)
+{
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    want.SetModuleName(MODULE_NAME_TEST);
+    AbilityInfo result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfo(want, 0, 0, result);
+    EXPECT_EQ(false, testRet);
+}
+
+/**
+ * @tc.number: QueryAbilityInfo_0500
+ * @tc.name: test can get the ability info by want with bundleName, moduleName, abilityName
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ * @tc.require: SR000GM5QO
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfo_0500, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    want.SetModuleName(MODULE_NAME_TEST);
+    AbilityInfo result;
+
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfo(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfo(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    EXPECT_EQ(MODULE_NAME_TEST, result.moduleName);
+
+    flags = GET_ABILITY_INFO_WITH_METADATA;
+    testRet = GetBundleDataMgr()->QueryAbilityInfo(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfo(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    EXPECT_EQ(MODULE_NAME_TEST, result.moduleName);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfo_0600
+ * @tc.name: test can get the ability info by want with bundleName, moduleName, abilityName
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ * @tc.require: SR000GM5QO
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfo_0600, Function | SmallTest | Level1)
+{
+    std::vector<std::string> moduleList {MODULE_NAME_TEST, MODULE_NAME_TEST_1};
+    MockInstallBundle(BUNDLE_NAME_TEST, moduleList, ABILITY_NAME_TEST);
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    want.SetModuleName(MODULE_NAME_TEST);
+    AbilityInfo result;
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfo(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfo(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    EXPECT_EQ(MODULE_NAME_TEST, result.moduleName);
+
+    want.SetModuleName(MODULE_NAME_TEST_1);
+    testRet = GetBundleDataMgr()->QueryAbilityInfo(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfo(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    EXPECT_EQ(MODULE_NAME_TEST_1, result.moduleName);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
 /**
@@ -1526,6 +1689,101 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0300, Function | SmallTest |
     std::vector<AbilityInfo> result;
     bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, 0, 0, result);
     EXPECT_EQ(false, testRet);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0400
+ * @tc.name: test can not get the ability info by want which bundle doesn't exist
+ * @tc.desc: 1.system run normally
+ *           2.get ability info failed
+ * @tc.require: AR000H4931
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0400, Function | SmallTest | Level1)
+{
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    want.SetModuleName(MODULE_NAME_TEST);
+    std::vector<AbilityInfo> result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, 0, 0, result);
+    EXPECT_EQ(false, testRet);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0500
+ * @tc.name: test can get the ability info of list by want with bundleName, moduleName and abilityName
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ * @tc.require: AR000H4931
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0500, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    want.SetModuleName(MODULE_NAME_TEST);
+    std::vector<AbilityInfo> result;
+
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    for (const auto &ret : result) {
+        EXPECT_EQ(MODULE_NAME_TEST, ret.moduleName);
+    }
+    result.clear();
+
+    flags = GET_ABILITY_INFO_WITH_METADATA;
+    testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    for (const auto &ret : result) {
+        EXPECT_EQ(MODULE_NAME_TEST, ret.moduleName);
+    }
+    result.clear();
+
+    flags = GET_ABILITY_INFO_WITH_PERMISSION | GET_ABILITY_INFO_WITH_METADATA;
+    testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    for (const auto &ret : result) {
+        EXPECT_EQ(MODULE_NAME_TEST, ret.moduleName);
+    }
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0600
+ * @tc.name: test can get the ability info of list by want with bundleName, moduleName and abilityName
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ * @tc.require: AR000H4931
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0600, Function | SmallTest | Level1)
+{
+    std::vector<std::string> moduleList {MODULE_NAME_TEST, MODULE_NAME_TEST_1};
+    MockInstallBundle(BUNDLE_NAME_TEST, moduleList, ABILITY_NAME_TEST);
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    want.SetModuleName(MODULE_NAME_TEST);
+    std::vector<AbilityInfo> result;
+
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    for (const auto &ret : result) {
+        EXPECT_EQ(MODULE_NAME_TEST, ret.moduleName);
+    }
+    result.clear();
+
+    want.SetModuleName(MODULE_NAME_TEST_1);
+    testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    for (const auto &ret : result) {
+        EXPECT_EQ(MODULE_NAME_TEST_1, ret.moduleName);
+    }
+    MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
 /**
