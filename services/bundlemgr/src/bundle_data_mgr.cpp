@@ -30,7 +30,9 @@
 #include "bundle_status_callback_death_recipient.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "image_source.h"
+#endif
 #include "ipc_skeleton.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
@@ -1592,7 +1594,7 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
     return false;
 }
 
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &moduleName, const std::string &abilityName) const
 {
@@ -2916,7 +2918,7 @@ bool BundleDataMgr::GetAllDependentModuleNames(const std::string &bundleName, co
     return true;
 }
 
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string &path) const
 {
     APP_LOGD("BundleDataMgr::LoadImageFile IN");

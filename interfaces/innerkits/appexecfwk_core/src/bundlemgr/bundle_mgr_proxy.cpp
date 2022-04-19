@@ -1845,7 +1845,7 @@ bool BundleMgrProxy::GetAbilityInfo(
     return true;
 }
 
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleMgrProxy::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName)
 {

@@ -38,7 +38,7 @@
 #include "inner_bundle_user_info.h"
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "pixel_map.h"
 #endif
 #include "preinstall_data_storage.h"
@@ -689,7 +689,7 @@ public:
 #endif
     bool ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
         AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo);
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &moduleName, const std::string &abilityName) const;
 #endif
@@ -807,7 +807,7 @@ private:
     std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(
         const AppExecFwk::BundleInfo &bundleInfo) const;
 #endif
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
     std::shared_ptr<Media::PixelMap> LoadImageFile(const std::string &path) const;
 #endif
 

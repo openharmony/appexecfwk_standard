@@ -555,7 +555,7 @@ private:
     ErrCode HandleGetAppType(Parcel &data, Parcel &reply);
 
     ErrCode HandleGetUidByBundleName(Parcel &data, Parcel &reply);
-#ifdef SUPPORT_GRAPHICS
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
     ErrCode HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply);
 
     ErrCode HandleGetAbilityPixelMapIconWithModuleName(Parcel &data, Parcel &reply);
