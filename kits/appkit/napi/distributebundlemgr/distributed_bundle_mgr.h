@@ -38,6 +38,7 @@ struct AsyncWorkData {
 struct ElementNameInfo : public AsyncWorkData {
     explicit ElementNameInfo(napi_env env) : AsyncWorkData(env) {}
     OHOS::AppExecFwk::ElementName elementName;
+    std::string locale;
     OHOS::AppExecFwk::RemoteAbilityInfo remoteAbilityInfo;
     int32_t errCode = 0;
     bool result = false;
@@ -47,6 +48,7 @@ struct ElementNameInfo : public AsyncWorkData {
 struct ElementNameInfos: public AsyncWorkData {
     explicit ElementNameInfos(napi_env env) : AsyncWorkData(env) {}
     std::vector<ElementName> elementNames;
+    std::string locale;
     std::vector<RemoteAbilityInfo> remoteAbilityInfos;
     int32_t errCode = 0;
     bool result = false;

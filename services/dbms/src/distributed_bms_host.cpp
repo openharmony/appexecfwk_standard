@@ -45,18 +45,18 @@ int DistributedBmsHost::OnRemoteRequest(uint32_t code, MessageParcel &data, Mess
         return ERR_INVALID_STATE;
     }
     switch (code) {
-        case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO): {
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO):
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO_WITH_LOCALE):
             return HandleGetRemoteAbilityInfo(data, reply);
-        }
-        case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS): {
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS):
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS_WITH_LOCALE):
             return HandleGetRemoteAbilityInfos(data, reply);
-        }
-        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFO): {
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFO):
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFO_WITH_LOCALE):
             return HandleGetAbilityInfo(data, reply);
-        }
-        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFOS): {
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFOS):
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFOS_WITH_LOCALE):
             return HandleGetAbilityInfos(data, reply);
-        }
         default:
             APP_LOGW("DistributedBmsHost receives unknown code, code = %{public}d", code);
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -76,8 +76,9 @@ int DistributedBmsHost::HandleGetRemoteAbilityInfo(Parcel &data, Parcel &reply)
         APP_LOGE("ReadParcelable<elementName> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    std::string localeInfo = data.ReadString();
     RemoteAbilityInfo remoteAbilityInfo;
-    int ret = GetRemoteAbilityInfo(*elementName, remoteAbilityInfo);
+    int ret = GetRemoteAbilityInfo(*elementName, localeInfo, remoteAbilityInfo);
     if (ret != NO_ERROR) {
         APP_LOGE("GetRemoteAbilityInfo result:%{public}d", ret);
         return ret;
@@ -105,8 +106,9 @@ int DistributedBmsHost::HandleGetRemoteAbilityInfos(Parcel &data, Parcel &reply)
         APP_LOGE("GetRemoteAbilityInfos get parcelable infos failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    std::string localeInfo = data.ReadString();
     std::vector<RemoteAbilityInfo> remoteAbilityInfos;
-    int ret = GetRemoteAbilityInfos(elementNames, remoteAbilityInfos);
+    int ret = GetRemoteAbilityInfos(elementNames, localeInfo, remoteAbilityInfos);
     if (ret != NO_ERROR) {
         APP_LOGE("GetRemoteAbilityInfos result:%{public}d", ret);
         return ret;
@@ -122,6 +124,7 @@ int DistributedBmsHost::HandleGetRemoteAbilityInfos(Parcel &data, Parcel &reply)
     return NO_ERROR;
 }
 
+
 int DistributedBmsHost::HandleGetAbilityInfo(Parcel &data, Parcel &reply)
 {
     APP_LOGI("DistributedBmsHost handle get ability info");
@@ -130,8 +133,9 @@ int DistributedBmsHost::HandleGetAbilityInfo(Parcel &data, Parcel &reply)
         APP_LOGE("ReadParcelable<elementName> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    std::string localeInfo = data.ReadString();
     RemoteAbilityInfo remoteAbilityInfo;
-    int ret = GetAbilityInfo(*elementName, remoteAbilityInfo);
+    int ret = GetAbilityInfo(*elementName, localeInfo, remoteAbilityInfo);
     if (ret != NO_ERROR) {
         APP_LOGE("GetAbilityInfo result:%{public}d", ret);
         return ret;
@@ -155,8 +159,9 @@ int DistributedBmsHost::HandleGetAbilityInfos(Parcel &data, Parcel &reply)
         APP_LOGE("GetRemoteAbilityInfos get parcelable infos failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
+    std::string localeInfo = data.ReadString();
     std::vector<RemoteAbilityInfo> remoteAbilityInfos;
-    int ret = GetAbilityInfos(elementNames, remoteAbilityInfos);
+    int ret = GetAbilityInfos(elementNames, localeInfo, remoteAbilityInfos);
     if (ret != NO_ERROR) {
         APP_LOGE("GetAbilityInfos result:%{public}d", ret);
         return ret;

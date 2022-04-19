@@ -44,6 +44,16 @@ public:
      */
     int32_t GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
+
+    /**
+     * @brief get remote ability info
+     * @param elementName Indicates the elementName.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    int32_t GetRemoteAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName, const std::string &localeInfo,
+        RemoteAbilityInfo &remoteAbilityInfo) override;
     /**
      * @brief get remote ability infos
      * @param elementNames Indicates the elementNames.
@@ -54,6 +64,16 @@ public:
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 
     /**
+     * @brief get remote ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    int32_t GetRemoteAbilityInfos(const std::vector<ElementName> &elementNames, const std::string &localeInfo,
+        std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
+
+    /**
      * @brief get ability info
      * @param elementName Indicates the elementName.
      * @param remoteAbilityInfo Indicates the remote ability info.
@@ -61,6 +81,16 @@ public:
      */
     int32_t GetAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
+
+    /**
+     * @brief get ability info
+     * @param elementName Indicates the elementName.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    int32_t GetAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName, const std::string &localeInfo,
+        RemoteAbilityInfo &remoteAbilityInfo) override;
     /**
      * @brief get ability infos
      * @param elementNames Indicates the elementNames.
@@ -69,6 +99,16 @@ public:
      */
     int32_t GetAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
+
+    /**
+     * @brief get ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    int32_t GetAbilityInfos(const std::vector<ElementName> &elementNames, const std::string &localeInfo,
+        std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 
     /**
      * @brief Start the bundle manager service.
@@ -81,12 +121,14 @@ public:
      */
     virtual void OnStop() override;
 private:
-    std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(const AppExecFwk::BundleInfo &bundleInfo);
+    std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(
+        const AppExecFwk::BundleInfo &bundleInfo, const std::string &localeInfo);
     bool GetMediaBase64(std::string &path, std::string &value);
     bool GetMediaBae64FromImageBuffer(std::shared_ptr<ImageBuffer>& imageBuffer, std::string& value);
     std::unique_ptr<unsigned char[]> LoadResourceFile(std::string &path, int &len);
     std::unique_ptr<char[]> EncodeBase64(std::unique_ptr<unsigned char[]> &data, int srcLen);
     bool GetCurrentUserId(int &userId);
+
     static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> bundleMgr_;
     static std::mutex bundleMgrMutex_;
 };

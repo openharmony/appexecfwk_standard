@@ -36,9 +36,10 @@ using namespace OHOS::AppExecFwk;
 
 namespace {
 constexpr size_t ARGS_SIZE_ONE = 1;
-constexpr size_t ARGS_SIZE_TWO = 2;
+constexpr size_t ARGS_SIZE_THREE = 3;
 constexpr int32_t PARAM0 = 0;
 constexpr int32_t PARAM1 = 1;
+constexpr int32_t PARAM2 = 2;
 constexpr int32_t NAPI_RETURN_ZERO = 0;
 constexpr int32_t NAPI_RETURN_ONE = 1;
 constexpr int32_t GET_REMOTE_ABILITY_INFO_MAX_SIZE = 10;
@@ -94,6 +95,20 @@ static std::string GetStringFromNAPI(napi_env env, napi_value value)
         APP_LOGE("can not get string value");
         return "";
     }
+    return result;
+}
+
+static napi_value ParseString(napi_env env, std::string &param, napi_value args)
+{
+    napi_status status;
+    napi_valuetype valuetype;
+    NAPI_CALL(env, napi_typeof(env, args, &valuetype));
+    NAPI_ASSERT(env, valuetype == napi_string, "Wrong argument type. String expected.");
+    param = GetStringFromNAPI(env, args);
+    APP_LOGD("param=%{public}s.", param.c_str());
+    napi_value result;
+    status = napi_create_int32(env, NAPI_RETURN_ONE, &result);
+    NAPI_ASSERT(env, status == napi_ok, "napi_create_int32 error!");
     return result;
 }
 
@@ -254,22 +269,22 @@ static bool ParseElementNames(napi_env env, std::vector<ElementName> &elementNam
 }
 
 static int32_t InnerGetRemoteAbilityInfo(
-    const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
+    const OHOS::AppExecFwk::ElementName &elementName, const std::string &locale, RemoteAbilityInfo &remoteAbilityInfo)
 {
     auto iDistBundleMgr = GetDistributedBundleMgr();
     if (!iDistBundleMgr) {
         APP_LOGE("can not get iDistBundleMgr");
         return ERR_INNER_ERROR;
     }
-    int32_t result = iDistBundleMgr->GetRemoteAbilityInfo(elementName, remoteAbilityInfo);
+    int32_t result = iDistBundleMgr->GetRemoteAbilityInfo(elementName, locale, remoteAbilityInfo);
     if (result != 0) {
         APP_LOGE("InnerGetRemoteAbilityInfo failed");
     }
     return ConvertResultCode(result);
 }
 
-static int32_t InnerGetRemoteAbilityInfos(
-    const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+static int32_t InnerGetRemoteAbilityInfos(const std::vector<ElementName> &elementNames, const std::string locale,
+    std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     if (elementNames.size() == 0) {
         APP_LOGE("InnerGetRemoteAbilityInfos elementNames is empty");
@@ -280,7 +295,7 @@ static int32_t InnerGetRemoteAbilityInfos(
         APP_LOGE("can not get iDistBundleMgr");
         return ERR_INNER_ERROR;
     }
-    int32_t result = iDistBundleMgr->GetRemoteAbilityInfos(elementNames, remoteAbilityInfos);
+    int32_t result = iDistBundleMgr->GetRemoteAbilityInfos(elementNames, locale, remoteAbilityInfos);
     if (result != 0) {
         APP_LOGE("InnerGetRemoteAbilityInfo failed");
     }
@@ -290,8 +305,8 @@ static int32_t InnerGetRemoteAbilityInfos(
 napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
 {
     size_t requireArgc = ARGS_SIZE_ONE;
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGS_SIZE_TWO] = { 0 };
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = { 0 };
     napi_value thisArg = nullptr;
     void *data = nullptr;
 
@@ -310,7 +325,9 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
             if (!ParseElementName(env, asyncCallbackInfo->elementName, argv[i])) {
                 asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
             }
-        } else if ((i == PARAM1) && (valueType == napi_function)) {
+        } else if ((i == PARAM1) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->locale, argv[i]);
+        } else if ((i == PARAM1 || i == PARAM2) && (valueType == napi_function)) {
             NAPI_CALL(env, napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
             break;
         } else {
@@ -333,7 +350,9 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
             ElementNameInfo* asyncCallbackInfo = (ElementNameInfo*)data;
             if (!asyncCallbackInfo->errCode) {
                 asyncCallbackInfo->errCode =
-                    InnerGetRemoteAbilityInfo(asyncCallbackInfo->elementName, asyncCallbackInfo->remoteAbilityInfo);
+                    InnerGetRemoteAbilityInfo(asyncCallbackInfo->elementName,
+                                              asyncCallbackInfo->locale,
+                                              asyncCallbackInfo->remoteAbilityInfo);
             }
         },
         [](napi_env env, napi_status status, void* data) {
@@ -369,8 +388,8 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
 napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
 {
     size_t requireArgc = ARGS_SIZE_ONE;
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGS_SIZE_TWO] = { 0 };
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = { 0 };
     napi_value thisArg = nullptr;
     void *data = nullptr;
 
@@ -393,7 +412,9 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
                 APP_LOGE("InnerGetRemoteAbilityInfos elementNames more than max");
                 asyncCallbackInfo->errCode = ERR_PARAMETERS_MORE_THAN_MAX;
             }
-        } else if ((i == PARAM1) && (valueType == napi_function)) {
+        } else if ((i == PARAM1) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->locale, argv[i]);
+        } else if ((i == PARAM1 || i == PARAM2) && (valueType == napi_function)) {
             NAPI_CALL(env, napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
             break;
         } else {
@@ -416,7 +437,9 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
             ElementNameInfos* asyncCallbackInfo = (ElementNameInfos*)data;
             if (!asyncCallbackInfo->errCode) {
                 asyncCallbackInfo->errCode =
-                    InnerGetRemoteAbilityInfos(asyncCallbackInfo->elementNames, asyncCallbackInfo->remoteAbilityInfos);
+                    InnerGetRemoteAbilityInfos(asyncCallbackInfo->elementNames,
+                                               asyncCallbackInfo->locale,
+                                               asyncCallbackInfo->remoteAbilityInfos);
             }
         },
         [](napi_env env, napi_status status, void* data) {

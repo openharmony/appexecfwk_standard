@@ -39,6 +39,16 @@ public:
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
 
     /**
+     * @brief get remote ability info
+     * @param elementName Indicates the elementName.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns result code when get remote ability info.
+     */
+    virtual int32_t GetRemoteAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName,
+        const std::string &localeInfo, RemoteAbilityInfo &remoteAbilityInfo) = 0;
+
+    /**
      * @brief get remote ability infos
      * @param elementNames Indicates the elementNames.
      * @param remoteAbilityInfos Indicates the remote ability infos.
@@ -46,6 +56,16 @@ public:
      */
     virtual int32_t GetRemoteAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
+
+    /**
+     * @brief get remote ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns result code when get remote ability infos.
+     */
+    virtual int32_t GetRemoteAbilityInfos(const std::vector<ElementName> &elementNames, const std::string &localeInfo,
+        std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
 
     /**
      * @brief get ability info
@@ -57,6 +77,16 @@ public:
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
 
     /**
+     * @brief get ability info
+     * @param elementName Indicates the elementName.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns result code when get ability info.
+     */
+    virtual int32_t GetAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName, const std::string &localeInfo,
+        RemoteAbilityInfo &remoteAbilityInfo) = 0;
+
+    /**
      * @brief get ability infos
      * @param elementNames Indicates the elementNames.
      * @param remoteAbilityInfos Indicates the remote ability infos.
@@ -65,11 +95,25 @@ public:
     virtual int32_t GetAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
 
+    /**
+     * @brief get ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param localeInfo Indicates the localeInfo.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns result code when get ability infos.
+     */
+    virtual int32_t GetAbilityInfos(const std::vector<ElementName> &elementNames, const std::string &localeInfo,
+        std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
+
     enum class Message {
         GET_REMOTE_ABILITY_INFO = 0,
         GET_REMOTE_ABILITY_INFOS,
         GET_ABILITY_INFO,
         GET_ABILITY_INFOS,
+        GET_REMOTE_ABILITY_INFO_WITH_LOCALE,
+        GET_REMOTE_ABILITY_INFOS_WITH_LOCALE,
+        GET_ABILITY_INFO_WITH_LOCALE,
+        GET_ABILITY_INFOS_WITH_LOCALE,
     };
 };
 }  // namespace AppExecFwk
