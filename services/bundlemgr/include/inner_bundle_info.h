@@ -666,6 +666,14 @@ public:
         return baseBundleInfo_.releaseType;
     }
     /**
+     * @brief Get minCompatibleVersionCode in base bundleInfo.
+     * @return Returns release type.
+     */
+    uint32_t GetMinCompatibleVersionCode() const
+    {
+        return baseBundleInfo_.minCompatibleVersionCode;
+    }
+    /**
      * @brief Get install mark in application.
      * @return Returns install mark.
      */

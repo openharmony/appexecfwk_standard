@@ -1029,13 +1029,19 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         return ERR_APPEXECFWK_INSTALL_ENTRY_ALREADY_EXIST;
     }
 
+    ErrCode result = CheckAppLabel(oldInfo, newInfo);
+    if (result != ERR_OK) {
+        APP_LOGE("CheckAppLabel failed %{public}d", result);
+        return result;
+    }
+
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_NEW_START);
     if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
         APP_LOGE("save install mark failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     std::string modulePath = newInfo.GetAppCodePath() + Constants::PATH_SEPARATOR + modulePackage_;
-    ErrCode result = ExtractModule(newInfo, modulePath);
+    result = ExtractModule(newInfo, modulePath);
     if (result != ERR_OK) {
         APP_LOGE("extract module and rename failed");
         return result;
@@ -1240,7 +1246,7 @@ ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info) const
         return ERR_APPEXECFWK_INSTALL_GENERATE_UID_ERROR;
     }
 
-    auto result = InstalldClient::GetInstance()->CreateBundleDataDir(bundleName_, userId_,
+    auto result = InstalldClient::GetInstance()->CreateBundleDataDir(info.GetBundleName(), userId_,
         newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, info.GetAppPrivilegeLevel());
     if (result != ERR_OK) {
         APP_LOGE("fail to create bundle data dir, error is %{public}d", result);
@@ -1248,7 +1254,7 @@ ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info) const
     }
 
     std::string dataBaseDir = Constants::BUNDLE_APP_DATA_BASE_DIR + Constants::BUNDLE_EL[1] +
-        Constants::DATABASE + bundleName_;
+        Constants::DATABASE + info.GetBundleName();
     info.SetAppDataBaseDir(dataBaseDir);
     info.AddInnerBundleUserInfo(newInnerBundleUserInfo);
     return ERR_OK;
@@ -1560,6 +1566,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
     std::string vendor = (infos.begin()->second).GetVendor();
     versionCode_ = (infos.begin()->second).GetVersionCode();
     std::string versionName = (infos.begin()->second).GetVersionName();
+    uint32_t minCompatibleVersionCode = (infos.begin()->second).GetMinCompatibleVersionCode();
     uint32_t target = (infos.begin()->second).GetTargetVersion();
     std::string releaseType = (infos.begin()->second).GetReleaseType();
     uint32_t compatible = (infos.begin()->second).GetCompatibleVersion();
@@ -1577,6 +1584,9 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
         }
         if (versionName != info.second.GetVersionName()) {
             return ERR_APPEXECFWK_INSTALL_VERSIONNAME_NOT_SAME;
+        }
+        if (minCompatibleVersionCode != info.second.GetMinCompatibleVersionCode()) {
+            return ERR_APPEXECFWK_INSTALL_MINCOMPATIBLE_VERSIONCODE_NOT_SAME;
         }
         // check vendor
         if (vendor != info.second.GetVendor()) {
@@ -1798,6 +1808,18 @@ ErrCode BaseBundleInstaller::UninstallAllSandboxApps(const std::string &bundleNa
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     APP_LOGD("UninstallAllSandboxApps finish");
+    return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::CheckAppLabel(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo) const
+{
+    // check app label for inheritance installation
+    APP_LOGD("CheckAppLabel begin");
+    if (oldInfo.GetReleaseType() != newInfo.GetReleaseType()) {
+        return ERR_APPEXECFWK_INSTALL_RELEASETYPE_NOT_SAME;
+    }
+
+    APP_LOGD("CheckAppLabel end");
     return ERR_OK;
 }
 
