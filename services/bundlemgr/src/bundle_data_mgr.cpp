@@ -356,10 +356,12 @@ bool BundleDataMgr::QueryAbilityInfo(const Want &want, int32_t flags, int32_t us
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
-    APP_LOGD("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
+    std::string moduleName = element.GetModuleName();
+    APP_LOGD("QueryAbilityInfo bundle name:%{public}s, moduleName:%{public}s, ability name:%{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
     // explicit query
     if (!bundleName.empty() && !abilityName.empty()) {
-        bool ret = ExplicitQueryAbilityInfo(bundleName, abilityName, flags, requestUserId, abilityInfo);
+        bool ret = ExplicitQueryAbilityInfo(bundleName, moduleName, abilityName, flags, requestUserId, abilityInfo);
         if (!ret) {
             APP_LOGE("explicit queryAbilityInfo error");
             return false;
@@ -391,12 +393,14 @@ bool BundleDataMgr::QueryAbilityInfos(
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
-    APP_LOGD("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
+    std::string moduleName = element.GetModuleName();
+    APP_LOGD("QueryAbilityInfos bundle name:%{public}s, moduleName:%{public}s, ability name:%{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
     // explicit query
     if (!bundleName.empty() && !abilityName.empty()) {
         AbilityInfo abilityInfo;
         bool ret = ExplicitQueryAbilityInfo(
-            bundleName, abilityName, flags, requestUserId, abilityInfo);
+            bundleName, moduleName, abilityName, flags, requestUserId, abilityInfo);
         if (!ret) {
             APP_LOGE("explicit queryAbilityInfo error");
             return false;
@@ -417,10 +421,11 @@ bool BundleDataMgr::QueryAbilityInfos(
     return true;
 }
 
-bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
-    int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const
+bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName, int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const
 {
-    APP_LOGD("bundleName:%{public}s, abilityName:%{public}s", bundleName.c_str(), abilityName.c_str());
+    APP_LOGD("ExplicitQueryAbilityInfo bundleName:%{public}s, moduleName:%{public}s, abilityName:%{public}s",
+        bundleName.c_str(), moduleName.c_str(), abilityName.c_str());
     APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
     int32_t requestUserId = GetUserId(userId);
     if (requestUserId == Constants::INVALID_USERID) {
@@ -435,7 +440,6 @@ bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, cons
     }
 
     int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
-    const std::string moduleName = "";
     auto ability = innerBundleInfo.FindAbilityInfo(bundleName, moduleName, abilityName, responseUserId);
     if (!ability) {
         APP_LOGE("ability not found");
@@ -1566,7 +1570,8 @@ bool BundleDataMgr::IsAbilityEnabled(const AbilityInfo &abilityInfo) const
 {
     int32_t flags = GET_ABILITY_INFO_DEFAULT;
     AbilityInfo abilityInfoIn;
-    return ExplicitQueryAbilityInfo(abilityInfo.bundleName, abilityInfo.name, flags, GetUserId(), abilityInfoIn);
+    return ExplicitQueryAbilityInfo(abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name,
+        flags, GetUserId(), abilityInfoIn);
 }
 
 bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled, int32_t userId)
@@ -1583,10 +1588,11 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
         return false;
     }
     InnerBundleInfo newInfo = infoItem->second;
-    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId(userId));
+    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name,
+        isEnabled, GetUserId(userId));
     if (dataStorage_->SaveStorageBundleInfo(newInfo)) {
         return infoItem->second.SetAbilityEnabled(
-            abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId(userId));
+            abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name, isEnabled, GetUserId(userId));
     }
     APP_LOGD("dataStorage SetAbilityEnabled %{public}s failed", abilityInfo.bundleName.c_str());
     return false;
