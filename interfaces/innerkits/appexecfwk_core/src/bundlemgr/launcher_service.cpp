@@ -196,6 +196,7 @@ bool LauncherService::GetAllLauncherAbilityInfos(int32_t userId, std::vector<Lau
         info.userId = userId;
         ElementName elementName;
         elementName.SetBundleName(ability.bundleName);
+        elementName.SetModuleName(ability.moduleName);
         elementName.SetAbilityName(ability.name);
         elementName.SetDeviceID(ability.deviceId);
         info.elementName = elementName;
@@ -251,6 +252,7 @@ bool LauncherService::GetAbilityInfo(const Want &want, const int userId, Launche
     info.labelId = abilityInfo.labelId;
     ElementName elementName;
     elementName.SetBundleName(abilityInfo.bundleName);
+    elementName.SetModuleName(abilityInfo.moduleName);
     elementName.SetAbilityName(abilityInfo.name);
     elementName.SetDeviceID(abilityInfo.deviceId);
     info.elementName = elementName;

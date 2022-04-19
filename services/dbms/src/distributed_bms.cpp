@@ -122,8 +122,9 @@ static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(con
 int32_t DistributedBms::GetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
-    APP_LOGD("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
-        elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
+    APP_LOGD("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s, moduleName:%{public}s, abilityName:%{public}s",
+        elementName.GetBundleName().c_str(), elementName.GetModuleName().c_str(),
+        elementName.GetAbilityName().c_str());
     auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
     if (!iDistBundleMgr) {
         APP_LOGE("GetDistributedBundle object failed");
@@ -152,8 +153,9 @@ int32_t DistributedBms::GetRemoteAbilityInfos(
 int32_t DistributedBms::GetAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
-    APP_LOGI("DistributedBms GetAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
-        elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
+    APP_LOGI("DistributedBms GetAbilityInfo bundleName:%{public}s, moduleName:%{public}s, abilityName:%{public}s",
+        elementName.GetBundleName().c_str(), elementName.GetModuleName().c_str(),
+        elementName.GetAbilityName().c_str());
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         APP_LOGE("DistributedBms GetBundleMgr failed");
@@ -231,8 +233,8 @@ int32_t DistributedBms::GetAbilityInfos(
         RemoteAbilityInfo remoteAbilityInfo;
         int32_t result = GetAbilityInfo(elementName, remoteAbilityInfo);
         if (result) {
-            APP_LOGE("get AbilityInfo:%{public}s, %{public}s failed", elementName.GetBundleName().c_str(),
-                elementName.GetAbilityName().c_str());
+            APP_LOGE("get AbilityInfo:%{public}s, %{public}s, %{public}s failed", elementName.GetBundleName().c_str(),
+                elementName.GetModuleName().c_str(), elementName.GetAbilityName().c_str());
             return result;
         }
         remoteAbilityInfos.push_back(remoteAbilityInfo);
