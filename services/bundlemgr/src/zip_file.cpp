@@ -198,6 +198,7 @@ bool ZipFile::Open()
         int64_t fileLength = ftell(tmpFile);
         if (fileLength == -1) {
             APP_LOGE("open file %{private}s failed", pathName_.c_str());
+            fclose(tmpFile);
             return false;
         }
         fileLength_ = static_cast<ZipPos>(fileLength);
