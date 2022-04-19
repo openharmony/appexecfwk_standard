@@ -818,7 +818,7 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0100, Function | SmallTest | Level0)
     info1.SetBaseApplicationInfo(applicationInfo1);
     info1.InsertAbilitiesInfo(BUNDLE_NAME + PACKAGE_NAME + ABILITY_NAME, abilityInfo);
     info1.AddInnerBundleUserInfo(innerBundleUserInfo);
-    info1.SetAbilityEnabled(BUNDLE_NAME, ABILITY_NAME, true, USERID);
+    info1.SetAbilityEnabled(BUNDLE_NAME, Constants::EMPTY_STRING, ABILITY_NAME, true, USERID);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
     dataMgr->AddUserId(USERID);
