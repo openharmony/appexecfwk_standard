@@ -75,6 +75,9 @@ const std::string FORMAT_ERROR_BUNDLE = "format_error_profile.hap";
 const std::string WRONG_BUNDLE_NAME = "wrong_bundle_name.ha";
 const std::string ERROR_BUNDLE_PROFILE_FILE = "error_bundle_profile.hap";
 const std::string RIGHT_DIFFERENT_RELEASE_TYPE = "first_diff_release_type.hap";
+const std::string RIGHT_COMPATIBLE_VERSION_CODE = "first_right_compCode.hap";
+const std::string RIGHT_DIFFERENT_COMPATIBLE_VERSION_CODE = "first_diff_minCompCode.hap";
+
 const std::string SAME_VERSION_ENTRY_SERVICE = "same_version_entry_service.hap";
 const std::string SAME_VERSION_FEATURE_SERVICE = "same_version_feature_service.hap";
 const std::string SAME_VERSION_FEATURE_APPLICATION = "same_version_feature_application.hap";
@@ -83,7 +86,6 @@ const std::string HIGHER_VERSION_ENTRY_SERVICE = "higher_version_entry_service.h
 const std::string LOWER_VERSION_ENTRY_SERVICE = "lower_version_entry_service.hap";
 const std::string HIGHER_VERSION_FEATURE_SERVICE = "higher_version_feature_service.hap";
 const std::string LOWER_VERSION_FEATURE_SERVICE = "lower_version_feature_service.hap";
-
 const std::string BUNDLE_DATA_DIR = "/data/app/el2/100/base/com.example.l3jsdemo";
 const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo";
 const std::string PACKAGE_NAME_FIRST = "com.example.l3jsdemo";
@@ -1579,8 +1581,158 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_4700, Function | SmallTes
     std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_DIFFERENT_RELEASE_TYPE;
     filePaths.clear();
     filePaths.emplace_back(secondBundleFile);
-    installRes = InstallThirdPartyMultipleBundles(filePaths, false);
+    installRes = InstallThirdPartyMultipleBundles(filePaths, true);
     EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_RELEASETYPE_NOT_SAME);
+
+    ClearBundleInfo(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: MultipleHapsInstall_4800
+ * @tc.name: test to install haps with different version name in the different input file path array
+ * @tc.desc: 1.the version name is differnet in the different input file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_4800, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(firstBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(PACKAGE_NAME_FIRST);
+
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_EIGHTH;
+    filePaths.clear();
+    filePaths.emplace_back(secondBundleFile);
+    installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_VERSIONNAME_NOT_SAME);
+
+    ClearBundleInfo(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: MultipleHapsInstall_4900
+ * @tc.name: test to install haps with different minCompatibleVersionCode in the input file path array
+ * @tc.desc: 1.the minCompatibleVersionCode is differnet in the input file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_4900, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_COMPATIBLE_VERSION_CODE;
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_DIFFERENT_COMPATIBLE_VERSION_CODE;
+    filePaths.emplace_back(firstBundleFile);
+    filePaths.emplace_back(secondBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_MINCOMPATIBLE_VERSIONCODE_NOT_SAME);
+    CheckFileNonExist();
+}
+
+/**
+ * @tc.number: MultipleHapsInstall_5000
+ * @tc.name: test to install haps with different minCompatibleVersionCode in the different input file path array
+ * @tc.desc: 1.the minCompatibleVersionCode is differnet in the different input file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_5000, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_COMPATIBLE_VERSION_CODE;
+    filePaths.emplace_back(firstBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(PACKAGE_NAME_FIRST);
+
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_DIFFERENT_COMPATIBLE_VERSION_CODE;
+    filePaths.clear();
+    filePaths.emplace_back(secondBundleFile);
+    installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_MINCOMPATIBLE_VERSIONCODE_NOT_SAME);
+
+    ClearBundleInfo(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: MultipleHapsInstall_5100
+ * @tc.name: test to install haps with different vendor in the different input file path array
+ * @tc.desc: 1.the vendor is differnet in the input different file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_5100, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(firstBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(PACKAGE_NAME_FIRST);
+
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_ELEVENTH;
+    filePaths.clear();
+    filePaths.emplace_back(secondBundleFile);
+    installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_VENDOR_NOT_SAME);
+
+    ClearBundleInfo(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: MultipleHapsInstall_5200
+ * @tc.name: test to install haps with different releaseType target in the different input file path array
+ * @tc.desc: 1.the releaseType target is differnet in the different input file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_5200, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(firstBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(PACKAGE_NAME_FIRST);
+
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_NINTH;
+    filePaths.clear();
+    filePaths.emplace_back(secondBundleFile);
+    installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_RELEASETYPE_TARGET_NOT_SAME);
+
+    ClearBundleInfo(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: MultipleHapsInstall_5300
+ * @tc.name: test to install haps with different releaseType compatible in the different input file path array
+ * @tc.desc: 1.the releaseType compatible is differnet in the different input file path array
+ *           2.the installation result is fail
+ * @tc.require: AR000GJ4KF
+ */
+HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_5300, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    std::string firstBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(firstBundleFile);
+    ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(PACKAGE_NAME_FIRST);
+
+
+    std::string secondBundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_TENTH;
+    filePaths.clear();
+    filePaths.emplace_back(secondBundleFile);
+    installRes = InstallThirdPartyMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME);
 
     ClearBundleInfo(BUNDLE_NAME);
 }
