@@ -197,6 +197,17 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
         return false;
     }
     prop = nullptr;
+    status = napi_get_named_property(env, args, "moduleName", &prop);
+    napi_typeof(env, prop, &valueType);
+    if (status == napi_ok && valueType == napi_string) {
+        std::string moduleName = GetStringFromNAPI(env, prop);
+        if (moduleName.empty()) {
+            APP_LOGE("err ElementName moduleName is empty");
+            return false;
+        }
+        elementName.SetModuleName(moduleName);
+    }
+    prop = nullptr;
     status = napi_get_named_property(env, args, "abilityName", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
