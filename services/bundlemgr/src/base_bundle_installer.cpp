@@ -1029,10 +1029,14 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         return ERR_APPEXECFWK_INSTALL_ENTRY_ALREADY_EXIST;
     }
 
-    ErrCode result = CheckAppLabel(oldInfo, newInfo);
-    if (result != ERR_OK) {
-        APP_LOGE("CheckAppLabel failed %{public}d", result);
-        return result;
+    // same version need to check app label
+    ErrCode result = ERR_OK;
+    if (oldInfo.GetVersionCode() == newInfo.GetVersionCode()) {
+        result = CheckAppLabel(oldInfo, newInfo);
+        if (result != ERR_OK) {
+            APP_LOGE("CheckAppLabel failed %{public}d", result);
+            return result;
+        }
     }
 
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_NEW_START);
@@ -1092,21 +1096,28 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
         return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
 
-    if (!isReplace && versionCode_ == oldInfo.GetVersionCode()) {
-        if (hasInstalledInUser_) {
-            APP_LOGE("fail to install already existing bundle using normal flag");
-            return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
+    ErrCode result = ERR_OK;
+    if (versionCode_ == oldInfo.GetVersionCode()) {
+        if ((result = CheckAppLabel(oldInfo, newInfo)) != ERR_OK) {
+            APP_LOGE("CheckAppLabel failed %{public}d", result);
+            return result;
         }
 
-        // app versionCode equals to the old and do not need to update module
-        // and only need to update userInfo
-        newInfo.SetOnlyCreateBundleUser(true);
-        if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UPDATING_SUCCESS)) {
-            APP_LOGE("update already start");
-            return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
-        }
+        if (!isReplace) {
+            if (hasInstalledInUser_) {
+                APP_LOGE("fail to install already existing bundle using normal flag");
+                return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
+            }
 
-        return ERR_OK;
+            // app versionCode equals to the old and do not need to update module
+            // and only need to update userInfo
+            newInfo.SetOnlyCreateBundleUser(true);
+            if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UPDATING_SUCCESS)) {
+                APP_LOGE("update state failed");
+                return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
+            }
+            return ERR_OK;
+        }
     }
 
     APP_LOGE("ProcessModuleUpdate noSkipsKill = %{public}d", noSkipsKill);
@@ -1127,7 +1138,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     }
 
     moduleTmpDir_ = newInfo.GetAppCodePath() + Constants::PATH_SEPARATOR + modulePackage_ + Constants::TMP_SUFFIX;
-    ErrCode result = ExtractModule(newInfo, moduleTmpDir_);
+    result = ExtractModule(newInfo, moduleTmpDir_);
     if (result != ERR_OK) {
         APP_LOGE("extract module and rename failed");
         return result;
@@ -1815,10 +1826,24 @@ ErrCode BaseBundleInstaller::CheckAppLabel(const InnerBundleInfo &oldInfo, const
 {
     // check app label for inheritance installation
     APP_LOGD("CheckAppLabel begin");
+    if (oldInfo.GetVersionName() != newInfo.GetVersionName()) {
+        return ERR_APPEXECFWK_INSTALL_VERSIONNAME_NOT_SAME;
+    }
+    if (oldInfo.GetMinCompatibleVersionCode() != newInfo.GetMinCompatibleVersionCode()) {
+        return ERR_APPEXECFWK_INSTALL_MINCOMPATIBLE_VERSIONCODE_NOT_SAME;
+    }
+    if (oldInfo.GetVendor() != newInfo.GetVendor()) {
+        return ERR_APPEXECFWK_INSTALL_VENDOR_NOT_SAME;
+    }
+    if (oldInfo.GetTargetVersion()!= newInfo.GetTargetVersion()) {
+        return ERR_APPEXECFWK_INSTALL_RELEASETYPE_TARGET_NOT_SAME;
+    }
+    if (oldInfo.GetCompatibleVersion() != newInfo.GetCompatibleVersion()) {
+        return ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME;
+    }
     if (oldInfo.GetReleaseType() != newInfo.GetReleaseType()) {
         return ERR_APPEXECFWK_INSTALL_RELEASETYPE_NOT_SAME;
     }
-
     APP_LOGD("CheckAppLabel end");
     return ERR_OK;
 }
