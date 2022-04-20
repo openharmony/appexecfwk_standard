@@ -1581,6 +1581,8 @@ void InnerBundleInfo::ClearMainAbility(const std::string &modulePackage)
     mainAbility_.clear();
     hasEntry_ = false;
     mainAbilityName_.clear();
+    baseBundleInfo_.mainEntry.clear();
+    baseBundleInfo_.entryModuleName.clear();
 }
 
 void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
