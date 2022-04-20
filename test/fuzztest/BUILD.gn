@@ -15,8 +15,8 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("bundlemgr_fuzztest_config") {
   include_dirs = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "${innerkits_path}/appexecfwk_base/include",
+    "${innerkits_path}/appexecfwk_core/include/bundlemgr",
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
     "mock/include",

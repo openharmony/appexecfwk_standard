@@ -21,8 +21,8 @@ config("bms_system_test_config") {
   ]
 
   configs = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:bundlemgr_sdk_config",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base_sdk_config",
+    "${innerkits_path}/appexecfwk_core:bundlemgr_sdk_config",
+    "${innerkits_path}/appexecfwk_base:appexecfwk_base_sdk_config",
   ]
 }
 
@@ -31,13 +31,13 @@ ohos_source_set("bms_install_sst_source") {
 
   sources = [
     "${aafwk_path}/frameworks/kits/content/cpp/src/ohos/aafwk/content/element_name.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_user_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/bundlemgr/bundle_installer_proxy.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/bundlemgr/bundle_mgr_proxy.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/bundlemgr/status_receiver_proxy.cpp",
+    "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
+    "${innerkits_path}/appexecfwk_core/src/bundlemgr/bundle_installer_proxy.cpp",
+    "${innerkits_path}/appexecfwk_core/src/bundlemgr/bundle_mgr_proxy.cpp",
+    "${innerkits_path}/appexecfwk_core/src/bundlemgr/status_receiver_proxy.cpp",
   ]
 
   include_dirs = [
