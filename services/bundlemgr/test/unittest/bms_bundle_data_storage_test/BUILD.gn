@@ -16,8 +16,8 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("private_config") {
   include_dirs = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
+    "${innerkits_path}/appexecfwk_core/include/bundlemgr",
+    "${innerkits_path}/appexecfwk_base/include",
     "${appexecfwk_path}/libs/test/mockpermission/permission",
     "${services_path}/bundlemgr/test/mock/include",
     "//third_party/json/include",
@@ -31,10 +31,10 @@ ohos_unittest("BmsBundleDataStorageDatabaseTest") {
   module_out_path = module_output_path
 
   sources = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_user_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
     "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
     "${services_path}/bundlemgr/src/inner_bundle_user_info.cpp",
   ]

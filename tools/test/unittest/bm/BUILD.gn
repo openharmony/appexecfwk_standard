@@ -18,8 +18,8 @@ module_output_path = "bundle_tool/tools"
 
 config("tools_bm_config_mock") {
   include_dirs = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "${innerkits_path}/appexecfwk_base/include",
+    "${innerkits_path}/appexecfwk_core/include/bundlemgr",
     "${aafwk_path}/interfaces/innerkits/uri/include",
     "${aafwk_path}/interfaces/innerkits/want/include",
     "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
