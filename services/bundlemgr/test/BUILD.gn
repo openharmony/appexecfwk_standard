@@ -15,8 +15,8 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("bundlemgr_test_config") {
   include_dirs = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "${innerkits_path}/appexecfwk_base/include",
+    "${innerkits_path}/appexecfwk_core/include/bundlemgr",
     "${appexecfwk_path}/services/bundlemgr/include/sandbox_app",
     "mock/include",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
@@ -26,8 +26,8 @@ config("bundlemgr_test_config") {
 
   if (bundle_framework_free_install) {
     include_dirs += [
-      "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/aging",
-      "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/free_install",
+      "${innerkits_path}/appexecfwk_base/include/aging",
+      "${innerkits_path}/appexecfwk_base/include/free_install",
     ]
   }
 

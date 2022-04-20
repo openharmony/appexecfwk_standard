@@ -30,7 +30,6 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
   ]
 
   include_dirs = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include",
     "//third_party/json/include",
@@ -72,7 +71,6 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
   }
   deps = [
     "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/bundlemgr:bundle_parser",
     "${services_path}/bundlemgr:parser_common",
@@ -94,6 +92,7 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
   external_deps = [
     "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
+    "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
