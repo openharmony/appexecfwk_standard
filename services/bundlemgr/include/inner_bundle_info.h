@@ -220,11 +220,12 @@ public:
     /**
      * @brief Find extensionInfo by bundle name and extension name.
      * @param bundleName Indicates the bundle name.
+     * @param moduleName Indicates the module name.
      * @param extensionName Indicates the extension name
      * @return Returns the ExtensionAbilityInfo object if find it; returns null otherwise.
      */
     std::optional<ExtensionAbilityInfo> FindExtensionInfo(
-        const std::string &bundleName, const std::string &extensionName) const;
+        const std::string &bundleName, const std::string &moduleName, const std::string &extensionName) const;
     /**
      * @brief Find extensionInfos by bundle name.
      * @param bundleName Indicates the bundle name.

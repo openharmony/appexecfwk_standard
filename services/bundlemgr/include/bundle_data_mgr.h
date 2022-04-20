@@ -797,7 +797,8 @@ private:
     int32_t GetUserIdByUid(int32_t uid) const;
     bool GetInnerBundleInfoByUid(const int uid, InnerBundleInfo &innerBundleInfo) const;
     bool GetAllBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) const;
-    bool ExplicitQueryExtensionInfo(const std::string &bundleName, const std::string &extensionName, int32_t flags,
+    bool ExplicitQueryExtensionInfo(const std::string &bundleName, const std::string &moduleName,
+        const std::string &extensionName, int32_t flags,
         int32_t userId, ExtensionAbilityInfo &extensionInfo) const;
     bool ImplicitQueryExtensionInfos(const Want &want, int32_t flags, int32_t userId,
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;
