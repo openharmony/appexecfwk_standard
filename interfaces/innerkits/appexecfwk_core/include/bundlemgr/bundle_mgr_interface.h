@@ -27,11 +27,11 @@
 #include "common_event_info.h"
 #include "distributed_bundle_info.h"
 #include "form_info.h"
-#include "foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/permission_def.h"
 #include "hap_module_info.h"
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "ohos/aafwk/content/want.h"
+#include "permission_define.h"
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "pixel_map.h"
 #endif

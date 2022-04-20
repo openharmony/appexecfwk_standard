@@ -23,11 +23,11 @@
 #include "bundle_mgr_service.h"
 #include "bundle_permission_mgr.h"
 #include "bundle_verify_mgr.h"
-#include "foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/permission_def.h"
 #include "inner_bundle_info.h"
 #include "installd/installd_service.h"
 #include "installd_client.h"
 #include "mock_status_receiver.h"
+#include "permission_define.h"
 
 using namespace testing::ext;
 using namespace std::chrono_literals;

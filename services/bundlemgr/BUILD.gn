@@ -12,9 +12,8 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/services/bundlemgr/appexecfwk_bundlemgr.gni")
+import("../../appexecfwk.gni")
+import("appexecfwk_bundlemgr.gni")
 
 config("bundlemgr_common_config") {
   include_dirs = [
