@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../../../appexecfwk.gni")
 
 module_output_path = "bundle_framework/bundlemgrsst"
 
@@ -40,7 +40,8 @@ ohos_systemtest("BmsUninstallSystemTest") {
     "ipc:ipc_core",
     "samgr_standard:samgr_proxy",
   ]
-  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrsst/ohos_test.xml"
+  resource_config_file =
+      "${appexecfwk_path}/test/resource/bundlemgrsst/ohos_test.xml"
 }
 
 group("systemtest") {
