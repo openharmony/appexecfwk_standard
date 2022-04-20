@@ -16,7 +16,5 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 group("moduletest") {
   testonly = true
 
-  deps = [
-    "moduletest/common/bms:moduletest",
-  ]
+  deps = [ "moduletest/common/bms:moduletest" ]
 }
