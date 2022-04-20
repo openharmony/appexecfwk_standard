@@ -285,6 +285,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install version name not same",
         },
         {
+            IStatusReceiver::ERR_INSTALL_MINCOMPATIBLE_VERSIONCODE_NOT_SAME,
+            "error: install min compatible version code not same",
+        },
+        {
             IStatusReceiver::ERR_INSTALL_VENDOR_NOT_SAME,
             "error: install vendor not same",
         },
