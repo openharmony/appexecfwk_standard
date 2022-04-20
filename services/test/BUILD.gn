@@ -18,7 +18,5 @@ group("moduletest") {
 
   deps = [
     "moduletest/common/bms:moduletest",
-    # Temporary disable bms because build error.
-    #"moduletest/common/bms:moduletest",
   ]
 }
