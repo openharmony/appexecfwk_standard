@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "permission_def.h"
+#include "permission_define.h"
 
 #include "nlohmann/json.hpp"
 #include "string_ex.h"

@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../appexecfwk.gni")
 
 config("appexecfwk_base_sdk_config") {
   include_dirs = [
@@ -47,7 +47,7 @@ ohos_shared_library("appexecfwk_base") {
     "src/module_info.cpp",
     "src/module_usage_record.cpp",
     "src/perf_profile.cpp",
-    "src/permission_def.cpp",
+    "src/permission_define.cpp",
     "src/remote_ability_info.cpp",
     "src/shortcut_info.cpp",
   ]
