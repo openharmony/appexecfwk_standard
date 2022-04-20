@@ -205,12 +205,10 @@ bool BundleDataMgr::AddNewModuleInfo(
         oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
         oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
-        if (dataStorage_->DeleteStorageBundleInfo(oldInfo)) {
-            if (dataStorage_->SaveStorageBundleInfo(oldInfo)) {
-                APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
-                bundleInfos_.at(bundleName) = oldInfo;
-                return true;
-            }
+        if (dataStorage_->SaveStorageBundleInfo(oldInfo)) {
+            APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
+            bundleInfos_.at(bundleName) = oldInfo;
+            return true;
         }
     }
     return false;
@@ -240,12 +238,10 @@ bool BundleDataMgr::RemoveModuleInfo(
         oldInfo.ClearMainAbility(modulePackage);
         oldInfo.RemoveModuleInfo(modulePackage);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
-        if (dataStorage_->DeleteStorageBundleInfo(oldInfo)) {
-            if (dataStorage_->SaveStorageBundleInfo(oldInfo)) {
-                APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
-                bundleInfos_.at(bundleName) = oldInfo;
-                return true;
-            }
+        if (dataStorage_->SaveStorageBundleInfo(oldInfo)) {
+            APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
+            bundleInfos_.at(bundleName) = oldInfo;
+            return true;
         }
         APP_LOGD("after delete modulePackage:%{public}s info", modulePackage.c_str());
     }
@@ -2383,8 +2379,7 @@ bool BundleDataMgr::SaveInstallMark(const InnerBundleInfo &info, bool isAppExist
         APP_LOGE("save install mark failed!");
         return false;
     }
-    if (dataStorage_->DeleteStorageBundleInfo(info) &&
-        dataStorage_->SaveStorageBundleInfo(info)) {
+    if (dataStorage_->SaveStorageBundleInfo(info)) {
         APP_LOGD("save install mark successfully");
         return true;
     }

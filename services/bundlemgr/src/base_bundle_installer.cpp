@@ -179,6 +179,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
             DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName, userId_);
         } else {
             DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName, userId_);
+            dataMgr_->EnableBundle(bundleName);
         }
     }
     return result;
@@ -657,7 +658,6 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         }
     }
 
-    enableGuard.Dismiss();
     std::string packageName;
     oldInfo.SetInstallMark(bundleName, packageName, InstallExceptionStatus::UNINSTALL_BUNDLE_START);
     if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
@@ -671,6 +671,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return result;
     }
 
+    enableGuard.Dismiss();
     APP_LOGD("finish to process %{public}s bundle uninstall", bundleName.c_str());
     return ERR_OK;
 }
@@ -773,6 +774,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
 
     ErrCode result = ERR_OK;
     if (onlyInstallInUser) {
+        APP_LOGI("%{public}s is only install at the userId %{public}d", bundleName.c_str(), userId_);
         result = RemoveModuleAndDataDir(oldInfo, modulePackage, userId_, installParam.isKeepData);
     } else {
         if (!installParam.isKeepData) {
@@ -786,6 +788,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
 
     oldInfo.SetInstallMark(bundleName, modulePackage, InstallExceptionStatus::INSTALL_FINISH);
+    APP_LOGD("start to remove module info of %{public}s in %{public}s ", modulePackage.c_str(), bundleName.c_str());
     if (!dataMgr_->RemoveModuleInfo(bundleName, modulePackage, oldInfo)) {
         APP_LOGE("RemoveModuleInfo failed");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -1325,6 +1328,7 @@ ErrCode BaseBundleInstaller::RemoveBundleDataDir(const InnerBundleInfo &info) co
 ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(
     const InnerBundleInfo &info, const std::string &modulePackage, int32_t userId, bool isKeepData) const
 {
+    APP_LOGD("RemoveModuleAndDataDir with package name %{public}s", modulePackage.c_str());
     auto moduleDir = info.GetModuleDir(modulePackage);
     auto result = RemoveModuleDir(moduleDir);
     if (result != ERR_OK) {
@@ -1345,7 +1349,7 @@ ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(
             RemoveModuleDataDir(info, modulePackage, installedUserId);
         }
     }
-
+    APP_LOGD("RemoveModuleAndDataDir successfully");
     return ERR_OK;
 }
 
