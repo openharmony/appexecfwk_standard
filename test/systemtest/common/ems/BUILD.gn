@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 group("systemtest_ems") {
   testonly = true
