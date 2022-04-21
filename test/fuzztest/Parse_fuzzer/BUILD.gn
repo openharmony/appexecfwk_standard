@@ -15,7 +15,7 @@
 import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../appexecfwk.gni")
 module_output_path = "developertest/bundle_framework"
 
 ##############################fuzztest##########################################
@@ -24,9 +24,6 @@ ohos_fuzztest("ParseFuzzTest") {
 
   include_dirs = [ "//utils/system/safwk/native/include" ]
 
-  configs = [
-    "//foundation/appexecfwk/standard/test/fuzztest/:bundlemgr_fuzztest_config",
-  ]
   cflags = [
     "-g",
     "-O0",
@@ -46,6 +43,7 @@ ohos_fuzztest("ParseFuzzTest") {
   external_deps = [
     "bundle_framework:appexecfwk_base",
     "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
     "utils_base:utils",
   ]
 }
