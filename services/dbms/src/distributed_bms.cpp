@@ -24,10 +24,11 @@
 #include "bundle_mgr_proxy.h"
 #include "iservice_registry.h"
 #include "if_system_ability_manager.h"
+#include "locale_config.h"
+#include "locale_info.h"
 #include "os_account_manager.h"
 #include "image_compress.h"
 #include "system_ability_definition.h"
-
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -104,13 +105,12 @@ static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
     return bundleMgr_;
 }
 
-
 static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(const std::string &deviceId)
 {
-    APP_LOGI("GetDistributedBundleMgr");
     auto samgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     OHOS::sptr<OHOS::IRemoteObject> remoteObject;
     if (deviceId.empty()) {
+        APP_LOGW("GetDistributedBundleMgr deviceId is empty");
         return nullptr;
     } else {
         APP_LOGI("GetDistributedBundleMgr get remote d-bms");
@@ -122,40 +122,52 @@ static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(con
 int32_t DistributedBms::GetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
-    APP_LOGD("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s, moduleName:%{public}s, abilityName:%{public}s",
-        elementName.GetBundleName().c_str(), elementName.GetModuleName().c_str(),
-        elementName.GetAbilityName().c_str());
+    return GetRemoteAbilityInfo(elementName, "", remoteAbilityInfo);
+}
+
+int32_t DistributedBms::GetRemoteAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName,
+    const std::string &localeInfo, RemoteAbilityInfo &remoteAbilityInfo)
+{
     auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
     if (!iDistBundleMgr) {
         APP_LOGE("GetDistributedBundle object failed");
         return ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY;
     } else {
         APP_LOGD("GetDistributedBundleMgr get remote d-bms");
-        return iDistBundleMgr->GetAbilityInfo(elementName, remoteAbilityInfo);
+        return iDistBundleMgr->GetAbilityInfo(elementName, localeInfo, remoteAbilityInfo);
     }
 }
 
 int32_t DistributedBms::GetRemoteAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
-    APP_LOGD("DistributedBms GetRemoteAbilityInfos");
+    return GetRemoteAbilityInfos(elementNames, "", remoteAbilityInfos);
+}
+
+int32_t DistributedBms::GetRemoteAbilityInfos(const std::vector<ElementName> &elementNames,
+    const std::string &localeInfo, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+{
     auto iDistBundleMgr = GetDistributedBundleMgr(elementNames[0].GetDeviceID());
     if (!iDistBundleMgr) {
         APP_LOGE("GetDistributedBundle object failed");
         return ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY;
     } else {
         APP_LOGD("GetDistributedBundleMgr get remote d-bms");
-        return iDistBundleMgr->GetAbilityInfos(elementNames, remoteAbilityInfos);
+        return iDistBundleMgr->GetAbilityInfos(elementNames, localeInfo, remoteAbilityInfos);
     }
 }
-
 
 int32_t DistributedBms::GetAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
-    APP_LOGI("DistributedBms GetAbilityInfo bundleName:%{public}s, moduleName:%{public}s, abilityName:%{public}s",
-        elementName.GetBundleName().c_str(), elementName.GetModuleName().c_str(),
-        elementName.GetAbilityName().c_str());
+    return GetAbilityInfo(elementName, "", remoteAbilityInfo);
+}
+
+int32_t DistributedBms::GetAbilityInfo(const OHOS::AppExecFwk::ElementName &elementName,
+    const std::string &localeInfo, RemoteAbilityInfo &remoteAbilityInfo)
+{
+    APP_LOGI("DistributedBms GetAbilityInfo bundleName:%{public}s , abilityName:%{public}s, localeInfo:%{public}s",
+        elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str(), localeInfo.c_str());
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         APP_LOGE("DistributedBms GetBundleMgr failed");
@@ -172,7 +184,7 @@ int32_t DistributedBms::GetAbilityInfo(
         return ERR_APPEXECFWK_FAILED_GET_BUNDLE_INFO;
     }
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager = nullptr;
-    resourceManager = GetResourceManager(bundleInfo);
+    resourceManager = GetResourceManager(bundleInfo, localeInfo);
     if (resourceManager == nullptr) {
         APP_LOGE("DistributedBms InitResourceManager failed");
         return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
@@ -221,7 +233,6 @@ int32_t DistributedBms::GetAbilityInfo(
     }
 
     APP_LOGD("DistributedBms GetAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
-    APP_LOGD("DistributedBms GetAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
     return OHOS::NO_ERROR;
 }
 
@@ -229,9 +240,16 @@ int32_t DistributedBms::GetAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     APP_LOGD("DistributedBms GetAbilityInfos");
+    return GetAbilityInfos(elementNames, "", remoteAbilityInfos);
+}
+
+int32_t DistributedBms::GetAbilityInfos(const std::vector<ElementName> &elementNames,
+    const std::string &localeInfo, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+{
+    APP_LOGD("DistributedBms GetAbilityInfos");
     for (auto elementName : elementNames) {
         RemoteAbilityInfo remoteAbilityInfo;
-        int32_t result = GetAbilityInfo(elementName, remoteAbilityInfo);
+        int32_t result = GetAbilityInfo(elementName, localeInfo, remoteAbilityInfo);
         if (result) {
             APP_LOGE("get AbilityInfo:%{public}s, %{public}s, %{public}s failed", elementName.GetBundleName().c_str(),
                 elementName.GetModuleName().c_str(), elementName.GetAbilityName().c_str());
@@ -243,33 +261,31 @@ int32_t DistributedBms::GetAbilityInfos(
 }
 
 std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceManager(
-    const AppExecFwk::BundleInfo &bundleInfo)
+    const AppExecFwk::BundleInfo &bundleInfo, const std::string &localeInfo)
 {
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
-    APP_LOGD(
-        "DistributedBms::InitResourceManager moduleResPaths count: %{public}zu", bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
-            APP_LOGE("DistributedBms::InitResourceManager length: %{public}zu, moduleResPath: %{private}s",
-                moduleResPath.length(),
-                moduleResPath.c_str());
             if (!resourceManager->AddResource(moduleResPath.c_str())) {
                 APP_LOGE("DistributedBms::InitResourceManager AddResource failed");
             }
         }
     }
-
+    APP_LOGD("DistributedBms::InitResourceManager locale:%{public}s", localeInfo.c_str());
+    std::map<std::string, std::string> configs;
+    OHOS::Global::I18n::LocaleInfo locale(localeInfo, configs);
     std::unique_ptr<Global::Resource::ResConfig> resConfig(Global::Resource::CreateResConfig());
-    resConfig->SetLocaleInfo("zh", "Hans", "CN");
+    resConfig->SetLocaleInfo(locale.GetLanguage().c_str(), locale.GetScript().c_str(), locale.GetRegion().c_str());
+    resourceManager->UpdateResConfig(*resConfig);
     if (resConfig->GetLocaleInfo() != nullptr) {
         APP_LOGD("DistributedBms::InitResourceManager language: %{public}s, script: %{public}s, region: %{public}s,",
             resConfig->GetLocaleInfo()->getLanguage(),
             resConfig->GetLocaleInfo()->getScript(),
             resConfig->GetLocaleInfo()->getCountry());
     } else {
-        APP_LOGE("DistributedBms::InitResourceManager language: GetLocaleInfo is null.");
+        APP_LOGW("DistributedBms::InitResourceManager language: GetLocaleInfo is null.");
     }
-    resourceManager->UpdateResConfig(*resConfig);
+
     return resourceManager;
 }
 
