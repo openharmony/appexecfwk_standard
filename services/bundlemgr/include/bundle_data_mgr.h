@@ -811,6 +811,11 @@ private:
     std::shared_ptr<Media::PixelMap> LoadImageFile(const std::string &path) const;
 #endif
 
+    void FilterAbilityInfosByModuleName(const std::string &moduleName, std::vector<AbilityInfo> &abilityInfos) const;
+
+    void FilterExtensionAbilityInfosByModuleName(const std::string &moduleName,
+        std::vector<ExtensionAbilityInfo> &extensionInfos) const;
+
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;

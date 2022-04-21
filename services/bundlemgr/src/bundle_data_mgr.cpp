@@ -522,6 +522,22 @@ bool BundleDataMgr::QueryAbilityInfosForClone(const Want &want, std::vector<Abil
     return true;
 }
 
+void BundleDataMgr::FilterAbilityInfosByModuleName(const std::string &moduleName,
+    std::vector<AbilityInfo> &abilityInfos) const
+{
+    APP_LOGD("BundleDataMgr::FilterAbilityInfosByModuleName moduleName: %{public}s", moduleName.c_str());
+    if (moduleName.empty()) {
+        return;
+    }
+    for (auto iter = abilityInfos.begin(); iter != abilityInfos.end();) {
+        if (iter->moduleName != moduleName) {
+            iter = abilityInfos.erase(iter);
+        } else {
+            ++iter;
+        }
+    }
+}
+
 bool BundleDataMgr::ImplicitQueryAbilityInfos(
     const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const
 {
@@ -553,6 +569,7 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
+        FilterAbilityInfosByModuleName(want.GetElement().GetModuleName(), abilityInfos);
     } else {
         // query all
         for (const auto &item : bundleInfos_) {
@@ -679,6 +696,7 @@ bool BundleDataMgr::QueryLauncherAbilityInfos(
             return false;
         }
         GetMatchLauncherAbilityInfos(want, item->second, abilityInfos, requestUserId);
+        FilterAbilityInfosByModuleName(element.GetModuleName(), abilityInfos);
         return true;
     }
 }
@@ -2603,6 +2621,22 @@ bool BundleDataMgr::ExplicitQueryExtensionInfo(const std::string &bundleName, co
     return true;
 }
 
+void BundleDataMgr::FilterExtensionAbilityInfosByModuleName(const std::string &moduleName,
+    std::vector<ExtensionAbilityInfo> &extensionInfos) const
+{
+    APP_LOGD("BundleDataMgr::FilterExtensionAbilityInfosByModuleName moduleName: %{public}s", moduleName.c_str());
+    if (moduleName.empty()) {
+        return;
+    }
+    for (auto iter = extensionInfos.begin(); iter != extensionInfos.end();) {
+        if (iter->moduleName != moduleName) {
+            iter = extensionInfos.erase(iter);
+        } else {
+            ++iter;
+        }
+    }
+}
+
 bool BundleDataMgr::ImplicitQueryExtensionInfos(
     const Want &want, int32_t flags, int32_t userId, std::vector<ExtensionAbilityInfo> &extensionInfos) const
 {
@@ -2630,6 +2664,7 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
+        FilterExtensionAbilityInfosByModuleName(want.GetElement().GetModuleName(), extensionInfos);
     } else {
         // query all
         for (const auto &item : bundleInfos_) {
