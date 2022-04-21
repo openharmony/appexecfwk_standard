@@ -1379,10 +1379,11 @@ std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(
 }
 
 std::optional<ExtensionAbilityInfo> InnerBundleInfo::FindExtensionInfo(
-    const std::string &bundleName, const std::string &extensionName) const
+    const std::string &bundleName, const std::string &moduleName, const std::string &extensionName) const
 {
     for (const auto &extension : baseExtensionInfos_) {
-        if ((extension.second.bundleName == bundleName) && (extension.second.name == extensionName)) {
+        if ((extension.second.bundleName == bundleName) && (extension.second.name == extensionName) &&
+            (moduleName.empty() || (extension.second.moduleName == moduleName))) {
             return extension.second;
         }
     }
