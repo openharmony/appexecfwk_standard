@@ -2061,7 +2061,7 @@ bool InnerBundleInfo::SetAbilityEnabled(const std::string &bundleName,
         bundleName.c_str(), moduleName.c_str(), abilityName.c_str(), userId);
     for (auto &ability : baseAbilityInfos_) {
         if ((ability.second.bundleName == bundleName) && (ability.second.name == abilityName) &&
-            (ability.second.moduleName.empty() || (ability.second.moduleName == moduleName))) {
+            (moduleName.empty() || (ability.second.moduleName == moduleName))) {
             auto &key = NameAndUserIdToKey(bundleName, userId);
             auto infoItem = innerBundleUserInfos_.find(key);
             if (infoItem == innerBundleUserInfos_.end()) {
