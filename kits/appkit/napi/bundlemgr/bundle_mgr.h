@@ -327,7 +327,7 @@ napi_value GetBundleGids(napi_env env, napi_callback_info info);
 napi_value IsAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value IsApplicationEnabled(napi_env env, napi_callback_info info);
 napi_value IsModuleRemovable(napi_env env, napi_callback_info info);
-napi_value UpdateModuleUpgradeFlag(napi_env env, napi_callback_info info);
+napi_value SetModuleUpgradeFlag(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
