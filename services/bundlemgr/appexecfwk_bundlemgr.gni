@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../appexecfwk.gni")
 
 install_daemon_sources = [
   "${services_path}/bundlemgr/src/installd/installd_host_impl.cpp",

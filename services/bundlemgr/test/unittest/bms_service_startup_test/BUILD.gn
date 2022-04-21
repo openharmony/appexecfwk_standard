@@ -12,9 +12,8 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/services/bundlemgr/appexecfwk_bundlemgr.gni")
+import("../../../../../appexecfwk.gni")
+import("../../../../../services/bundlemgr/appexecfwk_bundlemgr.gni")
 
 module_output_path = "bundle_framework/bundlemgrservice"
 

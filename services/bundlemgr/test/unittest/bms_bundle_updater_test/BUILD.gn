@@ -12,9 +12,8 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/services/bundlemgr/appexecfwk_bundlemgr.gni")
+import("../../../../../appexecfwk.gni")
+import("../../../../../services/bundlemgr/appexecfwk_bundlemgr.gni")
 
 config("private_config") {
   include_dirs = [
@@ -139,7 +138,8 @@ ohos_unittest("BmsBundleUpdaterTest") {
     defines += [ "HICOLLIE_ENABLE" ]
   }
 
-  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
+  resource_config_file =
+      "${appexecfwk_path}/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
 group("unittest") {

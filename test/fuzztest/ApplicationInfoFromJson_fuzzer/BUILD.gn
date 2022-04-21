@@ -15,7 +15,7 @@
 import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../appexecfwk.gni")
 module_output_path = "developertest/bundle_framework"
 
 ##############################fuzztest##########################################
@@ -35,6 +35,7 @@ ohos_fuzztest("ApplicationInfoFromJsonFuzzTest") {
   deps = [ "${common_path}:libappexecfwk_common" ]
   external_deps = [
     "bundle_framework:appexecfwk_base",
+    "ipc:ipc_core",
     "utils_base:utils",
   ]
 }
