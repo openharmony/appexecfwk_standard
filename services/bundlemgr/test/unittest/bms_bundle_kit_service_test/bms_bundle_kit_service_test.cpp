@@ -78,8 +78,6 @@ const std::string ICON_PATH = "/data/data/icon.png";
 const std::string KIND = "test";
 const std::string ACTION = "action.system.home";
 const std::string ENTITY = "entity.system.home";
-const std::string URI_SCHEME = "fakescheme";
-const std::string URI_HOST = "fakehost";
 const std::string TARGET_ABILITY = "MockTargetAbility";
 const AbilityType ABILITY_TYPE = AbilityType::PAGE;
 const DisplayOrientation ORIENTATION = DisplayOrientation::PORTRAIT;
@@ -332,12 +330,7 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
 {
     std::string keyName = bundleName + "." + moduleName + "." + abilityName;
     if (bundleName == BUNDLE_NAME_TEST) {
-        AppExecFwk::SkillUri uri {URI_SCHEME, URI_HOST};
-        Skill skill {{ACTION}, {ENTITY}, {uri}};
-        std::vector<Skill> skills;
-        skills.emplace_back(skill);
         innerBundleInfo.SetMainAbilityName(keyName);
-        innerBundleInfo.InsertSkillInfo(keyName, skills);
     }
     FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
     std::vector<FormInfo> formInfos;
@@ -367,6 +360,10 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     InnerBundleInfo innerBundleInfo;
     innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+    Skill skill {{ACTION}, {ENTITY}};
+    std::vector<Skill> skills;
+    skills.emplace_back(skill);
+    innerBundleInfo.InsertSkillInfo(keyName, skills);
     SaveToDatabase(bundleName, innerBundleInfo, userDataClearable, isSystemApp);
 }
 
@@ -446,6 +443,10 @@ void BmsBundleKitServiceTest::MockInstallBundle(
         AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
         innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
         innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+        Skill skill {{ACTION}, {ENTITY}};
+        std::vector<Skill> skills;
+        skills.emplace_back(skill);
+        innerBundleInfo.InsertSkillInfo(keyName, skills);
     }
     SaveToDatabase(bundleName, innerBundleInfo, userDataClearable, isSystemApp);
 }
@@ -1624,6 +1625,30 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfo_0600, Function | SmallTest | 
 }
 
 /**
+ * @tc.number: QueryAbilityInfo_0700
+ * @tc.name: test can get the ability info by want with implicit query
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ * @tc.require: SR000GM5QO
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfo_0700, Function | SmallTest | Level1)
+{
+    std::vector<std::string> moduleList {MODULE_NAME_TEST, MODULE_NAME_TEST_1, MODULE_NAME_TEST_2};
+    MockInstallBundle(BUNDLE_NAME_TEST, moduleList, ABILITY_NAME_TEST);
+    Want want;
+    want.SetAction("action.system.home");
+    want.AddEntity("entity.system.home");
+    want.SetElementName("", BUNDLE_NAME_TEST, "", MODULE_NAME_TEST_1);
+    AbilityInfo result;
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfo(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfo(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    EXPECT_EQ(MODULE_NAME_TEST_1, result.moduleName);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
  * @tc.number: QueryAbilityInfos_0100
  * @tc.name: test can get the ability info of list by want
  * @tc.desc: 1.system run normally
@@ -1782,6 +1807,55 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0600, Function | SmallTest |
     CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
     for (const auto &ret : result) {
         EXPECT_EQ(MODULE_NAME_TEST_1, ret.moduleName);
+    }
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0700
+ * @tc.name: test can get the ability info by want with implicit query
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ * @tc.require: SR000GM5QO
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0700, Function | SmallTest | Level1)
+{
+    std::vector<std::string> moduleList {MODULE_NAME_TEST, MODULE_NAME_TEST_1, MODULE_NAME_TEST_2};
+    MockInstallBundle(BUNDLE_NAME_TEST, moduleList, ABILITY_NAME_TEST);
+    Want want;
+    want.SetAction("action.system.home");
+    want.AddEntity("entity.system.home");
+    want.SetElementName("", BUNDLE_NAME_TEST, "", "");
+    std::vector<AbilityInfo> result;
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    EXPECT_EQ(result.size(), MODULE_NAMES_SIZE_THREE);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0800
+ * @tc.name: test can get the ability info by want with implicit query
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ * @tc.require: SR000GM5QO
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0800, Function | SmallTest | Level1)
+{
+    std::vector<std::string> moduleList {MODULE_NAME_TEST, MODULE_NAME_TEST_1, MODULE_NAME_TEST_2};
+    MockInstallBundle(BUNDLE_NAME_TEST, moduleList, ABILITY_NAME_TEST);
+    Want want;
+    want.SetAction("action.system.home");
+    want.AddEntity("entity.system.home");
+    want.SetElementName("", BUNDLE_NAME_TEST, "", MODULE_NAME_TEST_1);
+    std::vector<AbilityInfo> result;
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    EXPECT_EQ(result.size(), MODULE_NAMES_SIZE_ONE);
+    if (!result.empty()) {
+        EXPECT_EQ(MODULE_NAME_TEST_1, result[0].moduleName);
     }
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -3230,6 +3304,124 @@ HWTEST_F(BmsBundleKitServiceTest, CheckAbilityEnabled_0600, Function | SmallTest
     bool testRet1 = GetBundleDataMgr()->IsAbilityEnabled(abilityInfoEmpty);
     EXPECT_FALSE(testRet1);
 
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckAbilityEnabled_0700
+ * @tc.name: test can check ability status is enable by empty moduleName
+ * @tc.require: AR000H4931
+ * @tc.desc: 1.system run normally
+ *           2.check the ability status successful
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckAbilityEnabled_0700, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo;
+    abilityInfo.name = ABILITY_NAME_TEST;
+    abilityInfo.bundleName = BUNDLE_NAME_TEST;
+    bool testRet = GetBundleDataMgr()->SetAbilityEnabled(abilityInfo, true);
+    EXPECT_TRUE(testRet);
+    bool testRet1 = GetBundleDataMgr()->IsAbilityEnabled(abilityInfo);
+    EXPECT_TRUE(testRet1);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckAbilityEnabled_0800
+ * @tc.name: test can check ability status is disable by moduleName
+ * @tc.require: AR000H4931
+ * @tc.desc: 1.system run normally
+ *           2.check the ability status successful
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckAbilityEnabled_0800, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo;
+    abilityInfo.name = ABILITY_NAME_TEST;
+    abilityInfo.bundleName = BUNDLE_NAME_TEST;
+    abilityInfo.moduleName = MODULE_NAME_TEST;
+    bool testRet = GetBundleDataMgr()->SetAbilityEnabled(abilityInfo, true);
+    EXPECT_TRUE(testRet);
+    bool testRet1 = GetBundleDataMgr()->IsAbilityEnabled(abilityInfo);
+    EXPECT_TRUE(testRet1);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckAbilityEnabled_0900
+ * @tc.name: test can check ability status is disable by moduleName
+ * @tc.require: AR000H4931
+ * @tc.desc: 1.system run normally
+ *           2.check the ability status failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckAbilityEnabled_0900, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo;
+    abilityInfo.name = ABILITY_NAME_TEST;
+    abilityInfo.bundleName = BUNDLE_NAME_TEST;
+    abilityInfo.moduleName = MODULE_NAME_TEST_1;
+    bool testRet = GetBundleDataMgr()->SetAbilityEnabled(abilityInfo, true);
+    EXPECT_FALSE(testRet);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckAbilityEnabled_1000
+ * @tc.name: test can check ability status is enable by no setting
+ * @tc.require: AR000H4931
+ * @tc.desc: 1.system run normally
+ *           2.check the ability status successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckAbilityEnabled_1000, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo;
+    abilityInfo.name = ABILITY_NAME_TEST;
+    abilityInfo.bundleName = BUNDLE_NAME_TEST;
+    bool testRet = GetBundleDataMgr()->IsAbilityEnabled(abilityInfo);
+    EXPECT_TRUE(testRet);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckAbilityEnabled_1100
+ * @tc.name: test can check ability status is enable by no setting
+ * @tc.require: AR000H4931
+ * @tc.desc: 1.system run normally
+ *           2.check the ability status successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckAbilityEnabled_1100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo;
+    abilityInfo.name = ABILITY_NAME_TEST;
+    abilityInfo.bundleName = BUNDLE_NAME_TEST;
+    abilityInfo.moduleName = MODULE_NAME_TEST;
+    bool testRet = GetBundleDataMgr()->IsAbilityEnabled(abilityInfo);
+    EXPECT_TRUE(testRet);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: CheckAbilityEnabled_1200
+ * @tc.name: test can check ability status is enable by wrong moduleName
+ * @tc.require: AR000H4931
+ * @tc.desc: 1.system run normally
+ *           2.check the ability status failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, CheckAbilityEnabled_1200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo;
+    abilityInfo.name = ABILITY_NAME_TEST;
+    abilityInfo.bundleName = BUNDLE_NAME_TEST;
+    abilityInfo.moduleName = MODULE_NAME_TEST_1;
+    bool testRet = GetBundleDataMgr()->IsAbilityEnabled(abilityInfo);
+    EXPECT_FALSE(testRet);
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
