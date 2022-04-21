@@ -40,17 +40,23 @@ using namespace OHOS::AppExecFwk;
 namespace {
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
 const std::string MODULE_PACKAGE = "com.example.l3jsdemo";
-const std::string MODULE_PACKAGE1 = "com.example.l3jsdemo1";
+const std::string MODULE_PACKAGE1 = "com.example.l2jsdemo";
 const std::string ERROR_BUNDLE_NAME = "com.example.bundle.uninstall.error";
 const std::string ERROR_MODULE_PACKAGE_NAME = "com.example.module.uninstall.error";
 const std::string BUNDLE_FILE_PATH = "/data/test/resource/bms/uninstall_bundle/right.hap";
 const std::string BUNDLE_FILE_PATH1 = "/data/test/resource/bms/uninstall_bundle/right1.hap";
-const std::string BUNDLE_DATA_DIR = "/data/app/el2/100/base/com.example.l3jsdemo";
+const std::string BUNDLE_DATA_DIR1 = "/data/app/el1/100/base/com.example.l3jsdemo";
+const std::string BUNDLE_DATA_DIR2 = "/data/app/el1/100/database/com.example.l3jsdemo";
+const std::string BUNDLE_DATA_DIR3 = "/data/app/el2/100/base/com.example.l3jsdemo";
+const std::string BUNDLE_DATA_DIR4 = "/data/app/el2/100/database/com.example.l3jsdemo";
 const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo";
-const std::string MODULE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo";
-const std::string MODULE_CODE_DIR1 = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo1";
+const std::string MODULE_CODE_DIR1 = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo";
+const std::string MODULE_CODE_DIR2 = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l2jsdemo";
+const std::string RESOURCE_TEST_PATH = "/data/test/resource/bms/install_bundle/test/";
 const std::string ROOT_DIR = "/data/app";
 const std::string DB_FILE_PATH = "/data/bundlemgr";
+const int32_t INVALID_USERID = 0;
+const int32_t USERID = 100;
 const int32_t ROOT_UID = 0;
 const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
@@ -65,14 +71,13 @@ public:
     void SetUp();
     void TearDown();
 
-    ErrCode InstallBundle(const std::string &bundlePath) const;
-    ErrCode UninstallBundle(const std::string &bundleName) const;
-    ErrCode UninstallModule(const std::string &bundleName, const std::string &modulePackage) const;
+    ErrCode InstallMultipleBundles(const std::vector<std::string> &filePaths, bool &&flag) const;
+    ErrCode UninstallBundle(const std::string &bundleName, int32_t userId) const;
+    ErrCode UninstallModule(const std::string &bundleName, const std::string &modulePackage, int32_t userId) const;
     void CheckFileExist() const;
-    void CheckModuleFileExist() const;
-    void CheckModuleFileExist1() const;
+    void CheckModuleFileExist(const std::string&codePath) const;
     void CheckFileNonExist() const;
-    void CheckModuleFileNonExist() const;
+    void CheckModuleFileNonExist(const std::string&codePath) const;
     void StopInstalldService() const;
     void StartInstalldService() const;
     void StartBundleService();
@@ -80,8 +85,9 @@ public:
     void CheckBundleInfoExist() const;
     void CheckBundleInfoNonExist() const;
     const std::shared_ptr<BundleMgrService> GetBundleMgrService() const;
-    void ClearBundleInfoInDb();
-    void DeleteInstallFiles();
+    const std::shared_ptr<BundleDataMgr> GetBundleDataMgr() const;
+    void ClearBundleInfo(const std::string &bundleName) const;
+
 private:
     std::shared_ptr<InstalldService> installdService_ = std::make_unique<InstalldService>();
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -120,29 +126,7 @@ void BmsBundleUninstallerTest::TearDown()
 {
 }
 
-ErrCode BmsBundleUninstallerTest::InstallBundle(const std::string &bundlePath) const
-{
-    if (!bundleMgrService_) {
-        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
-    }
-    auto installer = bundleMgrService_->GetBundleInstaller();
-    if (!installer) {
-        EXPECT_FALSE(true) << "the installer is nullptr";
-        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
-    }
-    sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    if (!receiver) {
-        EXPECT_FALSE(true) << "the receiver is nullptr";
-        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
-    }
-    InstallParam installParam;
-    installParam.installFlag = InstallFlag::NORMAL;
-    bool result = installer->Install(bundlePath, installParam, receiver);
-    EXPECT_TRUE(result);
-    return receiver->GetResultCode();
-}
-
-ErrCode BmsBundleUninstallerTest::UninstallBundle(const std::string &bundleName) const
+ErrCode BmsBundleUninstallerTest::UninstallBundle(const std::string &bundleName, int32_t userId) const
 {
     if (!bundleMgrService_) {
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -158,13 +142,15 @@ ErrCode BmsBundleUninstallerTest::UninstallBundle(const std::string &bundleName)
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = userId;
     installParam.installFlag = InstallFlag::NORMAL;
     bool result = installer->Uninstall(bundleName, installParam, receiver);
     EXPECT_TRUE(result);
     return receiver->GetResultCode();
 }
 
-ErrCode BmsBundleUninstallerTest::UninstallModule(const std::string &bundleName, const std::string &modulePackage) const
+ErrCode BmsBundleUninstallerTest::UninstallModule(const std::string &bundleName, const std::string &modulePackage,
+    int32_t userId) const
 {
     if (!bundleMgrService_) {
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -180,6 +166,7 @@ ErrCode BmsBundleUninstallerTest::UninstallModule(const std::string &bundleName,
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = userId;
     installParam.installFlag = InstallFlag::NORMAL;
     bool result = installer->Uninstall(bundleName, modulePackage, installParam, receiver);
     EXPECT_TRUE(result);
@@ -188,37 +175,49 @@ ErrCode BmsBundleUninstallerTest::UninstallModule(const std::string &bundleName,
 
 void BmsBundleUninstallerTest::CheckFileExist() const
 {
-    int bundleDataExist = access(BUNDLE_DATA_DIR.c_str(), F_OK);
+    int bundleDataExist = access(BUNDLE_DATA_DIR1.c_str(), F_OK);
+    EXPECT_EQ(bundleDataExist, 0);
+
+    bundleDataExist = access(BUNDLE_DATA_DIR2.c_str(), F_OK);
+    EXPECT_EQ(bundleDataExist, 0);
+
+    bundleDataExist = access(BUNDLE_DATA_DIR3.c_str(), F_OK);
+    EXPECT_EQ(bundleDataExist, 0);
+
+    bundleDataExist = access(BUNDLE_DATA_DIR4.c_str(), F_OK);
     EXPECT_EQ(bundleDataExist, 0);
 
     int bundleCodeExist = access(BUNDLE_CODE_DIR.c_str(), F_OK);
     EXPECT_EQ(bundleCodeExist, 0);
 }
 
-void BmsBundleUninstallerTest::CheckModuleFileExist() const
+void BmsBundleUninstallerTest::CheckModuleFileExist(const std::string&codePath) const
 {
-    int moduleCodeExist = access(MODULE_CODE_DIR.c_str(), F_OK);
+    int moduleCodeExist = access(codePath.c_str(), F_OK);
     EXPECT_EQ(moduleCodeExist, 0);
-}
-
-void BmsBundleUninstallerTest::CheckModuleFileExist1() const
-{
-    int moduleCodeExist1 = access(MODULE_CODE_DIR1.c_str(), F_OK);
-    EXPECT_EQ(moduleCodeExist1, 0);
 }
 
 void BmsBundleUninstallerTest::CheckFileNonExist() const
 {
-    int bundleDataExist = access(BUNDLE_DATA_DIR.c_str(), F_OK);
+    int bundleDataExist = access(BUNDLE_DATA_DIR1.c_str(), F_OK);
+    EXPECT_NE(bundleDataExist, 0);
+
+    bundleDataExist = access(BUNDLE_DATA_DIR2.c_str(), F_OK);
+    EXPECT_NE(bundleDataExist, 0);
+
+    bundleDataExist = access(BUNDLE_DATA_DIR3.c_str(), F_OK);
+    EXPECT_NE(bundleDataExist, 0);
+
+    bundleDataExist = access(BUNDLE_DATA_DIR4.c_str(), F_OK);
     EXPECT_NE(bundleDataExist, 0);
 
     int bundleCodeExist = access(BUNDLE_CODE_DIR.c_str(), F_OK);
     EXPECT_NE(bundleCodeExist, 0);
 }
 
-void BmsBundleUninstallerTest::CheckModuleFileNonExist() const
+void BmsBundleUninstallerTest::CheckModuleFileNonExist(const std::string&codePath) const
 {
-    int moduleCodeExist = access(MODULE_CODE_DIR.c_str(), F_OK);
+    int moduleCodeExist = access(codePath.c_str(), F_OK);
     EXPECT_NE(moduleCodeExist, 0);
 }
 
@@ -253,6 +252,33 @@ void BmsBundleUninstallerTest::StopBundleService()
     }
 }
 
+void BmsBundleUninstallerTest::ClearBundleInfo(const std::string &bundleName) const
+{
+    if (bundleMgrService_ == nullptr) {
+        return;
+    }
+    auto dataMgt = bundleMgrService_->GetDataMgr();
+    if (dataMgt == nullptr) {
+        return;
+    }
+    auto dataStorage = dataMgt->GetDataStorage();
+    if (dataStorage == nullptr) {
+        return;
+    }
+
+    // clear innerBundleInfo from data manager
+    dataMgt->UpdateBundleInstallState(bundleName, InstallState::UNINSTALL_START);
+    dataMgt->UpdateBundleInstallState(bundleName, InstallState::UNINSTALL_SUCCESS);
+
+    InnerBundleInfo innerBundleInfo;
+    ApplicationInfo applicationInfo;
+    applicationInfo.bundleName = bundleName;
+    innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
+    // clear innerBundleInfo from data storage
+    bool result = dataStorage->DeleteStorageBundleInfo(innerBundleInfo);
+    EXPECT_TRUE(result) << "the bundle info in db clear fail: " << bundleName;
+}
+
 void BmsBundleUninstallerTest::CheckBundleInfoExist() const
 {
     EXPECT_NE(bundleMgrService_, nullptr);
@@ -278,84 +304,193 @@ const std::shared_ptr<BundleMgrService> BmsBundleUninstallerTest::GetBundleMgrSe
     return bundleMgrService_;
 }
 
-void BmsBundleUninstallerTest::ClearBundleInfoInDb()
+const std::shared_ptr<BundleDataMgr> BmsBundleUninstallerTest::GetBundleDataMgr() const
 {
-    if (bundleMgrService_ == nullptr) {
-        return;
-    }
-    auto dataMgt = bundleMgrService_->GetDataMgr();
-    if (dataMgt == nullptr) {
-        return;
-    }
-    auto dataStorage = dataMgt->GetDataStorage();
-    if (dataStorage == nullptr) {
-        return;
-    }
-    InnerBundleInfo innerBundleInfo;
-    ApplicationInfo applicationInfo;
-    applicationInfo.bundleName = BUNDLE_NAME;
-    innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
-    bool result = dataStorage->DeleteStorageBundleInfo(innerBundleInfo);
-    EXPECT_TRUE(result) << "the bundle info in db clear fail: " << BUNDLE_NAME;
+    return bundleMgrService_->GetDataMgr();
 }
 
-void BmsBundleUninstallerTest::DeleteInstallFiles()
+ErrCode BmsBundleUninstallerTest::InstallMultipleBundles(const std::vector<std::string> &filePaths,
+    bool &&flag) const
 {
-    DelayedSingleton<BundleMgrService>::DestroyInstance();
-    OHOS::ForceRemoveDirectory(BUNDLE_DATA_DIR);
-    OHOS::ForceRemoveDirectory(BUNDLE_CODE_DIR);
-    ClearBundleInfoInDb();
-    bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
+    auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
+    if (!installer) {
+        EXPECT_FALSE(true) << "the installer is nullptr";
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
+    if (!receiver) {
+        EXPECT_FALSE(true) << "the receiver is nullptr";
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    InstallParam installParam;
+    installParam.userId = USERID;
+    installParam.installFlag = flag ? InstallFlag::NORMAL : InstallFlag::REPLACE_EXISTING;
+    bool result = installer->Install(filePaths, installParam, receiver);
+    EXPECT_TRUE(result);
+    return receiver->GetResultCode();
 }
 
 /**
- * @tc.number: Bundle_Uninstall_0200
+ * @tc.number: Bundle_Uninstall_0100
  * @tc.name: test the empty bundle name will return fail
  * @tc.desc: 1. the bundle name is empty
  *           2. the empty bundle name will return fail
  * @tc.require: AR000GHLL7
  */
-HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0200, Function | SmallTest | Level0)
+HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0100, Function | SmallTest | Level0)
 {
-    ErrCode result = UninstallBundle("");
+    ErrCode result = UninstallBundle("", USERID);
     EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_INVALID_NAME);
 }
 
 /**
- * @tc.number: Bundle_Uninstall_0300
+ * @tc.number: Bundle_Uninstall_0200
  * @tc.name: test the error bundle name will return fail
  * @tc.desc: 1. the bundle name is error
  *           2. the error bundle name will return fail
  * @tc.require: AR000GHLL7
  */
+HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0200, Function | SmallTest | Level0)
+{
+    ErrCode result = UninstallBundle(ERROR_BUNDLE_NAME, USERID);
+    EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
+}
+
+/**
+ * @tc.number: Bundle_Uninstall_0300
+ * @tc.name: test the uninstall installed bundle with incorrect userId
+ * @tc.desc: 1. the bundle name is correct
+ *           2. the bundle will be uninstalled failed
+ * @tc.require: AR000GHLL7
+ */
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0300, Function | SmallTest | Level0)
 {
-    ErrCode result = UninstallBundle(ERROR_BUNDLE_NAME);
-    EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
+    std::vector<std::string> filePaths;
+    filePaths.emplace_back(RESOURCE_TEST_PATH);
+    ErrCode installRes = InstallMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(MODULE_CODE_DIR1);
+    CheckModuleFileExist(MODULE_CODE_DIR2);
+
+    ErrCode result = UninstallBundle(BUNDLE_NAME, INVALID_USERID);
+    EXPECT_NE(result, ERR_OK);
+
+    ClearBundleInfo(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: Bundle_Uninstall_0400
+ * @tc.name: test the uninstall installed bundle with correct userId
+ * @tc.desc: 1. the bundle name is correct
+ *           2. the bundle will be uninstalled successfully
+ * @tc.require: AR000GHLL7
+ */
+HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0400, Function | SmallTest | Level0)
+{
+    std::vector<std::string> filePaths;
+    filePaths.emplace_back(RESOURCE_TEST_PATH);
+    ErrCode installRes = InstallMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(MODULE_CODE_DIR1);
+    CheckModuleFileExist(MODULE_CODE_DIR2);
+
+    ErrCode result = UninstallBundle(BUNDLE_NAME, USERID);
+    EXPECT_EQ(result, ERR_OK);
+}
+
+/**
+ * @tc.number: Module_Uninstall_0100
+ * @tc.name: test the installed Module can be uninstalled
+ * @tc.desc: 1. the bundle name is empty
+ *           2. the empty bundle name will return fail
+ * @tc.require: AR000GHQ9D
+ */
+HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0100, Function | SmallTest | Level0)
+{
+    ErrCode result = UninstallModule("", MODULE_PACKAGE1, USERID);
+    EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_INVALID_NAME);
 }
 
 /**
  * @tc.number: Module_Uninstall_0200
  * @tc.name: test the installed Module can be uninstalled
- * @tc.desc: 1. the Module name is empty
- *           2. the empty Module name will return fail
+ * @tc.desc: 1. the bundle name is error name
+ *           2. the error bundle name will return fail
  * @tc.require: AR000GHQ9D
  */
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0200, Function | SmallTest | Level0)
 {
-    ErrCode result = UninstallModule(BUNDLE_NAME, "");
-    EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_INVALID_NAME);
+    ErrCode result = UninstallModule(ERROR_BUNDLE_NAME, MODULE_PACKAGE1, USERID);
+    EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
 }
 
 /**
  * @tc.number: Module_Uninstall_0300
+ * @tc.name: test the installed Module can be uninstalled
+ * @tc.desc: 1. the Module name is empty
+ *           2. the empty Module name will return fail
+ * @tc.require: AR000GHQ9D
+ */
+HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0300, Function | SmallTest | Level0)
+{
+    ErrCode result = UninstallModule(BUNDLE_NAME, "", USERID);
+    EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_INVALID_NAME);
+}
+
+/**
+ * @tc.number: Module_Uninstall_0400
  * @tc.name: test the error Module name will return fail.
  * @tc.desc: 1. the Module name is error.
  *           2. the error Module name will return fail.
  * @tc.require: AR000GHQ9D
  */
-HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0300, Function | SmallTest | Level0)
+HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0400, Function | SmallTest | Level0)
 {
-    ErrCode result = UninstallModule(BUNDLE_NAME, ERROR_MODULE_PACKAGE_NAME);
+    ErrCode result = UninstallModule(BUNDLE_NAME, ERROR_MODULE_PACKAGE_NAME, USERID);
     EXPECT_EQ(result, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
+}
+
+/**
+ * @tc.number: Module_Uninstall_0500
+ * @tc.name: test the uninstall module with correct bundle name, module name and invalid userId
+ * @tc.desc: 1. the bundl name and module name are corrct and userId is invalid.
+ *           2. the uninstallation will be sfailed
+ * @tc.require: AR000GHQ9D
+ */
+HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0500, Function | SmallTest | Level0)
+{
+    ErrCode result = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE1, INVALID_USERID);
+    EXPECT_NE(result, ERR_OK);
+}
+
+/**
+ * @tc.number: Module_Uninstall_0600
+ * @tc.name: test the correct Module name will be uninstalled successfully.
+ * @tc.desc: 1. the Module name is com.example.l2jsdemo.
+ *           2. the correct Module will be uninstalled successfully.
+ * @tc.require: AR000GHQ9D
+ */
+HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0600, Function | SmallTest | Level0)
+{
+    std::vector<std::string> filePaths;
+    filePaths.emplace_back(RESOURCE_TEST_PATH);
+    ErrCode installRes = InstallMultipleBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+    CheckFileExist();
+    CheckModuleFileExist(MODULE_CODE_DIR1);
+    CheckModuleFileExist(MODULE_CODE_DIR2);
+
+    installRes = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE1, USERID);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+
+    ApplicationInfo info;
+    bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
+    EXPECT_TRUE(result);
+
+    ClearBundleInfo(BUNDLE_NAME);
 }
