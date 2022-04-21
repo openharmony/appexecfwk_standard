@@ -2559,12 +2559,14 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const Want &want, int32_t flags, 
 
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
+    std::string moduleName = element.GetModuleName();
     std::string extensionName = element.GetAbilityName();
-    APP_LOGD("bundle name:%{public}s, extension name:%{public}s", bundleName.c_str(), extensionName.c_str());
+    APP_LOGD("bundle name:%{public}s, moduleName:%{public}s, extension name:%{public}s",
+        bundleName.c_str(), moduleName.c_str(), extensionName.c_str());
     // explicit query
     if (!bundleName.empty() && !extensionName.empty()) {
         ExtensionAbilityInfo info;
-        bool ret = ExplicitQueryExtensionInfo(bundleName, extensionName, flags, requestUserId, info);
+        bool ret = ExplicitQueryExtensionInfo(bundleName, moduleName, extensionName, flags, requestUserId, info);
         if (!ret) {
             APP_LOGE("explicit queryExtensionInfo error");
             return false;
@@ -2586,10 +2588,11 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const Want &want, int32_t flags, 
     return true;
 }
 
-bool BundleDataMgr::ExplicitQueryExtensionInfo(const std::string &bundleName, const std::string &extensionName,
-    int32_t flags, int32_t userId, ExtensionAbilityInfo &extensionInfo) const
+bool BundleDataMgr::ExplicitQueryExtensionInfo(const std::string &bundleName, const std::string &moduleName,
+    const std::string &extensionName, int32_t flags, int32_t userId, ExtensionAbilityInfo &extensionInfo) const
 {
-    APP_LOGD("bundleName:%{public}s, abilityName:%{public}s", bundleName.c_str(), extensionName.c_str());
+    APP_LOGD("bundleName:%{public}s, moduleName:%{public}s, abilityName:%{public}s",
+        bundleName.c_str(), moduleName.c_str(), extensionName.c_str());
     APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
     int32_t requestUserId = GetUserId(userId);
     if (requestUserId == Constants::INVALID_USERID) {
@@ -2601,7 +2604,7 @@ bool BundleDataMgr::ExplicitQueryExtensionInfo(const std::string &bundleName, co
         APP_LOGE("ExplicitQueryExtensionInfo failed");
         return false;
     }
-    auto extension = innerBundleInfo.FindExtensionInfo(bundleName, extensionName);
+    auto extension = innerBundleInfo.FindExtensionInfo(bundleName, moduleName, extensionName);
     if (!extension) {
         APP_LOGE("extensionAbility not found or disabled");
         return false;

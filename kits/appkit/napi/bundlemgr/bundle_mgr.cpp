@@ -6288,7 +6288,8 @@ static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo &info, napi_v
         return false;
     }
     ElementName element = info.want.GetElement();
-    ElementName newElement(element.GetDeviceID(), element.GetBundleName(), info.extensionAbilityName);
+    ElementName newElement(element.GetDeviceID(), element.GetBundleName(), info.extensionAbilityName,
+        element.GetModuleName());
     info.want.SetElement(newElement);
     return true;
 }
