@@ -18,7 +18,7 @@
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
 #include "parcel.h"
-#include "service_center_code.h"
+#include "free_install_params.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -44,7 +44,7 @@ void ServiceCenterConnection::OnAbilityConnectDone(
         return;
     }
     serviceCenterRemoteObject_ = remoteObject;
-    connectState_ = ServiceCenterConnectState::SERVICE_CENTER_CONNECTED;
+    connectState_ = ServiceCenterConnectState::CONNECTED;
 
     deathRecipient_ = (new (std::nothrow) ServiceCenterDeathRecipient(freeInstallParamsMap_));
     if (deathRecipient_ == nullptr) {
@@ -66,8 +66,8 @@ void ServiceCenterConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementN
     if (serviceCenterRemoteObject_ != nullptr && deathRecipient_ != nullptr) {
         serviceCenterRemoteObject_->RemoveDeathRecipient(deathRecipient_);
     }
-    
-    connectState_ = ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED;
+
+    connectState_ = ServiceCenterConnectState::DISCONNECTED;
     serviceCenterRemoteObject_ = nullptr;
 
     cv_.notify_all();
