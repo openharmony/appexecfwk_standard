@@ -37,7 +37,7 @@
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
 #include "permission_changed_death_recipient.h"
-#include "service_center_code.h"
+#include "free_install_params.h"
 #include "singleton.h"
 
 namespace OHOS {
