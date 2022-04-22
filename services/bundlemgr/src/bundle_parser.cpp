@@ -23,6 +23,7 @@
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
 #include "bundle_profile.h"
+#include "default_permission_profile.h"
 #include "module_profile.h"
 #include "pre_bundle_profile.h"
 #include "rpcid_decode/syscap_tool.h"
@@ -248,6 +249,18 @@ ErrCode BundleParser::ParsePreInstallAbilityConfig(
 
     PreBundleProfile preBundleProfile;
     return preBundleProfile.TransformTo(jsonBuf, preBundleConfigInfos);
+}
+
+ErrCode BundleParser::ParseDefaultPermission(std::vector<DefaultPermission> &defaultPermissions) const
+{
+    APP_LOGD("Parse DefaultPermission from %{private}s", Constants::INSTALL_LIST_PERMISSIONS_FILE_PATH.c_str());
+    nlohmann::json jsonBuf;
+    if (!ReadFileIntoJson(Constants::INSTALL_LIST_PERMISSIONS_FILE_PATH, jsonBuf)) {
+        APP_LOGE("Parse default-permissions file failed");
+        return ERR_APPEXECFWK_PARSE_FILE_FAILED;
+    }
+    DefaultPermissionProfile profile;
+    return profile.TransformTo(jsonBuf, defaultPermissions);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
