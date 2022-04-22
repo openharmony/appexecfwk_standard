@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../../appexecfwk.gni")
 
 ohos_ndk_headers("bundle_header") {
   dest_dir = "$ndk_headers_out_dir/bundle/"

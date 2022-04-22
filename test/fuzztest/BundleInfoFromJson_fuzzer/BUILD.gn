@@ -15,7 +15,7 @@
 import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../appexecfwk.gni")
 module_output_path = "developertest/bundle_framework"
 
 ##############################fuzztest##########################################
@@ -23,7 +23,7 @@ ohos_fuzztest("BundleInfoFromJsonFuzzTest") {
   module_out_path = module_output_path
 
   include_dirs = [ "//utils/system/safwk/native/include" ]
-  configs = [ "//foundation/appexecfwk/standard/services/bundlemgr/test/unittest/bms_bundle_data_storage_test:private_config" ]
+  configs = [ "${appexecfwk_path}/services/bundlemgr/test/unittest/bms_bundle_data_storage_test:private_config" ]
   cflags = [
     "-g",
     "-O0",
@@ -35,6 +35,7 @@ ohos_fuzztest("BundleInfoFromJsonFuzzTest") {
   deps = [ "${common_path}:libappexecfwk_common" ]
   external_deps = [
     "bundle_framework:appexecfwk_base",
+    "ipc:ipc_core",
     "utils_base:utils",
   ]
 }

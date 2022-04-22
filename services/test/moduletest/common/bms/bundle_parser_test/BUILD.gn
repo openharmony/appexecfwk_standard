@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../../../../appexecfwk.gni")
 
 module_output_path = "bundle_framework/mstbundlemgrservice"
 
@@ -46,7 +46,8 @@ ohos_moduletest("BmsBundleParserModuleTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
-  resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
+  resource_config_file =
+      "${appexecfwk_path}/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
 
 group("moduletest") {

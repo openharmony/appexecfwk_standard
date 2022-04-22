@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../../../appexecfwk.gni")
 SUBDEMOSYSTEM_DIR = "${appexecfwk_path}/test/resource/bmssystemtestability/abilitySrc/thirdPageDemo1"
 SUBST_TOOLS_DIR = "${appexecfwk_path}/test/resource/common"
 config("third_page_demo1_config") {
