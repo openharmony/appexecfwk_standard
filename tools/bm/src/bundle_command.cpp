@@ -553,7 +553,7 @@ ErrCode BundleManagerShellCommand::RunAsHelpCommand()
 ErrCode BundleManagerShellCommand::RunAsInstallCommand()
 {
     int result = OHOS::ERR_OK;
-    InstallFlag installFlag = InstallFlag::NORMAL;
+    InstallFlag installFlag = InstallFlag::REPLACE_EXISTING;
     int option = -1;
     int counter = 0;
     std::vector<std::string> bundlePath;
