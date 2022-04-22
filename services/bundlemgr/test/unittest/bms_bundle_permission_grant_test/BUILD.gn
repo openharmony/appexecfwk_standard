@@ -136,6 +136,12 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
     defines += [ "HICOLLIE_ENABLE" ]
   }
 
+  if (hisysevent_enable) {
+    sources += [ "${services_path}/bundlemgr/src/inner_event_report.cpp" ]
+    external_deps += [ "hisysevent_native:libhisysevent" ]
+    defines += [ "HISYSEVENT_ENABLE" ]
+  }
+
   resource_config_file =
       "${appexecfwk_path}/test/resource/bundlemgrservice/ohos_test.xml"
 }

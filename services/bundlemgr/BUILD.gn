@@ -241,6 +241,12 @@ ohos_shared_library("libbms") {
     defines += [ "HICOLLIE_ENABLE" ]
   }
 
+  if (hisysevent_enable) {
+    sources += [ "src/inner_event_report.cpp" ]
+    external_deps += [ "hisysevent_native:libhisysevent" ]
+    defines += [ "HISYSEVENT_ENABLE" ]
+  }
+
   if (use_pre_bundle_profile) {
     defines += [ "USE_PRE_BUNDLE_PROFILE" ]
   }

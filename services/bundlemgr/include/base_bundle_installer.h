@@ -26,6 +26,7 @@
 #include "bundle_data_mgr.h"
 #include "bundle_pack_info.h"
 #include "bundle_verify_mgr.h"
+#include "event_report.h"
 #include "inner_bundle_info.h"
 #include "install_param.h"
 
@@ -138,6 +139,15 @@ protected:
      * @brief Reset install properties.
      */
     void ResetInstallProperties();
+    /**
+     * @brief Reset install properties.
+     * @param isBootPeriod Indicates the event occurs in the boot phase.
+     */
+    void MarkPreBundleSyeEventBootTag(bool isBootPeriod)
+    {
+        sysEventInfo_.preBundlePeriod =
+            isBootPeriod ? InstallPeriod::BOOT : InstallPeriod::REBOOT;
+    }
 
 private:
     /**
@@ -465,6 +475,8 @@ private:
     void OnSingletonChange();
     ErrCode UninstallAllSandboxApps(const std::string &bundleName);
     ErrCode CheckAppLabel(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo) const;
+    void SendBundleSystemEvent(const std::string &bundleName, BundleEventType bundleEventType,
+        const InstallParam &installParam, InstallPeriod preBundlePeriod, ErrCode errCode);
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
@@ -487,6 +499,8 @@ private:
     int32_t userId_ = Constants::INVALID_USERID;
     bool hasInstalledInUser_ = false;
     SingletonState singletonState_ = SingletonState::DEFAULT;
+    // used to record system event infos
+    EventInfo sysEventInfo_;
 
     DISALLOW_COPY_AND_MOVE(BaseBundleInstaller);
 
