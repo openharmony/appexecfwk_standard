@@ -197,13 +197,14 @@ bool BundleDataMgr::AddNewModuleInfo(
     }
     if (statusItem->second == InstallState::UPDATING_SUCCESS) {
         APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
-        oldInfo.UpdateBaseBundleInfo(newInfo.GetBaseBundleInfo(), newInfo.HasEntry());
-        oldInfo.UpdateBaseApplicationInfo(newInfo.GetBaseApplicationInfo());
-        oldInfo.updateCommonHapInfo(newInfo);
+        if (!oldInfo.HasEntry() || oldInfo.GetEntryInstallationFree()) {
+            oldInfo.UpdateBaseBundleInfo(newInfo.GetBaseBundleInfo(), newInfo.HasEntry());
+            oldInfo.UpdateBaseApplicationInfo(newInfo.GetBaseApplicationInfo());
+            oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
+            oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
+        }
         oldInfo.SetBundlePackInfo(newInfo.GetBundlePackInfo());
         oldInfo.AddModuleInfo(newInfo);
-        oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
-        oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->SaveStorageBundleInfo(oldInfo)) {
             APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
@@ -232,10 +233,6 @@ bool BundleDataMgr::RemoveModuleInfo(
     }
     if (statusItem->second == InstallState::UNINSTALL_START || statusItem->second == InstallState::ROLL_BACK) {
         APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
-        // Judge whether the mainability of oldinfo is in the removed module.
-        // If so, clear the mainability in oldinfo.
-        // It should be called before RemoveModuleInfo.
-        oldInfo.ClearMainAbility(modulePackage);
         oldInfo.RemoveModuleInfo(modulePackage);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->SaveStorageBundleInfo(oldInfo)) {
@@ -319,18 +316,12 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         if (newInfo.HasEntry() || !oldInfo.HasEntry() || oldInfo.GetEntryInstallationFree()) {
             oldInfo.UpdateBaseBundleInfo(newInfo.GetBaseBundleInfo(), newInfo.HasEntry());
             oldInfo.UpdateBaseApplicationInfo(newInfo.GetBaseApplicationInfo());
-            oldInfo.SetMainAbility(newInfo.GetMainAbility());
-            oldInfo.SetMainAbilityName(newInfo.GetMainAbilityName());
             oldInfo.SetAppType(newInfo.GetAppType());
             oldInfo.SetAppFeature(newInfo.GetAppFeature());
             oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
             oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
         }
-        if (newInfo.HasEntry()) {
-            oldInfo.SetHasEntry(true);
-        }
         oldInfo.SetBundlePackInfo(newInfo.GetBundlePackInfo());
-        oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (!dataStorage_->SaveStorageBundleInfo(oldInfo)) {
@@ -1275,7 +1266,7 @@ bool BundleDataMgr::GetLaunchWantForBundle(const std::string &bundleName, Want &
         APP_LOGE("GetLaunchWantForBundle failed");
         return false;
     }
-    std::string mainAbility = innerBundleInfo.GetMainAbilityName();
+    std::string mainAbility = innerBundleInfo.GetMainAbility();
     if (mainAbility.empty()) {
         APP_LOGE("no main ability in the bundle %{public}s", bundleName.c_str());
         return false;
@@ -2791,12 +2782,11 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
         return false;
     }
     size_t cutPos = uri.find(Constants::SEPARATOR, schemePos + Constants::PARAM_URI_SEPARATOR_LEN);
-    if (cutPos == uri.npos) {
-        APP_LOGE("uri not include /, invalid");
-        return false;
-    }
     // 1. cut string
-    std::string convertUri = uri.substr(0, cutPos);
+    std::string convertUri = uri;
+    if (cutPos != uri.npos) {
+        convertUri = uri.substr(0, cutPos);
+    }
     // 2. replace :/// with ://
     convertUri.replace(schemePos, Constants::PARAM_URI_SEPARATOR_LEN,
         Constants::URI_SEPARATOR);

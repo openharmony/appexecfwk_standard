@@ -1520,8 +1520,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtrac
             bool isEntryEntity = std::find(skill.entities.begin(), skill.entities.end(),
                 Constants::INTENT_ENTITY_HOME) != skill.entities.end();
             if (isEntryAction && isEntryEntity) {
-                innerBundleInfo.SetMainAbility(key);
-                innerBundleInfo.SetMainAbilityName(ability.name);
+                innerModuleInfo.entryAbilityKey = key;
                 innerModuleInfo.label = ability.label;
                 innerModuleInfo.labelId = ability.labelId;
                 // get launcher application and ability
@@ -1550,9 +1549,6 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtrac
         innerBundleInfo.InsertExtensionInfo(key, extensionInfo);
     }
 
-    if (moduleJson.module.type == Profile::MODULE_TYPE_ENTRY) {
-        innerBundleInfo.SetHasEntry(true);
-    }
     innerBundleInfo.SetCurrentModulePackage(moduleJson.module.name);
     innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
     innerBundleInfo.SetBaseBundleInfo(bundleInfo);

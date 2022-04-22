@@ -179,7 +179,7 @@ ErrCode BundleCloneMgr::ProcessCloneInstall(const std::string &bundleName)
     }
     bundleName_ = cloneInfo_.GetBundleName();
     modulePackage_ = cloneInfo_.GetCurrentModulePackage();
-    mainAbility_ = cloneInfo_.GetMainAbilityName();
+    mainAbility_ = cloneInfo_.GetMainAbility();
 
     // Create clone Uid
     result = CreateBundleAndDataDir(cloneInfo_);

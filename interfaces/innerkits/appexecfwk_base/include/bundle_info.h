@@ -80,7 +80,7 @@ struct BundleInfo : public Parcelable {
 
     std::string mainEntry; // modulePackage
     std::string entryModuleName; // moduleName
-    bool entryInstallationFree = false;
+    bool entryInstallationFree = false; // application : false; atomic service : true
 
     std::string appId;
 
