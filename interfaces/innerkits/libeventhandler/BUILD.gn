@@ -12,9 +12,8 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/libs/libeventhandler/lib_event_handler_sources.gni")
+import("../../../appexecfwk.gni")
+import("../../../libs/libeventhandler/lib_event_handler_sources.gni")
 
 config("public_libeventhandler_config") {
   include_dirs = [ "include" ]

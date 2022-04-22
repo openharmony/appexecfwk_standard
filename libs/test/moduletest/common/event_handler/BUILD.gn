@@ -14,9 +14,8 @@
 #
 
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/libs/libeventhandler/lib_event_handler_sources.gni")
+import("../../../../../appexecfwk.gni")
+import("../../../../../libs/libeventhandler/lib_event_handler_sources.gni")
 
 config("libeventhandler_module_test_config") {
   include_dirs = [ "${libs_path}/libeventhandler/include/libeventhandler" ]
