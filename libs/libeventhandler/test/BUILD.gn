@@ -12,9 +12,8 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/libs/libeventhandler/lib_event_handler_sources.gni")
+import("../../../appexecfwk.gni")
+import("../../../libs/libeventhandler/lib_event_handler_sources.gni")
 
 config("libeventhandler_test_private_config") {
   defines = event_handler_log_domain_defines

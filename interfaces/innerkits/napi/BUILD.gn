@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../appexecfwk.gni")
 
 group("napi_packages") {
   deps = []

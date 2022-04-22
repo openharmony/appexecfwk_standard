@@ -13,7 +13,7 @@
 
 import("//build/ohos.gni")
 import("//build/ohos/ace/ace.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
+import("../../../../appexecfwk.gni")
 
 config("native_module_config") {
   include_dirs = [ "include" ]
