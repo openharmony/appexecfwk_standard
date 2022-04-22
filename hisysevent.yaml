@@ -20,13 +20,16 @@ BUNDLE_INSTALL_EXCEPTION:
   __BASE: {type: FAULT, level: MINOR, desc: used to fault happened when bundle install}
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
+  VERSION: {type: UINT32, desc: versionCode}
   INSTALL_TYPE: {type: STRING, desc: normal prebundle or freeInstall}
+  SCENE: {type: STRING, desc: boot reboot or createUser}
   ERROR_CODE: {type: INT32, desc: error code}
 
 BUNDLE_UNINSTALL_EXCEPTION:
   __BASE: {type: FAULT, level: MINOR, desc: used to fault happened when bundle uninstall}
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
+  VERSION: {type: UINT32, desc: versionCode}
   INSTALL_TYPE: {type: STRING, desc: normal prebundle or freeInstall}
   ERROR_CODE: {type: INT32, desc: error code}
 
@@ -34,15 +37,16 @@ BUNDLE_UPDATE_EXCEPTION:
   __BASE: {type: FAULT, level: MINOR, desc: used to fault happened when bundle update}
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
+  VERSION: {type: UINT32, desc: versionCode}
   INSTALL_TYPE: {type: STRING, desc: normal prebundle or freeInstall}
-  OLD_VERSION: {type: UINT32, desc: old versionCode}
-  NEW_VERSION: {type: UINT32, desc: new versionCode}
   ERROR_CODE: {type: INT32, desc: error code}
 
 PRE_BUNDLE_RECOVER_EXCEPTION:
   __BASE: {type: FAULT, level: MINOR, desc: used to fault happened when prebundle recover}
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
+  VERSION: {type: UINT32, desc: versionCode}
+  INSTALL_TYPE: {type: STRING, desc: only prebundle}
   ERROR_CODE: {type: INT32, desc: error code}
 
 BUNDLE_STATE_CHANGE_EXCEPTION:
@@ -50,6 +54,7 @@ BUNDLE_STATE_CHANGE_EXCEPTION:
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
   ABILITY_NAME: {type: STRING, desc: abilityName}
+  TYPE: {type: STRING, desc: application or ability}
 
 BUNDLE_CLEAN_CACHE_EXCEPTION:
   __BASE: {type: FAULT, level: MINOR, desc: used to fault happened when clean cache or clean data}
@@ -74,7 +79,7 @@ BUNDLE_INSTALL:
   BUNDLE_NAME: {type: STRING, desc: bundleName}
   VERSION: {type: UINT32, desc: versionCode}
   INSTALL_TYPE: {type: STRING, desc: normal prebundle or freeInstall}
-  PERIOD: {type: STRING, desc: boot reboot or createUser}
+  SCENE: {type: STRING, desc: boot reboot or createUser}
 
 BUNDLE_UNINSTALL:
   __BASE: {type: BEHAVIOR, level: MINOR, desc: bundle uninstall}
@@ -95,12 +100,14 @@ PRE_BUNDLE_RECOVER:
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
   VERSION: {type: UINT32, desc: versionCode}
+  INSTALL_TYPE: {type: STRING, desc: only prebundle}
 
 BUNDLE_COMPONENT_STATE_CHANGE:
   __BASE: {type: BEHAVIOR, level: MINOR, desc: bundle or component disable or enable}
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
   ABILITY_NAME: {type: STRING, desc: abilityName}
+  TYPE: {type: STRING, desc: application or ability}
   STATE: {type: STRING, desc: isEnable}
 
 BUNDLE_CLEAN_CACHE:

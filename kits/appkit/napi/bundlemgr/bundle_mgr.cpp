@@ -5141,7 +5141,7 @@ napi_value SetModuleUpgradeFlagPromise(napi_env env, AsyncModuleUpgradeFlagCallb
     return promise;
 }
 
-napi_value UpdateModuleUpgradeFlagWrap(
+napi_value SetModuleUpgradeFlagWrap(
     napi_env env, napi_callback_info info, AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo)
 {
     if (asyncCallbackInfo == nullptr) {
@@ -5208,15 +5208,15 @@ AsyncModuleUpgradeFlagCallbackInfo *CreateModuleUpgradeFlagCallbackInfo(napi_env
     return asyncCallbackInfo;
 }
 
-napi_value UpdateModuleUpgradeFlag(napi_env env, napi_callback_info info)
+napi_value SetModuleUpgradeFlag(napi_env env, napi_callback_info info)
 {
-    APP_LOGI("NAPI_UpdateModuleUpgradeFlag start");
+    APP_LOGI("NAPI_SetModuleUpgradeFlag start");
     AsyncModuleUpgradeFlagCallbackInfo *asyncCallbackInfo = CreateModuleUpgradeFlagCallbackInfo(env);
     if (asyncCallbackInfo == nullptr) {
         return WrapVoidToJS(env);
     }
 
-    napi_value ret = UpdateModuleUpgradeFlagWrap(env, info, asyncCallbackInfo);
+    napi_value ret = SetModuleUpgradeFlagWrap(env, info, asyncCallbackInfo);
 
     if (ret == nullptr) {
         APP_LOGE("%{public}s ret is nullptr", __func__);

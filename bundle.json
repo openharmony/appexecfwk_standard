@@ -62,7 +62,6 @@
                 "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
                 "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
                 "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
-                "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
                 "//foundation/appexecfwk/standard/services/bundlemgr:bms_target",
                 "//foundation/appexecfwk/standard/kits/appkit/napi:napi_packages",
                 "//foundation/appexecfwk/standard/kits/appkit/native/bundle:bundle_ndk",

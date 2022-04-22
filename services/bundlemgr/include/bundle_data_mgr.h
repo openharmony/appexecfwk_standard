@@ -45,7 +45,6 @@
 #ifdef GLOBAL_RESMGR_ENABLE
 #include "resource_manager.h"
 #endif
-#include "target_ability_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {

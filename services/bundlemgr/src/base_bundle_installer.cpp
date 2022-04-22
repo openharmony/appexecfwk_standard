@@ -87,7 +87,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
         bundleName_,
         (isAppExist_ ? BundleEventType::UPDATE : BundleEventType::INSTALL),
         installParam,
-        sysEventInfo_.preBundlePeriod,
+        sysEventInfo_.preBundleScene,
         result);
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
     APP_LOGD("finish to process bundle install");
@@ -115,7 +115,7 @@ ErrCode BaseBundleInstaller::InstallBundleByBundleName(
         bundleName,
         BundleEventType::INSTALL,
         installParam,
-        InstallPeriod::CREATE_USER,
+        InstallScene::CREATE_USER,
         result);
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
     APP_LOGD("finish to process %{public}s bundle install", bundleName.c_str());
@@ -145,7 +145,7 @@ ErrCode BaseBundleInstaller::Recover(
         bundleName,
         BundleEventType::RECOVER,
         recoverInstallParam,
-        sysEventInfo_.preBundlePeriod,
+        sysEventInfo_.preBundleScene,
         result);
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
     APP_LOGD("finish to process %{public}s bundle recover", bundleName.c_str());
@@ -175,7 +175,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
         bundleName,
         BundleEventType::UNINSTALL,
         installParam,
-        sysEventInfo_.preBundlePeriod,
+        sysEventInfo_.preBundleScene,
         result);
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
     APP_LOGD("finish to process %{public}s bundle uninstall", bundleName.c_str());
@@ -212,7 +212,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
         bundleName,
         BundleEventType::UNINSTALL,
         installParam,
-        sysEventInfo_.preBundlePeriod,
+        sysEventInfo_.preBundleScene,
         result);
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
     APP_LOGD("finish to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
@@ -313,7 +313,6 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 
     ErrCode result = ERR_OK;
     if (isAppExist_) {
-        sysEventInfo_.oldVersionCode = oldInfo.GetVersionCode();
         // to check new or old modle, application or hm service of the bundle.
         result = CheckHapModleOrType(oldInfo, newInfos);
         CHECK_RESULT(result, "bundle modle or type is not same %{public}d");
@@ -875,6 +874,7 @@ ErrCode BaseBundleInstaller::InnerProcessInstallByPreInstallInfo(
         bool isAppExist = dataMgr_->GetInnerBundleInfo(bundleName, oldInfo);
         if (isAppExist) {
             dataMgr_->EnableBundle(bundleName);
+            versionCode_ = oldInfo.GetVersionCode();
             if (oldInfo.HasInnerBundleUserInfo(userId_)) {
                 APP_LOGE("App is exist in user(%{public}d).", userId_);
                 return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
@@ -907,7 +907,6 @@ ErrCode BaseBundleInstaller::InnerProcessInstallByPreInstallInfo(
 
             userGuard.Dismiss();
             uid = oldInfo.GetUid(userId_);
-            versionCode_ = oldInfo.GetVersionCode();
             return ERR_OK;
         }
     }
@@ -2057,15 +2056,15 @@ void BaseBundleInstaller::OnSingletonChange()
 }
 
 void BaseBundleInstaller::SendBundleSystemEvent(const std::string &bundleName, BundleEventType bundleEventType,
-    const InstallParam &installParam, InstallPeriod preBundlePeriod, ErrCode errCode)
+    const InstallParam &installParam, InstallScene preBundleScene, ErrCode errCode)
 {
     sysEventInfo_.bundleName = bundleName;
     sysEventInfo_.isPreInstallApp = installParam.isPreInstallApp;
     sysEventInfo_.errCode = errCode;
     sysEventInfo_.isFreeInstallMode = (installParam.installFlag == InstallFlag::FREE_INSTALL);
     sysEventInfo_.userId = userId_;
-    sysEventInfo_.curVersionCode = versionCode_;
-    sysEventInfo_.preBundlePeriod = preBundlePeriod;
+    sysEventInfo_.versionCode = versionCode_;
+    sysEventInfo_.preBundleScene = preBundleScene;
     EventReport::SendBundleSystemEvent(bundleEventType, sysEventInfo_);
 }
 }  // namespace AppExecFwk

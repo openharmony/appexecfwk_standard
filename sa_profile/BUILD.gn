@@ -19,10 +19,3 @@ ohos_sa_profile("appexecfwk_sa_profile") {
 
   part_name = "bundle_framework"
 }
-
-ohos_prebuilt_etc("foundation.rc") {
-  source = "foundation.cfg"
-  relative_install_dir = "init"
-  subsystem_name = "appexecfwk"
-  part_name = "bundle_framework"
-}

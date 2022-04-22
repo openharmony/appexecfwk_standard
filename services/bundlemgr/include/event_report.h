@@ -25,23 +25,20 @@ namespace OHOS {
 namespace AppExecFwk {
 enum class BMSEventType {
     UNKNOW = 0,
-    /***********fault event**************/
+    /***********FAULT EVENT**************/
     BUNDLE_INSTALL_EXCEPTION,
     BUNDLE_UNINSTALL_EXCEPTION,
     BUNDLE_UPDATE_EXCEPTION,
     PRE_BUNDLE_RECOVER_EXCEPTION,
     BUNDLE_STATE_CHANGE_EXCEPTION,
     BUNDLE_CLEAN_CACHE_EXCEPTION,
-    /***********behavior event***********/
-    // boot sacn
+    /***********BEHAVIOR EVENT***********/
     BOOT_SCAN_START,
     BOOT_SCAN_END,
-    // Bundle version management
     BUNDLE_INSTALL,
     BUNDLE_UNINSTALL,
     BUNDLE_UPDATE,
     PRE_BUNDLE_RECOVER,
-    // Bundle state management
     BUNDLE_COMPONENT_STATE_CHANGE,
     BUNDLE_CLEAN_CACHE,
 };
@@ -54,7 +51,7 @@ enum class BundleEventType {
     RECOVER,
 };
 
-enum class InstallPeriod {
+enum class InstallScene {
     NORMAL = 0,
     BOOT,
     REBOOT,
@@ -71,19 +68,15 @@ enum HiSysEventType {
 
 struct EventInfo {
     int32_t userId = Constants::INVALID_USERID;
-    int32_t uid = Constants::INVALID_UID;
     std::string bundleName;
     std::string moduleName;
     std::string abilityName;
     int64_t timeStamp = 0;
-
-    // olny used in bundle update
-    uint32_t curVersionCode = 0;
-    uint32_t oldVersionCode = 0;
+    uint32_t versionCode = 0;
 
     // olny used for preBundle
     bool isPreInstallApp = false;
-    InstallPeriod preBundlePeriod = InstallPeriod::NORMAL;
+    InstallScene preBundleScene = InstallScene::NORMAL;
 
     // olny used for clean cache
     bool isCleanCache = true;
@@ -100,14 +93,12 @@ struct EventInfo {
     void Reset()
     {
         userId = Constants::INVALID_USERID;
-        uid = Constants::INVALID_UID;
         bundleName.clear();
         moduleName.clear();
         abilityName.clear();
-        curVersionCode = 0;
-        oldVersionCode = 0;
+        versionCode = 0;
         timeStamp = 0;
-        preBundlePeriod = InstallPeriod::NORMAL;
+        preBundleScene = InstallScene::NORMAL;
         isCleanCache = false;
         isPreInstallApp = false;
         isFreeInstallMode = false;
