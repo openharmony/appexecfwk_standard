@@ -329,9 +329,6 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
     const std::string &moduleName, const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const
 {
     std::string keyName = bundleName + "." + moduleName + "." + abilityName;
-    if (bundleName == BUNDLE_NAME_TEST) {
-        innerBundleInfo.SetMainAbilityName(keyName);
-    }
     FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
     std::vector<FormInfo> formInfos;
     formInfos.emplace_back(form);
