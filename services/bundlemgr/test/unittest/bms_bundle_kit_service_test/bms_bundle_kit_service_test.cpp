@@ -437,6 +437,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     for (const auto &moduleName : moduleNameList) {
         InnerModuleInfo moduleInfo = MockModuleInfo(moduleName);
         std::string keyName = bundleName + "." + moduleName + "." + abilityName;
+        moduleInfo.entryAbilityKey = keyName;
         AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
         innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
         innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
