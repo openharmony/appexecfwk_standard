@@ -46,9 +46,7 @@ const std::string EVENT_PARAM_ERROR_CODE = "ERROR_CODE";
 const std::string EVENT_PARAM_ABILITY_NAME = "ABILITY_NAME";
 const std::string EVENT_PARAM_TIME = "TIME";
 const std::string EVENT_PARAM_VERSION = "VERSION";
-const std::string EVENT_PARAM_OLD_VERSION = "OLD_VERSION";
-const std::string EVENT_PARAM_NEW_VERSION = "NEW_VERSION";
-const std::string EVENT_PARAM_PERIOD = "PERIOD";
+const std::string EVENT_PARAM_SCENE = "SCENE";
 const std::string EVENT_PARAM_CLEAN_TYPE = "CLEAN_TYPE";
 const std::string EVENT_PARAM_INSTALL_TYPE = "INSTALL_TYPE";
 const std::string EVENT_PARAM_STATE = "STATE";
@@ -56,23 +54,49 @@ const std::string EVENT_PARAM_STATE = "STATE";
 const std::string FREE_INSTALL_TYPE = "FreeInstall";
 const std::string PRE_BUNDLE_INSTALL_TYPE = "PreBundleInstall";
 const std::string NORMAL_INSTALL_TYPE = "normalInstall";
-const std::string NORMAL_PERIOD = "Normal";
-const std::string BOOT_PERIOD = "Boot";
-const std::string REBOOT_PERIOD = "Reboot";
-const std::string CREATE_USER_PERIOD = "CreateUser";
-const std::string REMOVE_USER_PERIOD = "CreateUser";
+const std::string NORMAL_SCENE = "Normal";
+const std::string BOOT_SCENE = "Boot";
+const std::string REBOOT_SCENE = "Reboot";
+const std::string CREATE_USER_SCENE = "CreateUser";
+const std::string REMOVE_USER_SCENE = "CreateUser";
 const std::string CLEAN_CACHE = "cleanCache";
 const std::string CLEAN_DATA = "cleanData";
 const std::string ENABLE = "enable";
 const std::string DISABLE = "disable";
+const std::string APPLICATION = "application";
+const std::string ABILITY = "ability";
+const std::string TYPE = "TYPE";
 
-const std::unordered_map<InstallPeriod, std::string> INSTALL_PERIOD_STR_MAP = {
-    { InstallPeriod::NORMAL, NORMAL_PERIOD },
-    { InstallPeriod::BOOT, BOOT_PERIOD },
-    { InstallPeriod::REBOOT, REBOOT_PERIOD },
-    { InstallPeriod::CREATE_USER, CREATE_USER_PERIOD },
-    { InstallPeriod::REMOVE_USER, REMOVE_USER_PERIOD },
+const std::unordered_map<InstallScene, std::string> INSTALL_SCENE_STR_MAP = {
+    { InstallScene::NORMAL, NORMAL_SCENE },
+    { InstallScene::BOOT, BOOT_SCENE },
+    { InstallScene::REBOOT, REBOOT_SCENE },
+    { InstallScene::CREATE_USER, CREATE_USER_SCENE },
+    { InstallScene::REMOVE_USER, REMOVE_USER_SCENE },
 };
+
+std::string GetInstallType(const EventInfo& eventInfo)
+{
+    std::string installType = NORMAL_INSTALL_TYPE;
+    if (eventInfo.isFreeInstallMode) {
+        installType = FREE_INSTALL_TYPE;
+    } else if (eventInfo.isPreInstallApp) {
+        installType = PRE_BUNDLE_INSTALL_TYPE;
+    }
+
+    return installType;
+}
+
+std::string GetInstallScene(const EventInfo& eventInfo)
+{
+    std::string installScene = NORMAL_SCENE;
+    auto iter = INSTALL_SCENE_STR_MAP.find(eventInfo.preBundleScene);
+    if (iter != INSTALL_SCENE_STR_MAP.end()) {
+        installScene = iter->second;
+    }
+
+    return installScene;
+}
 }
 
 std::unordered_map<BMSEventType, void (*)(const EventInfo& eventInfo)>
@@ -147,57 +171,38 @@ void InnerEventReport::SendSystemEvent(BMSEventType bmsEventType, const EventInf
 
 void InnerEventReport::InnerSendBundleInstallExceptionEvent(const EventInfo& eventInfo)
 {
-    std::string installType = NORMAL_INSTALL_TYPE;
-    if (eventInfo.isFreeInstallMode) {
-        installType = FREE_INSTALL_TYPE;
-    } else if (eventInfo.isPreInstallApp) {
-        installType = PRE_BUNDLE_INSTALL_TYPE;
-    }
-
     InnerEventWrite(
         BUNDLE_INSTALL_EXCEPTION,
         HiSysEventType::FAULT,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_INSTALL_TYPE, installType,
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, GetInstallType(eventInfo),
+        EVENT_PARAM_SCENE, GetInstallScene(eventInfo),
         EVENT_PARAM_ERROR_CODE, eventInfo.errCode);
 }
 
 void InnerEventReport::InnerSendBundleUninstallExceptionEvent(const EventInfo& eventInfo)
 {
-    std::string installType = NORMAL_INSTALL_TYPE;
-    if (eventInfo.isFreeInstallMode) {
-        installType = FREE_INSTALL_TYPE;
-    } else if (eventInfo.isPreInstallApp) {
-        installType = PRE_BUNDLE_INSTALL_TYPE;
-    }
-
     InnerEventWrite(
         BUNDLE_UNINSTALL_EXCEPTION,
         HiSysEventType::FAULT,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_INSTALL_TYPE, installType,
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, GetInstallType(eventInfo),
         EVENT_PARAM_ERROR_CODE, eventInfo.errCode);
 }
 
 void InnerEventReport::InnerSendBundleUpdateExceptionEvent(const EventInfo& eventInfo)
 {
-    std::string installType = NORMAL_INSTALL_TYPE;
-    if (eventInfo.isFreeInstallMode) {
-        installType = FREE_INSTALL_TYPE;
-    } else if (eventInfo.isPreInstallApp) {
-        installType = PRE_BUNDLE_INSTALL_TYPE;
-    }
-
     InnerEventWrite(
         BUNDLE_UPDATE_EXCEPTION,
         HiSysEventType::FAULT,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_INSTALL_TYPE, installType,
-        EVENT_PARAM_OLD_VERSION, eventInfo.oldVersionCode,
-        EVENT_PARAM_NEW_VERSION, eventInfo.curVersionCode,
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, GetInstallType(eventInfo),
         EVENT_PARAM_ERROR_CODE, eventInfo.errCode);
 }
 
@@ -208,17 +213,21 @@ void InnerEventReport::InnerSendPreBundleRecoverExceptionEvent(const EventInfo& 
         HiSysEventType::FAULT,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, PRE_BUNDLE_INSTALL_TYPE,
         EVENT_PARAM_ERROR_CODE, eventInfo.errCode);
 }
 
 void InnerEventReport::InnerSendBundleComponentChangeExceptionEvent(const EventInfo& eventInfo)
 {
+    std::string type = eventInfo.abilityName.empty() ? APPLICATION : ABILITY;
     InnerEventWrite(
         BUNDLE_STATE_CHANGE_EXCEPTION,
         HiSysEventType::FAULT,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_ABILITY_NAME, eventInfo.abilityName);
+        EVENT_PARAM_ABILITY_NAME, eventInfo.abilityName,
+        TYPE, type);
 }
 
 void InnerEventReport::InnerSendBundleCleanCacheExceptionEvent(const EventInfo& eventInfo)
@@ -250,63 +259,36 @@ void InnerEventReport::InnerSendBootScanEndEvent(const EventInfo& eventInfo)
 
 void InnerEventReport::InnerSendBundleInstallEvent(const EventInfo& eventInfo)
 {
-    std::string installType = NORMAL_INSTALL_TYPE;
-    if (eventInfo.isFreeInstallMode) {
-        installType = FREE_INSTALL_TYPE;
-    } else if (eventInfo.isPreInstallApp) {
-        installType = PRE_BUNDLE_INSTALL_TYPE;
-    }
-
-    std::string installPeriod;
-    auto iter = INSTALL_PERIOD_STR_MAP.find(eventInfo.preBundlePeriod);
-    if (iter != INSTALL_PERIOD_STR_MAP.end()) {
-        installPeriod = iter->second;
-    }
-
     InnerEventWrite(
         BUNDLE_INSTALL,
         HiSysEventType::BEHAVIOR,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_VERSION, eventInfo.curVersionCode,
-        EVENT_PARAM_INSTALL_TYPE, installType,
-        EVENT_PARAM_PERIOD, installPeriod);
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, GetInstallType(eventInfo),
+        EVENT_PARAM_SCENE, GetInstallScene(eventInfo));
 }
 
 void InnerEventReport::InnerSendBundleUninstallEvent(const EventInfo& eventInfo)
 {
-    std::string installType = NORMAL_INSTALL_TYPE;
-    if (eventInfo.isFreeInstallMode) {
-        installType = FREE_INSTALL_TYPE;
-    } else if (eventInfo.isPreInstallApp) {
-        installType = PRE_BUNDLE_INSTALL_TYPE;
-    }
-
     InnerEventWrite(
         BUNDLE_UNINSTALL,
         HiSysEventType::BEHAVIOR,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_VERSION, eventInfo.curVersionCode,
-        EVENT_PARAM_INSTALL_TYPE, installType);
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, GetInstallType(eventInfo));
 }
 
 void InnerEventReport::InnerSendBundleUpdateEvent(const EventInfo& eventInfo)
 {
-    std::string installType = NORMAL_INSTALL_TYPE;
-    if (eventInfo.isFreeInstallMode) {
-        installType = FREE_INSTALL_TYPE;
-    } else if (eventInfo.isPreInstallApp) {
-        installType = PRE_BUNDLE_INSTALL_TYPE;
-    }
-
     InnerEventWrite(
         BUNDLE_UPDATE,
         HiSysEventType::BEHAVIOR,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_VERSION, eventInfo.curVersionCode,
-        EVENT_PARAM_INSTALL_TYPE, installType);
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, GetInstallType(eventInfo));
 }
 
 void InnerEventReport::InnerSendPreBundleRecoverEvent(const EventInfo& eventInfo)
@@ -316,11 +298,13 @@ void InnerEventReport::InnerSendPreBundleRecoverEvent(const EventInfo& eventInfo
         HiSysEventType::BEHAVIOR,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
-        EVENT_PARAM_VERSION, eventInfo.curVersionCode);
+        EVENT_PARAM_VERSION, eventInfo.versionCode,
+        EVENT_PARAM_INSTALL_TYPE, PRE_BUNDLE_INSTALL_TYPE);
 }
 
 void InnerEventReport::InnerSendBundleComponentChangeEvent(const EventInfo& eventInfo)
 {
+    std::string type = eventInfo.abilityName.empty() ? APPLICATION : ABILITY;
     std::string state = eventInfo.isEnable ? ENABLE : DISABLE;
     InnerEventWrite(
         BUNDLE_COMPONENT_STATE_CHANGE,
@@ -328,6 +312,7 @@ void InnerEventReport::InnerSendBundleComponentChangeEvent(const EventInfo& even
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,
         EVENT_PARAM_ABILITY_NAME, eventInfo.abilityName,
+        TYPE, type,
         EVENT_PARAM_STATE, state);
 }
 

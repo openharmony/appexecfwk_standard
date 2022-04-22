@@ -141,12 +141,12 @@ protected:
     void ResetInstallProperties();
     /**
      * @brief Reset install properties.
-     * @param isBootPeriod Indicates the event occurs in the boot phase.
+     * @param isBootScene Indicates the event occurs in the boot phase.
      */
-    void MarkPreBundleSyeEventBootTag(bool isBootPeriod)
+    void MarkPreBundleSyeEventBootTag(bool isBootScene)
     {
-        sysEventInfo_.preBundlePeriod =
-            isBootPeriod ? InstallPeriod::BOOT : InstallPeriod::REBOOT;
+        sysEventInfo_.preBundleScene =
+            isBootScene ? InstallScene::BOOT : InstallScene::REBOOT;
     }
 
 private:
@@ -476,7 +476,7 @@ private:
     ErrCode UninstallAllSandboxApps(const std::string &bundleName);
     ErrCode CheckAppLabel(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo) const;
     void SendBundleSystemEvent(const std::string &bundleName, BundleEventType bundleEventType,
-        const InstallParam &installParam, InstallPeriod preBundlePeriod, ErrCode errCode);
+        const InstallParam &installParam, InstallScene preBundleScene, ErrCode errCode);
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
