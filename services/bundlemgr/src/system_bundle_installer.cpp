@@ -42,6 +42,8 @@ bool SystemBundleInstaller::InstallSystemBundle(
         || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
     }
+
+    MarkPreBundleSyeEventBootTag(true);
     ErrCode result = InstallBundle(filePath, installParam, appType);
     if (result != ERR_OK) {
         APP_LOGE("install system bundle fail, error: %{public}d", result);
@@ -58,6 +60,7 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
+
     InstallParam installParam;
     installParam.isPreInstallApp = true;
     installParam.noSkipsKill = false;
@@ -67,14 +70,18 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(
     || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
     }
+
     for (auto allUserId : dataMgr->GetAllUser()) {
         installParam.userId = allUserId;
+        MarkPreBundleSyeEventBootTag(false);
         ErrCode result = InstallBundle(filePaths, installParam, appType);
         if (result != ERR_OK) {
             APP_LOGW("install system bundle fail, error: %{public}d", result);
         }
+
         ResetInstallProperties();
     }
+
     return true;
 }
 
@@ -85,16 +92,20 @@ bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName)
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
+
     InstallParam installParam;
     for (auto userId : dataMgr->GetAllUser()) {
         installParam.userId = userId;
         installParam.needSavePreInstallInfo = true;
+        installParam.isPreInstallApp = true;
         installParam.noSkipsKill = false;
         installParam.needSendEvent = false;
+        MarkPreBundleSyeEventBootTag(false);
         ErrCode result = UninstallBundle(bundleName, installParam);
         if (result != ERR_OK) {
             APP_LOGW("uninstall system bundle fail, error: %{public}d", result);
         }
+
         ResetInstallProperties();
     }
     return true;
@@ -112,14 +123,18 @@ bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName,
     for (auto userId : dataMgr->GetAllUser()) {
         installParam.userId = userId;
         installParam.needSavePreInstallInfo = true;
+        installParam.isPreInstallApp = true;
         installParam.noSkipsKill = false;
         installParam.needSendEvent = false;
+        MarkPreBundleSyeEventBootTag(false);
         ErrCode result = UninstallBundle(bundleName, modulePackage, installParam);
         if (result != ERR_OK) {
             APP_LOGW("uninstall system bundle fail, error: %{public}d", result);
         }
+
         ResetInstallProperties();
     }
+
     return true;
 }
 }  // namespace AppExecFwk
