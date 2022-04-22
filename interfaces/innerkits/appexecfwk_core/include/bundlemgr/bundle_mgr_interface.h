@@ -656,16 +656,6 @@ public:
         return true;
     }
     /**
-     * @brief Obtains the icon of a specified ability.
-     * @param bundleName Indicates the bundle name.
-     * @param className Indicates the ability class name.
-     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
-     */
-    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &className)
-    {
-        return Constants::EMPTY_STRING;
-    }
-    /**
      * @brief Confirms with the permission management module to check whether a request prompt is required for granting
      * a certain permission.
      * @param bundleName Indicates the name of the bundle to check.
