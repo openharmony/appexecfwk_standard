@@ -16,7 +16,7 @@
 #include "service_center_death_recipient.h"
 
 #include "app_log_wrapper.h"
-#include "free_install_code.h"
+#include "free_install_params.h"
 #include "ohos/aafwk/content/want.h"
 #include "parcel.h"
 
@@ -56,7 +56,7 @@ void ServiceCenterDeathRecipient::SendCallBack(FreeInstallParams &freeInstallPar
         APP_LOGE("Write interface token failed");
         return;
     }
-    int32_t resultCode = FreeInstallErrorCode::FREE_INSTALL_SERVICE_CENTER_CRASH;
+    int32_t resultCode = FreeInstallErrorCode::SERVICE_CENTER_CRASH;
     if (!data.WriteInt32(resultCode)) {
         APP_LOGE("Write result code error");
         return;

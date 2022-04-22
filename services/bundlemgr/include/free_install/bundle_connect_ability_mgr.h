@@ -31,7 +31,6 @@
 #include "ipc_skeleton.h"
 #include "iremote_broker.h"
 #include "ohos/aafwk/content/want.h"
-#include "service_center_code.h"
 #include "service_center_connection.h"
 #include "system_ability_definition.h"
 #include "system_ability_helper.h"
@@ -224,7 +223,7 @@ private:
     sptr<ServiceCenterConnection> serviceCenterConnection_;
     std::map<std::string, FreeInstallParams> freeInstallParamsMap_;
     sptr<IRemoteObject> serviceCenterRemoteObject_;
-    int32_t connectState_ = ServiceCenterConnectState::SERVICE_CENTER_DISCONNECTED;
+    int32_t connectState_ = ServiceCenterConnectState::DISCONNECTED;
     std::shared_ptr<AppExecFwk::EventHandler> handler_;
     std::shared_ptr<EventRunner> runner_;
 };
