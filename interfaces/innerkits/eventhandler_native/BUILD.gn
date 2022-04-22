@@ -12,9 +12,8 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/libs/libeventhandler/lib_event_handler_sources.gni")
+import("../../../appexecfwk.gni")
+import("../../../libs/libeventhandler/lib_event_handler_sources.gni")
 
 config("private_config") {
   visibility = [ ":*" ]
@@ -39,7 +38,7 @@ ohos_shared_library("eventhandler_native") {
   cflags = [ "-Wno-error=inconsistent-missing-override" ]
 
   deps = [
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
     "//utils/native/base:utils",
   ]
 

@@ -11,9 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import("//build/test.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
-import(
-    "//foundation/appexecfwk/standard/services/bundlemgr/appexecfwk_bundlemgr.gni")
+import("../../../../../appexecfwk.gni")
+import("../../../../../services/bundlemgr/appexecfwk_bundlemgr.gni")
 
 module_output_path = "bundle_framework/bundlemgrservice"
 
@@ -130,7 +129,8 @@ ohos_unittest("BmsBundleAccessTokenIdTest") {
     defines += [ "HICOLLIE_ENABLE" ]
   }
 
-  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
+  resource_config_file =
+      "${appexecfwk_path}/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
 group("unittest") {
