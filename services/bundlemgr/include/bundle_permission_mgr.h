@@ -26,6 +26,12 @@ namespace AppExecFwk {
 class BundlePermissionMgr {
 public:
     /**
+     * @brief Initialize BundlePermissionMgr, which is only called when the system starts.
+     * @return Returns true if successfully initialized BundlePermissionMgr; returns false otherwise.
+     */
+    static bool Init();
+
+    /**
      * @brief Verify whether a specified bundle has been granted a specific permission.
      * @param bundleName Indicates the name of the bundle to check.
      * @param permission Indicates the permission to check.
@@ -98,9 +104,9 @@ private:
     static bool GetAllReqPermissionStateFull(Security::AccessToken::AccessTokenID tokenId,
         std::vector<Security::AccessToken::PermissionStateFull> &newPermissionState);
 
-    static bool InnerGrantRequestPermissions(const std::vector<RequestPermission> &reqPermissions,
-        const std::string &apl, const std::vector<std::string> &acls,
-        const Security::AccessToken::AccessTokenID tokenId);
+    static bool InnerGrantRequestPermissions(Security::AccessToken::AccessTokenID tokenId,
+        const std::vector<RequestPermission> &reqPermissions,
+        const InnerBundleInfo &innerBundleInfo);
 
     static Security::AccessToken::ATokenAplEnum GetTokenApl(const std::string &apl);
 
@@ -117,6 +123,15 @@ private:
 
     static std::vector<std::string> GetNeedDeleteRequestPermissionName(const InnerBundleInfo &oldInfo,
         const InnerBundleInfo &newInfo);
+
+    static bool CheckPermissionInDefaultPermissions(const std::string &bundleName, const std::string &permissionName,
+        bool &userCancellable);
+
+    static bool GrantPermission(const Security::AccessToken::AccessTokenID tokenId,
+        const std::string &permissionName, const Security::AccessToken::PermissionFlag flag,
+        const std::string &bundleName);
+
+    static std::map<std::string, std::map<std::string, bool>> defaultPermissions_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

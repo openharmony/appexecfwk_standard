@@ -85,10 +85,12 @@ ohos_source_set("bundle_parser") {
     "include/bundle_extractor.h",
     "include/bundle_parser.h",
     "include/bundle_profile.h",
+    "include/default_permission_profile.h",
     "include/module_profile.h",
     "src/bundle_extractor.cpp",
     "src/bundle_parser.cpp",
     "src/bundle_profile.cpp",
+    "src/default_permission_profile.cpp",
     "src/module_profile.cpp",
     "src/pre_bundle_profile.cpp",
   ]
