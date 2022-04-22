@@ -23,7 +23,6 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
 
   configs = [
     "${services_path}/test/moduletest/common/bms:bms_module_test_config",
-    "${libs_path}/libeventhandler:libeventhandler_config",
     "${services_path}/bundlemgr:bundlemgr_common_config",
     "${common_path}:appexecfwk_common_config",
   ]
@@ -67,18 +66,9 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
-    "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/bundlemgr:bundle_parser",
     "${services_path}/bundlemgr:parser_common",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
-    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
   ]
