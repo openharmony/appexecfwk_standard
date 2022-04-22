@@ -323,7 +323,7 @@ public:
     {
         return 0;
     }
-    int ContinueAbility(const std::string &deviceId, int32_t missionId) override
+    int ContinueAbility(const std::string &deviceId, int32_t missionId, uint32_t versionCode) override
     {
         return 0;
     }
