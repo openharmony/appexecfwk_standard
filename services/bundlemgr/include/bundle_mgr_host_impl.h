@@ -722,7 +722,7 @@ public:
      */
     virtual bool SetModuleUpgradeFlag(
         const std::string &bundleName, const std::string &moduleName, int32_t upgradeFlag) override;
-    virtual bool GetSandboxAppBundleInfo(
+    virtual bool GetSandboxBundleInfo(
         const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info) override;
 
 private:

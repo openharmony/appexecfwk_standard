@@ -597,7 +597,7 @@ private:
 
     ErrCode HandleGetAllDependentModuleNames(Parcel &data, Parcel &reply);
 
-    ErrCode HandleGetSandboxAppBundleInfo(Parcel &data, Parcel &reply);
+    ErrCode HandleGetSandboxBundleInfo(Parcel &data, Parcel &reply);
 
 private:
     /**

@@ -31,6 +31,8 @@ namespace {
 const std::string INSTALL_THREAD = "install_thread";
 const std::string GET_MANAGER_FAIL = "fail to get bundle installer manager";
 int32_t INVALID_APP_INDEX = 0;
+int32_t LOWER_DLP_TYPE_BOUND = 0;
+int32_t UPPER_DLP_TYPE_BOUND = 3;
 }  // namespace
 
 BundleInstallerHost::BundleInstallerHost()
@@ -212,16 +214,17 @@ void BundleInstallerHost::HandleInstallSandboxApp(Parcel &data, Parcel &reply)
 {
     APP_LOGD("handle install sandbox app message");
     std::string bundleName = Str16ToStr8(data.ReadString16());
+    int32_t dplType = data.ReadInt32();
     int32_t userId = data.ReadInt32();
-    if (bundleName.empty()) {
-        APP_LOGE("handle install sandbox failed due to empty bundleName");
-        if (!reply.WriteBool(false)) {
+    if (bundleName.empty() || dplType <= LOWER_DLP_TYPE_BOUND || dplType >= UPPER_DLP_TYPE_BOUND) {
+        APP_LOGE("handle install sandbox failed due to error parameters");
+        if (!reply.WriteInt32(0)) {
             APP_LOGE("write failed");
         }
         return;
     }
-    auto ret = InstallSandboxApp(bundleName, userId);
-    if (!reply.WriteBool(ret)) {
+    auto ret = InstallSandboxApp(bundleName, dplType, userId);
+    if (!reply.WriteInt32(ret)) {
         APP_LOGE("write failed");
     }
     APP_LOGD("handle install sandbox app message finished");
@@ -354,13 +357,17 @@ bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
     return true;
 }
 
-bool BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t userId)
+int32_t BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId)
 {
     std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
     if (installer == nullptr) {
         return false;
     }
-    return (installer->InstallSandboxApp(bundleName, userId) == ERR_OK) ? true : false;
+    int32_t appIndex = 0;
+    if (installer->InstallSandboxApp(bundleName, dplType, userId, appIndex) != ERR_OK) {
+        return 0;
+    }
+    return appIndex;
 }
 
 bool BundleInstallerHost::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)

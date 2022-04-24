@@ -102,6 +102,7 @@ public:
     std::string bundleName;
     int instIndex;
     std::string appIDDesc;
+    int dlpType;
 };
 
 class HapPolicyParams final {

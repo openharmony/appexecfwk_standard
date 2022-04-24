@@ -1558,10 +1558,10 @@ bool BundleMgrHostImpl::GetAllDependentModuleNames(const std::string &bundleName
     return dataMgr->GetAllDependentModuleNames(bundleName, moduleName, dependentModuleNames);
 }
 
-bool BundleMgrHostImpl::GetSandboxAppBundleInfo(
+bool BundleMgrHostImpl::GetSandboxBundleInfo(
     const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
 {
-    APP_LOGD("start GetSandboxAppBundleInfo, bundleName : %{public}s, appindex : %{public}d, userId : %{public}d",
+    APP_LOGD("start GetSandboxBundleInfo, bundleName : %{public}s, appindex : %{public}d, userId : %{public}d",
         bundleName.c_str(), appIndex, userId);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {

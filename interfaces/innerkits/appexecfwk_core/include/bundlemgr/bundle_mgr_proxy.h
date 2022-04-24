@@ -683,6 +683,8 @@ public:
         const std::string &bundleName, const std::string &moduleName,
         const std::string &abilityName, AbilityInfo &abilityInfo) override;
 
+    virtual bool GetSandboxBundleInfo(
+        const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info) override;
     /**
      * @brief Obtains the value of isRemovable based on a given bundle name through the proxy object.
      * @param bundleName Indicates the bundle name to be queried.
@@ -728,9 +730,6 @@ public:
      */
     virtual bool SetModuleUpgradeFlag(
         const std::string &bundleName, const std::string &moduleName, int32_t upgradeFlag) override;
-
-    virtual bool GetSandboxAppBundleInfo(
-        const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info) override;
 
 private:
     /**
