@@ -35,6 +35,16 @@ const std::string PACK_SUMMARY_APP_BUNDLE_VERSION = "version";
 const std::string PACK_SUMMARY_MODULE_ABILITY_NAME = "name";
 const std::string PACK_SUMMARY_MODULE_ABILITY_LABEL = "label";
 const std::string PACK_SUMMARY_MODULE_ABILITY_VISIBLE = "visible";
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS = "forms";
+
+// module ablities forms
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_NAME = "name";
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_TYPE = "type";
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_UPDATE_ENABLED = "updateEnabled";
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_SCHEDULE_DUPDATETIME = "scheduledUpdateTime";
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_UPDATE_DURATION = "updateDuration";
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_SUPPORT_DIMENSIONS = "supportDimensions";
+const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_DEFAULT_DIMENSION = "defaultDimension";
 
 // module distro
 const std::string PACK_SUMMARY_MODULE_DISTRO_MODULE_TYPE = "moduleType";
@@ -151,7 +161,8 @@ void to_json(nlohmann::json &jsonObject, const ModuleAbilityInfo &abilityinfo)
     jsonObject = nlohmann::json {
         {PACK_SUMMARY_MODULE_ABILITY_NAME, abilityinfo.name},
         {PACK_SUMMARY_MODULE_ABILITY_LABEL, abilityinfo.label},
-        {PACK_SUMMARY_MODULE_ABILITY_VISIBLE, abilityinfo.visible}
+        {PACK_SUMMARY_MODULE_ABILITY_VISIBLE, abilityinfo.visible},
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS, abilityinfo.forms}
     };
 }
 
@@ -183,8 +194,52 @@ void from_json(const nlohmann::json &jsonObject, ModuleAbilityInfo &abilityinfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<AbilityFormInfo>>(jsonObject,
+        jsonObjectEnd,
+        PACK_SUMMARY_MODULE_ABILITY_FORMS,
+        abilityinfo.forms,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
     if (parseResult != ERR_OK) {
         APP_LOGE("read module abilityinfo from jsonObject error, error code : %{public}d", parseResult);
+    }
+}
+
+void to_json(nlohmann::json &jsonObject, const AbilityFormInfo &abilityFormInfo)
+{
+    jsonObject = nlohmann::json {
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS_NAME, abilityFormInfo.name},
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS_TYPE, abilityFormInfo.type},
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS_UPDATE_ENABLED, abilityFormInfo.updateEnabled},
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS_SCHEDULE_DUPDATETIME, abilityFormInfo.scheduledUpdateTime},
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS_UPDATE_DURATION, abilityFormInfo.updateDuration},
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS_SUPPORT_DIMENSIONS, abilityFormInfo.supportDimensions},
+        {PACK_SUMMARY_MODULE_ABILITY_FORMS_DEFAULT_DIMENSION, abilityFormInfo.defaultDimension}};
+}
+
+void from_json(const nlohmann::json &jsonObject, AbilityFormInfo &abilityFormInfo)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, PACK_SUMMARY_MODULE_ABILITY_FORMS_NAME,
+        abilityFormInfo.name, JsonType::STRING, false, parseResult, ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, PACK_SUMMARY_MODULE_ABILITY_FORMS_TYPE,
+        abilityFormInfo.type, JsonType::STRING, false, parseResult, ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, PACK_SUMMARY_MODULE_ABILITY_FORMS_UPDATE_ENABLED,
+        abilityFormInfo.updateEnabled, JsonType::BOOLEAN, false, parseResult, ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, PACK_SUMMARY_MODULE_ABILITY_FORMS_SCHEDULE_DUPDATETIME,
+        abilityFormInfo.scheduledUpdateTime, JsonType::STRING, false, parseResult, ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<uint32_t>(jsonObject, jsonObjectEnd, PACK_SUMMARY_MODULE_ABILITY_FORMS_UPDATE_DURATION,
+        abilityFormInfo.updateDuration, JsonType::NUMBER, false, parseResult, ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject, jsonObjectEnd,
+        PACK_SUMMARY_MODULE_ABILITY_FORMS_SUPPORT_DIMENSIONS, abilityFormInfo.supportDimensions, JsonType::ARRAY, false,
+        parseResult, ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, PACK_SUMMARY_MODULE_ABILITY_FORMS_DEFAULT_DIMENSION,
+        abilityFormInfo.defaultDimension, JsonType::STRING, false, parseResult, ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read BundleConfigInfo from database error, error code : %{public}d", parseResult);
     }
 }
 

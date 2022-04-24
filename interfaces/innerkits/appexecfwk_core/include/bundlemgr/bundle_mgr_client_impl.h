@@ -19,6 +19,7 @@
 #include "appexecfwk_errors.h"
 #include "application_info.h"
 #include "bundle_info.h"
+#include "bundle_pack_info.h"
 #include "bundle_mgr_interface.h"
 #include "extension_ability_info.h"
 #include "hap_module_info.h"
@@ -35,6 +36,7 @@ public:
 
     bool GetBundleNameForUid(const int uid, std::string &bundleName);
     bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId);
+    bool GetBundlePackInfo(const std::string &bundleName, const BundlePackFlag flag, BundlePackInfo &bundlePackInfo);
     bool GetHapModuleInfo(const std::string &bundleName, const std::string &hapName, HapModuleInfo &hapModuleInfo);
     bool GetResConfigFile(const HapModuleInfo &hapModuleInfo, const std::string &metadataName,
     std::vector<std::string> &profileInfos) const;

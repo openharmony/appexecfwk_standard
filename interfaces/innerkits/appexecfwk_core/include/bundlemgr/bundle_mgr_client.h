@@ -18,6 +18,7 @@
 
 #include "bundle_constants.h"
 #include "bundle_info.h"
+#include "bundle_pack_info.h"
 #include "extension_ability_info.h"
 #include "hap_module_info.h"
 
@@ -33,6 +34,7 @@ public:
     bool GetBundleNameForUid(const int uid, std::string &bundleName);
     bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo,
         int32_t userId = Constants::UNSPECIFIED_USERID);
+    bool GetBundlePackInfo(const std::string &bundleName, const BundlePackFlag flag, BundlePackInfo &bundlePackInfo);
 
     /**
      * @brief Obtain the profile which are deploied in the Metadata in the bundle.
