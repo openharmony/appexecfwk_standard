@@ -36,11 +36,11 @@ ohos_fuzztest("ParseFuzzTest") {
     "${common_path}:libappexecfwk_common",
     "${services_path}/bundlemgr:bundle_parser",
     "${services_path}/bundlemgr:parser_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//third_party/googletest:gtest_main",
   ]
   external_deps = [
+    "ability_base:base",
+    "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",

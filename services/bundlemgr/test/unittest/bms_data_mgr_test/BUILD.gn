@@ -24,10 +24,7 @@ module_output_path = "bundle_framework/bundlemgrservice"
 ohos_unittest("BmsDataMgrTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [
-    "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
-    "//third_party/jsoncpp/include",
-  ]
+  include_dirs = [ "//third_party/jsoncpp/include" ]
   sources = [
     "${services_path}/bundlemgr/src/account_helper.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
@@ -44,7 +41,6 @@ ohos_unittest("BmsDataMgrTest") {
     "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
     "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
     "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
-    "//foundation/aafwk/standard/frameworks/kits/content/cpp/src/ohos/aafwk/content/element_name.cpp",
   ]
 
   sources += [
