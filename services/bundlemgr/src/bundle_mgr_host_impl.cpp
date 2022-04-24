@@ -102,6 +102,21 @@ bool BundleMgrHostImpl::GetBundleInfo(
     return dataMgr->GetBundleInfo(bundleName, flags, bundleInfo, userId);
 }
 
+bool BundleMgrHostImpl::GetBundlePackInfo(
+    const std::string &bundleName, const BundlePackFlag flag, BundlePackInfo &bundlePackInfo)
+{
+    return GetBundlePackInfo(bundleName, static_cast<int32_t>(flag), bundlePackInfo);
+}
+bool BundleMgrHostImpl::GetBundlePackInfo(const std::string &bundleName, int32_t flags, BundlePackInfo &bundlePackInfo)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetBundlePackInfo(bundleName, flags, bundlePackInfo);
+}
+
 bool BundleMgrHostImpl::GetBundleUserInfo(
     const std::string &bundleName, int32_t userId, InnerBundleUserInfo &innerBundleUserInfo)
 {

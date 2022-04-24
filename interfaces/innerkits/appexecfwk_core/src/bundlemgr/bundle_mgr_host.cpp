@@ -83,6 +83,12 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS:
             errCode = HandleGetBundleInfoWithIntFlags(data, reply);
             break;
+        case IBundleMgr::Message::GET_BUNDLE_PACK_INFO:
+            errCode = HandleGetBundlePackInfo(data, reply);
+            break;
+        case IBundleMgr::Message::GET_BUNDLE_PACK_INFO_WITH_INT_FLAGS:
+            errCode = HandleGetBundlePackInfoWithIntFlags(data, reply);
+            break;
         case IBundleMgr::Message::GET_BUNDLE_INFOS:
             errCode = HandleGetBundleInfos(data, reply);
             break;
@@ -460,6 +466,48 @@ ErrCode BundleMgrHost::HandleGetBundleInfoWithIntFlags(Parcel &data, Parcel &rep
     APP_LOGD("name %{public}s, flags %{public}d", name.c_str(), flags);
     BundleInfo info;
     bool ret = GetBundleInfo(name, flags, info, userId);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetBundlePackInfo(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string name = data.ReadString();
+    BundlePackFlag flag = static_cast<BundlePackFlag>(data.ReadInt32());
+    APP_LOGD("name %{public}s, flag %{public}d", name.c_str(), flag);
+    BundlePackInfo info;
+    bool ret = GetBundlePackInfo(name, flag, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetBundlePackInfoWithIntFlags(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string name = data.ReadString();
+    int flags = data.ReadInt32();
+    APP_LOGD("name %{public}s, flags %{public}d", name.c_str(), flags);
+    BundlePackInfo info;
+    bool ret = GetBundlePackInfo(name, flags, info);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

@@ -247,6 +247,15 @@ public:
      */
     bool GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo,
         int32_t userId = Constants::UNSPECIFIED_USERID) const;
+
+    /**
+     * @brief Obtains the BundlePackInfo based on a given bundle name.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param flags Indicates the information contained in the BundleInfo object to be returned.
+     * @param BundlePackInfo Indicates the obtained BundlePackInfo object.
+     * @return Returns true if the BundlePackInfo is successfully obtained; returns false otherwise.
+     */
+    bool GetBundlePackInfo(const std::string &bundleName, int32_t flags, BundlePackInfo &bundleInfo) const;
     /**
      * @brief Obtains the BundleInfo of application bundles based on the specified metaData.
      * @param metaData Indicates the metadata to get in the bundle.

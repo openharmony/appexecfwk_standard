@@ -20,6 +20,7 @@
 #include "application_info.h"
 #include "bundle_constants.h"
 #include "bundle_info.h"
+#include "bundle_pack_info.h"
 #include "bundle_installer_interface.h"
 #include "bundle_status_callback_interface.h"
 #include "bundle_user_mgr_interface.h"
@@ -131,6 +132,33 @@ public:
     {
         return false;
     }
+
+    /**
+     * @brief Obtains the BundlePackInfo based on a given bundle name.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param flags Indicates the information contained in the BundleInfo object to be returned.
+     * @param BundlePackInfo Indicates the obtained BundlePackInfo object.
+     * @return Returns true if the BundlePackInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetBundlePackInfo(const std::string &bundleName, const BundlePackFlag flag,
+        BundlePackInfo &bundlePackInfo)
+    {
+        return false;
+    }
+
+    /**
+     * @brief Obtains the BundlePackInfo based on a given bundle name.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param flags Indicates the information contained in the BundleInfo object to be returned.
+     * @param BundlePackInfo Indicates the obtained BundlePackInfo object.
+     * @return Returns true if the BundlePackInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetBundlePackInfo(const std::string &bundleName, int32_t flags,
+        BundlePackInfo &bundlePackInfo)
+    {
+        return false;
+    }
+
     /**
      * @brief Obtains BundleInfo of all bundles available in the system.
      * @param flag Indicates the flag used to specify information contained in the BundleInfo that will be returned.
@@ -1041,6 +1069,7 @@ public:
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
         GET_BUNDLE_INFO,
+        GET_BUNDLE_PACK_INFO,
         GET_BUNDLE_INFOS,
         GET_UID_BY_BUNDLE_NAME,
         GET_APPID_BY_BUNDLE_NAME,
@@ -1106,6 +1135,7 @@ public:
         GET_APPLICATION_INFO_WITH_INT_FLAGS,
         GET_APPLICATION_INFOS_WITH_INT_FLAGS,
         GET_BUNDLE_INFO_WITH_INT_FLAGS,
+        GET_BUNDLE_PACK_INFO_WITH_INT_FLAGS,
         GET_BUNDLE_INFOS_WITH_INT_FLAGS,
         GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS,
         GET_BUNDLE_USER_MGR,

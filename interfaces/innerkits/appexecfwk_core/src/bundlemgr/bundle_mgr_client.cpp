@@ -52,6 +52,16 @@ bool BundleMgrClient::GetBundleInfo(const std::string &bundleName, const BundleF
     return impl_->GetBundleInfo(bundleName, flag, bundleInfo, userId);
 }
 
+bool BundleMgrClient::GetBundlePackInfo(
+    const std::string &bundleName, const BundlePackFlag flag, BundlePackInfo &bundlePackInfo)
+{
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
+    return impl_->GetBundlePackInfo(bundleName, flag, bundlePackInfo);
+}
+
 bool BundleMgrClient::GetHapModuleInfo(const std::string &bundleName, const std::string &hapName,
     HapModuleInfo &hapModuleInfo)
 {
