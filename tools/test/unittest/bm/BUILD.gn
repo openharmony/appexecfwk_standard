@@ -20,9 +20,6 @@ config("tools_bm_config_mock") {
   include_dirs = [
     "${innerkits_path}/appexecfwk_base/include",
     "${innerkits_path}/appexecfwk_core/include/bundlemgr",
-    "${aafwk_path}/interfaces/innerkits/uri/include",
-    "${aafwk_path}/interfaces/innerkits/want/include",
-    "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
     "${appexecfwk_path}/services/bundlemgr/include",
     "${appexecfwk_path}/services/bundlemgr/include/sandbox_app",

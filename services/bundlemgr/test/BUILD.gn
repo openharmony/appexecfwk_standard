@@ -19,9 +19,6 @@ config("bundlemgr_test_config") {
     "${innerkits_path}/appexecfwk_core/include/bundlemgr",
     "${appexecfwk_path}/services/bundlemgr/include/sandbox_app",
     "mock/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
-    "//foundation/aafwk/standard/interfaces/innerkits/base/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/uri/include",
   ]
 
   if (bundle_framework_free_install) {

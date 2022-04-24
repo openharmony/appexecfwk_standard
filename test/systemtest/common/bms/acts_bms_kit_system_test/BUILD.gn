@@ -18,10 +18,7 @@ module_output_path = "bundle_framework/bundlemgrsst"
 
 ohos_systemtest("ActsBmsKitSystemTest") {
   module_out_path = module_output_path
-  include_dirs = [
-    "//third_party/json/include",
-    "//base/notification/common_event_service/test/systemtest/common/resource",
-  ]
+  include_dirs = [ "//third_party/json/include" ]
 
   sources = [ "acts_bms_kit_system_test.cpp" ]
   cflags = []
