@@ -104,7 +104,7 @@ struct CompatibleAbilityInfo : public Parcelable {
     AbilityType type = AbilityType::UNKNOWN;
     AbilitySubType subType = AbilitySubType::UNSPECIFIED;
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
-    LaunchMode launchMode = LaunchMode::STANDARD;
+    LaunchMode launchMode = LaunchMode::SINGLETON;
     std::vector<std::string> permissions;
     std::vector<std::string> deviceTypes;
     std::vector<std::string> deviceCapabilities;
@@ -158,7 +158,7 @@ struct AbilityInfo : public Parcelable {
     AbilityType type = AbilityType::UNKNOWN;
     ExtensionAbilityType extensionAbilityType = ExtensionAbilityType::UNSPECIFIED;
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
-    LaunchMode launchMode = LaunchMode::STANDARD;
+    LaunchMode launchMode = LaunchMode::SINGLETON;
     std::string srcPath;
     std::string srcLanguage = "js";
     std::vector<std::string> permissions;
