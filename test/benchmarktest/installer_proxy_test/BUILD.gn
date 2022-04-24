@@ -18,7 +18,6 @@ module_output_path = "bundle_framework/benchmark/bundle_framework"
 
 ohos_benchmarktest("BenchmarkTestInstallerProxy") {
   module_out_path = module_output_path
-  include_dirs = [ "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/" ]
 
   sources = [ "installer_proxy_test.cpp" ]
 
