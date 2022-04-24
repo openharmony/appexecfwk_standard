@@ -2324,11 +2324,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
                         std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
                         skill.entities.end() &&
                     (!find)) {
-                    innerBundleInfo.SetMainAbility(keyName);
-                    innerBundleInfo.SetMainAbilityName(ability.name);
-                    if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
-                        innerBundleInfo.SetMainAbilityName(configJson.module.package + ability.name);
-                    }
+                    innerModuleInfo.entryAbilityKey = keyName;
                     // if there is main ability, it's label will be the application's label
                     applicationInfo.label = ability.label;
                     applicationInfo.labelId = ability.labelId;
@@ -2352,10 +2348,6 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
         innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     }
 
-    if (configJson.module.distro.moduleType == ProfileReader::MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY) {
-        innerBundleInfo.SetHasEntry(true);
-    }
-    innerBundleInfo.SetIsSupportBackup(configJson.deveicConfig.defaultDevice.supportBackup);
     innerBundleInfo.SetCurrentModulePackage(configJson.module.package);
     innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
     innerBundleInfo.SetBaseBundleInfo(bundleInfo);

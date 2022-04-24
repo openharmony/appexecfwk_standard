@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-const std::string IS_SUPPORT_BACKUP = "isSupportBackup";
 const std::string APP_TYPE = "appType";
 const std::string UID = "uid";
 const std::string GID = "gid";
@@ -36,12 +35,9 @@ const std::string BASE_APPLICATION_INFO = "baseApplicationInfo";
 const std::string BASE_BUNDLE_INFO = "baseBundleInfo";
 const std::string BASE_ABILITY_INFO = "baseAbilityInfos";
 const std::string INNER_MODULE_INFO = "innerModuleInfos";
-const std::string MAIN_ABILITY = "mainAbility";
-const std::string MAIN_ABILITY_NAME = "mainAbilityName";
 const std::string SKILL_INFOS = "skillInfos";
 const std::string USER_ID = "userId_";
 const std::string APP_FEATURE = "appFeature";
-const std::string HAS_ENTRY = "hasEntry";
 const std::string CAN_UNINSTALL = "canUninstall";
 const std::string MODULE_PACKAGE = "modulePackage";
 const std::string MODULE_PATH = "modulePath";
@@ -66,6 +62,7 @@ const std::string MODULE_FORMS = "formInfos";
 const std::string MODULE_SHORTCUT = "shortcutInfos";
 const std::string MODULE_COMMON_EVENT = "commonEvents";
 const std::string MODULE_MAIN_ABILITY = "mainAbility";
+const std::string MODULE_ENTRY_ABILITY_KEY = "entryAbilityKey";
 const std::string MODULE_DEPENDENCIES = "dependencies";
 const std::string NEW_BUNDLE_NAME = "newBundleName";
 const std::string MODULE_SRC_PATH = "srcPath";
@@ -356,6 +353,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_ABILITY_KEYS, info.abilityKeys},
         {MODULE_SKILL_KEYS, info.skillKeys},
         {MODULE_MAIN_ABILITY, info.mainAbility},
+        {MODULE_ENTRY_ABILITY_KEY, info.entryAbilityKey},
         {MODULE_SRC_PATH, info.srcPath},
         {MODULE_PROCESS, info.process},
         {MODULE_SRC_ENTRANCE, info.srcEntrance},
@@ -408,7 +406,6 @@ void to_json(nlohmann::json &jsonObject, const InstallMark &installMark)
 
 void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
 {
-    jsonObject[IS_SUPPORT_BACKUP] = isSupportBackup_;
     jsonObject[APP_TYPE] = appType_;
     jsonObject[BASE_DATA_DIR] = baseDataDir_;
     jsonObject[BUNDLE_STATUS] = bundleStatus_;
@@ -419,10 +416,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[INNER_MODULE_INFO] = innerModuleInfos_;
     jsonObject[SKILL_INFOS] = skillInfos_;
     jsonObject[USER_ID] = userId_;
-    jsonObject[MAIN_ABILITY] = mainAbility_;
-    jsonObject[MAIN_ABILITY_NAME] = mainAbilityName_;
     jsonObject[APP_FEATURE] = appFeature_;
-    jsonObject[HAS_ENTRY] = hasEntry_;
     jsonObject[MODULE_FORMS] = formInfos_;
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
     jsonObject[NEW_BUNDLE_NAME] = newBundleName_;
@@ -550,6 +544,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         jsonObjectEnd,
         MODULE_MAIN_ABILITY,
         info.mainAbility,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_ENTRY_ABILITY_KEY,
+        info.entryAbilityKey,
         JsonType::STRING,
         false,
         ProfileReader::parseResult,
@@ -996,14 +998,6 @@ void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermiss
 int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
 {
     const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        IS_SUPPORT_BACKUP,
-        isSupportBackup_,
-        JsonType::BOOLEAN,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<Constants::AppType>(jsonObject,
         jsonObjectEnd,
         APP_TYPE,
@@ -1102,22 +1096,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        MAIN_ABILITY,
-        mainAbility_,
-        JsonType::STRING,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        MAIN_ABILITY_NAME,
-        mainAbilityName_,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
         APP_FEATURE,
         appFeature_,
         JsonType::STRING,
@@ -1145,14 +1123,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         MODULE_COMMON_EVENT,
         commonEvents_,
         JsonType::OBJECT,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        HAS_ENTRY,
-        hasEntry_,
-        JsonType::BOOLEAN,
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
@@ -1440,14 +1410,6 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
         APP_LOGE("current package %{public}s is exist", currentPackage_.c_str());
         return false;
     }
-    if (!hasEntry_ && newInfo.HasEntry()) {
-        hasEntry_ = true;
-    }
-    if (mainAbility_.empty() && !newInfo.mainAbility_.empty()) {
-        UpdateBaseApplicationInfo(newInfo.baseApplicationInfo_);
-        SetMainAbility(newInfo.mainAbility_);
-        SetMainAbilityName(newInfo.mainAbilityName_);
-    }
     AddInnerModuleInfo(newInfo.innerModuleInfos_);
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
@@ -1483,7 +1445,6 @@ void InnerBundleInfo::UpdateBaseBundleInfo(const BundleInfo &bundleInfo, bool is
     if (isEntry) {
         baseBundleInfo_.mainEntry = bundleInfo.mainEntry;
         baseBundleInfo_.entryModuleName = bundleInfo.entryModuleName;
-        baseBundleInfo_.entryInstallationFree = bundleInfo.entryInstallationFree;
     }
 }
 
@@ -1528,22 +1489,10 @@ void InnerBundleInfo::UpdateBaseApplicationInfo(const ApplicationInfo &applicati
     baseApplicationInfo_.supportedModes = applicationInfo.supportedModes;
     baseApplicationInfo_.vendor = applicationInfo.vendor;
 
-    baseApplicationInfo_.appPrivilegeLevel = applicationInfo.appPrivilegeLevel;
-
     if (baseApplicationInfo_.nativeLibraryPath.empty()) {
         baseApplicationInfo_.nativeLibraryPath = applicationInfo.nativeLibraryPath;
         baseApplicationInfo_.cpuAbi = applicationInfo.cpuAbi;
     }
-}
-
-void InnerBundleInfo::updateCommonHapInfo(const InnerBundleInfo &newInfo)
-{
-    if (newInfo.currentPackage_.empty()) {
-        APP_LOGE("no package in new info");
-        return;
-    }
-    SetIsKeepData(newInfo.GetIsKeepData());
-    SetIsSupportBackup(newInfo.GetIsSupportBackup());
 }
 
 void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
@@ -1564,28 +1513,6 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
     AddModuleCommonEvent(newInfo.commonEvents_);
 }
 
-void InnerBundleInfo::ClearMainAbility(const std::string &modulePackage)
-{
-    auto it = innerModuleInfos_.find(modulePackage);
-    if (it == innerModuleInfos_.end()) {
-        APP_LOGE("The module(%{public}s) infomation does not exist", modulePackage.c_str());
-        return;
-    }
-
-    auto abilityKeys = it->second.abilityKeys;
-    if (std::find(abilityKeys.begin(), abilityKeys.end(), mainAbility_) == abilityKeys.end()) {
-        APP_LOGE("The module(%{public}s) does not have mainability",
-            modulePackage.c_str());
-        return;
-    }
-
-    mainAbility_.clear();
-    hasEntry_ = false;
-    mainAbilityName_.clear();
-    baseBundleInfo_.mainEntry.clear();
-    baseBundleInfo_.entryModuleName.clear();
-}
-
 void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
 {
     auto it = innerModuleInfos_.find(modulePackage);
@@ -1595,6 +1522,10 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
     }
 
     auto oldModuleInfo = it->second;
+    if (oldModuleInfo.isEntry) {
+        baseBundleInfo_.mainEntry.clear();
+        baseBundleInfo_.entryModuleName.clear();
+    }
     innerModuleInfos_.erase(it);
     std::string key;
     key.append(".").append(modulePackage).append(".");
@@ -2389,6 +2320,36 @@ std::vector<std::string> InnerBundleInfo::GetAllDependentModuleNames(const std::
         }
     }
     return res;
+}
+
+std::string InnerBundleInfo::GetMainAbility() const
+{
+    AbilityInfo abilityInfo;
+    GetMainAbilityInfo(abilityInfo);
+    return abilityInfo.name;
+}
+
+void InnerBundleInfo::GetMainAbilityInfo(AbilityInfo &abilityInfo) const
+{
+    for (const auto& item : innerModuleInfos_) {
+        const std::string& key = item.second.entryAbilityKey;
+        if (!key.empty() && (baseAbilityInfos_.count(key) != 0)) {
+            abilityInfo = baseAbilityInfos_.at(key);
+            if (item.second.isEntry) {
+                return;
+            }
+        }
+    }
+}
+
+bool InnerBundleInfo::HasEntry() const
+{
+    for (const auto& item : innerModuleInfos_) {
+        if (item.second.isEntry) {
+            return true;
+        }
+    }
+    return false;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

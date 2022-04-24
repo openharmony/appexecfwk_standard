@@ -329,9 +329,6 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
     const std::string &moduleName, const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const
 {
     std::string keyName = bundleName + "." + moduleName + "." + abilityName;
-    if (bundleName == BUNDLE_NAME_TEST) {
-        innerBundleInfo.SetMainAbilityName(keyName);
-    }
     FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
     std::vector<FormInfo> formInfos;
     formInfos.emplace_back(form);
@@ -356,6 +353,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
 {
     InnerModuleInfo moduleInfo = MockModuleInfo(moduleName);
     std::string keyName = bundleName + "." + moduleName + "." + abilityName;
+    moduleInfo.entryAbilityKey = keyName;
     AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
     InnerBundleInfo innerBundleInfo;
     innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
@@ -1958,7 +1956,21 @@ HWTEST_F(BmsBundleKitServiceTest, GetLaunchWantForBundle_0200, Function | SmallT
  */
 HWTEST_F(BmsBundleKitServiceTest, GetLaunchWantForBundle_0300, Function | SmallTest | Level1)
 {
-    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
+    std::string bundleName = BUNDLE_NAME_DEMO;
+    std::string moduleName = MODULE_NAME_DEMO;
+    std::string abilityName = ABILITY_NAME_DEMO;
+    InnerModuleInfo moduleInfo = MockModuleInfo(moduleName);
+    std::string keyName = bundleName + "." + moduleName + "." + abilityName;
+    AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
+    InnerBundleInfo innerBundleInfo;
+    innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
+    innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+    Skill skill;
+    std::vector<Skill> skills;
+    skills.emplace_back(skill);
+    innerBundleInfo.InsertSkillInfo(keyName, skills);
+    SaveToDatabase(bundleName, innerBundleInfo, true, false);
+
     Want want;
     bool testRet = GetBundleDataMgr()->GetLaunchWantForBundle(BUNDLE_NAME_DEMO, want);
     EXPECT_EQ(false, testRet);
