@@ -64,7 +64,8 @@ struct InnerModuleInfo {
     int32_t labelId = 0;
     std::string description;
     int32_t descriptionId = 0;
-    std::string mainAbility;
+    std::string mainAbility; // config.json : mainAbility; module.json : mainElement
+    std::string entryAbilityKey; // skills contains "action.system.home" and "entity.system.home"
     std::string srcPath;
     bool isEntry = false;
     bool installationFree = false;
@@ -173,23 +174,11 @@ public:
      */
     void UpdateModuleInfo(const InnerBundleInfo &newInfo);
     /**
-     * @brief Update common hap info to old InnerBundleInfo object.
-     * @param newInfo Indicates the new InnerBundleInfo object.
-     * @return
-     */
-    void updateCommonHapInfo(const InnerBundleInfo &newInfo);
-    /**
      * @brief Remove module info from InnerBundleInfo object.
      * @param modulePackage Indicates the module package to be remove.
      * @return
      */
     void RemoveModuleInfo(const std::string &modulePackage);
-    /**
-     * @brief clear mainAbility before remove module info.
-     * @param modulePackage Indicates the module package to be remove.
-     * @return
-     */
-    void ClearMainAbility(const std::string &modulePackage);
     /**
      * @brief Find hap module info by module package.
      * @param modulePackage Indicates the module package.
@@ -392,22 +381,6 @@ public:
             return -1;
         }
         return innerBundleUserInfo.updateTime;
-    }
-    /**
-     * @brief Set whether the application supports backup.
-     * @param isSupportBackup Indicates the supports status to set.
-     */
-    void SetIsSupportBackup(bool isSupportBackup)
-    {
-        isSupportBackup_ = isSupportBackup;
-    }
-    /**
-     * @brief Get whether the application supports backup.
-     * @return Return the supports status.
-     */
-    bool GetIsSupportBackup() const
-    {
-        return isSupportBackup_;
     }
     /**
      * @brief Get bundle name.
@@ -900,16 +873,6 @@ public:
         return (innerModuleInfos_.find(modulePackage) != innerModuleInfos_.end());
     }
 
-    void SetIsKeepData(bool isKeepData)
-    {
-        isKeepData_ = isKeepData;
-    }
-
-    bool GetIsKeepData() const
-    {
-        return isKeepData_;
-    }
-
     void SetIsKeepAlive(bool isKeepAlive)
     {
         baseBundleInfo_.isKeepAlive = isKeepAlive;
@@ -985,32 +948,9 @@ public:
         return baseApplicationInfo_.isFreeInstallApp;
     }
 
-    void SetMainAbility(const std::string &mainAbility)
-    {
-        mainAbility_ = mainAbility;
-    }
+    std::string GetMainAbility() const;
 
-    std::string GetMainAbility() const
-    {
-        return mainAbility_;
-    }
-
-    void SetMainAbilityName(const std::string &mainAbilityName)
-    {
-        mainAbilityName_ = mainAbilityName;
-    }
-
-    std::string GetMainAbilityName() const
-    {
-        return mainAbilityName_;
-    }
-
-    void GetMainAbilityInfo(AbilityInfo &abilityInfo) const
-    {
-        if (!mainAbility_.empty()) {
-            abilityInfo = baseAbilityInfos_.at(mainAbility_);
-        }
-    }
+    void GetMainAbilityInfo(AbilityInfo &abilityInfo) const;
 
     std::string GetModuleDir(std::string modulePackage) const
     {
@@ -1082,15 +1022,7 @@ public:
         return baseApplicationInfo_.appPrivilegeLevel;
     }
 
-    void SetHasEntry(bool hasEntry)
-    {
-        hasEntry_ = hasEntry;
-    }
-
-    bool HasEntry() const
-    {
-        return hasEntry_;
-    }
+    bool HasEntry() const;
 
     /**
      * @brief Insert formInfo.
@@ -1503,8 +1435,6 @@ private:
     void RemoveDuplicateName(std::vector<std::string> &name) const;
 
     // using for get
-    bool isSupportBackup_ = false;
-    bool isKeepData_ = false;
     Constants::AppType appType_ = Constants::AppType::THIRD_PARTY_APP;
     int uid_ = Constants::INVALID_UID;
     int gid_ = Constants::INVALID_GID;
@@ -1513,10 +1443,7 @@ private:
     BundleStatus bundleStatus_ = BundleStatus::ENABLED;
     ApplicationInfo baseApplicationInfo_;
     BundleInfo baseBundleInfo_;  // applicationInfo and abilityInfo empty
-    std::string mainAbility_;
-    std::string mainAbilityName_;
     std::string appFeature_;
-    bool hasEntry_ = false;
     std::vector<std::string> allowedAcls_;
     InstallMark mark_;
     int32_t appIndex_ = Constants::INITIAL_APP_INDEX;
