@@ -33,15 +33,16 @@
 #include "installd/installd_service.h"
 #include "installd_client.h"
 #include "mock_status_receiver.h"
+#include "ohos/aafwk/content/want.h"
 #include "system_bundle_installer.h"
 
 using namespace testing::ext;
 using namespace std::chrono_literals;
 using namespace OHOS::AppExecFwk;
 using namespace OHOS::DistributedKv;
-using namespace OHOS;
 using OHOS::DelayedSingleton;
 
+namespace OHOS {
 namespace {
 const std::string SYSTEMFIEID_NAME = "com.query.test";
 const std::string SYSTEMFIEID_BUNDLE = "system_module.hap";
@@ -60,6 +61,11 @@ const int32_t ROOT_UID = 0;
 const int32_t USERID = 100;
 const std::string INSTALL_THREAD = "TestInstall";
 const int32_t WAIT_TIME = 5; // init mocked bms
+const std::string BUNDLE_BACKUP_TEST = "backup.hap";
+const std::string BUNDLE_BACKUP_NAME = "com.example.backuptest";
+const std::string MODULE_NAME = "entry";
+const std::string EXTENSION_ABILITY_NAME = "extensionAbility_A";
+const size_t NUMBER_ONE = 1;
 }  // namespace
 
 class BmsBundleInstallerTest : public testing::Test {
@@ -616,3 +622,147 @@ HWTEST_F(BmsBundleInstallerTest, ParseModuleJson_0100, Function | SmallTest | Le
 
     UnInstallBundle(SYSTEMFIEID_NAME);
 }
+
+/**
+ * @tc.number: BackupExtension_0100
+ * @tc.name: test the backup type
+ * @tc.desc: 1.install the hap
+ *           2.query extensionAbilityInfos
+ * @tc.require: AR000H035G
+ */
+HWTEST_F(BmsBundleInstallerTest, BackupExtension_0100, Function | SmallTest | Level0)
+{
+    std::string bundlePath = RESOURCE_ROOT_PATH + BUNDLE_BACKUP_TEST;
+    ErrCode installResult = InstallThirdPartyBundle(bundlePath);
+    EXPECT_EQ(installResult, ERR_OK);
+
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+    Want want;
+    want.SetAction("action.system.home");
+    want.AddEntity("entity.system.home");
+    want.SetElementName("", BUNDLE_BACKUP_NAME, "", "");
+    std::vector<ExtensionAbilityInfo> infos;
+    bool result = dataMgr->QueryExtensionAbilityInfos(want, 0, USERID, infos);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(infos.size(), NUMBER_ONE);
+    if (infos.size() > 0) {
+        EXPECT_EQ(infos[0].bundleName, BUNDLE_BACKUP_NAME);
+        EXPECT_EQ(infos[0].type, ExtensionAbilityType::BACKUP);
+    }
+    UnInstallBundle(BUNDLE_BACKUP_NAME);
+}
+
+/**
+ * @tc.number: QueryExtensionAbilityInfos_0100
+ * @tc.name: test the backup type
+ * @tc.desc: 1.install the hap
+ *           2.query extensionAbilityInfos
+ * @tc.require: SR000H0383
+ */
+HWTEST_F(BmsBundleInstallerTest, QueryExtensionAbilityInfos_0100, Function | SmallTest | Level0)
+{
+    std::string bundlePath = RESOURCE_ROOT_PATH + BUNDLE_BACKUP_TEST;
+    ErrCode installResult = InstallThirdPartyBundle(bundlePath);
+    EXPECT_EQ(installResult, ERR_OK);
+
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+    Want want;
+    want.SetAction("action.system.home");
+    want.AddEntity("entity.system.home");
+    want.SetElementName("", BUNDLE_BACKUP_NAME, "", MODULE_NAME);
+    std::vector<ExtensionAbilityInfo> infos;
+    bool result = dataMgr->QueryExtensionAbilityInfos(want, 0, USERID, infos);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(infos.size(), NUMBER_ONE);
+    if (infos.size() > 0) {
+        EXPECT_EQ(infos[0].bundleName, BUNDLE_BACKUP_NAME);
+        EXPECT_EQ(infos[0].moduleName, MODULE_NAME);
+        EXPECT_EQ(infos[0].type, ExtensionAbilityType::BACKUP);
+    }
+    UnInstallBundle(BUNDLE_BACKUP_NAME);
+}
+
+/**
+ * @tc.number: QueryExtensionAbilityInfos_0200
+ * @tc.name: test the backup type
+ * @tc.desc: 1.install the hap
+ *           2.query extensionAbilityInfos
+ * @tc.require: AR000H035G
+ */
+HWTEST_F(BmsBundleInstallerTest, QueryExtensionAbilityInfos_0200, Function | SmallTest | Level0)
+{
+    std::string bundlePath = RESOURCE_ROOT_PATH + BUNDLE_BACKUP_TEST;
+    ErrCode installResult = InstallThirdPartyBundle(bundlePath);
+    EXPECT_EQ(installResult, ERR_OK);
+
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+    Want want;
+    want.SetElementName("", BUNDLE_BACKUP_NAME, "", MODULE_NAME);
+    std::vector<ExtensionAbilityInfo> infos;
+    bool result = dataMgr->QueryExtensionAbilityInfos(want, 0, USERID, infos);
+    EXPECT_FALSE(result);
+    UnInstallBundle(BUNDLE_BACKUP_NAME);
+}
+
+/**
+ * @tc.number: QueryExtensionAbilityInfos_0300
+ * @tc.name: test the backup type
+ * @tc.desc: 1.install the hap
+ *           2.query extensionAbilityInfos
+ * @tc.require: AR000H035G
+ */
+HWTEST_F(BmsBundleInstallerTest, QueryExtensionAbilityInfos_0300, Function | SmallTest | Level0)
+{
+    std::string bundlePath = RESOURCE_ROOT_PATH + BUNDLE_BACKUP_TEST;
+    ErrCode installResult = InstallThirdPartyBundle(bundlePath);
+    EXPECT_EQ(installResult, ERR_OK);
+
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+    Want want;
+    want.SetElementName("", BUNDLE_BACKUP_NAME, EXTENSION_ABILITY_NAME, "");
+    std::vector<ExtensionAbilityInfo> infos;
+    bool result = dataMgr->QueryExtensionAbilityInfos(want, 0, USERID, infos);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(infos.size(), NUMBER_ONE);
+    if (infos.size() > 0) {
+        EXPECT_EQ(infos[0].bundleName, BUNDLE_BACKUP_NAME);
+        EXPECT_EQ(infos[0].name, EXTENSION_ABILITY_NAME);
+        EXPECT_EQ(infos[0].type, ExtensionAbilityType::BACKUP);
+    }
+    UnInstallBundle(BUNDLE_BACKUP_NAME);
+}
+
+/**
+ * @tc.number: QueryExtensionAbilityInfos_0400
+ * @tc.name: test the backup type
+ * @tc.desc: 1.install the hap
+ *           2.query extensionAbilityInfos
+ * @tc.require: AR000H035G
+ */
+HWTEST_F(BmsBundleInstallerTest, QueryExtensionAbilityInfos_0400, Function | SmallTest | Level0)
+{
+    std::string bundlePath = RESOURCE_ROOT_PATH + BUNDLE_BACKUP_TEST;
+    ErrCode installResult = InstallThirdPartyBundle(bundlePath);
+    EXPECT_EQ(installResult, ERR_OK);
+
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+    Want want;
+    want.SetElementName("", BUNDLE_BACKUP_NAME, EXTENSION_ABILITY_NAME, MODULE_NAME);
+    std::vector<ExtensionAbilityInfo> infos;
+    bool result = dataMgr->QueryExtensionAbilityInfos(want, 0, USERID, infos);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(infos.size(), NUMBER_ONE);
+    if (infos.size() > 0) {
+        EXPECT_EQ(infos[0].bundleName, BUNDLE_BACKUP_NAME);
+        EXPECT_EQ(infos[0].moduleName, MODULE_NAME);
+        EXPECT_EQ(infos[0].name, EXTENSION_ABILITY_NAME);
+        EXPECT_EQ(infos[0].type, ExtensionAbilityType::BACKUP);
+    }
+    UnInstallBundle(BUNDLE_BACKUP_NAME);
+}
+} // OHOS
