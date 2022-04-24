@@ -44,6 +44,7 @@ group("unittest") {
     deps = [
       "unittest/bms_bundle_accesstokenid_test:unittest",
       "unittest/bms_bundle_data_storage_test:unittest",
+      "unittest/bms_bundle_dependencies_test:unittest",
       "unittest/bms_bundle_installer_test:unittest",
       "unittest/bms_bundle_kit_service_test:unittest",
       "unittest/bms_bundle_native_test:unittest",
