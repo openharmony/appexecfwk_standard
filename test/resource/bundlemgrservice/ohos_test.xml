@@ -81,6 +81,7 @@
               src="res"/>
       <option name="push" value="test_bundle/wrong_bundle_name_sign.hap -> /data/test/resource/bms/install_bundle/"
               src="res"/>
+      <option name="push" value="test_bundle/backup.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
     </preparer>
   </target>
   <target name="BmsBundleUninstallerTest">
