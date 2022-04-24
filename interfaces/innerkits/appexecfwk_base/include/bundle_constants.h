@@ -234,6 +234,7 @@ const std::string PREINSTALL_ABILITY_CONFIG = "/preinstall_ability_config.json";
 // sandbox application
 const std::string SANDBOX_APP_INDEX = "sandbox_app_index";
 const int32_t INITIAL_APP_INDEX = 0;
+const int32_t MAX_APP_INDEX = 100;
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS

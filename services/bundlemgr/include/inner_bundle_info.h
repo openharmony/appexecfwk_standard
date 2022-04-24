@@ -140,6 +140,12 @@ struct InstallMark {
     int32_t status = InstallExceptionStatus::UNKNOWN_STATUS;
 };
 
+struct SandboxAppPersistentInfo {
+    uint32_t accessTokenId = 0;
+    int32_t appIndex = 0;
+    int32_t userId = Constants::INVALID_USERID;
+};
+
 class InnerBundleInfo {
 public:
     enum class BundleStatus {
@@ -1426,6 +1432,42 @@ public:
         innerBundleUserInfos_.clear();
     }
 
+    std::vector<SandboxAppPersistentInfo> GetSandboxPersistentInfo() const
+    {
+        return sandboxPersistentInfo_;
+    }
+
+    void AddSandboxPersistentInfo(const SandboxAppPersistentInfo& info)
+    {
+        auto it = std::find_if(sandboxPersistentInfo_.begin(), sandboxPersistentInfo_.end(), [&info](
+            const auto &sandboxInfo) {
+                return sandboxInfo.appIndex == info.appIndex;
+            });
+
+        if (it != sandboxPersistentInfo_.end()) {
+            sandboxPersistentInfo_.erase(it);
+        }
+        sandboxPersistentInfo_.emplace_back(info);
+    }
+
+    void RemoveSandboxPersistentInfo(const SandboxAppPersistentInfo& info)
+    {
+        auto it = std::find_if(sandboxPersistentInfo_.begin(), sandboxPersistentInfo_.end(), [&info](
+            const auto &sandboxInfo) {
+                return sandboxInfo.appIndex == info.appIndex;
+            });
+
+        if (it == sandboxPersistentInfo_.end()) {
+            return;
+        }
+        sandboxPersistentInfo_.erase(it);
+    }
+
+    void ClearSandboxPersistentInfo()
+    {
+        sandboxPersistentInfo_.clear();
+    }
+
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
@@ -1473,6 +1515,9 @@ private:
     int32_t upgradeFlag_ = 0;
     std::map<std::string, ExtensionAbilityInfo> baseExtensionInfos_;
     std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
+
+    // SandBox App Persistent Info
+    std::vector<SandboxAppPersistentInfo> sandboxPersistentInfo_;
 };
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info);
@@ -1481,6 +1526,7 @@ void from_json(const nlohmann::json &jsonObject, Skill &skill);
 void from_json(const nlohmann::json &jsonObject, Distro &distro);
 void from_json(const nlohmann::json &jsonObject, InstallMark &installMark);
 void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission);
+void from_json(const nlohmann::json &jsonObject, SandboxAppPersistentInfo &sandboxPersistentInfo);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INNER_BUNDLE_INFO_H

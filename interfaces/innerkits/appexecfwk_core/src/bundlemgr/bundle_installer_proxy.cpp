@@ -159,7 +159,7 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
     return SendInstallRequest(IBundleInstaller::Message::UNINSTALL_MODULE, data, reply, option);
 }
 
-bool BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int32_t userId)
+int32_t BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
@@ -168,15 +168,16 @@ bool BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int3
 
     PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
     PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    PARCEL_WRITE(data, Int32, dlpType);
     PARCEL_WRITE(data, Int32, userId);
 
     auto ret =
         SendInstallRequest(IBundleInstaller::Message::INSTALL_SANDBOX_APP, data, reply, option);
     if (!ret) {
         APP_LOGE("install sandbox app failed due to send request fail");
-        return false;
+        return 0;
     }
-    return reply.ReadBool();
+    return reply.ReadInt32();
 }
 
 bool BundleInstallerProxy::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)

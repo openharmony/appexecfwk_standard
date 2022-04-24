@@ -52,7 +52,8 @@ public:
         const std::string &bundleName, const std::string &permissionName, const int32_t userId);
 
     static Security::AccessToken::AccessTokenID CreateAccessTokenId(
-        const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId);
+        const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId,
+        const int32_t dlpType = 0);
 
     static bool UpdateDefineAndRequestPermissions(const Security::AccessToken::AccessTokenID tokenId,
         const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo, std::vector<std::string> &newRequestPermName);

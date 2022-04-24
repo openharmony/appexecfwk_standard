@@ -97,6 +97,7 @@ const std::string ALLOWED_ACLS = "allowedAcls";
 const std::string META_DATA_SHORTCUTS_NAME = "ohos.ability.shortcuts";
 const std::string APP_INDEX = "appIndex";
 const std::string BUNDLE_IS_SANDBOX_APP = "isSandboxApp";
+const std::string BUNDLE_SANDBOX_PERSISTENT_INFO = "sandboxPersistentInfo";
 
 const std::string NameAndUserIdToKey(const std::string &bundleName, int32_t userId)
 {
@@ -404,6 +405,15 @@ void to_json(nlohmann::json &jsonObject, const InstallMark &installMark)
     };
 }
 
+void to_json(nlohmann::json &jsonObject, const SandboxAppPersistentInfo &sandboxPersistentInfo)
+{
+    jsonObject = nlohmann::json {
+        {ProfileReader::BUNDLE_SANDBOX_PERSISTENT_ACCESS_TOKEN_ID, sandboxPersistentInfo.accessTokenId},
+        {ProfileReader::BUNDLE_SANDBOX_PERSISTENT_APP_INDEX, sandboxPersistentInfo.appIndex},
+        {ProfileReader::BUNDLE_SANDBOX_PERSISTENT_USER_ID, sandboxPersistentInfo.userId}
+    };
+}
+
 void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
 {
     jsonObject[APP_TYPE] = appType_;
@@ -430,6 +440,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[BUNDLE_PACK_INFO] = bundlePackInfo_;
     jsonObject[APP_INDEX] = appIndex_;
     jsonObject[BUNDLE_IS_SANDBOX_APP] = isSandboxApp_;
+    jsonObject[BUNDLE_SANDBOX_PERSISTENT_INFO] = sandboxPersistentInfo_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -906,6 +917,35 @@ void from_json(const nlohmann::json &jsonObject, InstallMark &installMark)
         ArrayType::NOT_ARRAY);
 }
 
+void from_json(const nlohmann::json &jsonObject, SandboxAppPersistentInfo &sandboxPersistentInfo)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_SANDBOX_PERSISTENT_ACCESS_TOKEN_ID,
+        sandboxPersistentInfo.accessTokenId,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_SANDBOX_PERSISTENT_APP_INDEX,
+        sandboxPersistentInfo.appIndex,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_SANDBOX_PERSISTENT_USER_ID,
+        sandboxPersistentInfo.userId,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+}
+
 void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission)
 {
     const auto &jsonObjectEnd = jsonObject.end();
@@ -1217,6 +1257,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<SandboxAppPersistentInfo>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_SANDBOX_PERSISTENT_INFO,
+        sandboxPersistentInfo_,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::OBJECT);
     if (parseResult != ERR_OK) {
         APP_LOGE("read InnerBundleInfo from database error, error code : %{public}d", parseResult);
         return parseResult;
