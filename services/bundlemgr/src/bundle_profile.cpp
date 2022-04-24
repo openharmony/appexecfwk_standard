@@ -236,7 +236,7 @@ struct Ability {
     int32_t labelId = 0;
     std::string uri;
     std::string process;
-    std::string launchType = "standard";
+    std::string launchType = "singleton";
     std::string theme;
     bool visible = false;
     bool continuable = false;
