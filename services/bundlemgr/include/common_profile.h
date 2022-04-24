@@ -375,7 +375,7 @@ const std::string META_DATA_COMMON_EVENTS = "ohos.extension.staticSubscriber";
 // ability
 const std::string ABILITY_NAME = "name";
 const std::string ABILITY_LAUNCH_TYPE = "launchType";
-const std::string ABILITY_LAUNCH_TYPE_DEFAULT_VALUE = "standard";
+const std::string ABILITY_LAUNCH_TYPE_DEFAULT_VALUE = "singleton";
 const std::string ABILITY_BACKGROUNDMODES = "backgroundModes";
 const std::string ABILITY_CONTINUABLE = "continuable";
 // extension ability
