@@ -78,10 +78,17 @@ ErrCode BaseBundleInstaller::InstallBundle(
             isAppExist_ ? NotifyType::UPDATE : NotifyType::INSTALL,
             uid);
     }
+
     if (result == ERR_OK) {
         DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName_, userId_);
     }
 
+    SendBundleSystemEvent(
+        bundleName_,
+        (isAppExist_ ? BundleEventType::UPDATE : BundleEventType::INSTALL),
+        installParam,
+        sysEventInfo_.preBundleScene,
+        result);
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
     APP_LOGD("finish to process bundle install");
     return result;
@@ -104,6 +111,12 @@ ErrCode BaseBundleInstaller::InstallBundleByBundleName(
         DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName, userId_);
     }
 
+    SendBundleSystemEvent(
+        bundleName,
+        BundleEventType::INSTALL,
+        installParam,
+        InstallScene::CREATE_USER,
+        result);
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
     APP_LOGD("finish to process %{public}s bundle install", bundleName.c_str());
     return result;
@@ -126,6 +139,14 @@ ErrCode BaseBundleInstaller::Recover(
         DistributedDataStorage::GetInstance()->SaveStorageDistributeInfo(bundleName, userId_);
     }
 
+    auto recoverInstallParam = installParam;
+    recoverInstallParam.isPreInstallApp = true;
+    SendBundleSystemEvent(
+        bundleName,
+        BundleEventType::RECOVER,
+        recoverInstallParam,
+        sysEventInfo_.preBundleScene,
+        result);
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
     APP_LOGD("finish to process %{public}s bundle recover", bundleName.c_str());
     return result;
@@ -145,10 +166,17 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
         dataMgr_->NotifyBundleStatus(
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
+
     if (result == ERR_OK) {
         DistributedDataStorage::GetInstance()->DeleteStorageDistributeInfo(bundleName, userId_);
     }
 
+    SendBundleSystemEvent(
+        bundleName,
+        BundleEventType::UNINSTALL,
+        installParam,
+        sysEventInfo_.preBundleScene,
+        result);
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
     APP_LOGD("finish to process %{public}s bundle uninstall", bundleName.c_str());
     return result;
@@ -170,9 +198,6 @@ ErrCode BaseBundleInstaller::UninstallBundle(
             bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE, uid);
     }
 
-    PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
-    APP_LOGD("finish to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
-
     if (result == ERR_OK) {
         InnerBundleInfo innerBundleInfo;
         if (!dataMgr_->GetInnerBundleInfo(bundleName, innerBundleInfo)) {
@@ -182,6 +207,15 @@ ErrCode BaseBundleInstaller::UninstallBundle(
             dataMgr_->EnableBundle(bundleName);
         }
     }
+
+    SendBundleSystemEvent(
+        bundleName,
+        BundleEventType::UNINSTALL,
+        installParam,
+        sysEventInfo_.preBundleScene,
+        result);
+    PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
+    APP_LOGD("finish to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
     return result;
 }
 
@@ -617,6 +651,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
 
+    versionCode_ = oldInfo.GetVersionCode();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
     InnerBundleUserInfo curInnerBundleUserInfo;
     if (!oldInfo.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
@@ -710,6 +745,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
 
+    versionCode_ = oldInfo.GetVersionCode();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
     InnerBundleUserInfo curInnerBundleUserInfo;
     if (!oldInfo.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
@@ -838,6 +874,7 @@ ErrCode BaseBundleInstaller::InnerProcessInstallByPreInstallInfo(
         bool isAppExist = dataMgr_->GetInnerBundleInfo(bundleName, oldInfo);
         if (isAppExist) {
             dataMgr_->EnableBundle(bundleName);
+            versionCode_ = oldInfo.GetVersionCode();
             if (oldInfo.HasInnerBundleUserInfo(userId_)) {
                 APP_LOGE("App is exist in user(%{public}d).", userId_);
                 return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
@@ -1977,6 +2014,7 @@ void BaseBundleInstaller::ResetInstallProperties()
     installedModules_.clear();
     state_ = InstallerState::INSTALL_START;
     singletonState_ = SingletonState::DEFAULT;
+    sysEventInfo_.Reset();
 }
 
 void BaseBundleInstaller::OnSingletonChange()
@@ -2015,6 +2053,19 @@ void BaseBundleInstaller::OnSingletonChange()
             UninstallBundle(bundleName_, installParam);
         }
     }
+}
+
+void BaseBundleInstaller::SendBundleSystemEvent(const std::string &bundleName, BundleEventType bundleEventType,
+    const InstallParam &installParam, InstallScene preBundleScene, ErrCode errCode)
+{
+    sysEventInfo_.bundleName = bundleName;
+    sysEventInfo_.isPreInstallApp = installParam.isPreInstallApp;
+    sysEventInfo_.errCode = errCode;
+    sysEventInfo_.isFreeInstallMode = (installParam.installFlag == InstallFlag::FREE_INSTALL);
+    sysEventInfo_.userId = userId_;
+    sysEventInfo_.versionCode = versionCode_;
+    sysEventInfo_.preBundleScene = preBundleScene;
+    EventReport::SendBundleSystemEvent(bundleEventType, sysEventInfo_);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

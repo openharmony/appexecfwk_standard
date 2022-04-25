@@ -17,6 +17,9 @@
             "bundle_framework_graphics",
             "bundle_framework_free_install"
         ],
+        "hisysevent_config": [
+            "//foundation/appexecfwk/standard/hisysevent.yaml"
+        ],
         "adapted_system_type": [
             "standard"
         ],
@@ -34,6 +37,7 @@
                 "device_manager_base",
                 "distributeddatamgr",
                 "eventhandler",
+                "hisysevent_native",
                 "hiviewdfx_hilog_native",
                 "init",
                 "ipc",

@@ -24,6 +24,7 @@
 #ifdef CONFIG_POLOCY_ENABLE
 #include "config_policy_utils.h"
 #endif
+#include "event_report.h"
 #include "perf_profile.h"
 #include "system_bundle_installer.h"
 
@@ -82,12 +83,14 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
 
 void BMSEventHandler::OnBootStartScanning(int32_t userId)
 {
+    EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_START);
 #ifdef USE_PRE_BUNDLE_PROFILE
     ProcessBootBundleInstallFromPreBundleProFile(userId);
 #else
     ProcessBootBundleInstallFromScan(userId);
 #endif
     PerfProfile::GetInstance().Dump();
+    EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_END);
 }
 
 void BMSEventHandler::ProcessBootBundleInstallFromScan(int32_t userId)
@@ -266,7 +269,9 @@ void BMSEventHandler::SetAllInstallFlag() const
 
 void BMSEventHandler::OnRebootStartScanning(int32_t userId)
 {
+    EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_START);
     ProcessRebootBundle(userId);
+    EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_END);
 }
 
 void BMSEventHandler::ProcessRebootBundle(int32_t userId)

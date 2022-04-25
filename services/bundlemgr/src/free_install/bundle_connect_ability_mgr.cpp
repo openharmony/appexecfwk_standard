@@ -28,6 +28,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
 const std::u16string ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN = u"ohos.aafwk.IAtomicServiceStatusCallback";
 const std::string serviceCenterBundleName = "com.ohos.hag.famanager";
 const std::string serviceCenterAbilityName = "com.ohos.hag.famanager.HapInstallServiceAbility";
@@ -45,6 +46,20 @@ constexpr uint32_t BIT_FIVE = 16;
 constexpr uint32_t BIT_SIX = 32;
 constexpr uint32_t BIT_SEVEN = 64;
 constexpr uint32_t OUT_TIME = 30000;
+
+void SendSysEvent(int32_t resultCode, const AAFwk::Want &want, int32_t userId)
+{
+    EventInfo sysEventInfo;
+    ElementName element = want.GetElement();
+    sysEventInfo.bundleName = element.GetBundleName();
+    sysEventInfo.moduleName = want.GetStringParam("moduleName");
+    sysEventInfo.abilityName = element.GetAbilityName();
+    sysEventInfo.isFreeInstallMode = true;
+    sysEventInfo.userId = userId;
+    sysEventInfo.errCode = resultCode;
+    EventReport::SendSystemEvent(BMSEventType::BUNDLE_INSTALL_EXCEPTION, sysEventInfo);
+}
+}
 
 BundleConnectAbilityMgr::BundleConnectAbilityMgr()
 {
@@ -76,6 +91,7 @@ bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targe
     if (handler_ == nullptr) {
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId);
         APP_LOGE("handler is null");
         return false;
     }
@@ -94,6 +110,7 @@ bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &target
     if (handler_ == nullptr) {
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId);
         APP_LOGE("handler is null");
         return false;
     }
@@ -112,6 +129,7 @@ bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targ
     if (handler_ == nullptr) {
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId);
         APP_LOGE("handler is null");
         return false;
     }
@@ -135,6 +153,7 @@ bool BundleConnectAbilityMgr::CheckReusableConnection(int32_t flag,
         APP_LOGE("Fail to connect ServiceCenter");
         SendCallBack(FreeInstallErrorCode::CONNECT_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::CONNECT_ERROR, want, userId);
         return false;
     } else {
         SendRequest(flag, targetAbilityInfo, want, userId);
@@ -334,6 +353,7 @@ void BundleConnectAbilityMgr::SendRequest(
         APP_LOGE("%{public}s failed to WriteParcelable targetAbilityInfo", __func__);
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId,
             targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId);
         return;
     }
     sptr<ServiceCenterStatusCallback> serviceCenterCallback =
@@ -346,6 +366,7 @@ void BundleConnectAbilityMgr::SendRequest(
         APP_LOGE("%{public}s failed to WriteRemoteObject callbcak", __func__);
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId,
             targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId);
         return;
     }
     APP_LOGI("ServiceCenterRemoteObject->SendRequest");
@@ -354,6 +375,7 @@ void BundleConnectAbilityMgr::SendRequest(
         APP_LOGE("%{public}s failed to get remote object", __func__);
         SendCallBack(
             FreeInstallErrorCode::CONNECT_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::CONNECT_ERROR, want, userId);
         return;
     }
     int32_t result = serviceCenterRemoteObject_->SendRequest(flag, data, reply, option);
@@ -362,6 +384,7 @@ void BundleConnectAbilityMgr::SendRequest(
         APP_LOGE("Failed to sendRequest, result = %{public}d", result);
         SendCallBack(
             FreeInstallErrorCode::CONNECT_ERROR, want, userId, targetAbilityInfo.targetInfo.transactId);
+        SendSysEvent(FreeInstallErrorCode::CONNECT_ERROR, want, userId);
         return;
     }
     OutTimeMonitor(targetAbilityInfo.targetInfo.transactId);

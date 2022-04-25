@@ -31,6 +31,7 @@ declare_args() {
   device_manager_enable = true
   global_resmgr_enable = true
   hicollie_enable = true
+  hisysevent_enable = true
 
   if (defined(global_parts_info) &&
       !defined(global_parts_info.aafwk_ability_runtime)) {
@@ -71,6 +72,11 @@ declare_args() {
     bundle_framework_free_install = false
   }
 
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.hiviewdfx_hisysevent_native)) {
+    hisysevent_enable = false
+  }
+
   print("bundle_framework_graphics = " + "$bundle_framework_graphics")
   print("bundle_framework_free_install = " + "$bundle_framework_free_install")
   print("ability_runtime_enable = " + "$ability_runtime_enable")
@@ -80,4 +86,5 @@ declare_args() {
   print("global_resmgr_enable = " + "$global_resmgr_enable")
   print("hicollie_enable = " + "$hicollie_enable")
   print("support_jsapi = " + "$support_jsapi")
+  print("hisysevent_enable = " + "$hisysevent_enable")
 }

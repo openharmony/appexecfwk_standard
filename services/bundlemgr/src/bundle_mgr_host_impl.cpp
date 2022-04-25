@@ -534,34 +534,47 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
     if (userId == Constants::UNSPECIFIED_USERID) {
         userId = BundleUtil::GetUserIdByCallingUid();
     }
+
     APP_LOGD("start CleanBundleCacheFiles, bundleName : %{public}s, userId : %{public}d", bundleName.c_str(), userId);
     if (userId < 0) {
         APP_LOGE("userId is invalid");
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, true, true);
         return false;
     }
+
     if (bundleName.empty() || !cleanCacheCallback) {
         APP_LOGE("the cleanCacheCallback is nullptr or bundleName empty");
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, true, true);
         return false;
     }
+
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERNISSION_REMOVECACHEFILE)) {
         APP_LOGE("ohos.permission.REMOVE_CACHE_FILES permission denied");
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, true, true);
         return false;
     }
+
     ApplicationInfo applicationInfo;
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, true, true);
         return false;
     }
+
     if (!dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
         userId, applicationInfo)) {
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, true, true);
         return false;
     }
+
     if (applicationInfo.isSystemApp && !applicationInfo.userDataClearable) {
         APP_LOGE("can not clean cacheFiles of %{public}s due to userDataClearable is false", bundleName.c_str());
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, true, true);
         return false;
     }
+
     CleanBundleCacheTask(bundleName, cleanCacheCallback, userId);
     return true;
 }
@@ -576,7 +589,8 @@ void BundleMgrHostImpl::CleanBundleCacheTask(const std::string &bundleName,
             Constants::FILE_SEPARATOR_CHAR + std::to_string(userId) + Constants::BASE + bundleName;
         rootDir.emplace_back(dataDir);
     }
-    auto cleanCache = [rootDir, cleanCacheCallback]() {
+
+    auto cleanCache = [bundleName, userId, rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
         for (const auto &st : rootDir) {
             std::vector<std::string> cache;
@@ -587,6 +601,7 @@ void BundleMgrHostImpl::CleanBundleCacheTask(const std::string &bundleName,
                 caches.emplace_back(item);
             }
         }
+
         bool error = false;
         if (!caches.empty()) {
             for (const auto& cache : caches) {
@@ -596,6 +611,8 @@ void BundleMgrHostImpl::CleanBundleCacheTask(const std::string &bundleName,
                 }
             }
         }
+
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, true, error);
         APP_LOGD("CleanBundleCacheFiles with error %{public}d", error);
         cleanCacheCallback->OnCleanCacheFinished(error);
     };
@@ -607,35 +624,50 @@ bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, cons
     APP_LOGD("start CleanBundleDataFiles, bundleName : %{public}s, userId : %{public}d", bundleName.c_str(), userId);
     if (bundleName.empty() || userId < 0) {
         APP_LOGE("the  bundleName empty or invalid userid");
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, false, true);
         return false;
     }
+
     ApplicationInfo applicationInfo;
     if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, applicationInfo)) {
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, false, true);
         return false;
     }
+
     if (applicationInfo.isSystemApp && !applicationInfo.userDataClearable) {
         APP_LOGE("can not clean dataFiles of %{public}s due to userDataClearable is false", bundleName.c_str());
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, false, true);
         return false;
     }
+
     InnerBundleUserInfo innerBundleUserInfo;
     if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
         APP_LOGE("%{public}s, userId:%{public}d, GetBundleUserInfo failed", bundleName.c_str(), userId);
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, false, true);
         return false;
     }
+
     if (BundlePermissionMgr::ClearUserGrantedPermissionState(applicationInfo.accessTokenId)) {
         APP_LOGE("%{public}s, ClearUserGrantedPermissionState failed", bundleName.c_str());
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, false, true);
         return false;
     }
+
     if (InstalldClient::GetInstance()->RemoveBundleDataDir(bundleName, userId) != ERR_OK) {
         APP_LOGE("%{public}s, RemoveBundleDataDir failed", bundleName.c_str());
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, false, true);
         return false;
     }
+
     if (InstalldClient::GetInstance()->CreateBundleDataDir(bundleName, userId, innerBundleUserInfo.uid,
         innerBundleUserInfo.uid, GetAppPrivilegeLevel(bundleName))) {
         APP_LOGE("%{public}s, CreateBundleDataDir failed", bundleName.c_str());
+        EventReport::SendCleanCacheSysEvent(bundleName, userId, false, true);
         return false;
     }
+
+    EventReport::SendCleanCacheSysEvent(bundleName, userId, false, false);
     return true;
 }
 
@@ -934,20 +966,24 @@ bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, boo
     APP_LOGD("SetApplicationEnabled begin");
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
+        EventReport::SendComponentStateSysEvent(bundleName, "", userId, isEnable, true);
         return false;
     }
     APP_LOGD("verify permission success, bgein to SetApplicationEnabled");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
+        EventReport::SendComponentStateSysEvent(bundleName, "", userId, isEnable, true);
         return false;
     }
 
     if (!dataMgr->SetApplicationEnabled(bundleName, isEnable, userId)) {
         APP_LOGE("Set application(%{public}s) enabled value faile.", bundleName.c_str());
+        EventReport::SendComponentStateSysEvent(bundleName, "", userId, isEnable, true);
         return false;
     }
 
+    EventReport::SendComponentStateSysEvent(bundleName, "", userId, isEnable, false);
     InnerBundleUserInfo innerBundleUserInfo;
     if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
         APP_LOGE("Get calling userInfo in bundle(%{public}s) failed", bundleName.c_str());
@@ -980,20 +1016,29 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
     APP_LOGD("start SetAbilityEnabled");
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
+        EventReport::SendComponentStateSysEvent(
+            abilityInfo.bundleName, abilityInfo.name, userId, isEnabled, true);
         return false;
     }
+
     APP_LOGD("verify permission success, bgein to SetAbilityEnabled");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
+        EventReport::SendComponentStateSysEvent(
+            abilityInfo.bundleName, abilityInfo.name, userId, isEnabled, true);
         return false;
     }
 
     if (!dataMgr->SetAbilityEnabled(abilityInfo, isEnabled, userId)) {
         APP_LOGE("Set ability(%{public}s) enabled value failed.", abilityInfo.bundleName.c_str());
+        EventReport::SendComponentStateSysEvent(
+            abilityInfo.bundleName, abilityInfo.name, userId, isEnabled, true);
         return false;
     }
 
+    EventReport::SendComponentStateSysEvent(
+        abilityInfo.bundleName, abilityInfo.name, userId, isEnabled, false);
     InnerBundleUserInfo innerBundleUserInfo;
     if (!GetBundleUserInfo(abilityInfo.bundleName, userId, innerBundleUserInfo)) {
         APP_LOGE("Get calling userInfo in bundle(%{public}s) failed", abilityInfo.bundleName.c_str());
