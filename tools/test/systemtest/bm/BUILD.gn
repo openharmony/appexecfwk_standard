@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("../../../../appexecfwk.gni")
+import("../../../bm/bundletool.gni")
 
 module_output_path = "bundle_tool/tools"
 
@@ -30,8 +30,8 @@ ohos_systemtest("bm_command_install_system_test") {
   ]
 
   configs = [
-    "${appexecfwk_path}/tools/bm:tools_bm_config",
-    "${appexecfwk_path}/tools/test/unittest/bm:tools_bm_config_mock",
+    "${bundletool_path}:tools_bm_config",
+    "${bundletool_test_path}/unittest/bm:tools_bm_config_mock",
   ]
 
   cflags = []
@@ -69,8 +69,8 @@ ohos_systemtest("bm_command_uninstall_system_test") {
   ]
 
   configs = [
-    "${appexecfwk_path}/tools/bm:tools_bm_config",
-    "${appexecfwk_path}/tools/test/unittest/bm:tools_bm_config_mock",
+    "${bundletool_path}:tools_bm_config",
+    "${bundletool_test_path}/unittest/bm:tools_bm_config_mock",
   ]
 
   cflags = []
@@ -108,8 +108,8 @@ ohos_systemtest("bm_command_dump_system_test") {
   ]
 
   configs = [
-    "${appexecfwk_path}/tools/bm:tools_bm_config",
-    "${appexecfwk_path}/tools/test/unittest/bm:tools_bm_config_mock",
+    "${bundletool_path}:tools_bm_config",
+    "${bundletool_test_path}/unittest/bm:tools_bm_config_mock",
   ]
 
   cflags = []
