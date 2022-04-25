@@ -260,4 +260,12 @@
      <option name="push" value="permission_bundle/unsign.hap -> /data/test/resource/bms/bundle_permission/" src="res" />
     </preparer>
   </target>
+  <target name="BmsBundleDependenciesTest">
+  <preparer>
+     <option name="push" value="bundle_dependencies/dependencies_entry.hap -> /data/test/resource/bms/dependencies/" src="res" />
+     <option name="push" value="bundle_dependencies/dependencies_entry_A.hap -> /data/test/resource/bms/dependencies/" src="res" />
+     <option name="push" value="bundle_dependencies/dependencies_entry_B.hap -> /data/test/resource/bms/dependencies/" src="res" />
+     <option name="push" value="bundle_dependencies/dependencies_entry_C.hap -> /data/test/resource/bms/dependencies/" src="res" />
+    </preparer>
+  </target>
 </configuration>
