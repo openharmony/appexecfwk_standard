@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef OHOS_AAFwk_LIBZIP_ZLIB_H
-#define OHOS_AAFwk_LIBZIP_ZLIB_H
+#ifndef OHOS_APPEXECFWK_LIBZIP_ZLIB_H
+#define OHOS_APPEXECFWK_LIBZIP_ZLIB_H
 #include <string>
 
 #include "napi/native_api.h"
@@ -21,7 +21,7 @@
 #include "zip_utils.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 
 /**
@@ -156,7 +156,7 @@ napi_value NAPI_ZipFile(napi_env env, napi_callback_info info);
 napi_value NAPI_UnzipFile(napi_env env, napi_callback_info info);
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
 
-#endif  // OHOS_AAFwk_LIBZIP_ZLIB_H
+#endif  // OHOS_APPEXECFWK_LIBZIP_ZLIB_H
