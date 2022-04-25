@@ -24,10 +24,12 @@
 using namespace std;
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 namespace {
 const std::string SEPARATOR = "/";
+const std::string ZIP = ".zip";
+const std::int32_t ZIP_SIZE = 4;
 }
 const FilePath::CharType FilePath::kSeparators[] = FILE_PATH_LITERAL("/");
 const size_t FilePath::kSeparatorsLength = arraysize(kSeparators);
@@ -336,10 +338,10 @@ bool FilePath::AppendRelativePath(const FilePath &child, FilePath *path)
     std::vector<std::string> childComponentsReverse;
 
     std::vector<std::string>::reverse_iterator riter;
-    for (riter = parentComponents.rbegin(); riter != parentComponents.rend(); riter++) {
+    for (riter = parentComponents.rbegin(); riter != parentComponents.rend(); ++riter) {
         parentComponentsReverse.push_back(*riter);
     }
-    for (riter = childComponents.rbegin(); riter != childComponents.rend(); riter++) {
+    for (riter = childComponents.rbegin(); riter != childComponents.rend(); ++riter) {
         childComponentsReverse.push_back(*riter);
     }
     std::vector<std::string>::const_iterator parentIt = parentComponentsReverse.begin();
@@ -357,7 +359,7 @@ bool FilePath::AppendRelativePath(const FilePath &child, FilePath *path)
             ++childIt;
         }
 
-        for (; childIt != childComponentsReverse.end(); childIt++) {
+        for (; childIt != childComponentsReverse.end(); ++childIt) {
             *path = path->Append(*childIt);
         }
     }
@@ -401,6 +403,15 @@ bool FilePath::GetZipAllDirFiles(const std::string &path, std::vector<std::strin
     closedir(dir);
     return result;
 }
+
+std::string FilePath::CheckDestDirTail()
+{
+    if (path_.substr(path_.size()-ZIP_SIZE, ZIP_SIZE) == ZIP) {
+        return path_;
+    } else {
+        return path_ + ZIP;
+    }
+}
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS

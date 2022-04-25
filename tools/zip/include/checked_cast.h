@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FOUNDATION_AAFWK_STANDARD_TOOLS_CHECKED_CAST_H
-#define FOUNDATION_AAFWK_STANDARD_TOOLS_CHECKED_CAST_H
+#ifndef FOUNDATION_APPEXECFWK_STANDARD_TOOLS_CHECKED_CAST_H
+#define FOUNDATION_APPEXECFWK_STANDARD_TOOLS_CHECKED_CAST_H
 
 #include <exception>
 #include <typeinfo>
@@ -159,4 +159,4 @@ inline T checked_cast(X const &x)
     return hidden::checked_cast_impl<T, X, hidden::IsPtr<X>::value>::cast(x, hidden::LookUpHelper2());
 }
 
-#endif  // FOUNDATION_AAFWK_STANDARD_TOOLS_CHECKED_CAST_H
+#endif  // FOUNDATION_APPEXECFWK_STANDARD_TOOLS_CHECKED_CAST_H

@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_FILE_PATH_H
-#define FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_FILE_PATH_H
+#ifndef FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_FILE_PATH_H
+#define FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_FILE_PATH_H
 #include <string>
 #include <vector>
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 
 #define FILE_PATH_LITERAL(x) x
@@ -72,6 +72,7 @@ public:
     FilePath BaseName();
     bool IsAbsolute();
     std::string Value();
+    std::string CheckDestDirTail();
 private:
     std::string path_;
 
@@ -79,7 +80,7 @@ private:
     bool AreAllSeparators(const std::string &input);
 };
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
 
-#endif  // FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_FILE_PATH_H
+#endif  // FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_FILE_PATH_H

@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_READER_H_
-#define FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_READER_H_
+#ifndef FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_READER_H_
+#define FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_READER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -27,7 +27,7 @@
 #include "contrib/minizip/unzip.h"
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 
 // A delegate interface used to stream out an entry; see
@@ -221,6 +221,6 @@ private:
 };
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // FOUNDATION_AAFWK_STANDARD_TOOLS_ZIP_READER_H_
+#endif  // FOUNDATION_APPEXECFWK_STANDARD_TOOLS_ZIP_READER_H_

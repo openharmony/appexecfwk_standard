@@ -30,7 +30,7 @@
 using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 
 // The implementation assumes that file names in zip files
@@ -295,5 +295,5 @@ void FilePathWriterDelegate::SetTimeModified(const struct tm *time)
 }
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS

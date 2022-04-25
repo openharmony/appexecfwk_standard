@@ -25,7 +25,7 @@
 using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
-namespace AAFwk {
+namespace AppExecFwk {
 namespace LIBZIP {
 
 struct tm GetTmDataFromTickts(int64_t sec)
@@ -322,5 +322,5 @@ bool ZipOpenNewFileInZip(
 }
 
 }  // namespace LIBZIP
-}  // namespace AAFwk
+}  // namespace AppExecFwk
 }  // namespace OHOS
