@@ -46,7 +46,8 @@ BundleSandboxInstaller::~BundleSandboxInstaller()
     APP_LOGD("base bundle installer instance is destroyed");
 }
 
-ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName, const int32_t &userId)
+ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName, const int32_t &dlpType,
+    const int32_t &userId, int32_t &appIndex)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("InstallSandboxApp %{public}s begin", bundleName.c_str());
@@ -66,6 +67,7 @@ ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName,
         APP_LOGE("the bundle is not installed");
         return ERR_APPEXECFWK_SANDBOX_INSTALL_FAILED_APP_NOT_EXISTED;
     }
+    InnerBundleInfo oldInfo = info;
 
     // 2. obtain userId
     if (userId < Constants::DEFAULT_USERID) {
@@ -100,7 +102,7 @@ ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName,
     }
     info.SetAppIndex(newAppIndex);
     info.SetIsSandbox(true);
-    uint32_t newTokenId = BundlePermissionMgr::CreateAccessTokenId(info, info.GetBundleName(), userId_);
+    uint32_t newTokenId = BundlePermissionMgr::CreateAccessTokenId(info, info.GetBundleName(), userId_, dlpType);
 
     // 5. grant permission
     // to be completed further
@@ -124,17 +126,21 @@ ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName,
         return result;
     }
 
-    // 7. store new bundleInfo to data manager
+    // 7. store new bundleInfo to sandbox data manager
     sandboxDataMgr_->SaveSandboxAppInfo(info, newAppIndex);
-    dataMgr_->EnableBundle(bundleName_);
     sandboxAppGuard.Dismiss();
+    dataMgr_->EnableBundle(bundleName_);
 
-    // 8. publish common event
+    // 8. SaveSandboxPersistentInfo
+    StoreSandboxPersitentInfo(bundleName, newTokenId, newAppIndex, userId_);
+
+    // 9. publish common event
     result = NotifySandboxAppStatus(info, userInfo.uid, SandboxInstallType::INSTALL);
     if (result != ERR_OK) {
         APP_LOGE("NotifySandboxAppStatus failed due to error : %{public}d", result);
     }
 
+    appIndex = newAppIndex;
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
 
     APP_LOGD("InstallSandboxApp %{public}s succesfully", bundleName.c_str());
@@ -183,7 +189,8 @@ ErrCode BundleSandboxInstaller::UninstallSandboxApp(
     }
 
     // 4. delete accesstoken id and appIndex
-    if (BundlePermissionMgr::DeleteAccessTokenId(info.GetAccessTokenId(userId_)) !=
+    uint32_t accessTokenId = info.GetAccessTokenId(userId_);
+    if (BundlePermissionMgr::DeleteAccessTokenId(accessTokenId) !=
         AccessToken::AccessTokenKitRet::RET_SUCCESS) {
         APP_LOGE("delete accessToken failed");
         return ERR_APPEXECFWK_SANDBOX_INSTALL_DELETE_ACCESSTOKEN_FAILED;
@@ -208,7 +215,10 @@ ErrCode BundleSandboxInstaller::UninstallSandboxApp(
     // 6. remove new innerBundleInfo from data manager
     sandboxDataMgr_->DeleteSandboxAppInfo(bundleName, appIndex);
 
-    // 7 publish common event
+    // 7. remove sandbox persistent info
+    DeleteSandboxPersitentInfo(bundleName, accessTokenId, appIndex, userId);
+
+    // 8. publish common event
     result = NotifySandboxAppStatus(info, userInfo.uid, SandboxInstallType::UNINSTALL);
     if (result != ERR_OK) {
         APP_LOGE("NotifySandboxAppStatus failed due to error : %{public}d", result);
@@ -368,6 +378,28 @@ ErrCode BundleSandboxInstaller::GetDataMgr()
         }
     }
     return ERR_OK;
+}
+
+void BundleSandboxInstaller::StoreSandboxPersitentInfo(const std::string &bundleName, uint32_t accessTokenId,
+    int32_t appIndex, int32_t userId)
+{
+    SandboxAppPersistentInfo sandboxPersistentInfo = {
+        .accessTokenId = accessTokenId,
+        .appIndex = appIndex,
+        .userId = userId
+    };
+    dataMgr_->StoreSandboxPersistentInfo(bundleName, sandboxPersistentInfo);
+}
+
+void BundleSandboxInstaller::DeleteSandboxPersitentInfo(const std::string &bundleName, uint32_t accessTokenId,
+    int32_t appIndex, int32_t userId)
+{
+    SandboxAppPersistentInfo sandboxPersistentInfo = {
+        .accessTokenId = accessTokenId,
+        .appIndex = appIndex,
+        .userId = userId
+    };
+    dataMgr_->DeleteSandboxPersistentInfo(bundleName, sandboxPersistentInfo);
 }
 } // AppExecFwk
 } // OHOS

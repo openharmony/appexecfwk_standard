@@ -95,10 +95,11 @@ public:
     /**
      * @brief Install sandbox application.
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param dlpType Indicates type of the sandbox application.
      * @param userId Indicates the sandbox application will be installed under which user id.
      * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
      */
-    virtual bool InstallSandboxApp(const std::string &bundleName, int32_t userId) = 0;
+    virtual int32_t InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId) = 0;
 
     /**
      * @brief Uninstall sandbox application.

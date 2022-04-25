@@ -75,7 +75,7 @@ void BundleDataStorageDatabase::SaveEntries(
         auto handler = std::make_shared<BundleExceptionHandler>(shared_from_this());
         handler->HandleInvalidBundle(innerBundleInfo, isBundleValid);
         auto sandboxHandler = std::make_shared<BundleSandboxExceptionHandler>(shared_from_this());
-        sandboxHandler->RemoveSandboxAppDataDir(innerBundleInfo.GetBundleName());
+        sandboxHandler->RemoveSandboxApp(innerBundleInfo);
         if (!isBundleValid) {
             continue;
         }

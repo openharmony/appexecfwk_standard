@@ -2639,6 +2639,40 @@ bool BundleMgrProxy::ImplicitQueryInfoByPriority(const Want &want, int32_t flags
     return true;
 }
 
+bool BundleMgrProxy::GetSandboxBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId,
+    BundleInfo &info)
+{
+    APP_LOGD("begin to GetSandboxBundleInfo");
+    if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
+        APP_LOGE("GetSandboxBundleInfo params are invalid");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to GetSandboxBundleInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("failed to GetSandboxBundleInfo due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteInt32(appIndex)) {
+        APP_LOGE("failed to GetSandboxBundleInfo due to write appIndex fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to GetSandboxBundleInfo due to write userId fail");
+        return false;
+    }
+    if (!GetParcelableInfo<BundleInfo>(
+        IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO, data, info)) {
+        APP_LOGE("failed to GetSandboxBundleInfo from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
     std::vector<std::string> &dependentModuleNames)
 {
@@ -2673,39 +2707,6 @@ bool BundleMgrProxy::GetAllDependentModuleNames(const std::string &bundleName, c
     }
     if (!reply.ReadStringVector(&dependentModuleNames)) {
         APP_LOGE("fail to GetAllDependentModuleNames from reply");
-        return false;
-    }
-    return true;
-}
-
-bool BundleMgrProxy::GetSandboxAppBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId,
-    BundleInfo &info)
-{
-    if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
-        APP_LOGE("GetSandboxAppBundleInfo params are invalid");
-        return false;
-    }
-
-    MessageParcel data;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("failed to GetSandboxAppBundleInfo due to write MessageParcel fail");
-        return false;
-    }
-    if (!data.WriteString(bundleName)) {
-        APP_LOGE("failed to GetSandboxAppBundleInfo due to write bundleName fail");
-        return false;
-    }
-    if (!data.WriteInt32(appIndex)) {
-        APP_LOGE("failed to GetSandboxAppBundleInfo due to write appIndex fail");
-        return false;
-    }
-    if (!data.WriteInt32(userId)) {
-        APP_LOGE("failed to GetSandboxAppBundleInfo due to write userId fail");
-        return false;
-    }
-    if (!GetParcelableInfo<BundleInfo>(
-        IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO, data, info)) {
-        APP_LOGE("failed to GetSandboxAppBundleInfo from server");
         return false;
     }
     return true;

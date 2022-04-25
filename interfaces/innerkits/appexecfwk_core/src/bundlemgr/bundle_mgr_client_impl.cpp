@@ -304,7 +304,7 @@ bool BundleMgrClientImpl::TransformFileToJsonString(const std::string &resPath, 
     return true;
 }
 
-bool BundleMgrClientImpl::InstallSandboxApp(const std::string &bundleName, int32_t userId)
+int32_t BundleMgrClientImpl::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId)
 {
     APP_LOGD("InstallSandboxApp begin");
     if (bundleName.empty()) {
@@ -317,7 +317,7 @@ bool BundleMgrClientImpl::InstallSandboxApp(const std::string &bundleName, int32
         return false;
     }
 
-    return bundleInstaller_->InstallSandboxApp(bundleName, userId);
+    return bundleInstaller_->InstallSandboxApp(bundleName, dlpType, userId);
 }
 
 bool BundleMgrClientImpl::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
@@ -336,10 +336,10 @@ bool BundleMgrClientImpl::UninstallSandboxApp(const std::string &bundleName, int
     return bundleInstaller_->UninstallSandboxApp(bundleName, appIndex, userId);
 }
 
-bool BundleMgrClientImpl::GetSandboxAppBundleInfo(
+bool BundleMgrClientImpl::GetSandboxBundleInfo(
     const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
 {
-    APP_LOGD("GetSandboxAppBundleInfo begin");
+    APP_LOGD("GetSandboxBundleInfo begin");
     if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
         APP_LOGE("UninstallSandboxApp params are invalid");
         return false;
@@ -350,7 +350,7 @@ bool BundleMgrClientImpl::GetSandboxAppBundleInfo(
         APP_LOGE("failed to connect");
         return false;
     }
-    return bundleMgr_->GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
+    return bundleMgr_->GetSandboxBundleInfo(bundleName, appIndex, userId, info);
 }
 
 ErrCode BundleMgrClientImpl::Connect()
