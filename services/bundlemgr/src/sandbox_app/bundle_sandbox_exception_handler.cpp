@@ -15,21 +15,15 @@
 
 #include "bundle_sandbox_exception_handler.h"
 
-#include <dirent.h>
-#include <sys/stat.h>
 #include <thread>
-#include <unistd.h>
 
 #include "bundle_constants.h"
+#include "bundle_permission_mgr.h"
 #include "installd_client.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-namespace {
-const std::string FIRST_DATA_DIR = "/data/app/el1/";
-const std::string EL1 = "el1";
-const std::string EL2 = "el2";
-} // namespace
+using namespace OHOS::Security;
 
 BundleSandboxExceptionHandler::BundleSandboxExceptionHandler(
     const std::shared_ptr<BundleDataStorageDatabase> &dataStorage) : dataStorage_(dataStorage)
@@ -42,67 +36,52 @@ BundleSandboxExceptionHandler::~BundleSandboxExceptionHandler()
     APP_LOGD("destroy bundle excepetion handler instance");
 }
 
-void BundleSandboxExceptionHandler::RemoveSandboxAppDataDir(const std::string &bundleName)
+void BundleSandboxExceptionHandler::RemoveSandboxApp(InnerBundleInfo &info)
 {
-    APP_LOGD("start to remove sandbox dir of %{public}s", bundleName.c_str());
-    if (bundleName.empty()) {
+    std::string bundleName = info.GetBundleName();
+    auto sandboxPersistentInfo = info.GetSandboxPersistentInfo();
+    if (sandboxPersistentInfo.empty()) {
+        APP_LOGD("no sandbox app info");
         return;
     }
+    info.ClearSandboxPersistentInfo();
+    UpdateBundleInfoToStorage(info);
 
-    std::thread t(ScanDataDir, std::ref(bundleName));
+    std::thread t(RemoveSandboxDataDirAndTokenId, bundleName, sandboxPersistentInfo);
     t.detach();
 }
 
-void BundleSandboxExceptionHandler::ScanDataDir(const std::string &bundleName)
+void BundleSandboxExceptionHandler::RemoveSandboxDataDirAndTokenId(const std::string &bundleName,
+    const std::vector<SandboxAppPersistentInfo> &sandboxPersistentInfo)
 {
-    DIR* dir = opendir(FIRST_DATA_DIR.c_str());
-    if (dir == nullptr) {
-        APP_LOGD("open dir failed :%{public}s", FIRST_DATA_DIR.c_str());
-        return;
-    }
-
-    struct dirent *entry = nullptr;
-    while ((entry = readdir(dir)) != nullptr) {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+    for (const auto& sandboxInfo : sandboxPersistentInfo) {
+        APP_LOGD("start to remove sandbox dir of %{public}s_%{public}d", bundleName.c_str(), sandboxInfo.appIndex);
+        if (sandboxInfo.appIndex <= 0) {
+            APP_LOGW("invalid app index %{public}d", sandboxInfo.appIndex);
             continue;
         }
-        std::string dataDirFirst = FIRST_DATA_DIR + entry->d_name + "/base/";
-        std::string dataDirSecond = FIRST_DATA_DIR + entry->d_name + "/database/";
-        RemoveDataDir(bundleName, dataDirFirst);
-        RemoveDataDir(bundleName, dataDirSecond);
+        // delete accessToken id from ATM
+        if (BundlePermissionMgr::DeleteAccessTokenId(sandboxInfo.accessTokenId) !=
+            AccessToken::AccessTokenKitRet::RET_SUCCESS) {
+            APP_LOGE("delete accessToken failed");
+        }
+        // delete sandbox data dir
+        std::string innerBundleName = bundleName + Constants::FILE_UNDERLINE + std::to_string(sandboxInfo.appIndex);
+        ErrCode result = InstalldClient::GetInstance()->RemoveBundleDataDir(innerBundleName, sandboxInfo.userId);
+        if (result != ERR_OK) {
+            APP_LOGE("fail to remove data dir: %{public}s, error is %{public}d", innerBundleName.c_str(), result);
+        }
     }
 }
 
-void BundleSandboxExceptionHandler::RemoveDataDir(const std::string &bundleName, const std::string &pathDir)
+void BundleSandboxExceptionHandler::UpdateBundleInfoToStorage(const InnerBundleInfo &info)
 {
-    if (pathDir.empty()) {
-        return;
-    }
-    APP_LOGD("start to remove data dir %{public}s", pathDir.c_str());
-    DIR* dir = opendir(pathDir.c_str());
-    if (dir == nullptr) {
-        APP_LOGD("open dir failed :%{private}s", pathDir.c_str());
-        return;
-    }
-
-    struct dirent *entry = nullptr;
-    while ((entry = readdir(dir)) != nullptr) {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-            continue;
-        }
-        std::string dataDir = pathDir + entry->d_name;
-        APP_LOGD("current data dir is %{public}s", dataDir.c_str());
-        if (dataDir.find(bundleName + Constants::FILE_UNDERLINE) != std::string::npos) {
-            ErrCode result = InstalldClient::GetInstance()->RemoveDir(dataDir);
-            if (result != ERR_OK) {
-                APP_LOGW("fail to remove data dir %{public}s, error is %{public}d", dataDir.c_str(), result);
-            }
-            auto tmpStr = dataDir.replace(dataDir.find(EL1), EL1.length(), EL2);
-            result = InstalldClient::GetInstance()->RemoveDir(tmpStr);
-            if (result != ERR_OK) {
-                APP_LOGW("fail to remove data dir %{public}s, error is %{public}d", dataDir.c_str(), result);
-            }
-        }
+    auto storage = dataStorage_.lock();
+    if (storage) {
+        APP_LOGD("update bundle info of %{public}s to the storage", info.GetBundleName().c_str());
+        storage->SaveStorageBundleInfo(info);
+    } else {
+        APP_LOGE(" fail to remove bundle info of %{public}s from the storage", info.GetBundleName().c_str());
     }
 }
 } // AppExecFwk

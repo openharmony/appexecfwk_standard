@@ -1788,6 +1788,36 @@ int32_t BundleDataMgr::GetModuleUpgradeFlag(const std::string &bundleName, const
     return newInfo.GetModuleUpgradeFlag(moduleName);
 }
 
+void BundleDataMgr::StoreSandboxPersistentInfo(const std::string &bundleName, const SandboxAppPersistentInfo &info)
+{
+    if (bundleName.empty()) {
+        APP_LOGW("StoreSandboxPersistentInfo bundleName is empty");
+        return;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.find(bundleName) == bundleInfos_.end()) {
+        APP_LOGW("can not find bundle %{public}s", bundleName.c_str());
+        return;
+    }
+    bundleInfos_[bundleName].AddSandboxPersistentInfo(info);
+    SaveInnerBundleInfo(bundleInfos_[bundleName]);
+}
+
+void BundleDataMgr::DeleteSandboxPersistentInfo(const std::string &bundleName, const SandboxAppPersistentInfo &info)
+{
+    if (bundleName.empty()) {
+        APP_LOGW("DeleteSandboxPersistentInfo bundleName is empty");
+        return;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.find(bundleName) == bundleInfos_.end()) {
+        APP_LOGW("can not find bundle %{public}s", bundleName.c_str());
+        return;
+    }
+    bundleInfos_[bundleName].RemoveSandboxPersistentInfo(info);
+    SaveInnerBundleInfo(bundleInfos_[bundleName]);
+}
+
 void BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
 {
     auto userInfos = info.GetInnerBundleUserInfos();
@@ -2377,24 +2407,17 @@ bool BundleDataMgr::LoadAllPreInstallBundleInfos(std::vector<PreInstallBundleInf
     return false;
 }
 
-bool BundleDataMgr::SaveInstallMark(const InnerBundleInfo &info, bool isAppExisted) const
+bool BundleDataMgr::SaveInnerBundleInfo(const InnerBundleInfo &info) const
 {
-    APP_LOGD("write install mark to storage with bundle:%{public}s", info.GetBundleName().c_str());
-    if (!isAppExisted) {
-        if (dataStorage_->SaveStorageBundleInfo(info)) {
-            APP_LOGD("save install mark successfully");
-            return true;
-        }
-        APP_LOGE("save install mark failed!");
-        return false;
-    }
+    APP_LOGD("write install InnerBundleInfo to storage with bundle:%{public}s", info.GetBundleName().c_str());
     if (dataStorage_->SaveStorageBundleInfo(info)) {
-        APP_LOGD("save install mark successfully");
+        APP_LOGD("save install InnerBundleInfo successfully");
         return true;
     }
-    APP_LOGE("save install mark failed!");
+    APP_LOGE("save install InnerBundleInfo failed!");
     return false;
 }
+
 
 bool BundleDataMgr::GetInnerBundleUserInfoByUserId(const std::string &bundleName,
     int32_t userId, InnerBundleUserInfo &innerBundleUserInfo) const

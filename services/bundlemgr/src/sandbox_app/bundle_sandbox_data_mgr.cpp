@@ -166,6 +166,10 @@ int32_t BundleSandboxDataMgr::GenerateSandboxAppIndex(const std::string &bundleN
     }
 
     int32_t newAppIndex = pre + 1;
+    if (newAppIndex > Constants::MAX_APP_INDEX) {
+        APP_LOGE("GenerateSandboxAppIndex failed due to exceed limitation of maximum appIndex");
+        return Constants::INITIAL_APP_INDEX;
+    }
     it->second.insert(newAppIndex);
     APP_LOGD("GenerateSandboxAppIndex successfully with appIndex %{public}d", newAppIndex);
     return newAppIndex;

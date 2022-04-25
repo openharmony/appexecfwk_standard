@@ -75,10 +75,11 @@ public:
     /**
      * @brief Install sandbox application.
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param dlpType Indicates type of the sandbox application.
      * @param userId Indicates the sandbox application will be installed under which user id.
-     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     * @return Returns appIndex of sandbox application if successfully, otherwise returns 0.
      */
-    bool InstallSandboxApp(const std::string &bundleName, int32_t userId);
+    int32_t InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId);
 
     /**
      * @brief Uninstall sandbox application.
@@ -89,7 +90,7 @@ public:
      */
     bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId);
 
-    bool GetSandboxAppBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info);
+    bool GetSandboxBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info);
 private:
     std::shared_ptr<BundleMgrClientImpl> impl_;
 };

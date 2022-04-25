@@ -43,21 +43,23 @@ const std::string BUNDLE_NAME = "com.example.ohosproject.hmservice";
 const std::string MSG_SUCCESS = "[SUCCESS]";
 const std::string OPERATION_FAILURE = "Failure";
 const std::string OPERATION_SUCCESS = "Success";
-const int TIMEOUT = 10;
-const int DEFAULT_USERID = 100;
+const int32_t TIMEOUT = 10;
+const int32_t DEFAULT_USERID = 100;
+const int32_t DLP_TYPE_1 = 1;
+const int32_t DLP_TYPE_2 = 2;
 } // namespace
 
 class StatusReceiverImpl : public StatusReceiverHost {
 public:
     StatusReceiverImpl();
     virtual ~StatusReceiverImpl() override;
-    virtual void OnStatusNotify(const int progress) override;
+    virtual void OnStatusNotify(const int32_t progress) override;
     virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override;
     std::string GetResultMsg() const;
 
 private:
     mutable std::promise<std::string> resultMsgSignal_;
-    int iProgress_ = 0;
+    int32_t iProgress_ = 0;
 
     DISALLOW_COPY_AND_MOVE(StatusReceiverImpl);
 };
@@ -72,7 +74,7 @@ StatusReceiverImpl::~StatusReceiverImpl()
     APP_LOGI("destroy status receiver instance");
 }
 
-void StatusReceiverImpl::OnStatusNotify(const int progress)
+void StatusReceiverImpl::OnStatusNotify(const int32_t progress)
 {
     EXPECT_GT(progress, iProgress_);
     iProgress_ = progress;
@@ -106,8 +108,9 @@ public:
     void SetUp();
     void TearDown();
     static void InstallBundle(
-        const std::string &bundleFilePath, const InstallFlag installFlag, std::string &installMsg, const int userId);
-    static void UninstallBundle(const std::string &bundleName, std::string &uninstallMsg, const int userId);
+        const std::string &bundleFilePath, const InstallFlag installFlag, std::string &installMsg,
+        const int32_t userId);
+    static void UninstallBundle(const std::string &bundleName, std::string &uninstallMsg, const int32_t userId);
     static void CheckPathAreExist(const std::string &bundleName, int32_t userId, int32_t appIndex);
     static void CheckSandboxAppInfo(const std::string &bundleName, int32_t appIndex, int32_t userId);
     static sptr<IBundleMgr> GetBundleMgrProxy();
@@ -165,7 +168,7 @@ sptr<IBundleInstaller> BundleMgrSandboxAppSystemTest::GetInstallerProxy()
 
 void BundleMgrSandboxAppSystemTest::InstallBundle(
     const std::string &bundleFilePath, const InstallFlag installFlag, std::string &installMsg,
-    const int userId = Constants::ALL_USERID)
+    const int32_t userId = Constants::ALL_USERID)
 {
     sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
     if (!installerProxy) {
@@ -187,7 +190,7 @@ void BundleMgrSandboxAppSystemTest::InstallBundle(
 }
 
 void BundleMgrSandboxAppSystemTest::UninstallBundle(
-    const std::string &bundleName, std::string &uninstallMsg, const int userId = Constants::ALL_USERID)
+    const std::string &bundleName, std::string &uninstallMsg, const int32_t userId = Constants::ALL_USERID)
 {
     sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
     if (!installerProxy) {
@@ -254,7 +257,7 @@ void BundleMgrSandboxAppSystemTest::CheckSandboxAppInfo(const std::string &bundl
 {
     BundleInfo info;
     BundleMgrClient bundleMgrClient;
-    bool ret = bundleMgrClient.GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
+    bool ret = bundleMgrClient.GetSandboxBundleInfo(bundleName, appIndex, userId, info);
     EXPECT_TRUE(ret);
 
     BundleInfo info2;
@@ -282,11 +285,44 @@ HWTEST_F(BundleMgrSandboxAppSystemTest, InstallSandboxAppTest001, TestSize.Level
     EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     BundleMgrClient bundleMgrClient;
-    bool ret = bundleMgrClient.InstallSandboxApp(BUNDLE_NAME, DEFAULT_USERID);
-    EXPECT_TRUE(ret);
+    int32_t ret = bundleMgrClient.InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, DEFAULT_USERID);
+    EXPECT_LT(0, ret);
 
     CheckPathAreExist(BUNDLE_NAME, DEFAULT_USERID, 1);
     CheckSandboxAppInfo(BUNDLE_NAME, 1, DEFAULT_USERID);
+
+    auto res = bundleMgrClient.UninstallSandboxApp(BUNDLE_NAME, 1, DEFAULT_USERID);
+    EXPECT_TRUE(res);
+
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: InstallSandboxAppTest002
+ * @tc.name: InstallSandboxApp
+ * @tc.desc: Test the interface of InstallSandboxApp
+ *           1. Install application 
+ * @tc.require: AR000GNT9D
+ */
+HWTEST_F(BundleMgrSandboxAppSystemTest, InstallSandboxAppTest002, TestSize.Level1)
+{
+    auto name = std::string("InstallSandboxAppTest002");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    BundleMgrClient bundleMgrClient;
+    int32_t ret = bundleMgrClient.InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_2, DEFAULT_USERID);
+    EXPECT_LT(0, ret);
+
+    CheckPathAreExist(BUNDLE_NAME, DEFAULT_USERID, 1);
+    CheckSandboxAppInfo(BUNDLE_NAME, 1, DEFAULT_USERID);
+
+    auto res = bundleMgrClient.UninstallSandboxApp(BUNDLE_NAME, 1, DEFAULT_USERID);
+    EXPECT_TRUE(res);
+
     GTEST_LOG_(INFO) << name << " end";
 }
 } // AppExecFwk

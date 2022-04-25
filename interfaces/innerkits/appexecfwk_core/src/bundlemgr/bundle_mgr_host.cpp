@@ -314,11 +314,11 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             errCode = HandleSetModuleRemovable(data, reply);
             break;
         case IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK:
-             errCode = HandleQueryAbilityInfoWithCallback(data, reply);
-             break;
+            errCode = HandleQueryAbilityInfoWithCallback(data, reply);
+            break;
         case IBundleMgr::Message::UPGRADE_ATOMIC_SERVICE:
-             errCode = HandleUpgradeAtomicService(data, reply);
-             break;
+            errCode = HandleUpgradeAtomicService(data, reply);
+            break;
         case IBundleMgr::Message::IS_MODULE_NEED_UPDATE:
             errCode = HandleGetModuleUpgradeFlag(data, reply);
             break;
@@ -333,8 +333,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             break;
         case IBundleMgr::Message::GET_ALL_DEPENDENT_MODULE_NAMES:
             errCode = HandleGetAllDependentModuleNames(data, reply);
+            break;
         case IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO:
-            errCode = HandleGetSandboxAppBundleInfo(data, reply);
+            errCode = HandleGetSandboxBundleInfo(data, reply);
             break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -2001,7 +2002,7 @@ ErrCode BundleMgrHost::HandleGetAllDependentModuleNames(Parcel &data, Parcel &re
     return ERR_OK;
 }
 
-ErrCode BundleMgrHost::HandleGetSandboxAppBundleInfo(Parcel &data, Parcel &reply)
+ErrCode BundleMgrHost::HandleGetSandboxBundleInfo(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
@@ -2009,11 +2010,11 @@ ErrCode BundleMgrHost::HandleGetSandboxAppBundleInfo(Parcel &data, Parcel &reply
     int32_t userId = data.ReadInt32();
 
     BundleInfo info;
-    auto res = GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
+    auto res = GetSandboxBundleInfo(bundleName, appIndex, userId, info);
     if (!reply.WriteBool(res)) {
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    if (res &&  !reply.WriteParcelable(&info)) {
+    if (res && !reply.WriteParcelable(&info)) {
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return ERR_OK;

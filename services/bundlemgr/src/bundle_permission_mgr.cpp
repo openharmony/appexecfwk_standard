@@ -88,7 +88,7 @@ Security::AccessToken::HapPolicyParams BundlePermissionMgr::CreateHapPolicyParam
 }
 
 AccessToken::AccessTokenID BundlePermissionMgr::CreateAccessTokenId(
-    const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId)
+    const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId, const int32_t dlpType)
 {
     APP_LOGD("BundlePermissionMgr::CreateAccessTokenId bundleName = %{public}s, userId = %{public}d",
         bundleName.c_str(), userId);
@@ -97,6 +97,7 @@ AccessToken::AccessTokenID BundlePermissionMgr::CreateAccessTokenId(
     hapInfo.bundleName = bundleName;
     hapInfo.instIndex = innerBundleInfo.GetAppIndex();
     hapInfo.appIDDesc = innerBundleInfo.GetProvisionId();
+    hapInfo.dlpType = dlpType;
     AccessToken::HapPolicyParams hapPolicy = CreateHapPolicyParam(innerBundleInfo);
     AccessToken::AccessTokenIDEx accessToken = AccessToken::AccessTokenKit::AllocHapToken(hapInfo, hapPolicy);
     APP_LOGD("BundlePermissionMgr::CreateAccessTokenId accessTokenId = %{public}u",

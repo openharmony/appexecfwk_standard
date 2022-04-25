@@ -27,17 +27,17 @@ public:
 
     /**
      * @brief to remove the sandbox data dir when the bms service inits
-     * @param bundleName indicates the bundle name of the application.
+     * @param info indicates the inner bundleInfo of the application.
      */
-    void RemoveSandboxAppDataDir(const std::string &bundleName);
+    void RemoveSandboxApp(InnerBundleInfo &info);
 
 private:
-    static void ScanDataDir(const std::string &bundleName);
-    static void RemoveDataDir(const std::string &bundleName, const std::string &pathDir);
+    static void RemoveSandboxDataDirAndTokenId(const std::string &bundleName,
+        const std::vector<SandboxAppPersistentInfo> &sandboxPersistentInfo);
+    void UpdateBundleInfoToStorage(const InnerBundleInfo &info);
 
     std::weak_ptr<BundleDataStorageDatabase> dataStorage_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif // FOUNDATION_APPEXECFWK_SERVICES_BUNDLE_SANDBOX_EXCEPTION_HANDLE_H
-

@@ -695,7 +695,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
 
     std::string packageName;
     oldInfo.SetInstallMark(bundleName, packageName, InstallExceptionStatus::UNINSTALL_BUNDLE_START);
-    if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
+    if (!dataMgr_->SaveInnerBundleInfo(oldInfo)) {
         APP_LOGE("save install mark failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
@@ -784,7 +784,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
 
     oldInfo.SetInstallMark(bundleName, modulePackage, InstallExceptionStatus::UNINSTALL_PACKAGE_START);
-    if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
+    if (!dataMgr_->SaveInnerBundleInfo(oldInfo)) {
         APP_LOGE("save install mark failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
@@ -966,7 +966,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
         return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
     }
     info.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_START);
-    if (!dataMgr_->SaveInstallMark(info, isAppExist_)) {
+    if (!dataMgr_->SaveInnerBundleInfo(info)) {
         APP_LOGE("save install mark to storage failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
@@ -1080,7 +1080,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     }
 
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_NEW_START);
-    if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
+    if (!dataMgr_->SaveInnerBundleInfo(oldInfo)) {
         APP_LOGE("save install mark failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
@@ -1172,7 +1172,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     }
 
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_EXISTED_START);
-    if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
+    if (!dataMgr_->SaveInnerBundleInfo(oldInfo)) {
         APP_LOGE("save install mark failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }

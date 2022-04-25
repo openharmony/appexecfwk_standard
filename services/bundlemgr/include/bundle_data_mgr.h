@@ -573,7 +573,7 @@ public:
      * @param isAppExisted Indicates whether the application exists in the database storage or not.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    bool SaveInstallMark(const InnerBundleInfo &info, bool isAppExisted) const;
+    bool SaveInnerBundleInfo(const InnerBundleInfo &info) const;
     /**
      * @brief GetInnerBundleUserInfoByUserId.
      * @param bundleName Indicates the application bundle name to be queried.
@@ -738,6 +738,8 @@ public:
         InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
 
     std::shared_ptr<BundleSandboxDataMgr> GetSandboxDataMgr() const;
+    void StoreSandboxPersistentInfo(const std::string &bundleName, const SandboxAppPersistentInfo &info);
+    void DeleteSandboxPersistentInfo(const std::string &bundleName, const SandboxAppPersistentInfo &info);
 
 private:
     /**

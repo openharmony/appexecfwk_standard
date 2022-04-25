@@ -954,6 +954,19 @@ public:
         return false;
     }
     /**
+     * @brief Obtain sandbox application bundleInfo.
+     * @param bundleName Indicates the bundle name of the sandbox application to be install.
+     * @param appIndex Indicates application index of the sandbox application.
+     * @param userId Indicates the sandbox application is installed under which user id.
+     * @return Returns true if the get sandbox application budnelInfo successfully; returns false otherwise.
+     */
+    virtual bool GetSandboxBundleInfo(
+        const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
+    {
+        return false;
+    }
+
+    /**
      * @brief Obtains the value of isRemovable based on a given bundle name and module name.
      * @param bundleName Indicates the bundle name to be queried.
      * @param moduleName Indicates the module name to be queried.
@@ -1010,19 +1023,6 @@ public:
      */
     virtual bool SetModuleUpgradeFlag(
         const std::string &bundleName, const std::string &moduleName, int32_t upgradeFlag)
-    {
-        return false;
-    }
-
-    /**
-     * @brief Obtain sandbox application bundleInfo.
-     * @param bundleName Indicates the bundle name of the sandbox application to be install.
-     * @param appIndex Indicates application index of the sandbox application.
-     * @param userId Indicates the sandbox application is installed under which user id.
-     * @return Returns true if the get sandbox application budnelInfo successfully; returns false otherwise.
-     */
-    virtual bool GetSandboxAppBundleInfo(
-        const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
     {
         return false;
     }

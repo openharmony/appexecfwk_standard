@@ -236,6 +236,11 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
 const std::string BUNDLE_INSTALL_MARK_BUNDLE = "installMarkBundle";
 const std::string BUNDLE_INSTALL_MARK_PACKAGE = "installMarkPackage";
 const std::string BUNDLE_INSTALL_MARK_STATUS = "installMarkStatus";
+// sub BUNDLE_SANDBOX_PERSISTENT_INFO
+const std::string BUNDLE_SANDBOX_PERSISTENT_ACCESS_TOKEN_ID = "accessTokenId";
+const std::string BUNDLE_SANDBOX_PERSISTENT_APP_INDEX = "appIndex";
+const std::string BUNDLE_SANDBOX_PERSISTENT_USER_ID = "userId";
+
 const uint32_t VALUE_HOME_SCREEN = 1 << 0;
 // 000010 represents supporting search box
 const uint32_t VALUE_SEARCHBOX = 1 << 1;
