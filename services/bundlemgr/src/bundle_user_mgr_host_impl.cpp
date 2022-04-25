@@ -142,6 +142,7 @@ void BundleUserMgrHostImpl::RemoveUser(int32_t userId)
         InstallParam installParam;
         installParam.userId = userId;
         installParam.forceExecuted = true;
+        installParam.isPreInstallApp = true;
         installParam.installFlag = InstallFlag::NORMAL;
         sptr<UserReceiverImpl> userReceiverImpl(new UserReceiverImpl());
         userReceiverImpl->SetBundlePromise(bundlePromise);
