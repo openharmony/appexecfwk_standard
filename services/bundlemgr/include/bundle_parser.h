@@ -20,6 +20,7 @@
 #include <string>
 
 #include "appexecfwk_errors.h"
+#include "default_permission.h"
 #include "inner_bundle_info.h"
 #include "pre_scan_info.h"
 
@@ -67,6 +68,13 @@ public:
      */
     ErrCode ParsePreInstallAbilityConfig(
         const std::string &configFile, std::set<PreBundleConfigInfo> &preBundleConfigInfos) const;
+
+    /**
+     * @brief Parse default permission file, then save in DefaultPermission info.
+     * @param defaultPermissions Indicates the obtained DefaultPermission object.
+     * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
+     */
+    ErrCode ParseDefaultPermission(std::vector<DefaultPermission> &defaultPermissions) const;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

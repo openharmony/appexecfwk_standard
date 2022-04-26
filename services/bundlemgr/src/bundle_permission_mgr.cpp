@@ -17,11 +17,36 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
+#include "bundle_parser.h"
 #include "ipc_skeleton.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::Security;
+std::map<std::string, std::map<std::string, bool>> BundlePermissionMgr::defaultPermissions_;
+
+bool BundlePermissionMgr::Init()
+{
+    BundleParser bundleParser;
+    std::vector<DefaultPermission> permissions;
+    if (bundleParser.ParseDefaultPermission(permissions) != ERR_OK) {
+        APP_LOGE("BundlePermissionMgr::Init failed");
+        return false;
+    }
+    defaultPermissions_.clear();
+    for (const auto &permission : permissions) {
+        std::map<std::string, bool> permissionInfo;
+        APP_LOGD("BundlePermissionMgr::Init bundleName: %{public}s", permission.bundleName.c_str());
+        for (const auto &info : permission.grantPermission) {
+            APP_LOGD("BundlePermissionMgr::Init permissionName: %{public}s, userCancellable: %{public}d",
+                info.name.c_str(), info.userCancellable);
+            permissionInfo.try_emplace(info.name, info.userCancellable);
+        }
+        defaultPermissions_.try_emplace(permission.bundleName, permissionInfo);
+    }
+    APP_LOGD("BundlePermissionMgr::Init success");
+    return true;
+}
 
 void BundlePermissionMgr::ConvertPermissionDef(
     const AccessToken::PermissionDef &permDef, PermissionDef &permissionDef)
@@ -326,13 +351,33 @@ std::vector<AccessToken::PermissionStateFull> BundlePermissionMgr::GetPermission
     return permStateFullList;
 }
 
-bool BundlePermissionMgr::InnerGrantRequestPermissions(const std::vector<RequestPermission> &reqPermissions,
-    const std::string &apl, const std::vector<std::string> &acls,
-    const Security::AccessToken::AccessTokenID tokenId)
+bool BundlePermissionMgr::GrantPermission(
+    const Security::AccessToken::AccessTokenID tokenId,
+    const std::string &permissionName,
+    const Security::AccessToken::PermissionFlag flag,
+    const std::string &bundleName)
 {
-    std::vector<std::string> grantPermList;
+    int32_t ret = AccessToken::AccessTokenKit::GrantPermission(tokenId, permissionName, flag);
+    if (ret != AccessToken::AccessTokenKitRet::RET_SUCCESS) {
+        APP_LOGE("GrantPermission failed, bundleName:%{public}s, request permission:%{public}s, err:%{public}d",
+            bundleName.c_str(), permissionName.c_str(), ret);
+        return false;
+    }
+    return true;
+}
+
+bool BundlePermissionMgr::InnerGrantRequestPermissions(Security::AccessToken::AccessTokenID tokenId,
+    const std::vector<RequestPermission> &reqPermissions,
+    const InnerBundleInfo &innerBundleInfo)
+{
+    std::string bundleName = innerBundleInfo.GetBundleName();
+    APP_LOGD("InnerGrantRequestPermissions start, bundleName:%{public}s", bundleName.c_str());
+    std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
+    std::vector<std::string> acls = innerBundleInfo.GetAllowedAcls();
+    std::vector<std::string> systemGrantPermList;
+    std::vector<std::string> userGrantPermList;
     for (const auto &reqPermission : reqPermissions) {
-        APP_LOGI("add permission %{public}s", reqPermission.name.c_str());
+        APP_LOGD("InnerGrantRequestPermissions add request permission %{public}s", reqPermission.name.c_str());
         AccessToken::PermissionDef permDef;
         int32_t ret = AccessToken::AccessTokenKit::GetDefPermission(reqPermission.name, permDef);
         if (ret != AccessToken::AccessTokenKitRet::RET_SUCCESS) {
@@ -341,46 +386,51 @@ bool BundlePermissionMgr::InnerGrantRequestPermissions(const std::vector<Request
         }
         if (CheckGrantPermission(permDef, apl, acls)) {
             if (permDef.grantMode == AccessToken::GrantMode::SYSTEM_GRANT) {
-                APP_LOGD("InnerGrantRequestPermissions system grant permission %{public}s", reqPermission.name.c_str());
-                grantPermList.emplace_back(reqPermission.name);
+                systemGrantPermList.emplace_back(reqPermission.name);
+            } else {
+                userGrantPermList.emplace_back(reqPermission.name);
             }
         } else {
             return false;
         }
     }
-
-    APP_LOGD("InnerGrantRequestPermissions add system grant permission %{public}zu", grantPermList.size());
-    for (const auto &perm : grantPermList) {
-        auto ret = AccessToken::AccessTokenKit::GrantPermission(tokenId, perm,
-            AccessToken::PermissionFlag::PERMISSION_SYSTEM_FIXED);
-        if (ret != AccessToken::AccessTokenKitRet::RET_SUCCESS) {
-            APP_LOGE("GrantReqPermission failed, request permission name:%{public}s", perm.c_str());
+    APP_LOGD("bundleName:%{public}s, add system_grant permission: %{public}zu, add user_grant permission: %{public}zu",
+        bundleName.c_str(), systemGrantPermList.size(), userGrantPermList.size());
+    for (const auto &perm : systemGrantPermList) {
+        if (!GrantPermission(tokenId, perm, AccessToken::PermissionFlag::PERMISSION_SYSTEM_FIXED, bundleName)) {
             return false;
         }
     }
+    if (innerBundleInfo.IsPreInstallApp()) {
+        for (const auto &perm: userGrantPermList) {
+            bool userCancellable = false;
+            if (!CheckPermissionInDefaultPermissions(bundleName, perm, userCancellable)) {
+                continue;
+            }
+            AccessToken::PermissionFlag flag = userCancellable ?
+                AccessToken::PermissionFlag::PERMISSION_DEFAULT_FLAG :
+                AccessToken::PermissionFlag::PERMISSION_SYSTEM_FIXED;
+            if (!GrantPermission(tokenId, perm, flag, bundleName)) {
+                return false;
+            }
+        }
+    }
+    APP_LOGD("InnerGrantRequestPermissions end, bundleName:%{public}s", bundleName.c_str());
     return true;
 }
 
 bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBundleInfo,
     const AccessToken::AccessTokenID tokenId)
 {
-    APP_LOGD("BundlePermissionMgr::GrantRequestPermissions bundleName: %{public}s",
-        innerBundleInfo.GetBundleName().c_str());
     std::vector<RequestPermission> reqPermissions = innerBundleInfo.GetAllRequestPermissions();
-    std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
-    std::vector<std::string> acls = innerBundleInfo.GetAllowedAcls();
-    return InnerGrantRequestPermissions(reqPermissions, apl, acls, tokenId);
+    return InnerGrantRequestPermissions(tokenId, reqPermissions, innerBundleInfo);
 }
 
 bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBundleInfo,
     const std::vector<std::string> &requestPermName,
     const AccessToken::AccessTokenID tokenId)
 {
-    APP_LOGD("BundlePermissionMgr::GrantRequestPermissions bundleName: %{public}s",
-        innerBundleInfo.GetBundleName().c_str());
     std::vector<RequestPermission> reqPermissions = innerBundleInfo.GetAllRequestPermissions();
-    std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
-    std::vector<std::string> acls = innerBundleInfo.GetAllowedAcls();
     std::vector<RequestPermission> newRequestPermissions;
     for (const auto &name : requestPermName) {
         auto iter = find_if(reqPermissions.begin(), reqPermissions.end(), [&name](const auto &req) {
@@ -390,7 +440,7 @@ bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBu
             newRequestPermissions.emplace_back(*iter);
         }
     }
-    return InnerGrantRequestPermissions(newRequestPermissions, apl, acls, tokenId);
+    return InnerGrantRequestPermissions(tokenId, newRequestPermissions, innerBundleInfo);
 }
 
 bool BundlePermissionMgr::GetAllReqPermissionStateFull(AccessToken::AccessTokenID tokenId,
@@ -531,6 +581,26 @@ bool BundlePermissionMgr::GetPermissionDef(const std::string &permissionName, Pe
         return true;
     }
     return false;
+}
+
+bool BundlePermissionMgr::CheckPermissionInDefaultPermissions(const std::string &bundleName,
+    const std::string &permissionName, bool &userCancellable)
+{
+    auto iterBundleName = defaultPermissions_.find(bundleName);
+    if (iterBundleName == defaultPermissions_.end()) {
+        APP_LOGW("bundleName: %{public}s does not exist in defaultPermissions",
+            bundleName.c_str());
+        return false;
+    }
+    std::map<std::string, bool> info = iterBundleName->second;
+    auto iterPermission = info.find(permissionName);
+    if (iterPermission == info.end()) {
+        APP_LOGW("bundleName: %{public}s, permissionName: %{public}s does not exist in defaultPermissions",
+            bundleName.c_str(), permissionName.c_str());
+        return false;
+    }
+    userCancellable = iterPermission->second;
+    return true;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
