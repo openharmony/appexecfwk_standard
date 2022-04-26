@@ -1608,6 +1608,16 @@ bool BundleMgrHostImpl::GetSandboxBundleInfo(
 {
     APP_LOGD("start GetSandboxBundleInfo, bundleName : %{public}s, appindex : %{public}d, userId : %{public}d",
         bundleName.c_str(), appIndex, userId);
+    // check bundle name
+    if (bundleName.empty()) {
+        APP_LOGE("GetSandboxBundleInfo failed due to empty bundleName");
+        return false;
+    }
+    // check appIndex
+    if (appIndex <= Constants::INITIAL_APP_INDEX || appIndex > Constants::MAX_APP_INDEX) {
+        APP_LOGE("the appIndex %{public}d is invalid", appIndex);
+        return false;
+    }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");

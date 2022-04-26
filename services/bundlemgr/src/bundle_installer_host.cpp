@@ -216,13 +216,6 @@ void BundleInstallerHost::HandleInstallSandboxApp(Parcel &data, Parcel &reply)
     std::string bundleName = Str16ToStr8(data.ReadString16());
     int32_t dplType = data.ReadInt32();
     int32_t userId = data.ReadInt32();
-    if (bundleName.empty() || dplType <= LOWER_DLP_TYPE_BOUND || dplType >= UPPER_DLP_TYPE_BOUND) {
-        APP_LOGE("handle install sandbox failed due to error parameters");
-        if (!reply.WriteInt32(0)) {
-            APP_LOGE("write failed");
-        }
-        return;
-    }
     auto ret = InstallSandboxApp(bundleName, dplType, userId);
     if (!reply.WriteInt32(ret)) {
         APP_LOGE("write failed");
@@ -236,19 +229,6 @@ void BundleInstallerHost::HandleUninstallSandboxApp(Parcel &data, Parcel &reply)
     std::string bundleName = Str16ToStr8(data.ReadString16());
     int32_t appIndex = data.ReadInt32();
     int32_t userId = data.ReadInt32();
-    // check bundle name
-    if (bundleName.empty()) {
-        APP_LOGE("handle install sandbox failed due to empty bundleName");
-        if (!reply.WriteBool(false)) {
-            APP_LOGE("write failed");
-        }
-        return;
-    }
-    // check appIndex
-    if (appIndex <= INVALID_APP_INDEX) {
-        APP_LOGE("the appIndex %{public}d is invalid", appIndex);
-        return;
-    }
     auto ret = UninstallSandboxApp(bundleName, appIndex, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
@@ -359,19 +339,35 @@ bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
 
 int32_t BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId)
 {
+    int32_t appIndex = 0;
+    if (bundleName.empty() || dplType <= LOWER_DLP_TYPE_BOUND || dplType >= UPPER_DLP_TYPE_BOUND) {
+        APP_LOGE("install sandbox failed due to error parameters");
+        return appIndex;
+    }
     std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
     if (installer == nullptr) {
         return false;
     }
-    int32_t appIndex = 0;
-    if (installer->InstallSandboxApp(bundleName, dplType, userId, appIndex) != ERR_OK) {
-        return 0;
+    auto res = installer->InstallSandboxApp(bundleName, dplType, userId, appIndex);
+    if (res != ERR_OK) {
+        APP_LOGE("install sandbox failed due to error code : %{public}d", res);
+        return appIndex;
     }
     return appIndex;
 }
 
 bool BundleInstallerHost::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
 {
+    // check bundle name
+    if (bundleName.empty()) {
+        APP_LOGE("install sandbox failed due to empty bundleName");
+        return false;
+    }
+    // check appIndex
+    if (appIndex <= INVALID_APP_INDEX || appIndex > Constants::MAX_APP_INDEX) {
+        APP_LOGE("the appIndex %{public}d is invalid", appIndex);
+        return false;
+    }
     std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
     if (installer == nullptr) {
         return false;

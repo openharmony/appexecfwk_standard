@@ -38,12 +38,12 @@ using namespace OHOS::Security;
 
 BundleSandboxInstaller::BundleSandboxInstaller()
 {
-    APP_LOGD("base bundle installer instance is created");
+    APP_LOGD("bundle sandbox installer instance is created");
 }
 
 BundleSandboxInstaller::~BundleSandboxInstaller()
 {
-    APP_LOGD("base bundle installer instance is destroyed");
+    APP_LOGD("bundle sandbox installer instance is destroyed");
 }
 
 ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName, const int32_t &dlpType,
@@ -193,7 +193,6 @@ ErrCode BundleSandboxInstaller::UninstallSandboxApp(
     if (BundlePermissionMgr::DeleteAccessTokenId(accessTokenId) !=
         AccessToken::AccessTokenKitRet::RET_SUCCESS) {
         APP_LOGE("delete accessToken failed");
-        return ERR_APPEXECFWK_SANDBOX_INSTALL_DELETE_ACCESSTOKEN_FAILED;
     }
 
     if (!sandboxDataMgr_->DeleteSandboxAppIndex(bundleName, appIndex)) {
@@ -212,7 +211,7 @@ ErrCode BundleSandboxInstaller::UninstallSandboxApp(
     info.AddInnerBundleUserInfo(userInfo);
     dataMgr_->RecycleUidAndGid(info);
 
-    // 6. remove new innerBundleInfo from data manager
+    // 6. remove new innerBundleInfo from sandData manager
     sandboxDataMgr_->DeleteSandboxAppInfo(bundleName, appIndex);
 
     // 7. remove sandbox persistent info
@@ -358,7 +357,7 @@ ErrCode BundleSandboxInstaller::GetSandboxDataMgr()
             APP_LOGE("Get dataMgr shared_ptr failed");
             return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
         }
-    
+
         sandboxDataMgr_ = dataMgr_->GetSandboxDataMgr();
         if (!sandboxDataMgr_) {
             APP_LOGE("Get sandbox dataMgr shared_ptr nullptr");
