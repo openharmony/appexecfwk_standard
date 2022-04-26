@@ -1514,10 +1514,6 @@ ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::st
         APP_LOGE("check hap sign info failed due to empty bundlePaths!");
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
-    if (installParam.noCheckSignature) {
-        APP_LOGI("force-install and no signinfo needed!");
-        return ERR_OK;
-    }
     for (const std::string &bundlePath : bundlePaths) {
         Security::Verify::HapVerifyResult hapVerifyResult;
         auto verifyRes = BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult);
@@ -1567,14 +1563,11 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     for (uint32_t i = 0; i < bundlePaths.size(); ++i) {
         InnerBundleInfo newInfo;
         newInfo.SetAppType(appType);
-        Security::Verify::ProvisionInfo provisionInfo;
-        if (!installParam.noCheckSignature) {
-            provisionInfo = hapVerifyRes[i].GetProvisionInfo();
-            bool isSystemApp = (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
-                provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP);
-            if (isSystemApp) {
-                newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
-            }
+        Security::Verify::ProvisionInfo provisionInfo = hapVerifyRes[i].GetProvisionInfo();
+        bool isSystemApp = (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
+            provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP);
+        if (isSystemApp) {
+            newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
         }
         newInfo.SetUserId(installParam.userId);
         newInfo.SetIsPreInstallApp(installParam.isPreInstallApp);
@@ -1592,12 +1585,10 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
             }
         }
         SetEntryInstallationFree(packInfo, newInfo);
-        if (!installParam.noCheckSignature) {
-            newInfo.SetProvisionId(provisionInfo.appId);
-            newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
-            newInfo.SetAppPrivilegeLevel(provisionInfo.bundleInfo.apl);
-            newInfo.SetAllowedAcls(provisionInfo.acls.allowedAcls);
-        }
+        newInfo.SetProvisionId(provisionInfo.appId);
+        newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
+        newInfo.SetAppPrivilegeLevel(provisionInfo.bundleInfo.apl);
+        newInfo.SetAllowedAcls(provisionInfo.acls.allowedAcls);
 
         if ((result = CheckSystemSize(bundlePaths[i], appType)) != ERR_OK) {
             APP_LOGE("install failed due to insufficient disk memory");
