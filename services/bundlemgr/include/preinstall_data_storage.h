@@ -55,6 +55,8 @@ private:
     DistributedKv::Status GetEntries(std::vector<DistributedKv::Entry> &allEntries) const;
     void SaveEntries(const std::vector<DistributedKv::Entry> &allEntries,
         std::vector<PreInstallBundleInfo> &preInstallBundleInfos);
+    void UpdateDataBase(std::map<std::string, PreInstallBundleInfo>& infos);
+    void DeleteOldBundleInfo(const std::string& oldKey);
 
 private:
     const DistributedKv::AppId appId_ { Constants::APP_ID };

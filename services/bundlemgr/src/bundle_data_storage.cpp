@@ -63,7 +63,7 @@ bool BundleDataStorage::SaveStorageBundleInfo(const InnerBundleInfo &innerBundle
 {
     APP_LOGI("save bundle data");
     bool ret = true;
-    std::string appName = innerBundleInfo.GetApplicationName();
+    std::string appName = innerBundleInfo.GetBundleName();
     std::fstream f(Constants::BUNDLE_DATA_BASE_FILE);
     bool isExist = f.good();
     if (isExist) {
@@ -96,7 +96,7 @@ bool BundleDataStorage::DeleteStorageBundleInfo(const InnerBundleInfo &innerBund
     APP_LOGI("delete bundle data");
     bool ret = false;
     bool isEmpty = false;
-    std::string appName = innerBundleInfo.GetApplicationName();
+    std::string appName = innerBundleInfo.GetBundleName();
     std::ifstream i(Constants::BUNDLE_DATA_BASE_FILE);
     nlohmann::json jParse;
     if (!i.is_open()) {
