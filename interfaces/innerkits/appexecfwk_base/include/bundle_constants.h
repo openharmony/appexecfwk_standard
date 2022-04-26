@@ -149,6 +149,9 @@ const std::string PERMISSION_GET_BUNDLE_INFO_PRIVILEGED = "ohos.permission.GET_B
 const std::string PERMISSION_CHANGE_ABILITY_ENABLED_STATE = "ohos.permission.CHANGE_ABILITY_ENABLED_STATE";
 const std::string PERNISSION_REMOVECACHEFILE = "ohos.permission.REMOVE_CACHE_FILES";
 
+// install list permissions file
+const std::string INSTALL_LIST_PERMISSIONS_FILE_PATH = "/system/etc/permission/install_list_permissions.json";
+
 enum class AppType {
     SYSTEM_APP = 0,
     THIRD_SYSTEM_APP,

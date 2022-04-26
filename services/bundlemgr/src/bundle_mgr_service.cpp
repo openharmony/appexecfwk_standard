@@ -20,6 +20,7 @@
 #include "account_helper.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
+#include "bundle_permission_mgr.h"
 #include "datetime_ex.h"
 #include "perf_profile.h"
 #include "system_ability_definition.h"
@@ -184,7 +185,9 @@ bool BundleMgrService::Init()
         }
     }
     APP_LOGD("create userMgrHost success");
-
+    if (!BundlePermissionMgr::Init()) {
+        APP_LOGW("BundlePermissionMgr::Init failed");
+    }
     if (!(dataMgr_->LoadDataFromPersistentStorage())) {
         APP_LOGW("load data from persistent storage fail");
         dataMgr_->AddUserId(Constants::DEFAULT_USERID);
