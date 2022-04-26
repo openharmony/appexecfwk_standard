@@ -42,7 +42,6 @@ struct InstallParam : public Parcelable {
     int userId = Constants::UNSPECIFIED_USERID;
     // is keep user data while uninstall.
     bool isKeepData = false;
-    bool noCheckSignature = false;
     bool needSavePreInstallInfo = false;
     bool isPreInstallApp = false;
     // should force uninstall when delete userinfo.
