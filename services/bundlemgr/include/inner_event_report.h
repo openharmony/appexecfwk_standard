@@ -37,7 +37,7 @@ private:
     static void InnerSendBundleUninstallExceptionEvent(const EventInfo& eventInfo);
     static void InnerSendBundleUpdateExceptionEvent(const EventInfo& eventInfo);
     static void InnerSendPreBundleRecoverExceptionEvent(const EventInfo& eventInfo);
-    static void InnerSendBundleComponentChangeExceptionEvent(const EventInfo& eventInfo);
+    static void InnerSendBundleStateChangeExceptionEvent(const EventInfo& eventInfo);
     static void InnerSendBundleCleanCacheExceptionEvent(const EventInfo& eventInfo);
 
     // behavior event
@@ -47,7 +47,7 @@ private:
     static void InnerSendBundleUninstallEvent(const EventInfo& eventInfo);
     static void InnerSendBundleUpdateEvent(const EventInfo& eventInfo);
     static void InnerSendPreBundleRecoverEvent(const EventInfo& eventInfo);
-    static void InnerSendBundleComponentChangeEvent(const EventInfo& eventInfo);
+    static void InnerSendBundleStateChangeEvent(const EventInfo& eventInfo);
     static void InnerSendBundleCleanCacheEvent(const EventInfo& eventInfo);
 
     template<typename... Types>
