@@ -48,8 +48,8 @@ BundleDataStorageDatabase::~BundleDataStorageDatabase()
 void BundleDataStorageDatabase::SaveEntries(
     const std::vector<Entry> &allEntries, std::map<std::string, InnerBundleInfo> &infos)
 {
+    std::map<std::string, InnerBundleInfo> updateInfos;
     for (const auto &item : allEntries) {
-        std::string bundleName = item.key.ToString();
         InnerBundleInfo innerBundleInfo;
 
         nlohmann::json jsonObject = nlohmann::json::parse(item.value.ToString(), nullptr, false);
@@ -79,7 +79,15 @@ void BundleDataStorageDatabase::SaveEntries(
         if (!isBundleValid) {
             continue;
         }
-        infos.emplace(bundleName, innerBundleInfo);
+        infos.emplace(innerBundleInfo.GetBundleName(), innerBundleInfo);
+        // database update
+        std::string key = item.key.ToString();
+        if (key != innerBundleInfo.GetBundleName()) {
+            updateInfos.emplace(key, innerBundleInfo);
+        }
+    }
+    if (updateInfos.size() > 0) {
+        UpdateDataBase(updateInfos);
     }
     APP_LOGD("SaveEntries end");
 }
@@ -255,6 +263,38 @@ bool BundleDataStorageDatabase::ResetKvStore()
     }
     APP_LOGW("failed");
     return false;
+}
+
+void BundleDataStorageDatabase::UpdateDataBase(std::map<std::string, InnerBundleInfo>& infos)
+{
+    APP_LOGD("begin to update database.");
+    for (const auto& item : infos) {
+        if (SaveStorageBundleInfo(item.second)) {
+            DeleteOldBundleInfo(item.first);
+        }
+    }
+    APP_LOGD("update database done.");
+}
+
+void BundleDataStorageDatabase::DeleteOldBundleInfo(const std::string& oldKey)
+{
+    APP_LOGD("begin to delete old bundleInfo");
+    std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+    if (!CheckKvStore()) {
+        APP_LOGE("kvStore is nullptr");
+        return;
+    }
+    Key key(oldKey);
+    Status status = kvStorePtr_->Delete(key);
+    if (status == Status::IPC_ERROR) {
+        status = kvStorePtr_->Delete(key);
+        APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
+    }
+    if (status != Status::SUCCESS) {
+        APP_LOGE("delete old bundleInfo failed: %{public}d", status);
+        return;
+    }
+    APP_LOGD("delete old bundleInfo success");
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

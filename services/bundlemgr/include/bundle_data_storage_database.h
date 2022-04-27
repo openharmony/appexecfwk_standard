@@ -58,6 +58,8 @@ private:
     void TryTwice(const std::function<DistributedKv::Status()> &func) const;
     bool CheckKvStore();
     DistributedKv::Status GetKvStore();
+    void UpdateDataBase(std::map<std::string, InnerBundleInfo>& infos);
+    void DeleteOldBundleInfo(const std::string& oldKey);
 
 private:
     const DistributedKv::AppId appId_ {Constants::APP_ID};
