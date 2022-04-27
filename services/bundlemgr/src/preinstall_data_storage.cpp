@@ -101,6 +101,7 @@ void PreInstallDataStorage::SaveEntries(
     const std::vector<Entry> &allEntries, std::vector<PreInstallBundleInfo> &preInstallBundleInfos)
 {
     APP_LOGD("PreInstall SaveEntries start.");
+    std::map<std::string, PreInstallBundleInfo> updateInfos;
     for (const auto &item : allEntries) {
         PreInstallBundleInfo preInstallBundleInfo;
         nlohmann::json jsonObject = nlohmann::json::parse(item.value.ToString(), nullptr, false);
@@ -123,8 +124,15 @@ void PreInstallDataStorage::SaveEntries(
             }
             continue;
         }
-
         preInstallBundleInfos.emplace_back(preInstallBundleInfo);
+        // database update
+        std::string key = item.key.ToString();
+        if (key != preInstallBundleInfo.GetBundleName()) {
+            updateInfos.emplace(key, preInstallBundleInfo);
+        }
+    }
+    if (updateInfos.size() > 0) {
+        UpdateDataBase(updateInfos);
     }
     APP_LOGD("PreInstall SaveEntries end");
 }
@@ -241,6 +249,38 @@ bool PreInstallDataStorage::DeletePreInstallStorageBundleInfo(const PreInstallBu
         APP_LOGD("delete value to kvStore success");
     }
     return true;
+}
+
+void PreInstallDataStorage::UpdateDataBase(std::map<std::string, PreInstallBundleInfo>& infos)
+{
+    APP_LOGD("begin to update preInstall database.");
+    for (const auto& item : infos) {
+        if (SavePreInstallStorageBundleInfo(item.second)) {
+            DeleteOldBundleInfo(item.first);
+        }
+    }
+    APP_LOGD("update preInstall database done.");
+}
+
+void PreInstallDataStorage::DeleteOldBundleInfo(const std::string& oldKey)
+{
+    APP_LOGD("begin to delete old preInstall bundleInfo");
+    std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+    if (!CheckKvStore()) {
+        APP_LOGE("kvStore is nullptr");
+        return;
+    }
+    Key key(oldKey);
+    Status status = kvStorePtr_->Delete(key);
+    if (status == Status::IPC_ERROR) {
+        status = kvStorePtr_->Delete(key);
+        APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
+    }
+    if (status != Status::SUCCESS) {
+        APP_LOGE("delete old bundleInfo failed: %{public}d", status);
+        return;
+    }
+    APP_LOGD("delete old preInstall bundleInfo success");
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
