@@ -964,6 +964,10 @@ bool BundleMgrHostImpl::SetModuleUpgradeFlag(const std::string &bundleName,
 bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     APP_LOGD("SetApplicationEnabled begin");
+    if (userId == Constants::UNSPECIFIED_USERID) {
+        userId = BundleUtil::GetUserIdByCallingUid();
+    }
+
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
         EventReport::SendComponentStateSysEvent(bundleName, "", userId, isEnable, true);
@@ -1014,6 +1018,10 @@ bool BundleMgrHostImpl::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled, int32_t userId)
 {
     APP_LOGD("start SetAbilityEnabled");
+    if (userId == Constants::UNSPECIFIED_USERID) {
+        userId = BundleUtil::GetUserIdByCallingUid();
+    }
+
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
         EventReport::SendComponentStateSysEvent(

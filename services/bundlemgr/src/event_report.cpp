@@ -82,7 +82,7 @@ void EventReport::SendComponentStateSysEvent(const std::string &bundleName,
     if (exception) {
         bmsEventType = BMSEventType::BUNDLE_STATE_CHANGE_EXCEPTION;
     } else {
-        bmsEventType = BMSEventType::BUNDLE_COMPONENT_STATE_CHANGE;
+        bmsEventType = BMSEventType::BUNDLE_STATE_CHANGE;
     }
 
     EventReport::SendSystemEvent(bmsEventType, eventInfo);
