@@ -35,7 +35,7 @@ const std::string BUNDLE_INSTALL = "BUNDLE_INSTALL";
 const std::string BUNDLE_UNINSTALL = "BUNDLE_UNINSTALL";
 const std::string BUNDLE_UPDATE = "BUNDLE_UPDATE";
 const std::string PRE_BUNDLE_RECOVER = "PRE_BUNDLE_RECOVER";
-const std::string BUNDLE_COMPONENT_STATE_CHANGE = "BUNDLE_COMPONENT_STATE_CHANGE";
+const std::string BUNDLE_STATE_CHANGE = "BUNDLE_STATE_CHANGE";
 const std::string BUNDLE_CLEAN_CACHE = "BUNDLE_CLEAN_CACHE";
 
 // event params
@@ -119,7 +119,7 @@ std::unordered_map<BMSEventType, void (*)(const EventInfo& eventInfo)>
             } },
         { BMSEventType::BUNDLE_STATE_CHANGE_EXCEPTION,
             [](const EventInfo& eventInfo) {
-                InnerSendBundleComponentChangeExceptionEvent(eventInfo);
+                InnerSendBundleStateChangeExceptionEvent(eventInfo);
             } },
         { BMSEventType::BUNDLE_CLEAN_CACHE_EXCEPTION,
             [](const EventInfo& eventInfo) {
@@ -149,9 +149,9 @@ std::unordered_map<BMSEventType, void (*)(const EventInfo& eventInfo)>
             [](const EventInfo& eventInfo) {
                 InnerSendPreBundleRecoverEvent(eventInfo);
             } },
-        { BMSEventType::BUNDLE_COMPONENT_STATE_CHANGE,
+        { BMSEventType::BUNDLE_STATE_CHANGE,
             [](const EventInfo& eventInfo) {
-                InnerSendBundleComponentChangeEvent(eventInfo);
+                InnerSendBundleStateChangeEvent(eventInfo);
             } },
         { BMSEventType::BUNDLE_CLEAN_CACHE,
             [](const EventInfo& eventInfo) {
@@ -218,7 +218,7 @@ void InnerEventReport::InnerSendPreBundleRecoverExceptionEvent(const EventInfo& 
         EVENT_PARAM_ERROR_CODE, eventInfo.errCode);
 }
 
-void InnerEventReport::InnerSendBundleComponentChangeExceptionEvent(const EventInfo& eventInfo)
+void InnerEventReport::InnerSendBundleStateChangeExceptionEvent(const EventInfo& eventInfo)
 {
     std::string type = eventInfo.abilityName.empty() ? APPLICATION : ABILITY;
     InnerEventWrite(
@@ -302,12 +302,12 @@ void InnerEventReport::InnerSendPreBundleRecoverEvent(const EventInfo& eventInfo
         EVENT_PARAM_INSTALL_TYPE, PRE_BUNDLE_INSTALL_TYPE);
 }
 
-void InnerEventReport::InnerSendBundleComponentChangeEvent(const EventInfo& eventInfo)
+void InnerEventReport::InnerSendBundleStateChangeEvent(const EventInfo& eventInfo)
 {
     std::string type = eventInfo.abilityName.empty() ? APPLICATION : ABILITY;
     std::string state = eventInfo.isEnable ? ENABLE : DISABLE;
     InnerEventWrite(
-        BUNDLE_COMPONENT_STATE_CHANGE,
+        BUNDLE_STATE_CHANGE,
         HiSysEventType::BEHAVIOR,
         EVENT_PARAM_USERID, eventInfo.userId,
         EVENT_PARAM_BUNDLE_NAME, eventInfo.bundleName,

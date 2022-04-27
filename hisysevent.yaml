@@ -102,7 +102,7 @@ PRE_BUNDLE_RECOVER:
   VERSION: {type: UINT32, desc: versionCode}
   INSTALL_TYPE: {type: STRING, desc: only prebundle}
 
-BUNDLE_COMPONENT_STATE_CHANGE:
+BUNDLE_STATE_CHANGE:
   __BASE: {type: BEHAVIOR, level: MINOR, desc: bundle or component disable or enable}
   USERID: {type: INT32, desc: userId}
   BUNDLE_NAME: {type: STRING, desc: bundleName}
