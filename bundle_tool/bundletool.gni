@@ -18,5 +18,5 @@ common_path = "${appexecfwk_path}/common"
 kits_path = "${appexecfwk_path}/kits"
 innerkits_path = "${appexecfwk_path}/interfaces/innerkits"
 
-bundletool_path = "${appexecfwk_path}/tools/bm"
-bundletool_test_path = "${appexecfwk_path}/tools/test"
+bundletool_path = "${appexecfwk_path}/bundle_tool/frameworks"
+bundletool_test_path = "${appexecfwk_path}/bundle_tool/test"

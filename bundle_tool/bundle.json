@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache 2.0",
     "segment": {
-        "destPath": "foundation/appexecfwk/standard/tools/bm"
+        "destPath": "foundation/appexecfwk/standard/bundle_tool"
     },
     "component": {
         "name": "bundle_tool",
@@ -32,13 +32,13 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard/tools/bm:tools_bm"
+                "//foundation/appexecfwk/standard/bundle_tool:bm"
             ],
             "inner_kits": [],
             "test": [
-                "//foundation/appexecfwk/standard/tools/test:moduletest",
-                "//foundation/appexecfwk/standard/tools/test:systemtest",
-                "//foundation/appexecfwk/standard/tools/test:unittest"
+                "//foundation/appexecfwk/standard/bundle_tool/test:moduletest",
+                "//foundation/appexecfwk/standard/bundle_tool/test:systemtest",
+                "//foundation/appexecfwk/standard/bundle_tool/test:unittest"
             ]
         }
     }

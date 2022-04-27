@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("bundletool.gni")
+import("../bundletool.gni")
 
 config("tools_bm_config") {
   include_dirs = [
