@@ -170,6 +170,7 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
   ]
 
   sources += [
+    "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_status_receiver.cpp",
     "${services_path}/bundlemgr/test/mock/src/system_ability_helper.cpp",
   ]

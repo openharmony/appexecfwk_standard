@@ -25,6 +25,7 @@ ohos_unittest("BmsInstallDaemonTest") {
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
   ]
   sources = [
+    "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp",
     "${services_path}/bundlemgr/src/installd_death_recipient.cpp",
     "${services_path}/bundlemgr/test/mock/src/system_ability_helper.cpp",
   ]
