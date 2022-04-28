@@ -34,7 +34,7 @@ ohos_unittest("BmsBundleParserTest") {
     "bms_bundle_parser_test.cpp",
   ]
 
-  source += [ "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp" ]
+  sources += [ "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp" ]
 
   configs = [
     "${services_path}/bundlemgr/test:bundlemgr_test_config",
