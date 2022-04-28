@@ -19,7 +19,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "datetime_ex.h"
 #include "ipc_types.h"
 #include "json_util.h"

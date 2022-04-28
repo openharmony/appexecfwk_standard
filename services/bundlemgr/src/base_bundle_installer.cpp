@@ -31,7 +31,7 @@
 #include "bundle_permission_mgr.h"
 #include "bundle_util.h"
 #include "bundle_verify_mgr.h"
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "datetime_ex.h"
 #include "installd_client.h"
 #include "perf_profile.h"

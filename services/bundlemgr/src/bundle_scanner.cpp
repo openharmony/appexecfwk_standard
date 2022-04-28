@@ -23,7 +23,7 @@
 #include "bundle_constants.h"
 #include "bundle_mgr_service.h"
 #include "bundle_util.h"
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "datetime_ex.h"
 #include "perf_profile.h"
 #include "string_ex.h"
