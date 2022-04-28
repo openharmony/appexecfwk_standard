@@ -15,7 +15,7 @@
 
 #include "bundle_installer_proxy.h"
 
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "ipc_types.h"
 #include "parcel.h"
 #include "string_ex.h"
