@@ -253,12 +253,10 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.process.c_str(), NAPI_AUTO_LENGTH, &nProcess));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "process", nProcess));
 
-    if (CheckIsSystemApp()) {
-        napi_value nEntryDir;
-        NAPI_CALL_RETURN_VOID(
-            env, napi_create_string_utf8(env, appInfo.entryDir.c_str(), NAPI_AUTO_LENGTH, &nEntryDir));
-        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "entryDir", nEntryDir));
-    }
+    napi_value nEntryDir;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, appInfo.entryDir.c_str(), NAPI_AUTO_LENGTH, &nEntryDir));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "entryDir", nEntryDir));
 
     napi_value nPermissions;
     NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nPermissions));
