@@ -49,6 +49,7 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
   ]
 
   sources += [
+    "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_bundle_status.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_clean_cache.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_status_receiver.cpp",
@@ -81,7 +82,6 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
 
   external_deps = [
     "ability_base:want",
-    "access_token:libaccesstoken_sdk",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",

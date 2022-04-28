@@ -39,8 +39,10 @@ ohos_unittest("BmsServiceStartupTest") {
     "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
   ]
 
-  sources +=
-      [ "${services_path}/bundlemgr/test/mock/src/system_ability_helper.cpp" ]
+  sources += [
+    "${services_path}/bundlemgr/test/mock/src/system_ability_helper.cpp",
+    "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp",
+  ]
 
   sources += bundle_install_sources
 
