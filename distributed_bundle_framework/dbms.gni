@@ -13,4 +13,5 @@
 
 import("../appexecfwk.gni")
 
-dbms_services_path = "${appexecfwk_path}/distributed_bundle_framework/services/dbms"
+dbms_services_path =
+    "${appexecfwk_path}/distributed_bundle_framework/services/dbms"
