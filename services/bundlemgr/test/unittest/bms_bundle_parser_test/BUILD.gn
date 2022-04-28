@@ -34,6 +34,8 @@ ohos_unittest("BmsBundleParserTest") {
     "bms_bundle_parser_test.cpp",
   ]
 
+  sources += [ "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp" ]
+
   configs = [
     "${services_path}/bundlemgr/test:bundlemgr_test_config",
     ":bundlemgr_parse_test_config",
@@ -46,7 +48,6 @@ ohos_unittest("BmsBundleParserTest") {
 
   external_deps = [
     "ability_base:want",
-    "access_token:libaccesstoken_sdk",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
