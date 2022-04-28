@@ -45,6 +45,7 @@ ohos_unittest("BmsBundleCloneTest") {
   ]
 
   sources += [
+    "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_bundle_status.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_clean_cache.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_status_receiver.cpp",
