@@ -34,6 +34,7 @@ using OHOS::DelayedSingleton;
 
 namespace {
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
+const std::string BUNDLE_NAME_INVALID = "";
 const std::string OTHER_BUNDLE_NAME = "com.example.ohosproject.hmservice";
 const std::string UNINSTALLED_BUNDLE_NAME = "com.example.l3jsdemo1";
 const std::string RESOURCE_ROOT_PATH = "/data/test/resource/bms/install_bundle/";
@@ -1151,4 +1152,256 @@ HWTEST_F(BmsSandboxAppTest, BmsSandboxAppUnInstallTest_1500, Function | SmallTes
 
     UninstallBundle(BUNDLE_NAME);
     UninstallBundle(OTHER_BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0100
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install successfully
+ *           3. get sandbox app bundleInfo information failed by empty bundlename
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0100, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto ret = InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, USERID);
+    EXPECT_EQ(ret, APP_INDEX_1);
+    CheckPathAreExisted(BUNDLE_NAME, APP_INDEX_1);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME_INVALID, APP_INDEX_1, USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0200
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install successfully
+ *           3. get sandbox app bundleInfo information failed by invalid appIndex
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0200, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto ret = InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, USERID);
+    EXPECT_EQ(ret, APP_INDEX_1);
+    CheckPathAreExisted(BUNDLE_NAME, APP_INDEX_1);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME, INVALID_APP_INDEX, USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0300
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install successfully
+ *           3. get sandbox app bundleInfo information failed by invalid userId
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0300, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto ret = InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, USERID);
+    EXPECT_EQ(ret, APP_INDEX_1);
+    CheckPathAreExisted(BUNDLE_NAME, APP_INDEX_1);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME, APP_INDEX_1, INVALID_USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0400
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install successfully
+ *           3. get sandbox app bundleInfo information failed 
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0400, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto ret = InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, USERID);
+    EXPECT_EQ(ret, APP_INDEX_1);
+    CheckPathAreExisted(BUNDLE_NAME, APP_INDEX_1);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME_INVALID, APP_INDEX_1, INVALID_USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0500
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install successfully
+ *           3. get sandboxApp bundleInfo information failed 
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0500, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto ret = InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, USERID);
+    EXPECT_EQ(ret, APP_INDEX_1);
+    CheckPathAreExisted(BUNDLE_NAME, APP_INDEX_1);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME, INVALID_APP_INDEX, INVALID_USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0600
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install successfully
+ *           3. get sandbox app bundleInfo information failed 
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0600, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto ret = InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, USERID);
+    EXPECT_EQ(ret, APP_INDEX_1);
+    CheckPathAreExisted(BUNDLE_NAME, APP_INDEX_1);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME_INVALID, INVALID_APP_INDEX, INVALID_USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0700
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. the sandbox app install failed
+ *           2. get sandbox app bundleInfo information failed by not installed hap
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0700, Function | SmallTest | Level1)
+{
+    InstallSandboxApp(BUNDLE_NAME, APP_INDEX_1, USERID);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME, APP_INDEX_1, USERID, info);
+    EXPECT_FALSE(testRet);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0800
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. get sandbox app bundleInfo information failed by not installed sandbox app
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0800, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME, APP_INDEX_1, USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_0900
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install failed
+ *           3. get sandbox app bundleInfo information by not installed sandbox app under the specified user
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_0900, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    InstallSandboxApp(OTHER_BUNDLE_NAME, DLP_TYPE_2, USERID);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME, APP_INDEX_1, USERID, info);
+    EXPECT_FALSE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: BmsGETSandboxAppMSG_1000
+ * @tc.name: get sandbox app bundleInfo information
+ * @tc.desc: 1. install a hap successfully
+ *           2. the sandbox app install successfully
+ *           3. get sandbox app bundleInfo information successfully
+ * @tc.require: AR000H02C4
+ */
+HWTEST_F(BmsSandboxAppTest, BmsGETSandboxAppMSG_1000, Function | SmallTest | Level1)
+{
+    std::vector<std::string> filePaths;
+    auto bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE_FIRST;
+    filePaths.emplace_back(bundleFile);
+    auto installRes = InstallBundles(filePaths, true);
+    EXPECT_EQ(installRes, ERR_OK);
+
+    auto ret = InstallSandboxApp(BUNDLE_NAME, DLP_TYPE_1, USERID);
+    EXPECT_EQ(ret, APP_INDEX_1);
+    CheckPathAreExisted(BUNDLE_NAME, APP_INDEX_1);
+
+    BundleInfo info;
+    bool testRet = GetSandboxAppBundleInfo(BUNDLE_NAME, APP_INDEX_1, USERID, info);
+    EXPECT_TRUE(testRet);
+
+    UninstallBundle(BUNDLE_NAME);
 }
