@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache 2.0",
     "segment": {
-        "destPath": "foundation/appexecfwk/standard/services/dbms"
+        "destPath": "foundation/appexecfwk/standard/distributed_bundle_framework"
     },
     "component": {
         "name": "distributed_bundle_framework",
@@ -38,9 +38,8 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard/kits/appkit/napi/distributebundlemgr:jsapi_target",
-                "//foundation/appexecfwk/standard/services/dbms:dbms_target",
-                "//foundation/appexecfwk/standard/services/dbms/sa_profile:distributedbms"
+                "//foundation/appexecfwk/standard/distributed_bundle_framework:jsapi_target",
+                "//foundation/appexecfwk/standard/distributed_bundle_framework:dbms_target"
             ],
             "test": []
         }
