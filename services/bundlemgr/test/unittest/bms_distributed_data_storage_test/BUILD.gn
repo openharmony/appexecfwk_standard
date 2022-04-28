@@ -60,7 +60,7 @@ ohos_unittest("BmsDistributedDataStorageTest") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
+    "resource_management:global_resmgr",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
@@ -68,7 +68,7 @@ ohos_unittest("BmsDistributedDataStorageTest") {
 
   defines = []
   if (bundle_framework_graphics) {
-    external_deps += [ "resmgr_standard:global_resmgr" ]
+    external_deps += [ "resource_management:global_resmgr" ]
   }
   if (account_enable) {
     external_deps += [ "os_account_standard:os_account_innerkits" ]

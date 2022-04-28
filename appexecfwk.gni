@@ -56,7 +56,7 @@ declare_args() {
   }
 
   if (defined(global_parts_info) &&
-      !defined(global_parts_info.global_resmgr_standard)) {
+      !defined(global_parts_info.global_resource_management)) {
     global_resmgr_enable = false
   }
 

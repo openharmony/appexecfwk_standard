@@ -82,7 +82,7 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
+    "resource_management:global_resmgr",
   ]
   defines = []
   if (configpolicy_enable) {

@@ -44,7 +44,7 @@
                 "napi",
                 "os_account_standard",
                 "safwk",
-                "resmgr_standard",
+                "resource_management",
                 "samgr_standard",
                 "startup_l2",
                 "utils_base"
