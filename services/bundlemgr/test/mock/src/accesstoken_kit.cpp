@@ -39,7 +39,7 @@ int AccessTokenKit::GetDefPermissions(AccessTokenID tokenID, std::vector<Permiss
 
 int AccessTokenKit::GetDefPermission(const std::string& permissionName, PermissionDef& permissionDefResult)
 {
-    return 0;
+    return -1;
 }
 
 int AccessTokenKit::GrantPermission(AccessTokenID tokenID, const std::string& permissionName, int flag)
