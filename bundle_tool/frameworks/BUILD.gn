@@ -52,7 +52,7 @@ ohos_source_set("tools_bm_source_set") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
+    "resource_management:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
     "utils_base:utils",

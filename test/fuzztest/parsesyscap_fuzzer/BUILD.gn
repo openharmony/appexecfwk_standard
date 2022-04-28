@@ -49,6 +49,6 @@ ohos_fuzztest("ParseSysCapFuzzTest") {
   defines = []
   if (global_resmgr_enable) {
     defines += [ "GLOBAL_RESMGR_ENABLE" ]
-    external_deps += [ "resmgr_standard:global_resmgr" ]
+    external_deps += [ "resource_management:global_resmgr" ]
   }
 }

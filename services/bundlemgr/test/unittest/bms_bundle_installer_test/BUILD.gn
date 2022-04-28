@@ -125,7 +125,7 @@ ohos_unittest("BmsBundleInstallerTest") {
   }
   if (global_resmgr_enable) {
     defines += [ "GLOBAL_RESMGR_ENABLE" ]
-    external_deps += [ "resmgr_standard:global_resmgr" ]
+    external_deps += [ "resource_management:global_resmgr" ]
   }
   if (hicollie_enable) {
     external_deps += [ "hicollie_native:libhicollie" ]
@@ -252,7 +252,7 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
   }
   if (global_resmgr_enable) {
     defines += [ "GLOBAL_RESMGR_ENABLE" ]
-    external_deps += [ "resmgr_standard:global_resmgr" ]
+    external_deps += [ "resource_management:global_resmgr" ]
   }
   if (device_manager_enable) {
     sources += [ "${services_path}/bundlemgr/src/bms_device_manager.cpp" ]
