@@ -598,6 +598,31 @@ public:
     {
         return false;
     }
+
+    /**
+     * @brief Obtains the value of isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName)
+    {
+        return false;
+    }
+    /**
+     * @brief Sets whether to enable isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleRemovable(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable)
+    {
+        return false;
+    }
+
     /**
      * @brief Dump the bundle informations with specific flags.
      * @param flag Indicates the information contained in the dump result.
@@ -962,30 +987,6 @@ public:
      */
     virtual bool GetSandboxBundleInfo(
         const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
-    {
-        return false;
-    }
-
-    /**
-     * @brief Obtains the value of isRemovable based on a given bundle name and module name.
-     * @param bundleName Indicates the bundle name to be queried.
-     * @param moduleName Indicates the module name to be queried.
-     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
-     */
-    virtual bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName)
-    {
-        return false;
-    }
-    /**
-     * @brief Sets whether to enable isRemovable based on a given bundle name and module name.
-     * @param bundleName Indicates the bundle name to be queried.
-     * @param moduleName Indicates the module name to be queried.
-     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
-     *                 The value true means to enable it, and the value false means to disable it
-     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
-     */
-    virtual bool SetModuleRemovable(
-        const std::string &bundleName, const std::string &moduleName, bool isEnable)
     {
         return false;
     }
