@@ -483,26 +483,6 @@ int BundleMgrHostImpl::CheckPublicKeys(const std::string &firstBundleName, const
     return dataMgr->CheckPublicKeys(firstBundleName, secondBundleName);
 }
 
-int BundleMgrHostImpl::CheckPermission(const std::string &bundleName, const std::string &permission)
-{
-    if (bundleName.empty() || permission.empty()) {
-        APP_LOGE("fail to CheckPermission due to params empty");
-        return Constants::PERMISSION_NOT_GRANTED;
-    }
-    int32_t userId = BundleUtil::GetUserIdByCallingUid();
-    return BundlePermissionMgr::VerifyPermission(bundleName, permission, userId);
-}
-
-int BundleMgrHostImpl::CheckPermissionByUid(
-    const std::string &bundleName, const std::string &permission, const int userId)
-{
-    if (bundleName.empty() || permission.empty()) {
-        APP_LOGE("fail to CheckPermission due to params empty");
-        return Constants::PERMISSION_NOT_GRANTED;
-    }
-    return BundlePermissionMgr::VerifyPermission(bundleName, permission, userId);
-}
-
 bool BundleMgrHostImpl::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
@@ -514,17 +494,6 @@ bool BundleMgrHostImpl::GetPermissionDef(const std::string &permissionName, Perm
         return false;
     }
     return BundlePermissionMgr::GetPermissionDef(permissionName, permissionDef);
-}
-
-bool BundleMgrHostImpl::GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs)
-{
-    return true;
-}
-
-bool BundleMgrHostImpl::GetAppsGrantedPermissions(
-    const std::vector<std::string> &permissions, std::vector<std::string> &appNames)
-{
-    return true;
 }
 
 bool BundleMgrHostImpl::HasSystemCapability(const std::string &capName)
@@ -1122,49 +1091,6 @@ sptr<IBundleInstaller> BundleMgrHostImpl::GetBundleInstaller()
 sptr<IBundleUserMgr> BundleMgrHostImpl::GetBundleUserMgr()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleUserMgr();
-}
-
-bool BundleMgrHostImpl::CanRequestPermission(
-    const std::string &bundleName, const std::string &permissionName, const int userId)
-{
-    return true;
-}
-
-bool BundleMgrHostImpl::RequestPermissionFromUser(
-    const std::string &bundleName, const std::string &permissionName, const int userId)
-{
-    return true;
-}
-
-bool BundleMgrHostImpl::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
-{
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return false;
-    }
-    return dataMgr->RegisterAllPermissionsChanged(callback);
-}
-
-bool BundleMgrHostImpl::RegisterPermissionsChanged(
-    const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
-{
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return false;
-    }
-    return dataMgr->RegisterPermissionsChanged(uids, callback);
-}
-
-bool BundleMgrHostImpl::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
-{
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return false;
-    }
-    return dataMgr->UnregisterPermissionsChanged(callback);
 }
 
 bool BundleMgrHostImpl::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
