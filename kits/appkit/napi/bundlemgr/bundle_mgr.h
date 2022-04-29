@@ -112,6 +112,16 @@ struct AsyncBundleInfosCallbackInfo : public AsyncWorkData {
     int32_t userId = Constants::UNSPECIFIED_USERID;
 };
 
+struct AsyncBundlePackInfoCallbackInfo : public AsyncWorkData {
+    explicit AsyncBundlePackInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
+    int32_t flags = 0;
+    std::string bundleName;
+    OHOS::AppExecFwk::BundlePackInfo bundlePackInfo;
+    bool ret = false;
+    int32_t err = 0;
+    std::string message;
+};
+
 struct AsyncApplicationInfosCallbackInfo : public AsyncWorkData {
     explicit AsyncApplicationInfosCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t flags = 0;
@@ -301,6 +311,7 @@ napi_value GetAbilityInfo(napi_env env, napi_callback_info info);
 napi_value QueryAbilityInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfo(napi_env env, napi_callback_info info);
+napi_value GetBundlePackInfo(napi_env env, napi_callback_info info);
 napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info);
 napi_value GetLaunchWantForBundle(napi_env env, napi_callback_info info);
 napi_value GetPermissionDef(napi_env env, napi_callback_info info);
@@ -328,6 +339,7 @@ napi_value IsAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value IsApplicationEnabled(napi_env env, napi_callback_info info);
 napi_value IsModuleRemovable(napi_env env, napi_callback_info info);
 napi_value SetModuleUpgradeFlag(napi_env env, napi_callback_info info);
+napi_value GetBundlePackInfoWrap(napi_env env, napi_value promise, AsyncBundlePackInfoCallbackInfo *asyncCallbackInfo);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);

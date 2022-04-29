@@ -879,6 +879,38 @@ bool BundleDataMgr::GetBundleInfo(
     return true;
 }
 
+bool BundleDataMgr::GetBundlePackInfo(
+    const std::string &bundleName, int32_t flags, BundlePackInfo &bundlePackInfo) const
+{
+    APP_LOGD("Service BundleDataMgr GetBundlePackInfo start");
+    int32_t requestUserId = GetUserIdByCallingUid();
+    if (requestUserId == Constants::INVALID_USERID) {
+        APP_LOGE("getBundlePackInfo userId is invalid");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    InnerBundleInfo innerBundleInfo;
+    if (!GetInnerBundleInfoWithFlags(bundleName, flags, innerBundleInfo, requestUserId)) {
+        APP_LOGE("GetBundlePackInfo failed");
+        return false;
+    }
+    BundlePackInfo innerBundlePackInfo = innerBundleInfo.GetBundlePackInfo();
+    if (static_cast<uint32_t>(flags) & GET_PACKAGES) {
+        bundlePackInfo.packages = innerBundlePackInfo.packages;
+        return true;
+    }
+    if (static_cast<uint32_t>(flags) & GET_BUNDLE_SUMMARY) {
+        bundlePackInfo.summary.app = innerBundlePackInfo.summary.app;
+        return true;
+    }
+    if (static_cast<uint32_t>(flags) & GET_MODULE_SUMMARY) {
+        bundlePackInfo.summary.modules = innerBundlePackInfo.summary.modules;
+        return true;
+    }
+    bundlePackInfo = innerBundlePackInfo;
+    return true;
+}
+
 bool BundleDataMgr::GetBundleInfosByMetaData(
     const std::string &metaData, std::vector<BundleInfo> &bundleInfos) const
 {

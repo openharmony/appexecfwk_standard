@@ -69,6 +69,18 @@ bool BundleMgrClientImpl::GetBundleInfo(const std::string &bundleName, const Bun
     return bundleMgr_->GetBundleInfo(bundleName, flag, bundleInfo, userId);
 }
 
+bool BundleMgrClientImpl::GetBundlePackInfo(
+    const std::string &bundleName, const BundlePackFlag flag, BundlePackInfo &bundlePackInfo)
+{
+    APP_LOGI("enter");
+    ErrCode result = Connect();
+    if (result != ERR_OK) {
+        APP_LOGE("failed to connect");
+        return false;
+    }
+    return bundleMgr_->GetBundlePackInfo(bundleName, flag, bundlePackInfo);
+}
+
 bool BundleMgrClientImpl::GetHapModuleInfo(const std::string &bundleName, const std::string &hapName,
     HapModuleInfo &hapModuleInfo)
 {

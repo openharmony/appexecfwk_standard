@@ -28,8 +28,8 @@ namespace AppExecFwk {
 enum BundlePackFlag {
     GET_PACK_INFO_ALL = 0x00000000,
     GET_PACKAGES = 0x00000001,
-    GET_BUNDLE_SUMMARY = 0x00000010,
-    GET_MODULE_SUMMARY = 0x00000020,
+    GET_BUNDLE_SUMMARY = 0x00000002,
+    GET_MODULE_SUMMARY = 0x00000004,
 };
 
 struct Version {
@@ -43,10 +43,21 @@ struct PackageApp {
     Version version;
 };
 
+struct AbilityFormInfo {
+    std::string name;
+    std::string type;
+    bool updateEnabled = false;
+    std::string scheduledUpdateTime;
+    uint32_t updateDuration = 0;
+    std::vector<std::string> supportDimensions;
+    std::string defaultDimension;
+};
+
 struct ModuleAbilityInfo {
     std::string name;
     std::string label;
     bool visible = false;
+    std::vector<AbilityFormInfo> forms;
 };
 
 struct ModuleDistro {
