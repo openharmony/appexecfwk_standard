@@ -363,42 +363,12 @@ public:
      */
     virtual int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) override;
     /**
-     * @brief Checks whether a specified bundle has been granted a specific permission through the proxy object.
-     * @param bundleName Indicates the name of the bundle to check.
-     * @param permission Indicates the permission to check.
-     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
-     */
-    virtual int CheckPermission(const std::string &bundleName, const std::string &permission) override;
-    /**
-     * @brief Checks whether a specified bundle has been granted a specific permission through the proxy object.
-     * @param bundleName Indicates the name of the bundle to check.
-     * @param permission Indicates the permission to check.
-     * @param userId Indicates the user id.
-     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
-     */
-    virtual int CheckPermissionByUid(
-        const std::string &bundleName, const std::string &permission, const int userId) override;
-    /**
      * @brief Obtains detailed information about a specified permission through the proxy object.
      * @param permissionName Indicates the name of the ohos permission.
      * @param permissionDef Indicates the object containing detailed information about the given ohos permission.
      * @return Returns true if the PermissionDef object is successfully obtained; returns false otherwise.
      */
     virtual bool GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef) override;
-    /**
-     * @brief Obtains all known permission groups in the system through the proxy object.
-     * @param permissionDefs Indicates the list of objects containing the permission group information.
-     * @return Returns true if the PermissionDef objects is successfully obtained; returns false otherwise.
-     */
-    virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) override;
-    /**
-     * @brief Obtains all known permission groups in the system through the proxy object.
-     * @param permissions Indicates the permission array.
-     * @param appNames Indicates the list of application names that have the specified permissions.
-     * @return Returns true if the application names is successfully obtained; returns false otherwise.
-     */
-    virtual bool GetAppsGrantedPermissions(
-        const std::vector<std::string> &permissions, std::vector<std::string> &appNames) override;
     /**
      * @brief Checks whether the system has a specified capability through the proxy object.
      * @param capName Indicates the name of the system feature to check.
@@ -502,47 +472,6 @@ public:
      * @return Returns a pointer to IBundleUserMgr class if exist; returns nullptr otherwise.
      */
     virtual sptr<IBundleUserMgr> GetBundleUserMgr() override;
-    /**
-     * @brief Confirms with the permission management module to check whether a request prompt is required for granting
-     * a certain permission.
-     * @param bundleName Indicates the name of the bundle to check through the proxy object.
-     * @param permission Indicates the permission to check.
-     * @param userId Indicates the user id.
-     * @return Returns true if the current application does not have the permission and the user does not turn off
-     * further requests; returns false if the current application already has the permission, the permission is rejected
-     * by the system, or the permission is denied by the user and the user has turned off further requests.
-     */
-    virtual bool CanRequestPermission(
-        const std::string &bundleName, const std::string &permissionName, const int userId) override;
-    /**
-     * @brief Requests a certain permission from user through the proxy object.
-     * @param bundleName Indicates the name of the bundle to request permission.
-     * @param permission Indicates the permission to request permission.
-     * @param userId Indicates the user id.
-     * @return Returns true if the permission request successfully; returns false otherwise.
-     */
-    virtual bool RequestPermissionFromUser(
-        const std::string &bundleName, const std::string &permission, const int userId) override;
-    /**
-     * @brief Registers a callback for listening for permission changes of all UIDs through the proxy object.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    virtual bool RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback) override;
-    /**
-     * @brief Registers a callback for listening for permission changes of specified UIDs through the proxy object.
-     * @param uids Indicates the list of UIDs whose permission changes will be monitored.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    virtual bool RegisterPermissionsChanged(
-        const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback) override;
-    /**
-     * @brief Unregisters a specified callback for listening for permission changes through the proxy object.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    virtual bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback) override;
     /**
      * @brief  Obtains the FormInfo objects provided by all applications on the device.
      * @param  formInfos List of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the

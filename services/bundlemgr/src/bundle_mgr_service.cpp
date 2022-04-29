@@ -62,9 +62,6 @@ BundleMgrService::~BundleMgrService()
         connectAbilityMgr_.reset();
     }
 #endif
-    if (perChangeSub_) {
-        perChangeSub_.reset();
-    }
     if (hidumpHelper_) {
         hidumpHelper_.reset();
     }
@@ -91,13 +88,6 @@ void BundleMgrService::OnStart()
 
 void BundleMgrService::AfterRegisterToService()
 {
-    if (!perChangeSub_) {
-        EventFwk::MatchingSkills matchingSkills;
-        matchingSkills.AddEvent("PERMISSIONS_CHANGED_EVENT");
-        EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
-        perChangeSub_ = std::make_shared<BundlePermissionsChangedMonitor>(dataMgr_, subscribeInfo);
-        EventFwk::CommonEventManager::SubscribeCommonEvent(perChangeSub_);
-    }
     if (!distributedSub_) {
         EventFwk::MatchingSkills matchingSkills;
         matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
@@ -111,9 +101,6 @@ void BundleMgrService::OnStop()
 {
     APP_LOGI("OnStop is called");
     SelfClean();
-    if (perChangeSub_) {
-        EventFwk::CommonEventManager::UnSubscribeCommonEvent(perChangeSub_);
-    }
     if (distributedSub_) {
         EventFwk::CommonEventManager::UnSubscribeCommonEvent(distributedSub_);
     }
