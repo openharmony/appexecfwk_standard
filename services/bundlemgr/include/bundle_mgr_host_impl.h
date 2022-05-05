@@ -618,6 +618,9 @@ public:
     virtual std::string GetAppType(const std::string &bundleName) override;
 
     virtual int GetUidByBundleName(const std::string &bundleName, const int userId) override;
+
+    virtual bool ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+        AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo) override;
 #ifdef SUPPORT_GRAPHICS
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) override;
