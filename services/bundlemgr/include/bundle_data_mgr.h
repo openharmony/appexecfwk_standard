@@ -695,8 +695,13 @@ public:
 
     void GetAllUriPrefix(std::vector<std::string> &uriPrefixList, int32_t userId,
         const std::string &excludeModule = "") const;
+
     bool AddInnerBundleUserInfo(const std::string &bundleName, const InnerBundleUserInfo& newUserInfo);
+
     bool RemoveInnerBundleUserInfo(const std::string &bundleName, int32_t userId);
+
+    bool ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+        AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo);
 #ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) const;
