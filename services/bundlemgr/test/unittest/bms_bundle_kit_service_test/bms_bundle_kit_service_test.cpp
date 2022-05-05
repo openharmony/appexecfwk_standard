@@ -3960,32 +3960,6 @@ HWTEST_F(BmsBundleKitServiceTest, RemoveClonedBundle_0200, Function | SmallTest 
 }
 
 /**
- * @tc.number:RegisterCallback
- * @tc.name: test can RegisterCallback
- * @tc.desc: 1.can RegisterCallback
- * @tc.require: AR000GJUJ8
- */
-HWTEST_F(BmsBundleKitServiceTest, RegisterCallback_001, Function | SmallTest | Level1)
-{
-    sptr<MockBundleStatus> bundleStatusCallback = new (std::nothrow) MockBundleStatus();
-    bundleStatusCallback->SetBundleName(HAP_FILE_PATH);
-    bool testRet1 = GetLauncherService()->RegisterCallback(bundleStatusCallback);
-    EXPECT_TRUE(testRet1);
-}
-
-/**
- * @tc.number:UnRegisterCallback
- * @tc.name: test can UnRegisterCallback
- * @tc.desc: 1.can UnRegisterCallback
- * @tc.require: AR000GJUJ8
- */
-HWTEST_F(BmsBundleKitServiceTest, UnRegisterCallback_001, Function | SmallTest | Level1)
-{
-    bool testRet1 = GetLauncherService()->UnRegisterCallback();
-    EXPECT_TRUE(testRet1);
-}
-
-/**
  * @tc.number: skill match rules
  * @tc.name: action match test: want empty; skill empty
  * @tc.desc: expect false
