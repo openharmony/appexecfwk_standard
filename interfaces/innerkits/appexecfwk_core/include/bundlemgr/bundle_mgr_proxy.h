@@ -701,7 +701,7 @@ public:
         const std::string &bundleName, const std::string &moduleName,
         const std::string &abilityName, AbilityInfo &abilityInfo) override;
 
-    virtual bool GetSandboxBundleInfo(
+    virtual ErrCode GetSandboxBundleInfo(
         const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info) override;
     /**
      * @brief Obtains the value of isRemovable based on a given bundle name through the proxy object.
@@ -767,6 +767,9 @@ private:
      */
     template <typename T>
     bool GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo);
+
+    template <typename T>
+    ErrCode GetParcelableInfoWithErrCode(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo);
     /**
      * @brief Send a command message and then get a vector of parcelable information objects from the reply.
      * @param code Indicates the message code to be sent.

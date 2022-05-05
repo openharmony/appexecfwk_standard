@@ -2059,11 +2059,11 @@ ErrCode BundleMgrHost::HandleGetSandboxBundleInfo(Parcel &data, Parcel &reply)
 
     BundleInfo info;
     auto res = GetSandboxBundleInfo(bundleName, appIndex, userId, info);
-    if (!reply.WriteBool(res)) {
-        return ERR_APPEXECFWK_PARCEL_ERROR;
+    if (!reply.WriteInt32(res)) {
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
     }
-    if (res && !reply.WriteParcelable(&info)) {
-        return ERR_APPEXECFWK_PARCEL_ERROR;
+    if (res == ERR_OK && !reply.WriteParcelable(&info)) {
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
     }
     return ERR_OK;
 }

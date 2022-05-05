@@ -15,12 +15,12 @@
 
 #include "bundle_installer_proxy.h"
 
+#include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "hitrace_meter.h"
 #include "ipc_types.h"
 #include "parcel.h"
 #include "string_ex.h"
-
-#include "app_log_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -159,46 +159,76 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
     return SendInstallRequest(IBundleInstaller::Message::UNINSTALL_MODULE, data, reply, option);
 }
 
-int32_t BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId)
+ErrCode BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId,
+    int32_t &appIndex)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
 
-    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
-    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
-    PARCEL_WRITE(data, Int32, dlpType);
-    PARCEL_WRITE(data, Int32, userId);
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to InstallSandboxApp due to write MessageParcel fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteString16(Str8ToStr16(bundleName))) {
+        APP_LOGE("failed to InstallSandboxApp due to write bundleName fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(dlpType)) {
+        APP_LOGE("failed to InstallSandboxApp due to write appIndex fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to InstallSandboxApp due to write userId fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
 
     auto ret =
         SendInstallRequest(IBundleInstaller::Message::INSTALL_SANDBOX_APP, data, reply, option);
     if (!ret) {
         APP_LOGE("install sandbox app failed due to send request fail");
-        return 0;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_SEND_REQUEST_ERROR;
     }
-    return reply.ReadInt32();
+
+    auto res = reply.ReadInt32();
+    if (res == ERR_OK) {
+        appIndex = reply.ReadInt32();
+    }
+    return res;
 }
 
-bool BundleInstallerProxy::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+ErrCode BundleInstallerProxy::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
 
-    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
-    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
-    PARCEL_WRITE(data, Int32, appIndex);
-    PARCEL_WRITE(data, Int32, userId);
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to InstallSandboxApp due to write MessageParcel fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteString16(Str8ToStr16(bundleName))) {
+        APP_LOGE("failed to InstallSandboxApp due to write bundleName fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(appIndex)) {
+        APP_LOGE("failed to InstallSandboxApp due to write appIndex fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to InstallSandboxApp due to write userId fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
 
     auto ret =
         SendInstallRequest(IBundleInstaller::Message::UNINSTALL_SANDBOX_APP, data, reply, option);
     if (!ret) {
         APP_LOGE("uninstall sandbox app failed due to send request fail");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_SEND_REQUEST_ERROR;
     }
-    return reply.ReadBool();
+    return reply.ReadInt32();
 }
 
 bool BundleInstallerProxy::SendInstallRequest(const uint32_t& code, MessageParcel& data, MessageParcel& reply,
