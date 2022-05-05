@@ -598,7 +598,6 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
-        return true;
     } else {
         // query all
         for (const auto &item : bundleInfos_) {
@@ -615,7 +614,7 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
     }
     // sort by priority, descending order.
     if (abilityInfos.size() > 1) {
-        std::sort(abilityInfos.begin(), abilityInfos.end(),
+        std::stable_sort(abilityInfos.begin(), abilityInfos.end(),
             [](AbilityInfo a, AbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
@@ -2824,7 +2823,6 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
-        return true;
     } else {
         // query all
         for (const auto &item : bundleInfos_) {
@@ -2840,7 +2838,7 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
     }
     // sort by priority, descending order.
     if (extensionInfos.size() > 1) {
-        std::sort(extensionInfos.begin(), extensionInfos.end(),
+        std::stable_sort(extensionInfos.begin(), extensionInfos.end(),
             [](ExtensionAbilityInfo a, ExtensionAbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
