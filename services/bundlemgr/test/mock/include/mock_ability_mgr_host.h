@@ -423,7 +423,7 @@ public:
         return 0;
     }
 
-    virtual int RegisterWindowHandler(const sptr<IWindowHandler>& handler) override
+    virtual int RegisterWindowManagerServiceHandler(const sptr<IWindowManagerServiceHandler>& handler) override
     {
         return 0;
     }
