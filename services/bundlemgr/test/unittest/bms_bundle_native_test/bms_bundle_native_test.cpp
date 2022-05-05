@@ -44,20 +44,6 @@ void BmsBundleNativeTest::TearDown()
 /**
  * @tc.number: BmsBundleNativeTest
  * Function: OH_NativeBundle_GetAppIdByBundleName
- * @tc.name: test right bundleName
- * @tc.require: SR000H0ALQ
- * @tc.desc: 1. system running normally
- */
-HWTEST_F(BmsBundleNativeTest, BmsBundleNativeTest_0100, Function | SmallTest | Level1)
-{
-    char* appId = OH_NativeBundle_GetAppIdByBundleName("com.ohos.camera");
-    EXPECT_TRUE(appId != nullptr);
-    free(appId);
-}
-
-/**
- * @tc.number: BmsBundleNativeTest
- * Function: OH_NativeBundle_GetAppIdByBundleName
  * @tc.name: test wrong bundleName
  * @tc.require: AR000H0AMV
  * @tc.desc: 1. system running normally
