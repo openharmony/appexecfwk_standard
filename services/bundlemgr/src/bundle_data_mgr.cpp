@@ -588,8 +588,8 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         return false;
     }
     std::string bundleName = want.GetElement().GetBundleName();
-    // query in current bundleName
     if (!bundleName.empty()) {
+        // query in current bundleName
         InnerBundleInfo innerBundleInfo;
         if (!GetInnerBundleInfoWithFlags(
             bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
@@ -599,18 +599,24 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
         return true;
-    }
-    // query all
-    for (const auto &item : bundleInfos_) {
-        InnerBundleInfo innerBundleInfo;
-        if (!GetInnerBundleInfoWithFlags(
-            item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ImplicitQueryAbilityInfos failed");
-            continue;
-        }
+    } else {
+        // query all
+        for (const auto &item : bundleInfos_) {
+            InnerBundleInfo innerBundleInfo;
+            if (!GetInnerBundleInfoWithFlags(
+                item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+                APP_LOGE("ImplicitQueryAbilityInfos failed");
+                continue;
+            }
 
-        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
-        GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
+            int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
+            GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
+        }
+    }
+    // sort by priority, descending order.
+    if (abilityInfos.size() > 1) {
+        std::sort(abilityInfos.begin(), abilityInfos.end(),
+            [](AbilityInfo a, AbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
 }
@@ -2806,32 +2812,36 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
     if (requestUserId == Constants::INVALID_USERID) {
         return false;
     }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     std::string bundleName = want.GetElement().GetBundleName();
-    // query at current bundle
     if (!bundleName.empty()) {
-        std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+        // query in current bundle
         InnerBundleInfo innerBundleInfo;
         if (!GetInnerBundleInfoWithFlags(
             bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ExplicitQueryExtensionAbilityInfo failed");
+            APP_LOGE("ImplicitQueryExtensionAbilityInfos failed");
             return false;
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
         return true;
-    }
-
-    // query all
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    for (const auto &item : bundleInfos_) {
-        InnerBundleInfo innerBundleInfo;
-        if (!GetInnerBundleInfoWithFlags(
-            item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ImplicitQueryExtensionAbilityInfos failed");
-            continue;
+    } else {
+        // query all
+        for (const auto &item : bundleInfos_) {
+            InnerBundleInfo innerBundleInfo;
+            if (!GetInnerBundleInfoWithFlags(
+                item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+                APP_LOGE("ImplicitQueryExtensionAbilityInfos failed");
+                continue;
+            }
+            int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
+            GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
         }
-        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
-        GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
+    }
+    // sort by priority, descending order.
+    if (extensionInfos.size() > 1) {
+        std::sort(extensionInfos.begin(), extensionInfos.end(),
+            [](ExtensionAbilityInfo a, ExtensionAbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
 }
