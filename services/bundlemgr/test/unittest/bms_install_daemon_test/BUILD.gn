@@ -56,7 +56,7 @@ ohos_unittest("BmsInstallDaemonTest") {
   }
   if (global_resmgr_enable) {
     defines += [ "GLOBAL_RESMGR_ENABLE" ]
-    external_deps += [ "resmgr_standard:global_resmgr" ]
+    external_deps += [ "resource_management:global_resmgr" ]
   }
   resource_config_file =
       "${appexecfwk_path}/test/resource/bundlemgrservice/ohos_test.xml"
