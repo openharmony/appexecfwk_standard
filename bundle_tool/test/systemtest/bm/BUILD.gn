@@ -50,7 +50,7 @@ ohos_systemtest("bm_command_install_system_test") {
     "ability_base:want",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
+    "os_account:os_account_innerkits",
   ]
   resource_config_file = "${appexecfwk_path}/test/resource/tools/ohos_test.xml"
 }
@@ -89,7 +89,7 @@ ohos_systemtest("bm_command_uninstall_system_test") {
     "ability_base:want",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
+    "os_account:os_account_innerkits",
   ]
   resource_config_file = "${appexecfwk_path}/test/resource/tools/ohos_test.xml"
 }
@@ -128,7 +128,7 @@ ohos_systemtest("bm_command_dump_system_test") {
     "ability_base:want",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
+    "os_account:os_account_innerkits",
   ]
   resource_config_file = "${appexecfwk_path}/test/resource/tools/ohos_test.xml"
 }

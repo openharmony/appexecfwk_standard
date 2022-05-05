@@ -71,7 +71,7 @@ ohos_unittest("BmsDistributedDataStorageTest") {
     external_deps += [ "resource_management:global_resmgr" ]
   }
   if (account_enable) {
-    external_deps += [ "os_account_standard:os_account_innerkits" ]
+    external_deps += [ "os_account:os_account_innerkits" ]
     defines += [ "ACCOUNT_ENABLE" ]
   }
 

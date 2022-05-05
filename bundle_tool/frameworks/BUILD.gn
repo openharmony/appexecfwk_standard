@@ -51,7 +51,7 @@ ohos_source_set("tools_bm_source_set") {
     "bundle_framework:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
+    "os_account:os_account_innerkits",
     "resource_management:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",

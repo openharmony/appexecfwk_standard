@@ -42,7 +42,7 @@
                 "init",
                 "ipc",
                 "napi",
-                "os_account_standard",
+                "os_account",
                 "safwk",
                 "resource_management",
                 "samgr_standard",

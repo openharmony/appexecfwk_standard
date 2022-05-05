@@ -54,7 +54,7 @@ ohos_shared_library("libdbms") {
     "hiviewdfx_hilog_native:libhilog",
     "i18n:intl_util",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
+    "os_account:os_account_innerkits",
     "resource_management:global_resmgr",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
