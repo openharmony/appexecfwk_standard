@@ -158,7 +158,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
 
     // uninstall all sandbox app before
-    UninstallAllSandboxApps(bundleName);
+    UninstallAllSandboxApps(bundleName, installParam.userId);
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
@@ -189,7 +189,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
 
     // uninstall all sandbox app before
-    UninstallAllSandboxApps(bundleName);
+    UninstallAllSandboxApps(bundleName, installParam.userId);
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
@@ -1833,7 +1833,7 @@ ErrCode BaseBundleInstaller::CreateBundleUserData(InnerBundleInfo &innerBundleIn
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::UninstallAllSandboxApps(const std::string &bundleName)
+ErrCode BaseBundleInstaller::UninstallAllSandboxApps(const std::string &bundleName, int32_t userId)
 {
     // All sandbox will be uninstalled when the original application is updated or uninstalled
     APP_LOGD("UninstallAllSandboxApps begin");
@@ -1846,7 +1846,7 @@ ErrCode BaseBundleInstaller::UninstallAllSandboxApps(const std::string &bundleNa
         APP_LOGE("UninstallAllSandboxApps failed due to installer nullptr");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
-    if (installer->UninstallAllSandboxApps(bundleName) != ERR_OK) {
+    if (installer->UninstallAllSandboxApps(bundleName, userId) != ERR_OK) {
         APP_LOGE("UninstallAllSandboxApps failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
