@@ -22,7 +22,7 @@
 #include "bundle_permission_mgr.h"
 #include "bundle_sandbox_data_mgr.h"
 #include "bundle_util.h"
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
 #include "datetime_ex.h"
