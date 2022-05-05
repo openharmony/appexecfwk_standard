@@ -51,7 +51,7 @@ void PermissionCallback::OnChanged(const int32_t uid)
         APP_LOGE("new uv_work_t failed");
         return;
     }
-    CallbackInfo *callbackInfo = new (std::nothrow) CallbackInfo{
+    CallbackInfo *callbackInfo = new (std::nothrow) CallbackInfo {
         .env = env_,
         .callback = callback_,
         .uid = uid,

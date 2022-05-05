@@ -19,7 +19,7 @@ module_output_path = "bundle_framework/bundlemgrservice"
 ohos_unittest("BmsBundleNativeTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [ "${kits_path}/appkit/native/bundle/include" ]
+  include_dirs = [ "${kits_path}/native/bundle/include" ]
 
   sources = [ "bms_bundle_native_test.cpp" ]
   sources += [ "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp" ]
@@ -28,7 +28,7 @@ ohos_unittest("BmsBundleNativeTest") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  deps = [ "${kits_path}/appkit/native/bundle:bundle_ndk" ]
+  deps = [ "${kits_path}/native/bundle:bundle_ndk" ]
 }
 
 group("unittest") {
