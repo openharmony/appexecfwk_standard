@@ -157,9 +157,9 @@ struct Extension {
     int32_t iconId = 0;
     std::string label;
     int32_t labelId = 0;
-    int32_t priority = 0;
     std::string description;
     int32_t descriptionId = 0;
+    int32_t priority = 0;
     std::string type;
     std::string readPermission;
     std::string writePermission;
@@ -1327,6 +1327,7 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson, const Profile::Exten
     extensionInfo.descriptionId = extension.descriptionId;
     extensionInfo.type = ConvertToExtensionAbilityType(extension.type);
     if (isSystemApp && isPreInstallApp) {
+        extensionInfo.priority = extension.priority;
         extensionInfo.readPermission = extension.readPermission;
         extensionInfo.writePermission = extension.writePermission;
     }
