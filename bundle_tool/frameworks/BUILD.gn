@@ -18,7 +18,7 @@ config("tools_bm_config") {
   include_dirs = [
     "include",
     "${common_path}/log/include",
-    "${kits_path}/appkit/napi/bundlemgr",
+    "${kits_path}/js/bundlemgr",
     "//utils/system/safwk/native/include",
   ]
 
@@ -31,7 +31,7 @@ config("tools_bm_config") {
 ohos_source_set("tools_bm_source_set") {
   sources = [
     "${common_path}/log/src/app_log_wrapper.cpp",
-    "${kits_path}/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
+    "${kits_path}/js/bundlemgr/bundle_death_recipient.cpp",
     "src/bundle_command.cpp",
     "src/main.cpp",
     "src/shell_command.cpp",
