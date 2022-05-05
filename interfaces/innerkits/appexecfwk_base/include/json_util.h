@@ -46,7 +46,6 @@ void CheckArrayType(
 {
     auto arrays = jsonObject.at(key);
     if (arrays.empty()) {
-        APP_LOGD("array is empty");
         return;
     }
     switch (arrayType) {
