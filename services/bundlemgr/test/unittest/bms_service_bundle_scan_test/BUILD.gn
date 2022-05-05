@@ -86,7 +86,7 @@ ohos_unittest("BmsServiceBundleScanTest") {
     defines += [ "CONFIG_POLOCY_ENABLE" ]
   }
   if (account_enable) {
-    external_deps += [ "os_account_standard:os_account_innerkits" ]
+    external_deps += [ "os_account:os_account_innerkits" ]
     defines += [ "ACCOUNT_ENABLE" ]
   }
   if (bundle_framework_free_install) {
