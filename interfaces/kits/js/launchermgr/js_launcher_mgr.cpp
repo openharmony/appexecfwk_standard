@@ -22,7 +22,7 @@ JSLauncherMgr::JSLauncherMgr()
     launcherService_ = new LauncherService();
 }
 
-JSLauncherMgr::~JSLauncherMgr(){}
+JSLauncherMgr::~JSLauncherMgr() {}
 
 OHOS::sptr<LauncherService> JSLauncherMgr::GetLauncherService()
 {
