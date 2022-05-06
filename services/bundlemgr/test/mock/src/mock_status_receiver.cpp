@@ -38,5 +38,10 @@ int32_t MockStatusReceiver::GetResultCode()
     future.wait();
     return future.get();
 }
+
+void MockStatusReceiver::SetStreamInstallId(uint32_t installerId)
+{
+    return;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

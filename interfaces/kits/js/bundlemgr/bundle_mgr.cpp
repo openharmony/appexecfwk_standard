@@ -17,6 +17,7 @@
 #include <string>
 
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "bundle_death_recipient.h"
 #include "bundle_mgr_interface.h"
@@ -2867,11 +2868,26 @@ static void InnerInstall(napi_env env, const std::vector<std::string> &bundleFil
 
     sptr<BundleDeathRecipient> recipient(new (std::nothrow) BundleDeathRecipient(callback));
     iBundleInstaller->AsObject()->AddDeathRecipient(recipient);
-    iBundleInstaller->Install(bundleFilePath, installParam, callback);
-    installResult.resultMsg = callback->GetResultMsg();
-    APP_LOGD("InnerInstall resultMsg %{public}s", installResult.resultMsg.c_str());
-    installResult.resultCode = callback->GetResultCode();
-    APP_LOGD("InnerInstall resultCode %{public}d", installResult.resultCode);
+    ErrCode res = iBundleInstaller->StreamInstall(bundleFilePath, installParam, callback);
+
+    if (res == ERR_APPEXECFWK_INSTALL_PARAM_ERROR) {
+        APP_LOGE("install param error");
+        installResult.resultCode = IStatusReceiver::ERR_INSTALL_PARAM_ERROR;
+        installResult.resultMsg = "STATUS_INSTALL_FAILURE_INVALID";
+    } else if (res == ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR) {
+        APP_LOGE("install internal error");
+        installResult.resultCode = IStatusReceiver::ERR_INSTALL_INTERNAL_ERROR;
+        installResult.resultMsg = "STATUS_INSTALL_FAILURE";
+    } else if (res == ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID) {
+        APP_LOGE("install invalid path");
+        installResult.resultCode = IStatusReceiver::ERR_INSTALL_FILE_PATH_INVALID;
+        installResult.resultMsg = "STATUS_INSTALL_FAILURE_INVALID";
+    } else {
+        installResult.resultCode = callback->GetResultCode();
+        APP_LOGD("InnerInstall resultCode %{public}d", installResult.resultCode);
+        installResult.resultMsg = callback->GetResultMsg();
+        APP_LOGD("InnerInstall resultMsg %{public}s", installResult.resultMsg.c_str());
+    }
 }
 
 static void InnerRecover(napi_env env, const std::string &bundleName, InstallParam &installParam,
