@@ -58,6 +58,7 @@ protected:
             "appType": 0,
             "baseAbilityInfos": {
                 "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility": {
+                    "priority": 0,
                     "applicationName": "com.ohos.launcher",
                     "backgroundModes": 0,
                     "bundleName": "com.ohos.launcher",
