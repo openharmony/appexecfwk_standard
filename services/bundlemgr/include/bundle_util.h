@@ -104,6 +104,18 @@ public:
      * @return Returns userId.
      */
     static int32_t GetUserIdByUid(int32_t uid);
+    /**
+     * @brief Is file exist.
+     * @param path Indicates path.
+     * @return Returns result.
+     */
+    static bool IsExistFile(const std::string &path);
+    /**
+     * @brief Is dir exist.
+     * @param path Indicates path.
+     * @return Returns result.
+     */
+    static bool IsExistDir(const std::string &path);
 
     static void MakeHmdfsConfig(const std::string &bundleName, int32_t bundleId);
 

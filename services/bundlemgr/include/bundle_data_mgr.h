@@ -31,6 +31,7 @@
 #include "bundle_data_storage_interface.h"
 #include "bundle_promise.h"
 #include "bundle_sandbox_data_mgr.h"
+#include "bundle_state_storage.h"
 #include "bundle_status_callback_interface.h"
 #include "common_event_manager.h"
 #include "distributed_data_storage.h"
@@ -826,6 +827,9 @@ private:
 
     void FilterExtensionAbilityInfosByModuleName(const std::string &moduleName,
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;
+    void CompatibleOldBundleStateInKvDb();
+    void ResetBundleStateData();
+    void LoadAllBundleStateDataFromJsonDb();
 
 private:
     mutable std::mutex bundleInfoMutex_;
@@ -859,6 +863,7 @@ private:
     std::shared_ptr<IBundleDataStorage> dataStorage_;
     std::shared_ptr<PreInstallDataStorage> preInstallDataStorage_;
     std::shared_ptr<DistributedDataStorage> distributedDataStorage_;
+    std::shared_ptr<BundleStateStorage> bundleStateStorage_;
     std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
     std::vector<PreInstallBundleInfo> preInstallBundleInfos_;
     // map<uid, callback>.

@@ -29,11 +29,11 @@ struct BundleUserInfo : public Parcelable {
     // Indicates whether the bundle is disabled.
     bool enabled = true;
 
-    std::vector<std::string> abilities;
-
     // disabled abilities of the user.
     std::vector<std::string> disabledAbilities;
 
+    bool IsInitialState() const;
+    void Reset();
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static BundleUserInfo *Unmarshalling(Parcel &parcel);

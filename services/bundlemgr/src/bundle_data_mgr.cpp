@@ -49,6 +49,7 @@ BundleDataMgr::BundleDataMgr()
     preInstallDataStorage_ = std::make_shared<PreInstallDataStorage>();
     distributedDataStorage_ = DistributedDataStorage::GetInstance();
     sandboxDataMgr_ = std::make_shared<BundleSandboxDataMgr>();
+    bundleStateStorage_ = std::make_shared<BundleStateStorage>();
     APP_LOGI("BundleDataMgr instance is created");
 }
 
@@ -63,22 +64,89 @@ BundleDataMgr::~BundleDataMgr()
 bool BundleDataMgr::LoadDataFromPersistentStorage()
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    bool ret = dataStorage_->LoadAllData(bundleInfos_);
-    if (ret) {
-        if (bundleInfos_.empty()) {
-            APP_LOGW("persistent data is empty");
-            return false;
+    // Judge whether bundleState json db exists.
+    // If it does not exist, create it and return the judgment result.
+    bool bundleStateDbExist = bundleStateStorage_->HasBundleUserInfoJsonDb();
+    if (!dataStorage_->LoadAllData(bundleInfos_)) {
+        APP_LOGE("LoadAllData failed");
+        return false;
+    }
+
+    if (bundleInfos_.empty()) {
+        APP_LOGW("persistent data is empty");
+        return false;
+    }
+
+    for (const auto &item : bundleInfos_) {
+        std::lock_guard<std::mutex> lock(stateMutex_);
+        installStates_.emplace(item.first, InstallState::INSTALL_SUCCESS);
+    }
+
+    LoadAllPreInstallBundleInfos(preInstallBundleInfos_);
+    RestoreUidAndGid();
+    if (!bundleStateDbExist) {
+        // Compatible old bundle status in kV db
+        CompatibleOldBundleStateInKvDb();
+    } else {
+        ResetBundleStateData();
+        // Load all bundle status from json db.
+        LoadAllBundleStateDataFromJsonDb();
+    }
+
+    SetInitialUserFlag(true);
+    return true;
+}
+
+void BundleDataMgr::CompatibleOldBundleStateInKvDb()
+{
+    for (auto& bundleInfoItem : bundleInfos_) {
+        for (auto& innerBundleUserInfoItem : bundleInfoItem.second.GetInnerBundleUserInfos()) {
+            auto& bundleUserInfo = innerBundleUserInfoItem.second.bundleUserInfo;
+            if (bundleUserInfo.IsInitialState()) {
+                continue;
+            }
+
+            // save old bundle state to json db
+            bundleStateStorage_->SaveBundleStateStorage(
+                bundleInfoItem.first, bundleUserInfo.userId, bundleUserInfo);
         }
-        for (const auto &item : bundleInfos_) {
-            std::lock_guard<std::mutex> lock(stateMutex_);
-            installStates_.emplace(item.first, InstallState::INSTALL_SUCCESS);
+    }
+}
+
+void BundleDataMgr::LoadAllBundleStateDataFromJsonDb()
+{
+    APP_LOGD("Load all bundle state start");
+    std::map<std::string, std::map<int32_t, BundleUserInfo>> bundleStateInfos;
+    if (!bundleStateStorage_->LoadAllBundleStateData(bundleStateInfos) || bundleStateInfos.empty()) {
+        APP_LOGE("Load all bundle state failed");
+        return;
+    }
+
+    for (auto& bundleState : bundleStateInfos) {
+        auto infoItem = bundleInfos_.find(bundleState.first);
+        if (infoItem == bundleInfos_.end()) {
+            APP_LOGE("BundleName(%{public}s) not exist in cache", bundleState.first.c_str());
+            continue;
         }
 
-        LoadAllPreInstallBundleInfos(preInstallBundleInfos_);
-        RestoreUidAndGid();
-        SetInitialUserFlag(true);
+        InnerBundleInfo& newInfo = infoItem->second;
+        for (auto& bundleUserState : bundleState.second) {
+            auto& tempUserInfo = bundleUserState.second;
+            newInfo.SetApplicationEnabled(tempUserInfo.enabled, bundleUserState.first);
+            for (auto& disabledAbility : tempUserInfo.disabledAbilities) {
+                newInfo.SetAbilityEnabled(bundleState.first, "", disabledAbility, false, bundleUserState.first);
+            }
+        }
     }
-    return ret;
+
+    APP_LOGD("Load all bundle state end");
+}
+
+void BundleDataMgr::ResetBundleStateData()
+{
+    for (auto& bundleInfoItem : bundleInfos_) {
+        bundleInfoItem.second.ResetBundleState(Constants::ALL_USERID);
+    }
 }
 
 bool BundleDataMgr::UpdateBundleInstallState(const std::string &bundleName, const InstallState state)
@@ -286,6 +354,8 @@ bool BundleDataMgr::RemoveInnerBundleUserInfo(
         APP_LOGE("update storage failed bundle:%{public}s", bundleName.c_str());
         return false;
     }
+
+    bundleStateStorage_->DeleteBundleState(bundleName, userId);
     return true;
 }
 
@@ -1525,21 +1595,30 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
         APP_LOGE("bundleName empty");
         return false;
     }
+
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         APP_LOGE("can not find bundle %{public}s", bundleName.c_str());
         return false;
     }
-    InnerBundleInfo newInfo = infoItem->second;
+
+    InnerBundleInfo& newInfo = infoItem->second;
     newInfo.SetApplicationEnabled(isEnable, GetUserId(userId));
-    if (dataStorage_->SaveStorageBundleInfo(newInfo)) {
-        infoItem->second.SetApplicationEnabled(isEnable, GetUserId(userId));
-        return true;
-    } else {
-        APP_LOGE("bundle:%{private}s SetApplicationEnabled failed", bundleName.c_str());
+    InnerBundleUserInfo innerBundleUserInfo;
+    if (!newInfo.GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+        APP_LOGE("can not find userId %{public}d when get applicationInfo", userId);
         return false;
     }
+
+    if (innerBundleUserInfo.bundleUserInfo.IsInitialState()) {
+        bundleStateStorage_->DeleteBundleState(bundleName, userId);
+    } else {
+        bundleStateStorage_->SaveBundleStateStorage(
+            bundleName, userId, innerBundleUserInfo.bundleUserInfo);
+    }
+
+    return true;
 }
 
 bool BundleDataMgr::SetModuleRemovable(const std::string &bundleName, const std::string &moduleName, bool isEnable)
@@ -1621,20 +1700,34 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
         APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGD("SetAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
+
     auto infoItem = bundleInfos_.find(abilityInfo.bundleName);
     if (infoItem == bundleInfos_.end()) {
+        APP_LOGE("can not find bundle %{public}s", abilityInfo.bundleName.c_str());
         return false;
     }
-    InnerBundleInfo newInfo = infoItem->second;
-    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name,
-        isEnabled, GetUserId(userId));
-    if (dataStorage_->SaveStorageBundleInfo(newInfo)) {
-        return infoItem->second.SetAbilityEnabled(
-            abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name, isEnabled, GetUserId(userId));
+
+    InnerBundleInfo& newInfo = infoItem->second;
+    if (!newInfo.SetAbilityEnabled(
+        abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name, isEnabled, GetUserId(userId))) {
+        APP_LOGE("SetAbilityEnabled %{public}s failed", abilityInfo.bundleName.c_str());
+        return false;
     }
-    APP_LOGD("dataStorage SetAbilityEnabled %{public}s failed", abilityInfo.bundleName.c_str());
-    return false;
+
+    InnerBundleUserInfo innerBundleUserInfo;
+    if (!newInfo.GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+        APP_LOGE("can not find userId %{public}d when get applicationInfo", userId);
+        return false;
+    }
+
+    if (innerBundleUserInfo.bundleUserInfo.IsInitialState()) {
+        bundleStateStorage_->DeleteBundleState(abilityInfo.bundleName, userId);
+    } else {
+        bundleStateStorage_->SaveBundleStateStorage(
+            abilityInfo.bundleName, userId, innerBundleUserInfo.bundleUserInfo);
+    }
+    
+    return true;
 }
 
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS

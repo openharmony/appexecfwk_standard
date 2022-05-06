@@ -1221,6 +1221,11 @@ public:
         return innerBundleUserInfos_;
     }
     /**
+     * @brief Reset bundle state.
+     * @param userId Indicates the userId to set.
+     */
+    void ResetBundleState(int32_t userId);
+    /**
      * @brief Set userId to remove userinfo.
      * @param userId Indicates the userId to set.
      */
