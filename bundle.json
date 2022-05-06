@@ -63,8 +63,8 @@
                 "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
                 "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
                 "//foundation/appexecfwk/standard/services/bundlemgr:bms_target",
-                "//foundation/appexecfwk/standard/kits/appkit/napi:napi_packages",
-                "//foundation/appexecfwk/standard/kits/appkit/native/bundle:bundle_ndk",
+                "//foundation/appexecfwk/standard/interfaces/kits/js:napi_packages",
+                "//foundation/appexecfwk/standard/interfaces/kits/native/bundle:bundle_ndk",
                 "//foundation/appexecfwk/standard/test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
                 "//foundation/appexecfwk/standard/tools/zip:tools_zip"
             ],
