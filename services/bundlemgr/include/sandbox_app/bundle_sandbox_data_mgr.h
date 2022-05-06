@@ -34,12 +34,12 @@ public:
 
     void SaveSandboxAppInfo(const InnerBundleInfo &info, const int32_t &appIndex);
     void DeleteSandboxAppInfo(const std::string &bundleName, const int32_t &appIndex);
-    bool GetSandboxAppBundleInfo(
+    ErrCode GetSandboxAppBundleInfo(
         const std::string &bundleName, const int32_t &appIndex, const int32_t &userId, BundleInfo &info) const;
     int32_t GenerateSandboxAppIndex(const std::string &bundleName);
     bool DeleteSandboxAppIndex(const std::string &bundleName, int32_t appIndex);
     std::unordered_map<std::string, InnerBundleInfo> GetSandboxAppInfoMap() const;
-    bool GetSandboxAppInfo(
+    ErrCode GetSandboxAppInfo(
         const std::string &bundleName, const int32_t &appIndex, int32_t &userId, InnerBundleInfo &info) const;
 
 private:

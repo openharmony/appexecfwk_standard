@@ -316,51 +316,52 @@ bool BundleMgrClientImpl::TransformFileToJsonString(const std::string &resPath, 
     return true;
 }
 
-int32_t BundleMgrClientImpl::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId)
+ErrCode BundleMgrClientImpl::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId,
+    int32_t &appIndex)
 {
     APP_LOGD("InstallSandboxApp begin");
     if (bundleName.empty()) {
         APP_LOGE("InstallSandboxApp bundleName is empty");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     ErrCode result = Connect();
     if (result != ERR_OK) {
         APP_LOGE("failed to connect");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
 
-    return bundleInstaller_->InstallSandboxApp(bundleName, dlpType, userId);
+    return bundleInstaller_->InstallSandboxApp(bundleName, dlpType, userId, appIndex);
 }
 
-bool BundleMgrClientImpl::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+ErrCode BundleMgrClientImpl::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
 {
     APP_LOGD("UninstallSandboxApp begin");
     if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
         APP_LOGE("UninstallSandboxApp params are invalid");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     ErrCode result = Connect();
     if (result != ERR_OK) {
         APP_LOGE("failed to connect");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
 
     return bundleInstaller_->UninstallSandboxApp(bundleName, appIndex, userId);
 }
 
-bool BundleMgrClientImpl::GetSandboxBundleInfo(
+ErrCode BundleMgrClientImpl::GetSandboxBundleInfo(
     const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
 {
     APP_LOGD("GetSandboxBundleInfo begin");
     if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
         APP_LOGE("UninstallSandboxApp params are invalid");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
 
     ErrCode result = Connect();
     if (result != ERR_OK) {
         APP_LOGE("failed to connect");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
     return bundleMgr_->GetSandboxBundleInfo(bundleName, appIndex, userId, info);
 }

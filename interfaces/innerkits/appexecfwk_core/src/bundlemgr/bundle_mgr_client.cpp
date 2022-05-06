@@ -112,30 +112,31 @@ std::vector<std::string> BundleMgrClient::GetAccessibleAppCodePaths(int32_t user
     return impl_->GetAccessibleAppCodePaths(userId);
 }
 
-int32_t BundleMgrClient::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId)
+ErrCode BundleMgrClient::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId,
+    int32_t &appIndex)
 {
     if (impl_ == nullptr) {
         APP_LOGE("Bundle mgr client impl is nullptr");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
-    return impl_->InstallSandboxApp(bundleName, dlpType, userId);
+    return impl_->InstallSandboxApp(bundleName, dlpType, userId, appIndex);
 }
 
-bool BundleMgrClient::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+ErrCode BundleMgrClient::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
 {
     if (impl_ == nullptr) {
         APP_LOGE("Bundle mgr client impl is nullptr");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
     return impl_->UninstallSandboxApp(bundleName, appIndex, userId);
 }
 
-bool BundleMgrClient::GetSandboxBundleInfo(
+ErrCode BundleMgrClient::GetSandboxBundleInfo(
     const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
 {
     if (impl_ == nullptr) {
         APP_LOGE("Bundle mgr client impl is nullptr");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
     return impl_->GetSandboxBundleInfo(bundleName, appIndex, userId, info);
 }

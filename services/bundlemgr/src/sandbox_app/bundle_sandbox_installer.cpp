@@ -65,7 +65,7 @@ ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName,
     bool isExist = false;
     if (!GetInnerBundleInfo(info, isExist) || !isExist) {
         APP_LOGE("the bundle is not installed");
-        return ERR_APPEXECFWK_SANDBOX_INSTALL_FAILED_APP_NOT_EXISTED;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_APP_NOT_EXISTED;
     }
     InnerBundleInfo oldInfo = info;
 
@@ -85,7 +85,7 @@ ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName,
     InnerBundleUserInfo userInfo;
     if (!info.GetInnerBundleUserInfo(userId_, userInfo)) {
         APP_LOGE("the origin application is not installed at current user");
-        return ERR_APPEXECFWK_SANDBOX_INSTALL_USER_NOT_EXIST;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_NOT_INSTALLED_AT_SPECIFIED_USERID;
     }
     info.CleanInnerBundleUserInfos();
     ScopeGuard sandboxAppGuard([&] { SandboxAppRollBack(info, userId_); });
@@ -176,16 +176,17 @@ ErrCode BundleSandboxInstaller::UninstallSandboxApp(
         APP_LOGE("get sandbox data mgr failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
-    if (!sandboxDataMgr_->GetSandboxAppInfo(bundleName, appIndex, userId_, info)) {
+    ErrCode result = ERR_OK;
+    if ((result = sandboxDataMgr_->GetSandboxAppInfo(bundleName, appIndex, userId_, info)) != ERR_OK) {
         APP_LOGE("UninstallSandboxApp no sandbox app info can be found");
-        return ERR_APPEXECFWK_SANDBOX_INSTALL_NO_SANDBOX_APP_INFO;
+        return result;
     }
 
     // 3. check whether sandbox app is installed at current user
     InnerBundleUserInfo userInfo;
     if (!info.GetInnerBundleUserInfo(userId_, userInfo)) {
         APP_LOGE("the sandbox app is not installed at this user %{public}d", userId_);
-        return ERR_APPEXECFWK_SANDBOX_INSTALL_USER_NOT_EXIST;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_NOT_INSTALLED_AT_SPECIFIED_USERID;
     }
 
     // 4. delete accesstoken id and appIndex
@@ -202,7 +203,7 @@ ErrCode BundleSandboxInstaller::UninstallSandboxApp(
 
     // 5. remove data dir and uid, gid
     std::string innerBundleName = bundleName + Constants::FILE_UNDERLINE + std::to_string(appIndex);
-    ErrCode result = InstalldClient::GetInstance()->RemoveBundleDataDir(innerBundleName, userId_);
+    result = InstalldClient::GetInstance()->RemoveBundleDataDir(innerBundleName, userId_);
     if (result != ERR_OK) {
         APP_LOGE("fail to remove data dir: %{public}s, error is %{public}d", innerBundleName.c_str(), result);
         return result;
@@ -299,7 +300,7 @@ void BundleSandboxInstaller::SandboxAppRollBack(InnerBundleInfo &info, const int
     APP_LOGD("SandboxAppRollBack finish");
 }
 
-ErrCode BundleSandboxInstaller::UninstallAllSandboxApps(const std::string &bundleName)
+ErrCode BundleSandboxInstaller::UninstallAllSandboxApps(const std::string &bundleName, int32_t userId)
 {
     // All sandbox will be uninstalled when the original application is updated or uninstalled
     APP_LOGD("UninstallAllSandboxApps begin");
@@ -317,7 +318,7 @@ ErrCode BundleSandboxInstaller::UninstallAllSandboxApps(const std::string &bundl
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     auto sandboxAppInfoMap = sandboxDataMgr_->GetSandboxAppInfoMap();
-    for_each(sandboxAppInfoMap.begin(), sandboxAppInfoMap.end(), [&bundleName, &sandboxAppInfoMap, this](
+    for_each(sandboxAppInfoMap.begin(), sandboxAppInfoMap.end(), [&bundleName, &sandboxAppInfoMap, &userId, this](
         std::unordered_map<std::string, InnerBundleInfo>::reference info)->void {
         auto pos = info.first.find(bundleName);
         if (pos != std::string::npos) {
@@ -328,10 +329,12 @@ ErrCode BundleSandboxInstaller::UninstallAllSandboxApps(const std::string &bundl
                 return;
             }
             auto userInfos = sandboxAppInfoMap[info.first].GetInnerBundleUserInfos();
-            auto userId = (userInfos.begin()->second).bundleUserInfo.userId;
-            if (this->UninstallSandboxApp(bundleName, appIndex, userId) != ERR_OK) {
-                APP_LOGE("UninstallSandboxApp failed");
-                return;
+            auto specifiedUserId = (userInfos.begin()->second).bundleUserInfo.userId;
+            if (specifiedUserId == userId || userId == Constants::INVALID_USERID) {
+                if (this->UninstallSandboxApp(bundleName, appIndex, specifiedUserId) != ERR_OK) {
+                    APP_LOGE("UninstallSandboxApp failed");
+                    return;
+                }
             }
         }
     });

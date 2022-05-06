@@ -70,21 +70,21 @@ void BundleSandboxDataMgr::DeleteSandboxAppInfo(const std::string &bundleName, c
     APP_LOGD("delete sandbox app %{public}s info successfully", key.c_str());
 }
 
-bool BundleSandboxDataMgr::GetSandboxAppInfo(
+ErrCode BundleSandboxDataMgr::GetSandboxAppInfo(
     const std::string &bundleName, const int32_t &appIndex, int32_t &userId, InnerBundleInfo &info) const
 {
     APP_LOGD("GetSandboxAppInfo begin");
     if (bundleName.empty()) {
         APP_LOGE("GetSandboxAppInfo bundleName is empty");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     if (appIndex <= Constants::INITIAL_APP_INDEX) {
         APP_LOGE("GetSandboxAppInfo appIndex is invalid");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     if (userId < Constants::DEFAULT_USERID) {
         APP_LOGE("userId(%{public}d) is invalid.", userId);
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
 
     auto key = bundleName + Constants::FILE_UNDERLINE + std::to_string(appIndex);
@@ -94,35 +94,36 @@ bool BundleSandboxDataMgr::GetSandboxAppInfo(
         auto it = sandboxAppInfos_.find(key);
         if (it == sandboxAppInfos_.end()) {
             APP_LOGE("GetSandboxAppInfo no sandbox app info can be found");
-            return false;
+            return ERR_APPEXECFWK_SANDBOX_INSTALL_NO_SANDBOX_APP_INFO;
         }
 
         InnerBundleUserInfo userInfo;
         if (!(it->second).GetInnerBundleUserInfo(userId, userInfo)) {
             APP_LOGE("the sandbox app is not installed at this user %{public}d", userId);
-            return false;
+            return ERR_APPEXECFWK_SANDBOX_INSTALL_NOT_INSTALLED_AT_SPECIFIED_USERID;
         }
         info = it->second;
     }
 
     APP_LOGD("GetSandboxAppInfo successfully");
-    return true;
+    return ERR_OK;
 }
 
-bool BundleSandboxDataMgr::GetSandboxAppBundleInfo(
+ErrCode BundleSandboxDataMgr::GetSandboxAppBundleInfo(
     const std::string &bundleName, const int32_t &appIndex, const int32_t &userId, BundleInfo &info) const
 {
     APP_LOGD("GetSandboxAppBundleInfo begin");
     InnerBundleInfo innerBundleInfo;
     int32_t requestUserId = userId;
-    if (!GetSandboxAppInfo(bundleName, appIndex, requestUserId, innerBundleInfo)) {
+    ErrCode result = ERR_OK;
+    if ((result = GetSandboxAppInfo(bundleName, appIndex, requestUserId, innerBundleInfo)) != ERR_OK) {
         APP_LOGE("GetSandboxAppBundleInfo get sandbox app info failed");
-        return false;
+        return result;
     }
     InnerBundleUserInfo userInfo;
     if (!innerBundleInfo.GetInnerBundleUserInfo(requestUserId, userInfo)) {
         APP_LOGE("the origin application is not installed at current user");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_NOT_INSTALLED_AT_SPECIFIED_USERID;
     }
 
     innerBundleInfo.GetBundleInfo(
@@ -131,7 +132,7 @@ bool BundleSandboxDataMgr::GetSandboxAppBundleInfo(
         BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION |
         BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO, info, requestUserId);
     APP_LOGD("GetSandboxAppBundleInfo successfully");
-    return true;
+    return ERR_OK;
 }
 
 int32_t BundleSandboxDataMgr::GenerateSandboxAppIndex(const std::string &bundleName)
