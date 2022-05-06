@@ -41,6 +41,7 @@ enum class ExtensionAbilityType {
     STATICSUBSCRIBER = 7,
     WALLPAPER = 8,
     BACKUP = 9,
+    FILE = 10,
     UNSPECIFIED = 20
 };
 
