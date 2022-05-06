@@ -216,8 +216,12 @@ void BundleInstallerHost::HandleInstallSandboxApp(Parcel &data, Parcel &reply)
     std::string bundleName = Str16ToStr8(data.ReadString16());
     int32_t dplType = data.ReadInt32();
     int32_t userId = data.ReadInt32();
-    auto ret = InstallSandboxApp(bundleName, dplType, userId);
+    int32_t appIndex = Constants::INITIAL_APP_INDEX;
+    auto ret = InstallSandboxApp(bundleName, dplType, userId, appIndex);
     if (!reply.WriteInt32(ret)) {
+        APP_LOGE("write failed");
+    }
+    if (ret == ERR_OK && !reply.WriteInt32(appIndex)) {
         APP_LOGE("write failed");
     }
     APP_LOGD("handle install sandbox app message finished");
@@ -230,7 +234,7 @@ void BundleInstallerHost::HandleUninstallSandboxApp(Parcel &data, Parcel &reply)
     int32_t appIndex = data.ReadInt32();
     int32_t userId = data.ReadInt32();
     auto ret = UninstallSandboxApp(bundleName, appIndex, userId);
-    if (!reply.WriteBool(ret)) {
+    if (!reply.WriteInt32(ret)) {
         APP_LOGE("write failed");
     }
     APP_LOGD("handle install sandbox app message finished");
@@ -337,42 +341,45 @@ bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
     return true;
 }
 
-int32_t BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId)
+ErrCode BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId,
+    int32_t &appIndex)
 {
-    int32_t appIndex = 0;
     if (bundleName.empty() || dplType <= LOWER_DLP_TYPE_BOUND || dplType >= UPPER_DLP_TYPE_BOUND) {
         APP_LOGE("install sandbox failed due to error parameters");
-        return appIndex;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
     if (installer == nullptr) {
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
     auto res = installer->InstallSandboxApp(bundleName, dplType, userId, appIndex);
     if (res != ERR_OK) {
         APP_LOGE("install sandbox failed due to error code : %{public}d", res);
-        return appIndex;
     }
-    return appIndex;
+    return res;
 }
 
-bool BundleInstallerHost::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+ErrCode BundleInstallerHost::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
 {
     // check bundle name
     if (bundleName.empty()) {
         APP_LOGE("install sandbox failed due to empty bundleName");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     // check appIndex
     if (appIndex <= INVALID_APP_INDEX || appIndex > Constants::MAX_APP_INDEX) {
         APP_LOGE("the appIndex %{public}d is invalid", appIndex);
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
     if (installer == nullptr) {
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
-    return (installer->UninstallSandboxApp(bundleName, appIndex, userId) == ERR_OK) ? true : false;
+    auto res = installer->UninstallSandboxApp(bundleName, appIndex, userId);
+    if (res != ERR_OK) {
+        APP_LOGE("uninstall sandbox failed due to error code : %{public}d", res);
+    }
+    return res;
 }
 
 bool BundleInstallerHost::CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const

@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_INTERFACE_H
 
 #include "ability_info.h"
+#include "appexecfwk_errors.h"
 #include "application_info.h"
 #include "bundle_constants.h"
 #include "bundle_info.h"
@@ -998,7 +999,6 @@ public:
      * @param abilityName Indicates the ability name to be queried.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the abilityInfo is successfully obtained; returns false otherwise.
-
      */
     virtual bool GetAbilityInfo(
         const std::string &bundleName, const std::string &moduleName,
@@ -1011,12 +1011,12 @@ public:
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param appIndex Indicates application index of the sandbox application.
      * @param userId Indicates the sandbox application is installed under which user id.
-     * @return Returns true if the get sandbox application budnelInfo successfully; returns false otherwise.
+     * @return Returns ERR_OK if the get sandbox application budnelInfo successfully; returns errcode otherwise.
      */
-    virtual bool GetSandboxBundleInfo(
+    virtual ErrCode GetSandboxBundleInfo(
         const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
     {
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
 
     /**

@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_CLIENT_H
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_CLIENT_H
 
+#include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "bundle_info.h"
 #include "bundle_pack_info.h"
@@ -79,9 +80,10 @@ public:
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param dlpType Indicates type of the sandbox application.
      * @param userId Indicates the sandbox application will be installed under which user id.
+     * @param appIndex Indicates the appIndex of the sandbox application installed under which user id.
      * @return Returns appIndex of sandbox application if successfully, otherwise returns 0.
      */
-    int32_t InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId);
+    ErrCode InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId, int32_t &appIndex);
 
     /**
      * @brief Uninstall sandbox application.
@@ -90,9 +92,9 @@ public:
      * @param userId Indicates the sandbox application will be uninstall under which user id.
      * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
      */
-    bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId);
+    ErrCode UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId);
 
-    bool GetSandboxBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info);
+    ErrCode GetSandboxBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info);
 private:
     std::shared_ptr<BundleMgrClientImpl> impl_;
 };
