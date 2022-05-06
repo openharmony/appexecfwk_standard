@@ -144,6 +144,7 @@ ohos_shared_library("libbms") {
     "src/bundle_mgr_service.cpp",
     "src/bundle_mgr_service_event_handler.cpp",
     "src/bundle_scanner.cpp",
+    "src/bundle_state_storage.cpp",
     "src/bundle_status_callback_death_recipient.cpp",
     "src/bundle_user_mgr_host_impl.cpp",
     "src/distributed_data_storage.cpp",
