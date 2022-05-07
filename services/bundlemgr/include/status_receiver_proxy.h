@@ -39,12 +39,15 @@ public:
      */
     virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override;
 
+    virtual void SetStreamInstallId(uint32_t installerId) override;
 private:
     void TransformResult(const int32_t resultCode);
+    void CloseStreamInstaller(uint32_t installerId);
 
 private:
     int32_t resultCode_ = -1;
     std::string resultMsg_;
+    uint32_t streamInstallerId_ = 0;
     static inline BrokerDelegator<StatusReceiverProxy> delegator_;
 };
 }  // namespace AppExecFwk

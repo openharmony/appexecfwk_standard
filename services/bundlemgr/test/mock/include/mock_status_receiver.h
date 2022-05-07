@@ -32,6 +32,7 @@ public:
     virtual void OnStatusNotify(const int32_t progress) override;
     virtual void OnFinished(const int32_t resultCode, [[maybe_unused]] const std::string &resultMsg) override;
     virtual sptr<IRemoteObject> AsObject() override;
+    virtual void SetStreamInstallId(uint32_t installerId) override;
     int32_t GetResultCode();
 
 private:

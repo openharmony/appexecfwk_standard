@@ -23,6 +23,7 @@
 
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
+#include "bundle_mgr_service.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -362,7 +363,7 @@ void StatusReceiverProxy::OnFinished(const int32_t resultCode, const std::string
     APP_LOGI("result from service is %{public}d, %{public}s", resultCode, resultMsg.c_str());
     // transform service error code to client error code.
     TransformResult(resultCode);
-
+    CloseStreamInstaller(streamInstallerId_);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
@@ -403,6 +404,26 @@ void StatusReceiverProxy::TransformResult(const int32_t resultCode)
         resultMsg_ = MSG_ERR_UNKNOWN;
     }
     APP_LOGD("result transformed is %{public}d, %{public}s", resultCode_, resultMsg_.c_str());
+}
+
+void StatusReceiverProxy::CloseStreamInstaller(uint32_t installerId)
+{
+    if (installerId <= 0) {
+        APP_LOGE("invalid installer id: %{public}d", installerId);
+        return;
+    }
+    sptr<IBundleInstaller> bundleInstaller = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
+    if (bundleInstaller == nullptr) {
+        APP_LOGE("bundle install is nullptr");
+        return;
+    }
+    bundleInstaller->DestoryBundleStreamInstaller(installerId);
+    streamInstallerId_ = 0;
+}
+
+void StatusReceiverProxy::SetStreamInstallId(uint32_t installerId)
+{
+    streamInstallerId_ = installerId;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
