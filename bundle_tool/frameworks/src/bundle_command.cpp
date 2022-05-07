@@ -57,6 +57,7 @@ const struct option LONG_OPTIONS[] = {
     {"data", no_argument, nullptr, 'd'},
     {"is-removable", required_argument, nullptr, 'i'},
     {"user-id", required_argument, nullptr, 'u'},
+    {"keep-data", no_argument, nullptr, 'k'},
     {nullptr, 0, nullptr, 0},
 };
 
@@ -824,6 +825,13 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     return OHOS::ERR_INVALID_VALUE;
                 }
+                break;
+            }
+            case 'k': {
+                // 'bm uninstall -n <bundleName> -k'
+                // 'bm uninstall --bundle-name <bundleName> --keep-data'
+                APP_LOGD("'bm uninstall %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT]);
+                isKeepData = true;
                 break;
             }
             default: {
