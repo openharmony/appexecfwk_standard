@@ -33,7 +33,7 @@ ohos_systemtest("BundleMgrClientSystemTest") {
 
   if (bundle_framework_graphics) {
     public_deps = [
-      "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+      "//base/global/resource_management/frameworks/resmgr:global_resmgr",
       "//third_party/icu/icu4c:shared_icuuc",
       "//third_party/jsoncpp:jsoncpp",
     ]

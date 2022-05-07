@@ -37,6 +37,8 @@ public:
      */
     virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) = 0;
 
+    virtual void SetStreamInstallId(uint32_t installerId) = 0;
+
     enum class Message {
         ON_STATUS_NOTIFY,
         ON_FINISHED,

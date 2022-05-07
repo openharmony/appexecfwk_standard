@@ -1626,7 +1626,7 @@ bool BundleMgrHostImpl::GetAllDependentModuleNames(const std::string &bundleName
     return dataMgr->GetAllDependentModuleNames(bundleName, moduleName, dependentModuleNames);
 }
 
-bool BundleMgrHostImpl::GetSandboxBundleInfo(
+ErrCode BundleMgrHostImpl::GetSandboxBundleInfo(
     const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
 {
     APP_LOGD("start GetSandboxBundleInfo, bundleName : %{public}s, appindex : %{public}d, userId : %{public}d",
@@ -1634,22 +1634,22 @@ bool BundleMgrHostImpl::GetSandboxBundleInfo(
     // check bundle name
     if (bundleName.empty()) {
         APP_LOGE("GetSandboxBundleInfo failed due to empty bundleName");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     // check appIndex
     if (appIndex <= Constants::INITIAL_APP_INDEX || appIndex > Constants::MAX_APP_INDEX) {
         APP_LOGE("the appIndex %{public}d is invalid", appIndex);
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
     auto sandboxDataMgr = dataMgr->GetSandboxDataMgr();
     if (sandboxDataMgr == nullptr) {
         APP_LOGE("sandDataMgr is nullptr");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
     return sandboxDataMgr->GetSandboxAppBundleInfo(bundleName, appIndex, userId, info);
 }

@@ -18,11 +18,17 @@ group("common_target") {
 }
 
 config("appexecfwk_common_config") {
-  include_dirs = [ "log/include" ]
+  include_dirs = [
+    "log/include",
+    "utils/include",
+  ]
 }
 
 ohos_shared_library("libappexecfwk_common") {
-  sources = [ "log/src/app_log_wrapper.cpp" ]
+  sources = [
+    "log/src/app_log_wrapper.cpp",
+    "utils/src/bundle_file_util.cpp",
+  ]
 
   defines = [
     "APP_LOG_TAG = \"AppExecFwk\"",

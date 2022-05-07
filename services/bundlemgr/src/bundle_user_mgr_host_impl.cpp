@@ -19,7 +19,7 @@
 #include "bundle_mgr_service.h"
 #include "bundle_promise.h"
 #include "bundle_util.h"
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "status_receiver_host.h"
 
 namespace OHOS {

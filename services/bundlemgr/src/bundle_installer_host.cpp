@@ -15,6 +15,7 @@
 
 #include "bundle_installer_host.h"
 
+#include "ipc_skeleton.h"
 #include "ipc_types.h"
 #include "string_ex.h"
 
@@ -91,6 +92,12 @@ int BundleInstallerHost::OnRemoteRequest(
         case IBundleInstaller::Message::UNINSTALL_SANDBOX_APP:
             HandleUninstallSandboxApp(data, reply);
             break;
+        case IBundleInstaller::Message::CREATE_STREAM_INSTALLER:
+            HandleCreateStreamInstaller(data, reply);
+            break;
+        case IBundleInstaller::Message::DESTORY_STREAM_INSTALLER:
+            HandleDestoryBundleStreamInstaller(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -116,7 +123,6 @@ void BundleInstallerHost::HandleInstallMessage(Parcel &data)
     Install(bundlePath, *installParam, statusReceiver);
     APP_LOGD("handle install message finished");
 }
-
 
 void BundleInstallerHost::HandleRecoverMessage(Parcel &data)
 {
@@ -144,10 +150,7 @@ void BundleInstallerHost::HandleInstallMultipleHapsMessage(Parcel &data)
     int32_t size = data.ReadInt32();
     std::vector<std::string> pathVec;
     for (int i = 0; i < size; ++i) {
-        std::string path(Str16ToStr8(data.ReadString16()));
-        if (std::find(pathVec.begin(), pathVec.end(), path) == pathVec.end()) {
-            pathVec.emplace_back(path);
-        }
+        pathVec.emplace_back(Str16ToStr8(data.ReadString16()));
     }
     if (size == 0 || pathVec.empty()) {
         APP_LOGE("inputted bundlepath vector is empty");
@@ -216,8 +219,12 @@ void BundleInstallerHost::HandleInstallSandboxApp(Parcel &data, Parcel &reply)
     std::string bundleName = Str16ToStr8(data.ReadString16());
     int32_t dplType = data.ReadInt32();
     int32_t userId = data.ReadInt32();
-    auto ret = InstallSandboxApp(bundleName, dplType, userId);
+    int32_t appIndex = Constants::INITIAL_APP_INDEX;
+    auto ret = InstallSandboxApp(bundleName, dplType, userId, appIndex);
     if (!reply.WriteInt32(ret)) {
+        APP_LOGE("write failed");
+    }
+    if (ret == ERR_OK && !reply.WriteInt32(appIndex)) {
         APP_LOGE("write failed");
     }
     APP_LOGD("handle install sandbox app message finished");
@@ -230,11 +237,54 @@ void BundleInstallerHost::HandleUninstallSandboxApp(Parcel &data, Parcel &reply)
     int32_t appIndex = data.ReadInt32();
     int32_t userId = data.ReadInt32();
     auto ret = UninstallSandboxApp(bundleName, appIndex, userId);
-    if (!reply.WriteBool(ret)) {
+    if (!reply.WriteInt32(ret)) {
         APP_LOGE("write failed");
     }
     APP_LOGD("handle install sandbox app message finished");
 }
+
+void BundleInstallerHost::HandleCreateStreamInstaller(Parcel &data, Parcel &reply)
+{
+    APP_LOGD("handle create stream installer message begin");
+    std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
+    if (!installParam) {
+        APP_LOGE("ReadParcelable<InstallParam> failed");
+        return;
+    }
+
+    sptr<IBundleStreamInstaller> streamInstaller = CreateStreamInstaller(*installParam);
+    if (!streamInstaller) {
+        if (!reply.WriteBool(false)) {
+            APP_LOGE("write result failed");
+            return;
+        }
+    }
+    if (!reply.WriteBool(true)) {
+        APP_LOGE("write result failed");
+        return;
+    }
+    if (!reply.WriteUint32(streamInstaller->GetInstallerId())) {
+        APP_LOGE("write stream installe id failed");
+        return;
+    }
+    if (!reply.WriteRemoteObject(streamInstaller->AsObject())) {
+        APP_LOGE("write stream installer remote object failed");
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(streamInstallMutex_);
+    streamInstallers_.emplace_back(streamInstaller);
+    APP_LOGD("handle create stream installer message finish");
+}
+
+void BundleInstallerHost::HandleDestoryBundleStreamInstaller(Parcel &data, Parcel &reply)
+{
+    APP_LOGD("handle destory stream installer message begin");
+    uint32_t installeId = data.ReadUint32();
+    DestoryBundleStreamInstaller(installeId);
+    APP_LOGD("handle destoy stream installer message finish");
+}
+
 
 bool BundleInstallerHost::Install(
     const std::string &bundleFilePath, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
@@ -322,8 +372,8 @@ bool BundleInstallerHost::Uninstall(const std::string &bundleName, const std::st
 bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
     const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
-    if (!CheckBundleInstallerManager(statusReceiver)) {
         APP_LOGE("statusReceiver invalid");
+    if (!CheckBundleInstallerManager(statusReceiver)) {
         return false;
     }
 
@@ -337,42 +387,86 @@ bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
     return true;
 }
 
-int32_t BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId)
+ErrCode BundleInstallerHost::InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId,
+    int32_t &appIndex)
 {
-    int32_t appIndex = 0;
     if (bundleName.empty() || dplType <= LOWER_DLP_TYPE_BOUND || dplType >= UPPER_DLP_TYPE_BOUND) {
         APP_LOGE("install sandbox failed due to error parameters");
-        return appIndex;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
     if (installer == nullptr) {
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
     auto res = installer->InstallSandboxApp(bundleName, dplType, userId, appIndex);
     if (res != ERR_OK) {
         APP_LOGE("install sandbox failed due to error code : %{public}d", res);
-        return appIndex;
     }
-    return appIndex;
+    return res;
 }
 
-bool BundleInstallerHost::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+ErrCode BundleInstallerHost::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
 {
     // check bundle name
     if (bundleName.empty()) {
         APP_LOGE("install sandbox failed due to empty bundleName");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     // check appIndex
     if (appIndex <= INVALID_APP_INDEX || appIndex > Constants::MAX_APP_INDEX) {
         APP_LOGE("the appIndex %{public}d is invalid", appIndex);
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
     std::shared_ptr<BundleSandboxInstaller> installer = std::make_shared<BundleSandboxInstaller>();
     if (installer == nullptr) {
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
+    }
+    auto res = installer->UninstallSandboxApp(bundleName, appIndex, userId);
+    if (res != ERR_OK) {
+        APP_LOGE("uninstall sandbox failed due to error code : %{public}d", res);
+    }
+    return res;
+}
+
+ErrCode BundleInstallerHost::StreamInstall(const std::vector<std::string> &bundleFilePaths,
+    const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    return ERR_OK;
+}
+
+sptr<IBundleStreamInstaller> BundleInstallerHost::CreateStreamInstaller(const InstallParam &installParam)
+{
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+        APP_LOGE("install permission denied");
+        return nullptr;
+    }
+    auto uid = IPCSkeleton::GetCallingUid();
+    sptr<BundleStreamInstallerHostImpl> streamInstaller(new (std::nothrow) BundleStreamInstallerHostImpl(
+        ++streamInstallerIds_, uid));
+    bool res = streamInstaller->Init(installParam);
+    if (!res) {
+        APP_LOGE("stream installer init failed");
+        return nullptr;
+    }
+    return streamInstaller;
+}
+
+bool BundleInstallerHost::DestoryBundleStreamInstaller(uint32_t streamInstallerId)
+{
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+        APP_LOGE("install permission denied");
         return false;
     }
-    return (installer->UninstallSandboxApp(bundleName, appIndex, userId) == ERR_OK) ? true : false;
+    std::lock_guard<std::mutex> lock(streamInstallMutex_);
+    for (auto it = streamInstallers_.begin(); it != streamInstallers_.end();) {
+        if ((*it)->GetInstallerId() == streamInstallerId) {
+            (*it)->UnInit();
+            it = streamInstallers_.erase(it);
+        } else {
+            it++;
+        }
+    }
+    return true;
 }
 
 bool BundleInstallerHost::CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const

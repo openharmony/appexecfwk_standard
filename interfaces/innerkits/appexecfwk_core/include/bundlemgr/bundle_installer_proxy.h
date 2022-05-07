@@ -82,21 +82,30 @@ public:
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param dlpType Indicates type of the sandbox application.
      * @param userId Indicates the sandbox application will be installed under which user id.
-     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     * @return Returns ERR_OK if the sandbox application is installed successfully; returns errcode otherwise.
      */
-    virtual int32_t InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId) override;
+    virtual ErrCode InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId,
+        int32_t &appIndex) override;
     /**
      * @brief Uninstall sandbox application.
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param appIndex Indicates application index of the sandbox application.
      * @param userId Indicates the sandbox application will be uninstall under which user id.
-     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     * @return Returns ERR_OK if the sandbox application is installed successfully; returns errcode otherwise.
      */
-    virtual bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
+    virtual ErrCode UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
+
+    virtual sptr<IBundleStreamInstaller> CreateStreamInstaller(const InstallParam &installParam) override;
+    virtual bool DestoryBundleStreamInstaller(uint32_t streamInstallerId) override;
+
+    virtual ErrCode StreamInstall(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) override;
 
 private:
     bool SendInstallRequest(const uint32_t& code, MessageParcel& data, MessageParcel& reply,
         MessageOption& option);
+    ErrCode WriteFileToStream(sptr<IBundleStreamInstaller> &streamInstaller, const std::string &path);
+
     static inline BrokerDelegator<BundleInstallerProxy> delegator_;
 };
 }  // namespace AppExecFwk

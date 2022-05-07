@@ -78,10 +78,10 @@ ohos_unittest("BmsDataMgrTest") {
     "ability_base:want",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_core",
-    "bytrace_standard:bytrace_core",
     "common_event_service:cesfwk_innerkits",
     "distributeddatamgr:distributeddata_inner",
     "eventhandler:libeventhandler",
+    "hitrace_native:hitrace_meter",
     "init:libbegetutil",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
@@ -93,7 +93,7 @@ ohos_unittest("BmsDataMgrTest") {
     defines += [ "CONFIG_POLOCY_ENABLE" ]
   }
   if (account_enable) {
-    external_deps += [ "os_account_standard:os_account_innerkits" ]
+    external_deps += [ "os_account:os_account_innerkits" ]
     defines += [ "ACCOUNT_ENABLE" ]
   }
   if (bundle_framework_free_install) {
@@ -121,7 +121,7 @@ ohos_unittest("BmsDataMgrTest") {
   }
   if (global_resmgr_enable) {
     defines += [ "GLOBAL_RESMGR_ENABLE" ]
-    external_deps += [ "resmgr_standard:global_resmgr" ]
+    external_deps += [ "resource_management:global_resmgr" ]
   }
   if (hicollie_enable) {
     external_deps += [ "hicollie_native:libhicollie" ]

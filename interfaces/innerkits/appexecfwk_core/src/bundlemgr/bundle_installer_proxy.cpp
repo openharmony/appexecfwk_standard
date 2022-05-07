@@ -15,15 +15,24 @@
 
 #include "bundle_installer_proxy.h"
 
-#include "bytrace.h"
+#include <fcntl.h>
+#include <unistd.h>
+
+#include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
+#include "bundle_file_util.h"
+#include "directory_ex.h"
+#include "hitrace_meter.h"
 #include "ipc_types.h"
 #include "parcel.h"
 #include "string_ex.h"
 
-#include "app_log_wrapper.h"
-
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+const std::string SEPARATOR = "/";
+const int32_t DEFAULT_BUFFER_SIZE = 65536;
+} // namespace
 
 BundleInstallerProxy::BundleInstallerProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IBundleInstaller>(object)
 {
@@ -159,46 +168,228 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
     return SendInstallRequest(IBundleInstaller::Message::UNINSTALL_MODULE, data, reply, option);
 }
 
-int32_t BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId)
+ErrCode BundleInstallerProxy::InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId,
+    int32_t &appIndex)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
 
-    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
-    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
-    PARCEL_WRITE(data, Int32, dlpType);
-    PARCEL_WRITE(data, Int32, userId);
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to InstallSandboxApp due to write MessageParcel fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteString16(Str8ToStr16(bundleName))) {
+        APP_LOGE("failed to InstallSandboxApp due to write bundleName fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(dlpType)) {
+        APP_LOGE("failed to InstallSandboxApp due to write appIndex fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to InstallSandboxApp due to write userId fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
 
     auto ret =
         SendInstallRequest(IBundleInstaller::Message::INSTALL_SANDBOX_APP, data, reply, option);
     if (!ret) {
         APP_LOGE("install sandbox app failed due to send request fail");
-        return 0;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_SEND_REQUEST_ERROR;
     }
-    return reply.ReadInt32();
+
+    auto res = reply.ReadInt32();
+    if (res == ERR_OK) {
+        appIndex = reply.ReadInt32();
+    }
+    return res;
 }
 
-bool BundleInstallerProxy::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
+ErrCode BundleInstallerProxy::UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
 
-    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
-    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
-    PARCEL_WRITE(data, Int32, appIndex);
-    PARCEL_WRITE(data, Int32, userId);
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to InstallSandboxApp due to write MessageParcel fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteString16(Str8ToStr16(bundleName))) {
+        APP_LOGE("failed to InstallSandboxApp due to write bundleName fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(appIndex)) {
+        APP_LOGE("failed to InstallSandboxApp due to write appIndex fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to InstallSandboxApp due to write userId fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
+    }
 
     auto ret =
         SendInstallRequest(IBundleInstaller::Message::UNINSTALL_SANDBOX_APP, data, reply, option);
     if (!ret) {
         APP_LOGE("uninstall sandbox app failed due to send request fail");
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_SEND_REQUEST_ERROR;
+    }
+    return reply.ReadInt32();
+}
+
+sptr<IBundleStreamInstaller> BundleInstallerProxy::CreateStreamInstaller(const InstallParam &installParam)
+{
+    APP_LOGD("create stream installer begin");
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    bool ret = data.WriteInterfaceToken(GetDescriptor());
+    if (!ret) {
+        APP_LOGE("fail to write interface token into the parcel!");
+        return nullptr;
+    }
+    ret = data.WriteParcelable(&installParam);
+    if (!ret) {
+        APP_LOGE("fail to write parameter into the parcel!");
+        return nullptr;
+    }
+    bool res = SendInstallRequest(IBundleInstaller::Message::CREATE_STREAM_INSTALLER, data, reply, option);
+    if (!res) {
+        APP_LOGE("CreateStreamInstaller failed due to send request fail");
+        return nullptr;
+    }
+    if (!reply.ReadBool()) {
+        APP_LOGE("CreateStreamInstaller failed");
+        return nullptr;
+    }
+    uint32_t streamInstallerId = reply.ReadUint32();
+    sptr<IRemoteObject> object = reply.ReadRemoteObject();
+    if (!object) {
+        APP_LOGE("CreateStreamInstaller create nullptr remote object");
+        return nullptr;
+    }
+    sptr<IBundleStreamInstaller> streamInstaller = iface_cast<IBundleStreamInstaller>(object);
+    if (!streamInstaller) {
+        APP_LOGE("CreateStreamInstaller failed");
+        return streamInstaller;
+    }
+    streamInstaller->SetInstallerId(streamInstallerId);
+    APP_LOGD("create stream installer successfully");
+    return streamInstaller;
+}
+
+bool BundleInstallerProxy::DestoryBundleStreamInstaller(uint32_t streamInstallerId)
+{
+    APP_LOGD("destory stream installer begin");
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    PARCEL_WRITE(data, Uint32, streamInstallerId);
+    bool res = SendInstallRequest(IBundleInstaller::Message::DESTORY_STREAM_INSTALLER, data, reply, option);
+    if (!res) {
+        APP_LOGE("CreateStreamInstaller failed due to send request fail");
         return false;
     }
-    return reply.ReadBool();
+    APP_LOGD("destory stream installer successfully");
+    return true;
+}
+
+ErrCode BundleInstallerProxy::StreamInstall(const std::vector<std::string> &bundleFilePaths,
+    const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    APP_LOGD("stream install start");
+    if (statusReceiver == nullptr) {
+        APP_LOGE("stream install failed due to nullptr status receiver");
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
+    }
+
+    std::vector<std::string> realPaths;
+    bool result = BundleFileUtil::CheckFilePath(bundleFilePaths, realPaths);
+    if (!result) {
+        APP_LOGE("stream install failed due to check file failed");
+        return ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID;
+    }
+
+    sptr<IBundleStreamInstaller> streamInstaller = CreateStreamInstaller(installParam);
+    if (streamInstaller == nullptr) {
+        APP_LOGE("stream install failed due to nullptr stream installer");
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    for (const auto &path : realPaths) {
+        if ((result = WriteFileToStream(streamInstaller, path)) != ERR_OK) {
+            DestoryBundleStreamInstaller(streamInstaller->GetInstallerId());
+            return result;
+        }
+    }
+
+    // start install haps
+    bool ret = streamInstaller->Install(statusReceiver);
+    if (!ret) {
+        APP_LOGE("stream install failed");
+        DestoryBundleStreamInstaller(streamInstaller->GetInstallerId());
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    APP_LOGD("stream install end");
+    return result;
+}
+
+ErrCode BundleInstallerProxy::WriteFileToStream(sptr<IBundleStreamInstaller> &streamInstaller, const std::string &path)
+{
+    APP_LOGD("write file stream to service terminal start");
+    if (streamInstaller == nullptr) {
+        APP_LOGE("write file to stream failed due to nullptr stream installer");
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+
+    // find hap file name
+    size_t pos = path.find_last_of(SEPARATOR);
+    if (pos == std::string::npos) {
+        APP_LOGE("write file to stream failed due to invalid file path");
+        return ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID;
+    }
+    std::string hapName = path.substr(pos + 1);
+    if (hapName.empty()) {
+        APP_LOGE("write file to stream failed due to invalid file path");
+        return ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID;
+    }
+
+    APP_LOGD("write file stream of bundle path %{public}s and hap name %{public}s", path.c_str(), hapName.c_str());
+    int32_t outputFd = streamInstaller->CreateStream(hapName, 0);
+    if (outputFd < 0) {
+        APP_LOGE("write file to stream failed due to invalid file descriptor");
+        close(outputFd);
+        return ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID;
+    }
+
+    int32_t inputFd = open(path.c_str(), O_RDONLY);
+    if (inputFd < 0) {
+        close(inputFd);
+        APP_LOGE("write file to stream failed due to open the hap file");
+        return ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID;
+    }
+    char buffer[DEFAULT_BUFFER_SIZE] = {0};
+    int offset = -1;
+    while ((offset = read(inputFd, buffer, sizeof(buffer))) > 0) {
+        if (write(outputFd, buffer, offset) < 0) {
+            close(inputFd);
+            close(outputFd);
+            return ERR_APPEXECFWK_INSTALL_DISK_MEM_INSUFFICIENT;
+        }
+    }
+
+    close(inputFd);
+    close(outputFd);
+
+    APP_LOGD("write file stream to service terminal end");
+    return ERR_OK;
 }
 
 bool BundleInstallerProxy::SendInstallRequest(const uint32_t& code, MessageParcel& data, MessageParcel& reply,

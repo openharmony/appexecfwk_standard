@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_INTERFACE_H
 
 #include "ability_info.h"
+#include "appexecfwk_errors.h"
 #include "application_info.h"
 #include "bundle_constants.h"
 #include "bundle_info.h"
@@ -626,6 +627,31 @@ public:
     {
         return false;
     }
+
+    /**
+     * @brief Obtains the value of isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName)
+    {
+        return false;
+    }
+    /**
+     * @brief Sets whether to enable isRemovable based on a given bundle name and module name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
+     *                 The value true means to enable it, and the value false means to disable it
+     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
+     */
+    virtual bool SetModuleRemovable(
+        const std::string &bundleName, const std::string &moduleName, bool isEnable)
+    {
+        return false;
+    }
+
     /**
      * @brief Dump the bundle informations with specific flags.
      * @param flag Indicates the information contained in the dump result.
@@ -973,7 +999,6 @@ public:
      * @param abilityName Indicates the ability name to be queried.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the abilityInfo is successfully obtained; returns false otherwise.
-
      */
     virtual bool GetAbilityInfo(
         const std::string &bundleName, const std::string &moduleName,
@@ -986,36 +1011,12 @@ public:
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param appIndex Indicates application index of the sandbox application.
      * @param userId Indicates the sandbox application is installed under which user id.
-     * @return Returns true if the get sandbox application budnelInfo successfully; returns false otherwise.
+     * @return Returns ERR_OK if the get sandbox application budnelInfo successfully; returns errcode otherwise.
      */
-    virtual bool GetSandboxBundleInfo(
+    virtual ErrCode GetSandboxBundleInfo(
         const std::string &bundleName, int32_t appIndex, int32_t userId, BundleInfo &info)
     {
-        return false;
-    }
-
-    /**
-     * @brief Obtains the value of isRemovable based on a given bundle name and module name.
-     * @param bundleName Indicates the bundle name to be queried.
-     * @param moduleName Indicates the module name to be queried.
-     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
-     */
-    virtual bool IsModuleRemovable(const std::string &bundleName, const std::string &moduleName)
-    {
-        return false;
-    }
-    /**
-     * @brief Sets whether to enable isRemovable based on a given bundle name and module name.
-     * @param bundleName Indicates the bundle name to be queried.
-     * @param moduleName Indicates the module name to be queried.
-     * @param isEnable Specifies whether to enable the isRemovable of InnerModuleInfo.
-     *                 The value true means to enable it, and the value false means to disable it
-     * @return Returns true if the isRemovable is successfully obtained; returns false otherwise.
-     */
-    virtual bool SetModuleRemovable(
-        const std::string &bundleName, const std::string &moduleName, bool isEnable)
-    {
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
 
     /**

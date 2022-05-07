@@ -24,7 +24,7 @@
                 "bundle_framework",
                 "hiviewdfx_hilog_native",
                 "ipc",
-                "resmgr_standard",
+                "resource_management",
                 "samgr_standard",
                 "utils_base"
             ],

@@ -18,6 +18,7 @@
 
 #include <vector>
 
+#include "bundle_stream_installer_interface.h"
 #include "status_receiver_interface.h"
 #include "install_param.h"
 
@@ -97,18 +98,25 @@ public:
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param dlpType Indicates type of the sandbox application.
      * @param userId Indicates the sandbox application will be installed under which user id.
-     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     * @param appIndex Indicates the appIndex of the sandbox application installed under which user id.
+     * @return Returns ERR_OK if the sandbox application is installed successfully; returns errcode otherwise.
      */
-    virtual int32_t InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId) = 0;
+    virtual ErrCode InstallSandboxApp(const std::string &bundleName, int32_t dlpType, int32_t userId,
+        int32_t &appIndex) = 0;
 
     /**
      * @brief Uninstall sandbox application.
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param appIndex Indicates application index of the sandbox application.
      * @param userId Indicates the sandbox application will be uninstall under which user id.
-     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     * @return Returns ERR_OK if the sandbox application is installed successfully; returns errcode otherwise.
      */
-    virtual bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) = 0;
+    virtual ErrCode UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) = 0;
+
+    virtual sptr<IBundleStreamInstaller> CreateStreamInstaller(const InstallParam &installParam) = 0;
+    virtual bool DestoryBundleStreamInstaller(uint32_t streamInstallerId) = 0;
+    virtual ErrCode StreamInstall(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) = 0;
 
     enum Message : uint32_t {
         INSTALL = 0,
@@ -118,6 +126,8 @@ public:
         RECOVER,
         INSTALL_SANDBOX_APP,
         UNINSTALL_SANDBOX_APP,
+        CREATE_STREAM_INSTALLER,
+        DESTORY_STREAM_INSTALLER,
     };
 };
 

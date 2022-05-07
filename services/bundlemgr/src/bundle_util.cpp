@@ -26,7 +26,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "directory_ex.h"
 #include "ipc_skeleton.h"
 #include "string_ex.h"
@@ -298,6 +298,60 @@ void BundleUtil::RemoveHmdfsConfig(const std::string &bundleName)
     if (rmdir(realBundleDir.c_str()) != 0) {
         APP_LOGE("remove hmdfs bundle dir error");
     }
+}
+
+std::string BundleUtil::CreateInstallTempDir(uint32_t installerId)
+{
+    std::time_t curTime = std::time(0);
+    std::string tempDir = Constants::HAP_COPY_PATH + Constants::PATH_SEPARATOR + std::to_string(curTime) +
+        std::to_string(installerId) + Constants::PATH_SEPARATOR;
+    if (!OHOS::ForceCreateDirectory(tempDir)) {
+        APP_LOGE("mkdir %{public}s failed", tempDir.c_str());
+        return "";
+    }
+    if (chown(tempDir.c_str(), Constants::BMS_UID, Constants::BMS_GID) != 0) {
+        APP_LOGE("fail to change %{private}s ownership", tempDir.c_str());
+        return "";
+    }
+    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+    if (!OHOS::ChangeModeFile(tempDir, mode)) {
+        APP_LOGE("change mode failed, temp install dir : %{public}s", tempDir.c_str());
+        return "";
+    }
+    return tempDir;
+}
+
+void BundleUtil::DeleteInstallTempDir(const std::string &tempDir)
+{
+    OHOS::ForceRemoveDirectory(tempDir);
+}
+
+void BundleUtil::CloseFileDescriptor(std::vector<int32_t> &fdVec)
+{
+    for_each(fdVec.begin(), fdVec.end(), [](const auto &fd) {
+        if (fd > 0) {
+            close(fd);
+        }
+    });
+    fdVec.clear();
+}
+
+
+int32_t BundleUtil::CreateFileDescriptor(const std::string &bundlePath, long long offset)
+{
+    int fd = -1;
+    if (bundlePath.length() > Constants::PATH_MAX_SIZE) {
+        APP_LOGE("the length of the bundlePath exceeds maximum limitation");
+        return fd;
+    }
+    if ((fd = open(bundlePath.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR | S_IWGRP | S_IWOTH)) < 0) {
+        APP_LOGE("stream installer open bundlePath %{public}s failed", bundlePath.c_str());
+        return fd;
+    }
+    if (offset > 0) {
+        lseek(fd, offset, SEEK_SET);
+    }
+    return fd;
 }
 
 bool BundleUtil::IsExistFile(const std::string &path)
