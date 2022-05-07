@@ -217,6 +217,7 @@ struct AbilityInfo : public Parcelable {
     bool isModuleJson = false;
     bool isStageBasedModel = false;
     bool continuable = false;
+    int32_t priority = 0;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

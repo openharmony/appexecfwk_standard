@@ -2341,6 +2341,55 @@ bool BundleMgrProxy::QueryExtensionAbilityInfoByUri(const std::string &uri, int3
     return true;
 }
 
+bool BundleMgrProxy::ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo)
+{
+    APP_LOGD("begin to ImplicitQueryInfoByPriority");
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to implicit query info by priority due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to implicit query info by priority due to write want fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to implicit query info by priority due to write flags fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to implicit query info by priority due to write userId error");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY, data, reply)) {
+        return false;
+    }
+
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return false;
+    }
+
+    std::unique_ptr<AbilityInfo> abilityInfoPtr(reply.ReadParcelable<AbilityInfo>());
+    if (!abilityInfoPtr) {
+        APP_LOGE("read AbilityInfo failed");
+        return false;
+    }
+    abilityInfo = *abilityInfoPtr;
+
+    std::unique_ptr<ExtensionAbilityInfo> extensionInfoPtr(reply.ReadParcelable<ExtensionAbilityInfo>());
+    if (!extensionInfoPtr) {
+        APP_LOGE("read ExtensionAbilityInfo failed");
+        return false;
+    }
+    extensionInfo = *extensionInfoPtr;
+    return true;
+}
+
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {

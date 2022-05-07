@@ -234,6 +234,7 @@ struct Ability {
     int32_t iconId = 0;
     std::string label;
     int32_t labelId = 0;
+    int32_t priority = 0;
     std::string uri;
     std::string process;
     std::string launchType = "singleton";
@@ -468,6 +469,7 @@ void from_json(const nlohmann::json &jsonObject, App &app)
             false,
             parseResult,
             ArrayType::NOT_ARRAY);
+    }
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         BUNDLE_APP_PROFILE_KEY_USER_DATA_CLEARABLE,
@@ -476,7 +478,6 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    }
 }
 
 void from_json(const nlohmann::json &jsonObject, ReqVersion &reqVersion)
@@ -1187,6 +1188,14 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         jsonObjectEnd,
         PROFILE_KEY_LABEL_ID,
         ability.labelId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        ability.priority,
         JsonType::NUMBER,
         false,
         parseResult,
@@ -2072,8 +2081,8 @@ bool ToInnerModuleInfo(const ProfileReader::ConfigJson &configJson, InnerModuleI
     return true;
 }
 
-bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
-    const ProfileReader::Ability &ability, AbilityInfo &abilityInfo)
+bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson, const ProfileReader::Ability &ability,
+    AbilityInfo &abilityInfo, bool isSystemApp,  bool isPreInstallApp)
 {
     abilityInfo.name = ability.name;
     if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
@@ -2090,6 +2099,9 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     abilityInfo.kind = ability.type;
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
+    if (isSystemApp && isPreInstallApp) {
+        abilityInfo.priority = ability.priority;
+    }
 
     std::transform(
         abilityInfo.srcLanguage.begin(), abilityInfo.srcLanguage.end(), abilityInfo.srcLanguage.begin(), ::tolower);
@@ -2103,6 +2115,7 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     if (iterType != ProfileReader::ABILITY_TYPE_MAP.end()) {
         abilityInfo.type = iterType->second;
     } else {
+        APP_LOGE("ability type invalid.");
         return false;
     }
 
@@ -2129,6 +2142,7 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     abilityInfo.deviceCapabilities = ability.deviceCapability;
     if (iterType->second == AbilityType::DATA &&
         ability.uri.find(Constants::DATA_ABILITY_URI_PREFIX) == std::string::npos) {
+        APP_LOGE("ability uri invalid.");
         return false;
     }
     abilityInfo.uri = ability.uri;
@@ -2216,8 +2230,8 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {
         AbilityInfo abilityInfo;
-        if (!ToAbilityInfo(configJson, ability, abilityInfo)) {
-            APP_LOGE("ability type is valid");
+        if (!ToAbilityInfo(configJson, ability, abilityInfo, applicationInfo.isSystemApp, isPreInstallApp)) {
+            APP_LOGE("parse to abilityInfo failed");
             return false;
         }
         std::string keyName;

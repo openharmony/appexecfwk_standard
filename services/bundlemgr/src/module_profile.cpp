@@ -141,6 +141,7 @@ struct Ability {
     int32_t iconId = 0;
     std::string label;
     int32_t labelId = 0;
+    int32_t priority = 0;
     std::vector<std::string> permissions;
     std::vector<Metadata> metadata;
     bool visible = false;
@@ -158,6 +159,7 @@ struct Extension {
     int32_t labelId = 0;
     std::string description;
     int32_t descriptionId = 0;
+    int32_t priority = 0;
     std::string type;
     std::string readPermission;
     std::string writePermission;
@@ -326,6 +328,14 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        ability.priority,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         PERMISSIONS,
@@ -440,6 +450,14 @@ void from_json(const nlohmann::json &jsonObject, Extension &extension)
         jsonObjectEnd,
         DESCRIPTION_ID,
         extension.descriptionId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        extension.priority,
         JsonType::NUMBER,
         false,
         parseResult,
@@ -1242,7 +1260,8 @@ uint32_t GetBackgroundModes(const std::vector<std::string> &backgroundModes)
     return backgroundMode;
 }
 
-bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability &ability, AbilityInfo &abilityInfo)
+bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability &ability,
+    AbilityInfo &abilityInfo, bool isSystemApp, bool isPreInstallApp)
 {
     APP_LOGD("transform ModuleJson to AbilityInfo");
     abilityInfo.name = ability.name;
@@ -1253,6 +1272,9 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     abilityInfo.iconId = ability.iconId;
     abilityInfo.label = ability.label;
     abilityInfo.labelId = ability.labelId;
+    if (isSystemApp && isPreInstallApp) {
+        abilityInfo.priority = ability.priority;
+    }
     abilityInfo.permissions = ability.permissions;
     abilityInfo.visible = ability.visible;
     abilityInfo.continuable = ability.continuable;
@@ -1305,6 +1327,7 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson, const Profile::Exten
     extensionInfo.descriptionId = extension.descriptionId;
     extensionInfo.type = ConvertToExtensionAbilityType(extension.type);
     if (isSystemApp && isPreInstallApp) {
+        extensionInfo.priority = extension.priority;
         extensionInfo.readPermission = extension.readPermission;
         extensionInfo.writePermission = extension.writePermission;
     }
@@ -1421,7 +1444,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtrac
     bool findEntry = false;
     for (const Profile::Ability &ability : moduleJson.module.abilities) {
         AbilityInfo abilityInfo;
-        ToAbilityInfo(moduleJson, ability, abilityInfo);
+        ToAbilityInfo(moduleJson, ability, abilityInfo, applicationInfo.isSystemApp, isPreInstallApp);
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")
             .append(moduleJson.module.name).append(".").append(abilityInfo.name);
@@ -1459,8 +1482,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtrac
     // handle extensionAbilities
     for (const Profile::Extension &extension : moduleJson.module.extensionAbilities) {
         ExtensionAbilityInfo extensionInfo;
-        ToExtensionInfo(moduleJson, extension, extensionInfo,
-            applicationInfo.isSystemApp, isPreInstallApp);
+        ToExtensionInfo(moduleJson, extension, extensionInfo, applicationInfo.isSystemApp, isPreInstallApp);
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")
             .append(moduleJson.module.name).append(".").append(extension.name);

@@ -551,6 +551,8 @@ private:
     ErrCode HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply);
 #endif
     ErrCode HandleGetAbilityInfo(Parcel &data, Parcel &reply);
+
+    ErrCode HandleImplicitQueryInfoByPriority(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.

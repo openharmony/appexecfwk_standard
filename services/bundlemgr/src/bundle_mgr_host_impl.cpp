@@ -1383,5 +1383,17 @@ bool BundleMgrHostImpl::GetAbilityInfo(
     want.SetElement(elementName);
     return QueryAbilityInfo(want, abilityInfo);
 }
+
+bool BundleMgrHostImpl::ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo)
+{
+    APP_LOGD("start ImplicitQueryInfoByPriority, flags : %{public}d, userId : %{public}d", flags, userId);
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->ImplicitQueryInfoByPriority(want, flags, userId, abilityInfo, extensionInfo);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

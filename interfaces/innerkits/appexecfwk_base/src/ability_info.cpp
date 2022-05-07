@@ -39,6 +39,7 @@ const std::string JSON_KEY_ICON_PATH = "iconPath";
 const std::string JSON_KEY_THEME = "theme";
 const std::string JSON_KEY_VISIBLE = "visible";
 const std::string JSON_KEY_ABILITY_CONTINUABLE = "continuable";
+const std::string PRIORITY = "priority";
 const std::string JSON_KEY_KIND = "kind";
 const std::string JSON_KEY_TYPE = "type";
 const std::string JSON_KEY_ORIENTATION = "orientation";
@@ -112,6 +113,7 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     srcLanguage = Str16ToStr8(parcel.ReadString16());
     visible = parcel.ReadBool();
     continuable = parcel.ReadBool();
+    priority = parcel.ReadInt32();
     isLauncherAbility = parcel.ReadBool();
     isNativeAbility = parcel.ReadBool();
     enabled = parcel.ReadBool();
@@ -236,6 +238,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcLanguage));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, continuable);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, priority);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
@@ -355,6 +358,7 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_THEME, abilityInfo.theme},
         {JSON_KEY_VISIBLE, abilityInfo.visible},
         {JSON_KEY_ABILITY_CONTINUABLE, abilityInfo.continuable},
+        {PRIORITY, abilityInfo.priority},
         {JSON_KEY_IS_LAUNCHER_ABILITY, abilityInfo.isLauncherAbility},
         {JSON_KEY_IS_NATIVE_ABILITY, abilityInfo.isNativeAbility},
         {JSON_KEY_ENABLED, abilityInfo.enabled},
@@ -542,6 +546,14 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         JSON_KEY_ABILITY_CONTINUABLE,
         abilityInfo.continuable,
         JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        abilityInfo.priority,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
