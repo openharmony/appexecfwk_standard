@@ -27,12 +27,12 @@ namespace OHOS {
     {
         Parcel dataMessageParcel;
         AbilityInfo abilityInfo;
-        abilityInfo.bundleName = reinterpret_cast<const char*>(data);
-        if (!abilityInfo.Marshalling(dataMessageParcel)) {
-            return false;
+        if (dataMessageParcel.WriteBuffer(data, size)) {
+            abilityInfo.Marshalling(dataMessageParcel);
+            auto ability = AbilityInfo::Unmarshalling(dataMessageParcel);
+            return ability != nullptr;
         }
-        auto ability = AbilityInfo::Unmarshalling(dataMessageParcel);
-        return ability != nullptr;
+        return false;
     }
 }
 
