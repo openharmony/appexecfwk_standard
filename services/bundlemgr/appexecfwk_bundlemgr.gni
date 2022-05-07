@@ -30,6 +30,7 @@ bundle_install_sources = [
   "${services_path}/bundlemgr/src/bundle_installer_host.cpp",
   "${services_path}/bundlemgr/src/bundle_installer_manager.cpp",
   "${services_path}/bundlemgr/src/bundle_permission_mgr.cpp",
+  "${services_path}/bundlemgr/src/bundle_stream_installer_host_impl.cpp",
   "${services_path}/bundlemgr/src/bundle_util.cpp",
   "${services_path}/bundlemgr/src/bundle_verify_mgr.cpp",
   "${services_path}/bundlemgr/src/event_report.cpp",
@@ -43,6 +44,7 @@ bundle_install_sources = [
   "${services_path}/bundlemgr/src/sandbox_app/bundle_sandbox_data_mgr.cpp",
   "${services_path}/bundlemgr/src/sandbox_app/bundle_sandbox_exception_handler.cpp",
   "${services_path}/bundlemgr/src/sandbox_app/bundle_sandbox_installer.cpp",
+  "${services_path}/bundlemgr/src/status_receiver_proxy.cpp",
   "${services_path}/bundlemgr/src/system_bundle_installer.cpp",
   "${services_path}/bundlemgr/src/xcollie_helper.cpp",
 ]

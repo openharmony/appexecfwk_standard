@@ -37,10 +37,10 @@ ohos_moduletest("bm_command_dump_module_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${bundletool_path}/src/bundle_command.cpp",
     "${bundletool_path}/src/shell_command.cpp",
     "${bundletool_path}/src/status_receiver_impl.cpp",
+    "${kits_path}/js/bundlemgr/bundle_death_recipient.cpp",
     "bm_command_dump_module_test.cpp",
   ]
   sources += tools_bm_mock_sources
@@ -71,8 +71,8 @@ ohos_moduletest("bm_command_dump_module_test") {
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
+    "os_account:os_account_innerkits",
+    "resource_management:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
     "utils_base:utils",
@@ -83,10 +83,10 @@ ohos_moduletest("bm_command_install_module_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${bundletool_path}/src/bundle_command.cpp",
     "${bundletool_path}/src/shell_command.cpp",
     "${bundletool_path}/src/status_receiver_impl.cpp",
+    "${kits_path}/js/bundlemgr/bundle_death_recipient.cpp",
     "bm_command_install_module_test.cpp",
   ]
   sources += tools_bm_mock_sources
@@ -117,8 +117,8 @@ ohos_moduletest("bm_command_install_module_test") {
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
+    "os_account:os_account_innerkits",
+    "resource_management:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
     "utils_base:utils",
@@ -129,10 +129,10 @@ ohos_moduletest("bm_command_uninstall_module_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${bundletool_path}/src/bundle_command.cpp",
     "${bundletool_path}/src/shell_command.cpp",
     "${bundletool_path}/src/status_receiver_impl.cpp",
+    "${kits_path}/js/bundlemgr/bundle_death_recipient.cpp",
     "bm_command_uninstall_module_test.cpp",
   ]
   sources += tools_bm_mock_sources
@@ -163,8 +163,8 @@ ohos_moduletest("bm_command_uninstall_module_test") {
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
+    "os_account:os_account_innerkits",
+    "resource_management:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
     "utils_base:utils",

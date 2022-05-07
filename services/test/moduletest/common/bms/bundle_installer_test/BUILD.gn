@@ -83,12 +83,12 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
     "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "bundle_framework:appexecfwk_core",
-    "bytrace_standard:bytrace_core",
     "common_event_service:cesfwk_innerkits",
+    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
+    "resource_management:global_resmgr",
   ]
   defines = []
   if (configpolicy_enable) {
@@ -100,7 +100,7 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
     cflags += [ "-DWITH_SELINUX" ]
   }
   if (account_enable) {
-    external_deps += [ "os_account_standard:os_account_innerkits" ]
+    external_deps += [ "os_account:os_account_innerkits" ]
     defines += [ "ACCOUNT_ENABLE" ]
   }
   if (device_manager_enable) {

@@ -73,8 +73,8 @@ ohos_unittest("BmsBundleCloneTest") {
   deps += bundle_install_deps
 
   external_deps = [
-    "bytrace_standard:bytrace_core",
     "common_event_service:cesfwk_innerkits",
+    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",

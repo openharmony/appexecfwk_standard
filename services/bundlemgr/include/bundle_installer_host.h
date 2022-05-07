@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_HOST_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_HOST_H
 
+#include <atomic>
 #include <memory>
 #include <string>
 
@@ -24,6 +25,7 @@
 
 #include "bundle_installer_interface.h"
 #include "bundle_installer_manager.h"
+#include "bundle_stream_installer_host_impl.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -99,17 +101,24 @@ public:
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param dlpType Indicates type of the sandbox application.
      * @param userId Indicates the sandbox application will be installed under which user id.
-     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     * @param appIndex Indicates the appIndex of the sandbox application installed under which user id.
+     * @return Returns ERR_OK if the sandbox application is installed successfully; returns errcode otherwise.
      */
-    virtual int32_t InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId) override;
+    virtual ErrCode InstallSandboxApp(const std::string &bundleName, int32_t dplType, int32_t userId,
+        int32_t &appIndex) override;
     /**
      * @brief Uninstall sandbox application.
      * @param bundleName Indicates the bundle name of the sandbox application to be install.
      * @param appIndex Indicates application index of the sandbox application.
      * @param userId Indicates the sandbox application will be uninstall under which user id.
-     * @return Returns true if the sandbox application is installed successfully; returns false otherwise.
+     * @return Returns ERR_OK if the sandbox application is installed successfully; returns errcode otherwise.
      */
-    virtual bool UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
+    virtual ErrCode UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
+
+    virtual sptr<IBundleStreamInstaller> CreateStreamInstaller(const InstallParam &installParam) override;
+    virtual bool DestoryBundleStreamInstaller(uint32_t streamInstallerId) override;
+    virtual ErrCode StreamInstall(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) override;
 
 private:
     /**
@@ -167,9 +176,15 @@ private:
      */
     bool CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const;
 
+    void HandleCreateStreamInstaller(Parcel &data, Parcel &reply);
+    void HandleDestoryBundleStreamInstaller(Parcel &data, Parcel &reply);
+
 private:
     InstallParam CheckInstallParam(const InstallParam &installParam);
     std::shared_ptr<BundleInstallerManager> manager_;
+    std::vector<sptr<IBundleStreamInstaller>> streamInstallers_;
+    std::atomic<uint32_t> streamInstallerIds_ = 0;
+    std::mutex streamInstallMutex_;
 
     DISALLOW_COPY_AND_MOVE(BundleInstallerHost);
 };

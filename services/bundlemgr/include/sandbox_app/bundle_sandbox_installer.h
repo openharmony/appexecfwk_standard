@@ -50,7 +50,7 @@ public:
      * @param bundleName Indicates the bundleName of the sandbox applications to uninstall.
      * @return Returns ERR_OK if the sandbox apps uninstall successfully; returns error code otherwise.
      */
-    ErrCode UninstallAllSandboxApps(const std::string &bundleName);
+    ErrCode UninstallAllSandboxApps(const std::string &bundleName, int32_t userId = Constants::INVALID_USERID);
 
 protected:
     enum class SandboxInstallType : uint32_t {

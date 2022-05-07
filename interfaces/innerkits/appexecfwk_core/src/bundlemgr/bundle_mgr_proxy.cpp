@@ -22,7 +22,7 @@
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
-#include "bytrace.h"
+#include "hitrace_meter.h"
 #include "json_util.h"
 #include "securec.h"
 
@@ -2700,38 +2700,34 @@ bool BundleMgrProxy::ImplicitQueryInfoByPriority(const Want &want, int32_t flags
     return true;
 }
 
-bool BundleMgrProxy::GetSandboxBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId,
+ErrCode BundleMgrProxy::GetSandboxBundleInfo(const std::string &bundleName, int32_t appIndex, int32_t userId,
     BundleInfo &info)
 {
     APP_LOGD("begin to GetSandboxBundleInfo");
     if (bundleName.empty() || appIndex <= Constants::INITIAL_APP_INDEX) {
         APP_LOGE("GetSandboxBundleInfo params are invalid");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_PARAM_ERROR;
     }
 
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("failed to GetSandboxBundleInfo due to write MessageParcel fail");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteString(bundleName)) {
         APP_LOGE("failed to GetSandboxBundleInfo due to write bundleName fail");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(appIndex)) {
         APP_LOGE("failed to GetSandboxBundleInfo due to write appIndex fail");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(userId)) {
         APP_LOGE("failed to GetSandboxBundleInfo due to write userId fail");
-        return false;
+        return ERR_APPEXECFWK_SANDBOX_INSTALL_WRITE_PARCEL_ERROR;
     }
-    if (!GetParcelableInfo<BundleInfo>(
-        IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO, data, info)) {
-        APP_LOGE("failed to GetSandboxBundleInfo from server");
-        return false;
-    }
-    return true;
+
+    return GetParcelableInfoWithErrCode<BundleInfo>(IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO, data, info);
 }
 
 bool BundleMgrProxy::GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
@@ -2794,6 +2790,28 @@ bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &
     parcelableInfo = *info;
     APP_LOGD("get parcelable info success");
     return true;
+}
+
+template <typename T>
+ErrCode BundleMgrProxy::GetParcelableInfoWithErrCode(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
+{
+    MessageParcel reply;
+    if (!SendTransactCmd(code, data, reply)) {
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    ErrCode res = reply.ReadInt32();
+    if (res == ERR_OK) {
+        std::unique_ptr<T> info(reply.ReadParcelable<T>());
+        if (!info) {
+            APP_LOGE("readParcelableInfo failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+        parcelableInfo = *info;
+    }
+
+    APP_LOGD("get parcelable info success");
+    return res;
 }
 
 template<typename T>

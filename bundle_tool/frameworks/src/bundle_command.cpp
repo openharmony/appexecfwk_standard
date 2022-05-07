@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "bundle_death_recipient.h"
 #include "bundle_mgr_client.h"
 #include "clean_cache_callback_host.h"
@@ -57,6 +58,7 @@ const struct option LONG_OPTIONS[] = {
     {"data", no_argument, nullptr, 'd'},
     {"is-removable", required_argument, nullptr, 'i'},
     {"user-id", required_argument, nullptr, 'u'},
+    {"keep-data", no_argument, nullptr, 'k'},
     {nullptr, 0, nullptr, 0},
 };
 
@@ -824,6 +826,13 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     return OHOS::ERR_INVALID_VALUE;
                 }
+                break;
+            }
+            case 'k': {
+                // 'bm uninstall -n <bundleName> -k'
+                // 'bm uninstall --bundle-name <bundleName> --keep-data'
+                APP_LOGD("'bm uninstall %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT]);
+                isKeepData = true;
                 break;
             }
             default: {
@@ -1882,7 +1891,12 @@ int32_t BundleManagerShellCommand::InstallOperation(const std::vector<std::strin
         }
         realPathVec.emplace_back(absoluteBundlePath);
     }
-
+    std::vector<std::string> pathVec;
+    for (const auto &path : realPathVec) {
+        if (std::find(pathVec.begin(), pathVec.end(), path) == pathVec.end()) {
+            pathVec.emplace_back(path);
+        }
+    }
     sptr<StatusReceiverImpl> statusReceiver(new (std::nothrow) StatusReceiverImpl());
     if (statusReceiver == nullptr) {
         APP_LOGE("statusReceiver is null");
@@ -1894,8 +1908,21 @@ int32_t BundleManagerShellCommand::InstallOperation(const std::vector<std::strin
         return IStatusReceiver::ERR_UNKNOWN;
     }
     bundleInstallerProxy_->AsObject()->AddDeathRecipient(recipient);
-    bundleInstallerProxy_->Install(realPathVec, installParam, statusReceiver);
-    return statusReceiver->GetResultCode();
+    ErrCode res = bundleInstallerProxy_->StreamInstall(pathVec, installParam, statusReceiver);
+    if (res == ERR_OK) {
+        return statusReceiver->GetResultCode();
+    } else if (res == ERR_APPEXECFWK_INSTALL_PARAM_ERROR) {
+        APP_LOGE("install param error");
+        return IStatusReceiver::ERR_INSTALL_PARAM_ERROR;
+    } else if (res == ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR) {
+        APP_LOGE("install internal error");
+        return IStatusReceiver::ERR_INSTALL_INTERNAL_ERROR;
+    } else if (res == ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID) {
+        APP_LOGE("install invalid path");
+        return IStatusReceiver::ERR_INSTALL_FILE_PATH_INVALID;
+    } else {
+        return res;
+    }
 }
 
 int32_t BundleManagerShellCommand::UninstallOperation(

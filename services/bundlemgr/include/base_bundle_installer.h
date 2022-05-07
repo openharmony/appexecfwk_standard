@@ -473,7 +473,7 @@ private:
      */
     void SaveOldRemovableInfo(InnerModuleInfo &newModuleInfo, InnerBundleInfo &oldInfo, bool existModule);
     void OnSingletonChange();
-    ErrCode UninstallAllSandboxApps(const std::string &bundleName);
+    ErrCode UninstallAllSandboxApps(const std::string &bundleName, int32_t userId = Constants::INVALID_USERID);
     ErrCode CheckAppLabel(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo) const;
     void SendBundleSystemEvent(const std::string &bundleName, BundleEventType bundleEventType,
         const InstallParam &installParam, InstallScene preBundleScene, ErrCode errCode);
