@@ -588,8 +588,8 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         return false;
     }
     std::string bundleName = want.GetElement().GetBundleName();
-    // query in current bundleName
     if (!bundleName.empty()) {
+        // query in current bundleName
         InnerBundleInfo innerBundleInfo;
         if (!GetInnerBundleInfoWithFlags(
             bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
@@ -598,19 +598,24 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
-        return true;
-    }
-    // query all
-    for (const auto &item : bundleInfos_) {
-        InnerBundleInfo innerBundleInfo;
-        if (!GetInnerBundleInfoWithFlags(
-            item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ImplicitQueryAbilityInfos failed");
-            continue;
-        }
+    } else {
+        // query all
+        for (const auto &item : bundleInfos_) {
+            InnerBundleInfo innerBundleInfo;
+            if (!GetInnerBundleInfoWithFlags(
+                item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+                APP_LOGE("ImplicitQueryAbilityInfos failed");
+                continue;
+            }
 
-        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
-        GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
+            int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
+            GetMatchAbilityInfos(want, flags, innerBundleInfo, responseUserId, abilityInfos);
+        }
+    }
+    // sort by priority, descending order.
+    if (abilityInfos.size() > 1) {
+        std::stable_sort(abilityInfos.begin(), abilityInfos.end(),
+            [](AbilityInfo a, AbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
 }
@@ -2806,32 +2811,35 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
     if (requestUserId == Constants::INVALID_USERID) {
         return false;
     }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     std::string bundleName = want.GetElement().GetBundleName();
-    // query at current bundle
     if (!bundleName.empty()) {
-        std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+        // query in current bundle
         InnerBundleInfo innerBundleInfo;
         if (!GetInnerBundleInfoWithFlags(
             bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ExplicitQueryExtensionAbilityInfo failed");
+            APP_LOGE("ImplicitQueryExtensionAbilityInfos failed");
             return false;
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
-        return true;
-    }
-
-    // query all
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    for (const auto &item : bundleInfos_) {
-        InnerBundleInfo innerBundleInfo;
-        if (!GetInnerBundleInfoWithFlags(
-            item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ImplicitQueryExtensionAbilityInfos failed");
-            continue;
+    } else {
+        // query all
+        for (const auto &item : bundleInfos_) {
+            InnerBundleInfo innerBundleInfo;
+            if (!GetInnerBundleInfoWithFlags(
+                item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+                APP_LOGE("ImplicitQueryExtensionAbilityInfos failed");
+                continue;
+            }
+            int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
+            GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
         }
-        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
-        GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
+    }
+    // sort by priority, descending order.
+    if (extensionInfos.size() > 1) {
+        std::stable_sort(extensionInfos.begin(), extensionInfos.end(),
+            [](ExtensionAbilityInfo a, ExtensionAbilityInfo b) { return a.priority > b.priority; });
     }
     return true;
 }
@@ -3027,6 +3035,47 @@ std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceMan
     resConfig->SetLocaleInfo("zh", "Hans", "CN");
     resourceManager->UpdateResConfig(*resConfig);
     return resourceManager;
+}
+
+bool BundleDataMgr::ImplicitQueryInfoByPriority(const Want &want, int32_t flags, int32_t userId,
+    AbilityInfo &abilityInfo, ExtensionAbilityInfo &extensionInfo)
+{
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        APP_LOGE("invalid userId");
+        return false;
+    }
+    std::vector<AbilityInfo> abilityInfos;
+    bool abilityValid =
+        ImplicitQueryAbilityInfos(want, flags, requestUserId, abilityInfos) && (abilityInfos.size() > 0);
+    std::vector<ExtensionAbilityInfo> extensionInfos;
+    bool extensionValid =
+        ImplicitQueryExtensionInfos(want, flags, requestUserId, extensionInfos) && (extensionInfos.size() > 0);
+    if (!abilityValid && !extensionValid) {
+        // both invalid
+        APP_LOGE("can't find target AbilityInfo or ExtensionAbilityInfo");
+        return false;
+    }
+    if (abilityValid && extensionValid) {
+        // both valid
+        if (abilityInfos[0].priority >= extensionInfos[0].priority) {
+            APP_LOGD("find target AbilityInfo with higher priority, name : %{public}s", abilityInfos[0].name.c_str());
+            abilityInfo = abilityInfos[0];
+        } else {
+            APP_LOGD("find target ExtensionAbilityInfo with higher priority, name : %{public}s",
+                extensionInfos[0].name.c_str());
+            extensionInfo = extensionInfos[0];
+        }
+    } else if (abilityValid) {
+        // only ability valid
+        APP_LOGD("find target AbilityInfo, name : %{public}s", abilityInfos[0].name.c_str());
+        abilityInfo = abilityInfos[0];
+    } else {
+        // only extension valid
+        APP_LOGD("find target ExtensionAbilityInfo, name : %{public}s", extensionInfos[0].name.c_str());
+        extensionInfo = extensionInfos[0];
+    }
+    return true;
 }
 
 #ifdef SUPPORT_GRAPHICS

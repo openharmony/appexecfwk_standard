@@ -38,6 +38,7 @@ const std::string LABEL = "label";
 const std::string LABEL_ID = "labelId";
 const std::string DESCRIPTION = "description";
 const std::string DESCRIPTION_ID = "descriptionId";
+const std::string PRIORITY = "priority";
 const std::string TYPE = "type";
 const std::string PERMISSIONS = "permissions";
 const std::string READ_PERMISSION = "readPermission";
@@ -61,6 +62,7 @@ bool ExtensionAbilityInfo::ReadFromParcel(Parcel &parcel)
     labelId = parcel.ReadInt32();
     description = Str16ToStr8(parcel.ReadString16());
     descriptionId = parcel.ReadInt32();
+    priority = parcel.ReadInt32();
     type = static_cast<ExtensionAbilityType>(parcel.ReadInt32());
     int32_t permissionSize = parcel.ReadInt32();
     for (int32_t i = 0; i < permissionSize; ++i) {
@@ -114,6 +116,7 @@ bool ExtensionAbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, priority);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
     for (const auto &per : permissions) {
@@ -148,6 +151,7 @@ void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionIn
         {LABEL_ID, extensionInfo.labelId},
         {DESCRIPTION, extensionInfo.description},
         {DESCRIPTION_ID, extensionInfo.descriptionId},
+        {PRIORITY, extensionInfo.priority},
         {TYPE, extensionInfo.type},
         {READ_PERMISSION, extensionInfo.readPermission},
         {WRITE_PERMISSION, extensionInfo.writePermission},
@@ -242,6 +246,14 @@ void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extension
         jsonObjectEnd,
         DESCRIPTION_ID,
         extensionInfo.descriptionId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PRIORITY,
+        extensionInfo.priority,
         JsonType::NUMBER,
         false,
         parseResult,
