@@ -95,9 +95,17 @@ public:
      */
     virtual ErrCode UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
 
+    virtual sptr<IBundleStreamInstaller> CreateStreamInstaller(const InstallParam &installParam) override;
+    virtual bool DestoryBundleStreamInstaller(uint32_t streamInstallerId) override;
+
+    virtual ErrCode StreamInstall(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) override;
+
 private:
     bool SendInstallRequest(const uint32_t& code, MessageParcel& data, MessageParcel& reply,
         MessageOption& option);
+    ErrCode WriteFileToStream(sptr<IBundleStreamInstaller> &streamInstaller, const std::string &path);
+
     static inline BrokerDelegator<BundleInstallerProxy> delegator_;
 };
 }  // namespace AppExecFwk

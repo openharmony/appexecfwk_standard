@@ -30,6 +30,8 @@ public:
 
     int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
+    virtual void SetStreamInstallId(uint32_t installerId) override {};
+
 private:
     DISALLOW_COPY_AND_MOVE(StatusReceiverHost);
 };

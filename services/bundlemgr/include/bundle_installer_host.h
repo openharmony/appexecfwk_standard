@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_HOST_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_HOST_H
 
+#include <atomic>
 #include <memory>
 #include <string>
 
@@ -24,6 +25,7 @@
 
 #include "bundle_installer_interface.h"
 #include "bundle_installer_manager.h"
+#include "bundle_stream_installer_host_impl.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -113,6 +115,11 @@ public:
      */
     virtual ErrCode UninstallSandboxApp(const std::string &bundleName, int32_t appIndex, int32_t userId) override;
 
+    virtual sptr<IBundleStreamInstaller> CreateStreamInstaller(const InstallParam &installParam) override;
+    virtual bool DestoryBundleStreamInstaller(uint32_t streamInstallerId) override;
+    virtual ErrCode StreamInstall(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) override;
+
 private:
     /**
      * @brief Handles the Install function called from a IBundleInstaller proxy object.
@@ -169,9 +176,15 @@ private:
      */
     bool CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const;
 
+    void HandleCreateStreamInstaller(Parcel &data, Parcel &reply);
+    void HandleDestoryBundleStreamInstaller(Parcel &data, Parcel &reply);
+
 private:
     InstallParam CheckInstallParam(const InstallParam &installParam);
     std::shared_ptr<BundleInstallerManager> manager_;
+    std::vector<sptr<IBundleStreamInstaller>> streamInstallers_;
+    std::atomic<uint32_t> streamInstallerIds_ = 0;
+    std::mutex streamInstallMutex_;
 
     DISALLOW_COPY_AND_MOVE(BundleInstallerHost);
 };
