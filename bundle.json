@@ -59,8 +59,8 @@
         "build": {
             "sub_component": [
                 "//foundation/appexecfwk/standard/common:common_target",
-                "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-                "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+                "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_base:appexecfwk_base",
+                "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_core:appexecfwk_core",
                 "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
                 "//foundation/appexecfwk/standard/services/bundlemgr:bms_target",
                 "//foundation/appexecfwk/standard/interfaces/kits/js:napi_packages",
@@ -71,7 +71,7 @@
             "inner_kits": [
                 {
                     "header": {
-                      "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
+                      "header_base": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_base/include",
                       "header_files": [
                         "ability_info.h",
                         "appexecfwk_errors.h",
@@ -79,11 +79,11 @@
                         "bundle_info.h"
                       ]
                     },
-                    "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base"
+                    "name": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_base:appexecfwk_base"
                   },
                   {
                     "header": {
-                      "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include",
+                      "header_base": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_core/include",
                       "header_files": [
                         "bundlemgr/bundle_installer_interface.h",
                         "bundlemgr/bundle_mgr_interface.h",
@@ -92,7 +92,7 @@
                         "bundlemgr/status_receiver_interface.h"
                       ]
                     },
-                    "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core"
+                    "name": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_core:appexecfwk_core"
                   }
             ],
             "test": [

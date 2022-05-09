@@ -24,10 +24,10 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
   ]
   sources = [
-    "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/ability_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/application_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/bundle_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/bundle_user_info.cpp",
     "${services_path}/bundlemgr/src/account_helper.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
@@ -63,7 +63,7 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
   configs = [
     "${services_path}/bundlemgr/test:bundlemgr_test_config",
     "${libs_path}/libeventhandler:libeventhandler_config",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base_sdk_config",
+    "${inner_api_path}/appexecfwk_base:appexecfwk_base_sdk_config",
   ]
   cflags = []
   if (target_cpu == "arm") {

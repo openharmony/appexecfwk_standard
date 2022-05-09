@@ -15,16 +15,16 @@ import("../../../appexecfwk.gni")
 
 config("bundlemgr_test_config") {
   include_dirs = [
-    "${innerkits_path}/appexecfwk_base/include",
-    "${innerkits_path}/appexecfwk_core/include/bundlemgr",
+    "${inner_api_path}/appexecfwk_base/include",
+    "${inner_api_path}/appexecfwk_core/include/bundlemgr",
     "${appexecfwk_path}/services/bundlemgr/include/sandbox_app",
     "mock/include",
   ]
 
   if (bundle_framework_free_install) {
     include_dirs += [
-      "${innerkits_path}/appexecfwk_base/include/aging",
-      "${innerkits_path}/appexecfwk_base/include/free_install",
+      "${inner_api_path}/appexecfwk_base/include/aging",
+      "${inner_api_path}/appexecfwk_base/include/free_install",
     ]
   }
 
