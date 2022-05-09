@@ -957,15 +957,6 @@ HWTEST_F(BmsUninstallSystemTest, BMS_BundleInfoDeletion_0200, Function | MediumT
     bool isUninstallSucceed = CheckUninstallIsSuccess(bundleName);
     EXPECT_TRUE(isUninstallSucceed);
 
-    std::vector<std::string> abilityPermissions = {"com.third.example.helloworld.RUN"};
-    std::string permission;
-    sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-    if (!bundleMgrProxy) {
-        APP_LOGE("bundle mgr proxy is nullptr.");
-        EXPECT_EQ(bundleMgrProxy, nullptr);
-    }
-    bool result = bundleMgrProxy->CheckPermission(bundleName, permission);
-    EXPECT_TRUE(result);
     std::cout << "BMS_BundleInfoDeletion_0200 end" << std::endl;
 }
 
@@ -1044,10 +1035,6 @@ HWTEST_F(BmsUninstallSystemTest, BMS_BundleInfoDeletion_0400, Function | MediumT
     bool infoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_TRUE(infoResult);
 
-    std::string permission;
-    bool result = bundleMgrProxy->CheckPermission(bundleName, permission);
-    EXPECT_TRUE(result);
-
     int userId = Constants::DEFAULT_USERID;
     int uidResult = bundleMgrProxy->GetUidByBundleName(bundleName, userId);
     EXPECT_NE(uidResult, 0);
@@ -1062,9 +1049,6 @@ HWTEST_F(BmsUninstallSystemTest, BMS_BundleInfoDeletion_0400, Function | MediumT
 
     infoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(infoResult);
-
-    result = bundleMgrProxy->CheckPermission(bundleName, permission);
-    EXPECT_TRUE(result);
 
     uidResult = bundleMgrProxy->GetUidByBundleName(bundleName, userId);
     EXPECT_EQ(uidResult, -1);

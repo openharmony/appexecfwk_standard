@@ -30,7 +30,6 @@ ohos_shared_library("bundle") {
     "cleancache_callback.cpp",
     "installer_callback.cpp",
     "native_module.cpp",
-    "permission_callback.cpp",
   ]
 
   deps = [ "${common_path}:libappexecfwk_common" ]

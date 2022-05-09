@@ -167,20 +167,8 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case IBundleMgr::Message::CHECK_PUBLICKEYS:
             errCode = HandleCheckPublicKeys(data, reply);
             break;
-        case IBundleMgr::Message::CHECK_PERMISSION:
-            errCode = HandleCheckPermission(data, reply);
-            break;
-        case IBundleMgr::Message::CHECK_PERMISSION_BY_UID:
-            errCode = HandleCheckPermissionByUid(data, reply);
-            break;
         case IBundleMgr::Message::GET_PERMISSION_DEF:
             errCode = HandleGetPermissionDef(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ALL_PERMISSION_GROUP_DEFS:
-            errCode = HandleGetAllPermissionGroupDefs(data, reply);
-            break;
-        case IBundleMgr::Message::GET_APPS_GRANTED_PERMISSIONS:
-            errCode = HandleGetAppsGrantedPermissions(data, reply);
             break;
         case IBundleMgr::Message::HAS_SYSTEM_CAPABILITY:
             errCode = HandleHasSystemCapability(data, reply);
@@ -237,21 +225,6 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             break;
         case IBundleMgr::Message::GET_BUNDLE_INSTALLER:
             errCode = HandleGetBundleInstaller(data, reply);
-            break;
-        case IBundleMgr::Message::CAN_REQUEST_PERMISSION:
-            errCode = HandleCanRequestPermission(data, reply);
-            break;
-        case IBundleMgr::Message::REQUEST_PERMISSION_FROM_USER:
-            errCode = HandleRequestPermissionFromUser(data, reply);
-            break;
-        case IBundleMgr::Message::REGISTER_ALL_PERMISSIONS_CHANGED:
-            errCode = HandleRegisterAllPermissionsChanged(data, reply);
-            break;
-        case IBundleMgr::Message::REGISTER_PERMISSIONS_CHANGED:
-            errCode = HandleRegisterPermissionsChanged(data, reply);
-            break;
-        case IBundleMgr::Message::UNREGISTER_PERMISSIONS_CHANGED:
-            errCode = HandleUnregisterPermissionsChanged(data, reply);
             break;
         case IBundleMgr::Message::GET_ALL_FORMS_INFO:
             errCode = HandleGetAllFormsInfo(data, reply);
@@ -1081,37 +1054,6 @@ ErrCode BundleMgrHost::HandleCheckPublicKeys(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
-ErrCode BundleMgrHost::HandleCheckPermission(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::string bundleName = data.ReadString();
-    std::string permission = data.ReadString();
-
-    APP_LOGI("bundleName %{public}s, permission %{public}s", bundleName.c_str(), permission.c_str());
-    int ret = CheckPermission(bundleName, permission);
-    if (!reply.WriteInt32(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleCheckPermissionByUid(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::string bundleName = data.ReadString();
-    std::string permission = data.ReadString();
-    int userId = data.ReadInt32();
-
-    APP_LOGI("bundleName %{public}s, permission %{public}s", bundleName.c_str(), permission.c_str());
-    int ret = CheckPermissionByUid(bundleName, permission, userId);
-    if (!reply.WriteInt32(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    return ERR_OK;
-}
-
 ErrCode BundleMgrHost::HandleGetPermissionDef(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
@@ -1126,48 +1068,6 @@ ErrCode BundleMgrHost::HandleGetPermissionDef(Parcel &data, Parcel &reply)
     }
     if (ret) {
         if (!reply.WriteParcelable(&permissionDef)) {
-            APP_LOGE("write failed");
-            return ERR_APPEXECFWK_PARCEL_ERROR;
-        }
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleGetAllPermissionGroupDefs(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::vector<PermissionDef> permissionDefs;
-    bool ret = GetAllPermissionGroupDefs(permissionDefs);
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    if (ret) {
-        if (!WriteParcelableVector(permissionDefs, reply)) {
-            APP_LOGE("write failed");
-            return ERR_APPEXECFWK_PARCEL_ERROR;
-        }
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleGetAppsGrantedPermissions(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::vector<std::string> permissions;
-    if (data.ReadStringVector(&permissions)) {
-        APP_LOGE("read failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-
-    std::vector<std::string> appNames;
-    bool ret = GetAppsGrantedPermissions(permissions, appNames);
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    if (ret) {
-        if (!reply.WriteStringVector(appNames)) {
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
@@ -1479,110 +1379,6 @@ ErrCode BundleMgrHost::HandleGetAbilityPixelMapIconWithModuleName(Parcel &data, 
     return ERR_OK;
 }
 #endif
-
-ErrCode BundleMgrHost::HandleCanRequestPermission(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::string bundleName = data.ReadString();
-    std::string permission = data.ReadString();
-    int32_t userId = data.ReadInt32();
-
-    APP_LOGI("bundleName %{public}s, permission %{public}s", bundleName.c_str(), permission.c_str());
-    bool ret = CanRequestPermission(bundleName, permission, userId);
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleRequestPermissionFromUser(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::string bundleName = data.ReadString();
-    std::string permission = data.ReadString();
-    int32_t userId = data.ReadInt32();
-
-    APP_LOGI("bundleName %{public}s, permission %{public}s", bundleName.c_str(), permission.c_str());
-    bool ret = RequestPermissionFromUser(bundleName, permission, userId);
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleRegisterAllPermissionsChanged(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
-    if (object == nullptr) {
-        APP_LOGE("read failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
-
-    bool ret = false;
-    if (!callback) {
-        APP_LOGE("Get OnPermissionChangedCallback failed");
-    } else {
-        ret = RegisterAllPermissionsChanged(callback);
-    }
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleRegisterPermissionsChanged(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    std::vector<int> uids;
-    if (!data.ReadInt32Vector(&uids)) {
-        APP_LOGE("read parcel failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
-    if (object == nullptr) {
-        APP_LOGE("read failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
-    bool ret = false;
-    if (!callback) {
-        APP_LOGE("Get OnPermissionChangedCallback failed");
-    } else {
-        ret = RegisterPermissionsChanged(uids, callback);
-    }
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    return ERR_OK;
-}
-
-ErrCode BundleMgrHost::HandleUnregisterPermissionsChanged(Parcel &data, Parcel &reply)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
-    if (object == nullptr) {
-        APP_LOGE("read failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    };
-    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
-    bool ret = false;
-    if (!callback) {
-        APP_LOGE("Get OnPermissionChangedCallback failed");
-    } else {
-        ret = UnregisterPermissionsChanged(callback);
-    }
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("write failed");
-        return ERR_APPEXECFWK_PARCEL_ERROR;
-    }
-    return ERR_OK;
-}
 
 ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
 {

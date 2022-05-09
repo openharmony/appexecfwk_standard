@@ -31,7 +31,6 @@
 #include "form_info.h"
 #include "hap_module_info.h"
 #include "module_usage_record.h"
-#include "on_permission_changed_callback_interface.h"
 #include "ohos/aafwk/content/want.h"
 #include "permission_define.h"
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
@@ -501,54 +500,12 @@ public:
         return Constants::SIGNATURE_UNKNOWN_BUNDLE;
     }
     /**
-     * @brief Checks whether a specified bundle has been granted a specific permission.
-     * @param bundleName Indicates the name of the bundle to check.
-     * @param permission Indicates the permission to check.
-     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
-     */
-    virtual int CheckPermission(const std::string &bundleName, const std::string &permission)
-    {
-        return Constants::PERMISSION_NOT_GRANTED;
-    }
-    /**
-     * @brief Checks whether a specified bundle has been granted a specific permission.
-     * @param bundleName Indicates the name of the bundle to check.
-     * @param permission Indicates the permission to check.
-     * @param userId Indicates the user id.
-     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
-     */
-    virtual int CheckPermissionByUid(
-        const std::string &bundleName, const std::string &permission, const int userId)
-    {
-        return Constants::PERMISSION_NOT_GRANTED;
-    }
-    /**
      * @brief Obtains detailed information about a specified permission.
      * @param permissionName Indicates the name of the ohos permission.
      * @param permissionDef Indicates the object containing detailed information about the given ohos permission.
      * @return Returns true if the PermissionDef object is successfully obtained; returns false otherwise.
      */
     virtual bool GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
-    {
-        return false;
-    }
-    /**
-     * @brief Obtains all known permission groups in the system.
-     * @param permissionDefs Indicates the list of objects containing the permission group information.
-     * @return Returns true if the PermissionDef objects is successfully obtained; returns false otherwise.
-     */
-    virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs)
-    {
-        return false;
-    }
-    /**
-     * @brief Obtains all known permission groups in the system.
-     * @param permissions Indicates the permission array.
-     * @param appNames Indicates the list of application names that have the specified permissions.
-     * @return Returns true if the application names is successfully obtained; returns false otherwise.
-     */
-    virtual bool GetAppsGrantedPermissions(
-        const std::vector<std::string> &permissions, std::vector<std::string> &appNames)
     {
         return false;
     }
@@ -708,62 +665,6 @@ public:
         int32_t userId = Constants::UNSPECIFIED_USERID)
     {
         return true;
-    }
-    /**
-     * @brief Confirms with the permission management module to check whether a request prompt is required for granting
-     * a certain permission.
-     * @param bundleName Indicates the name of the bundle to check.
-     * @param permission Indicates the permission to check.
-     * @param userId Indicates the user id.
-     * @return Returns true if the current application does not have the permission and the user does not turn off
-     * further requests; returns false if the current application already has the permission, the permission is rejected
-     * by the system, or the permission is denied by the user and the user has turned off further requests.
-     */
-    virtual bool CanRequestPermission(
-        const std::string &bundleName, const std::string &permissionName, const int userId)
-    {
-        return false;
-    }
-    /**
-     * @brief Requests a certain permission from user.
-     * @param bundleName Indicates the name of the bundle to request permission.
-     * @param permission Indicates the permission to request permission.
-     * @param userId Indicates the user id.
-     * @return Returns true if the permission request successfully; returns false otherwise.
-     */
-    virtual bool RequestPermissionFromUser(
-        const std::string &bundleName, const std::string &permission, const int userId)
-    {
-        return false;
-    }
-    /**
-     * @brief Registers a callback for listening for permission changes of all UIDs.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    virtual bool RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
-    {
-        return false;
-    }
-    /**
-     * @brief Registers a callback for listening for permission changes of specified UIDs.
-     * @param uids Indicates the list of UIDs whose permission changes will be monitored.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    virtual bool RegisterPermissionsChanged(
-        const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
-    {
-        return false;
-    }
-    /**
-     * @brief Unregisters a specified callback for listening for permission changes.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    virtual bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
-    {
-        return false;
     }
     /**
      * @brief Obtains the FormInfo objects provided by all applications on the device.
@@ -1084,11 +985,7 @@ public:
         GET_HAP_MODULE_INFO,
         GET_LAUNCH_WANT_FOR_BUNDLE,
         CHECK_PUBLICKEYS,
-        CHECK_PERMISSION,
-        CHECK_PERMISSION_BY_UID,
         GET_PERMISSION_DEF,
-        GET_ALL_PERMISSION_GROUP_DEFS,
-        GET_APPS_GRANTED_PERMISSIONS,
         HAS_SYSTEM_CAPABILITY,
         GET_SYSTEM_AVAILABLE_CAPABILITIES,
         IS_SAFE_MODE,
@@ -1106,11 +1003,6 @@ public:
         GET_ABILITY_INFO_WITH_MODULE_NAME,
         GET_ABILITY_PIXELMAP_ICON,
         GET_ABILITY_PIXELMAP_ICON_WITH_MODULE_NAME,
-        CAN_REQUEST_PERMISSION,
-        REQUEST_PERMISSION_FROM_USER,
-        REGISTER_ALL_PERMISSIONS_CHANGED,
-        REGISTER_PERMISSIONS_CHANGED,
-        UNREGISTER_PERMISSIONS_CHANGED,
         GET_ALL_FORMS_INFO,
         GET_FORMS_INFO_BY_APP,
         GET_FORMS_INFO_BY_MODULE,

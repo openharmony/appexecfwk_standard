@@ -244,21 +244,6 @@ struct AsyncGetNameByUidInfo : public AsyncWorkData {
     bool ret = false;
 };
 
-struct AsyncRegisterAllPermissions : public AsyncWorkData {
-    explicit AsyncRegisterAllPermissions(napi_env env) : AsyncWorkData(env) {}
-};
-
-struct AsyncRegisterPermissions : public AsyncWorkData {
-    explicit AsyncRegisterPermissions(napi_env env) : AsyncWorkData(env) {}
-    std::vector<int32_t> uids;
-};
-
-struct AsyncUnregisterPermissions : public AsyncWorkData {
-    explicit AsyncUnregisterPermissions(napi_env env) : AsyncWorkData(env) {}
-    std::vector<int32_t> uids;
-    bool ret = false;
-};
-
 struct AsyncHandleBundleContext : public AsyncWorkData {
     explicit AsyncHandleBundleContext(napi_env env) : AsyncWorkData(env) {}
     OHOS::sptr<CleanCacheCallback> cleanCacheCallback;
@@ -277,15 +262,6 @@ struct EnabledInfo : public AsyncWorkData {
     bool isEnable = false;
     bool result = false;
     int32_t errCode = 0;
-    std::string errMssage;
-};
-
-struct AppPrivilegeLevel : public AsyncWorkData {
-    explicit AppPrivilegeLevel(napi_env env) : AsyncWorkData(env) {}
-    std::string bundleName;
-    std::string appPrivilegeLevel;
-    int32_t errCode = 0;
-    bool result = false;
     std::string errMssage;
 };
 
@@ -324,12 +300,10 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info);
 napi_value GetShortcutInfos(napi_env env, napi_callback_info info);
-napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info);
 napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info);
 napi_value ClearBundleCache(napi_env env, napi_callback_info info);
 napi_value SetApplicationEnabled(napi_env env, napi_callback_info info);
 napi_value SetAbilityEnabled(napi_env env, napi_callback_info info);
-napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info);
 napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info);
 napi_value GetNameForUid(napi_env env, napi_callback_info info);
 napi_value GetAbilityLabel(napi_env env, napi_callback_info info);
