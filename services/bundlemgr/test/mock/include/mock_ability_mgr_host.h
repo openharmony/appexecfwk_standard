@@ -423,10 +423,14 @@ public:
         return 0;
     }
 
+#ifdef SUPPORT_GRAPHICS
     virtual int RegisterWindowManagerServiceHandler(const sptr<IWindowManagerServiceHandler>& handler) override
     {
         return 0;
     }
+
+    virtual void CompleteFirstFrameDrawing(const sptr<IRemoteObject> &abilityToken) override {}
+#endif
 
 #ifdef ABILITY_COMMAND_FOR_TEST
     virtual int ForceTimeoutForTest(const std::string &abilityName, const std::string &state) override
