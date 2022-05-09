@@ -353,5 +353,33 @@ int32_t BundleUtil::CreateFileDescriptor(const std::string &bundlePath, long lon
     }
     return fd;
 }
+
+bool BundleUtil::IsExistFile(const std::string &path)
+{
+    if (path.empty()) {
+        return false;
+    }
+
+    struct stat buf = {};
+    if (stat(path.c_str(), &buf) != 0) {
+        return false;
+    }
+
+    return S_ISREG(buf.st_mode);
+}
+
+bool BundleUtil::IsExistDir(const std::string &path)
+{
+    if (path.empty()) {
+        return false;
+    }
+
+    struct stat buf = {};
+    if (stat(path.c_str(), &buf) != 0) {
+        return false;
+    }
+
+    return S_ISDIR(buf.st_mode);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

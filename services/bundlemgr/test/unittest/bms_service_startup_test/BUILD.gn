@@ -30,6 +30,7 @@ ohos_unittest("BmsServiceStartupTest") {
     "${services_path}/bundlemgr/src/bundle_mgr_service.cpp",
     "${services_path}/bundlemgr/src/bundle_mgr_service_event_handler.cpp",
     "${services_path}/bundlemgr/src/bundle_scanner.cpp",
+    "${services_path}/bundlemgr/src/bundle_state_storage.cpp",
     "${services_path}/bundlemgr/src/bundle_status_callback_death_recipient.cpp",
     "${services_path}/bundlemgr/src/bundle_user_mgr_host_impl.cpp",
     "${services_path}/bundlemgr/src/distributed_data_storage.cpp",

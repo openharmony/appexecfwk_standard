@@ -450,7 +450,6 @@ namespace {
     {
         nlohmann::json jsonObject;
         BundleUserInfo bundleUserInfo;
-        bundleUserInfo.abilities = {"ohos.global.systemres.MainAbility"};
         bundleUserInfo.disabledAbilities = {"ohos.global.systemres.MainAbility"};
         for (auto _ : state) {
             /* @tc.steps: step1.call to_json in loop */
