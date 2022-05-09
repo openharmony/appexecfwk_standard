@@ -17,6 +17,7 @@ appexecfwk_path = "//foundation/appexecfwk/standard"
 common_path = "${appexecfwk_path}/common"
 kits_path = "${appexecfwk_path}/interfaces/kits"
 innerkits_path = "${appexecfwk_path}/interfaces/innerkits"
+inner_api_path = "${appexecfwk_path}/interfaces/inner_api"
 
 bundletool_path = "${appexecfwk_path}/bundle_tool/frameworks"
 bundletool_test_path = "${appexecfwk_path}/bundle_tool/test"

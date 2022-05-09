@@ -21,11 +21,11 @@ ohos_unittest("BmsBundleCloneTest") {
   module_out_path = module_output_path
   include_dirs = [ "//third_party/jsoncpp/include" ]
   sources = [
-    "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/compatible_ability_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/compatible_application_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/ability_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/application_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/bundle_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/compatible_ability_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/compatible_application_info.cpp",
     "${services_path}/bundlemgr/src/account_helper.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
@@ -58,7 +58,7 @@ ohos_unittest("BmsBundleCloneTest") {
 
   configs = [
     "${services_path}/bundlemgr/test:bundlemgr_test_config",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base_sdk_config",
+    "${inner_api_path}/appexecfwk_base:appexecfwk_base_sdk_config",
   ]
   cflags = []
   if (target_cpu == "arm") {
