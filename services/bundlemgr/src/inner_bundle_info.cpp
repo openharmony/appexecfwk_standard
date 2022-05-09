@@ -1907,6 +1907,25 @@ void InnerBundleInfo::GetModuleNames(std::vector<std::string> &moduleNames) cons
     }
 }
 
+void InnerBundleInfo::ResetBundleState(int32_t userId)
+{
+    if (userId == Constants::ALL_USERID) {
+        for (auto& innerBundleUserInfo : innerBundleUserInfos_) {
+            innerBundleUserInfo.second.bundleUserInfo.Reset();
+        }
+
+        return;
+    }
+
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    if (innerBundleUserInfos_.find(key) == innerBundleUserInfos_.end()) {
+        APP_LOGD("no this user %{public}s", key.c_str());
+        return;
+    }
+
+    innerBundleUserInfos_.at(key).bundleUserInfo.Reset();
+}
+
 void InnerBundleInfo::RemoveInnerBundleUserInfo(int32_t userId)
 {
     auto& key = NameAndUserIdToKey(GetBundleName(), userId);
