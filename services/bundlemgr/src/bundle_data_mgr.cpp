@@ -1596,6 +1596,12 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
         return false;
     }
 
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        APP_LOGE("Request userId is invalid");
+        return false;
+    }
+
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -1604,18 +1610,18 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
     }
 
     InnerBundleInfo& newInfo = infoItem->second;
-    newInfo.SetApplicationEnabled(isEnable, GetUserId(userId));
+    newInfo.SetApplicationEnabled(isEnable, requestUserId);
     InnerBundleUserInfo innerBundleUserInfo;
-    if (!newInfo.GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
-        APP_LOGE("can not find userId %{public}d when get applicationInfo", userId);
+    if (!newInfo.GetInnerBundleUserInfo(requestUserId, innerBundleUserInfo)) {
+        APP_LOGE("can not find request userId %{public}d when get userInfo", requestUserId);
         return false;
     }
 
     if (innerBundleUserInfo.bundleUserInfo.IsInitialState()) {
-        bundleStateStorage_->DeleteBundleState(bundleName, userId);
+        bundleStateStorage_->DeleteBundleState(bundleName, requestUserId);
     } else {
         bundleStateStorage_->SaveBundleStateStorage(
-            bundleName, userId, innerBundleUserInfo.bundleUserInfo);
+            bundleName, requestUserId, innerBundleUserInfo.bundleUserInfo);
     }
 
     return true;
@@ -1701,6 +1707,12 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
         return false;
     }
 
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        APP_LOGE("Request userId is invalid");
+        return false;
+    }
+
     auto infoItem = bundleInfos_.find(abilityInfo.bundleName);
     if (infoItem == bundleInfos_.end()) {
         APP_LOGE("can not find bundle %{public}s", abilityInfo.bundleName.c_str());
@@ -1709,22 +1721,22 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
 
     InnerBundleInfo& newInfo = infoItem->second;
     if (!newInfo.SetAbilityEnabled(
-        abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name, isEnabled, GetUserId(userId))) {
+        abilityInfo.bundleName, abilityInfo.moduleName, abilityInfo.name, isEnabled, requestUserId)) {
         APP_LOGE("SetAbilityEnabled %{public}s failed", abilityInfo.bundleName.c_str());
         return false;
     }
 
     InnerBundleUserInfo innerBundleUserInfo;
-    if (!newInfo.GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
-        APP_LOGE("can not find userId %{public}d when get applicationInfo", userId);
+    if (!newInfo.GetInnerBundleUserInfo(requestUserId, innerBundleUserInfo)) {
+        APP_LOGE("can not find request userId %{public}d when get userInfo", requestUserId);
         return false;
     }
 
     if (innerBundleUserInfo.bundleUserInfo.IsInitialState()) {
-        bundleStateStorage_->DeleteBundleState(abilityInfo.bundleName, userId);
+        bundleStateStorage_->DeleteBundleState(abilityInfo.bundleName, requestUserId);
     } else {
         bundleStateStorage_->SaveBundleStateStorage(
-            abilityInfo.bundleName, userId, innerBundleUserInfo.bundleUserInfo);
+            abilityInfo.bundleName, requestUserId, innerBundleUserInfo.bundleUserInfo);
     }
     
     return true;
