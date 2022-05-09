@@ -38,7 +38,6 @@
 #include "inner_bundle_info.h"
 #include "inner_bundle_user_info.h"
 #include "module_usage_record.h"
-#include "on_permission_changed_callback_interface.h"
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "pixel_map.h"
 #endif
@@ -496,37 +495,6 @@ public:
      */
     bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) const;
     /**
-     * @brief Registers a callback for listening for permission changes of all UIDs.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback);
-    /**
-     * @brief Registers a callback for listening for permission changes of specified UIDs.
-     * @param uids Indicates the list of UIDs whose permission changes will be monitored.
-     * @param callback Indicates the callback method to register.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool RegisterPermissionsChanged(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback);
-    /**
-     * @brief Add death recipient for specified callback registerd.
-     * @param callback Indicates the callback for death recipient.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool AddDeathRecipient(const sptr<OnPermissionChangedCallback> &callback);
-    /**
-     * @brief Unregisters a specified callback for listening for permission changes.
-     * @param callback Indicates the callback method to unregister.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback);
-    /**
-     * @brief Call callback for listening the uid permission changes.
-     * @param uid Indicates the bundle uid whose permission changes.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    bool NotifyPermissionsChanged(int32_t uid);
-    /**
      * @brief Update bundle usage record on module removed.
      * @param keepUsage Indicates the flag record is remove on module removed.
      * @param userId Indicates the user Id of the application.
@@ -837,8 +805,6 @@ private:
     mutable std::mutex bundleIdMapMutex_;
     mutable std::mutex callbackMutex_;
     mutable std::shared_mutex bundleMutex_;
-    mutable std::mutex allPermissionsChangedLock_;
-    mutable std::mutex permissionsChangedLock_;
     mutable std::mutex multiUserIdSetMutex_;
     mutable std::mutex preInstallInfoMutex_;
     bool initialUserFlag_ = false;
@@ -864,10 +830,7 @@ private:
     std::shared_ptr<PreInstallDataStorage> preInstallDataStorage_;
     std::shared_ptr<DistributedDataStorage> distributedDataStorage_;
     std::shared_ptr<BundleStateStorage> bundleStateStorage_;
-    std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
     std::vector<PreInstallBundleInfo> preInstallBundleInfos_;
-    // map<uid, callback>.
-    std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;
     std::shared_ptr<BundlePromise> bundlePromise_ = nullptr;
     std::shared_ptr<BundleSandboxDataMgr> sandboxDataMgr_;
 };

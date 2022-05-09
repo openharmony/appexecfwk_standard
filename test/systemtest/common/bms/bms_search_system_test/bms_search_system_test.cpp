@@ -676,15 +676,6 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1300, Function | MediumTest | Level1)
     EXPECT_EQ(installResult, "Success");
 
     std::string bundleName = BASE_BUNDLE_NAME + "3";
-    std::string appPermission = "com.example.permission";
-
-    sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-    if (!bundleMgrProxy) {
-        APP_LOGE("bundle mgr proxy is nullptr.");
-        EXPECT_EQ(bundleMgrProxy, nullptr);
-    }
-    int result = bundleMgrProxy->CheckPermission(bundleName, appPermission);
-    EXPECT_EQ(result, 0);
 
     std::vector<std::string> resvec2;
     Uninstall(bundleName, resvec2);
@@ -696,30 +687,6 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1300, Function | MediumTest | Level1)
     uninstallResult = commonTool.VectorToStr(resvec2);
     EXPECT_EQ(uninstallResult, "Success");
     std::cout << "END BMS_SEARCH_1300" << std::endl;
-}
-
-/**
- * @tc.number: BMS_Search_1400
- * @tc.name: test query app permission
- * @tc.desc: 1.under '/data/test/bms_bundle',there is an app
- *           2.install the app
- *           3.query app permission by bundleName
- */
-HWTEST_F(BmsSearchSystemTest, BMS_Search_1400, Function | MediumTest | Level1)
-{
-    std::cout << "START BMS_SEARCH_1400" << std::endl;
-
-    std::string bundleName = BASE_BUNDLE_NAME + "1";
-    std::string appPermission = "USER_GRANT";
-    sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-    if (!bundleMgrProxy) {
-        APP_LOGE("bundle mgr proxy is nullptr.");
-        EXPECT_EQ(bundleMgrProxy, nullptr);
-    }
-
-    int result = bundleMgrProxy->CheckPermission(bundleName, appPermission);
-    EXPECT_NE(result, 0);
-    std::cout << "END BMS_SEARCH_1400" << std::endl;
 }
 
 /**
@@ -1161,21 +1128,6 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_2900, Function | MediumTest | Level1)
     bool result = bundleMgrProxy->QueryKeepAliveBundleInfos(bundleInfos);
     EXPECT_TRUE(result);
     std::cout << "END BMS_SEARCH_2900" << std::endl;
-}
-
-/**
- * @tc.number: BMS_Search_3000
- * @tc.name: test GetAllPermissionGroupDefs interface
- * @tc.desc: 1.call GetAllPermissionGroupDefs
- */
-HWTEST_F(BmsSearchSystemTest, BMS_Search_3000, Function | MediumTest | Level1)
-{
-    std::cout << "START BMS_SEARCH_3000" << std::endl;
-    sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-    std::vector<PermissionDef> permissionDefs;
-    bool result = bundleMgrProxy->GetAllPermissionGroupDefs(permissionDefs);
-    EXPECT_TRUE(result);
-    std::cout << "END BMS_SEARCH_3000" << std::endl;
 }
 
 /**

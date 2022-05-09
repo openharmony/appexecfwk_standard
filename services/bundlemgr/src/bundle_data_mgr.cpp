@@ -28,6 +28,7 @@
 #include "bundle_data_storage_database.h"
 #include "bundle_mgr_service.h"
 #include "bundle_status_callback_death_recipient.h"
+#include "bundle_util.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
@@ -36,7 +37,6 @@
 #include "ipc_skeleton.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
-#include "permission_changed_death_recipient.h"
 #include "free_install_params.h"
 #include "singleton.h"
 
@@ -2264,170 +2264,6 @@ bool BundleDataMgr::GetAllCommonEventInfo(const std::string &eventKey,
         return false;
     }
     APP_LOGE("commonEventInfos find success");
-    return true;
-}
-
-bool BundleDataMgr::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
-{
-    if (!callback) {
-        APP_LOGE("callback is nullptr");
-        return false;
-    }
-    std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
-    std::set<sptr<OnPermissionChangedCallback>>::iterator it = allPermissionsCallbacks_.begin();
-    while (it != allPermissionsCallbacks_.end()) {
-        if ((*it)->AsObject() == callback->AsObject()) {
-            break;
-        }
-        it++;
-    }
-    if (it == allPermissionsCallbacks_.end()) {
-        allPermissionsCallbacks_.emplace(callback);
-    }
-    APP_LOGD("all permissions callbacks size = %{public}zu", allPermissionsCallbacks_.size());
-    return AddDeathRecipient(callback);
-}
-
-bool BundleDataMgr::RegisterPermissionsChanged(
-    const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
-{
-    if (!callback) {
-        APP_LOGE("callback is nullptr");
-        return false;
-    }
-    std::lock_guard<std::mutex> lock(permissionsChangedLock_);
-    for (int32_t uid : uids) {
-        std::set<sptr<OnPermissionChangedCallback>>::iterator it = permissionsCallbacks_[uid].begin();
-        while (it != permissionsCallbacks_[uid].end()) {
-            if ((*it)->AsObject() == callback->AsObject()) {
-                break;
-            }
-            it++;
-        }
-        if (it == permissionsCallbacks_[uid].end()) {
-            permissionsCallbacks_[uid].emplace(callback);
-        }
-    }
-    APP_LOGD("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
-
-    for (const auto &item1 : permissionsCallbacks_) {
-        APP_LOGD("item1->first = %{public}d", item1.first);
-        APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
-    }
-    return AddDeathRecipient(callback);
-}
-
-bool BundleDataMgr::AddDeathRecipient(const sptr<OnPermissionChangedCallback> &callback)
-{
-    if (!callback) {
-        APP_LOGE("callback is nullptr");
-        return false;
-    }
-    auto object = callback->AsObject();
-    if (!object) {
-        APP_LOGW("callback object is nullptr");
-        return false;
-    }
-    // add callback death recipient.
-    sptr<PermissionChangedDeathRecipient> deathRecipient = new (std::nothrow) PermissionChangedDeathRecipient();
-    if (deathRecipient == nullptr) {
-        APP_LOGE("create PermissionChangedDeathRecipient failed");
-        return false;
-    }
-    object->AddDeathRecipient(deathRecipient);
-    return true;
-}
-
-bool BundleDataMgr::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
-{
-    bool ret = false;
-    if (!callback) {
-        APP_LOGE("callback is nullptr");
-        return ret;
-    }
-    {
-        std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
-
-        for (auto allPermissionsItem = allPermissionsCallbacks_.begin();
-             allPermissionsItem != allPermissionsCallbacks_.end();) {
-            if ((*allPermissionsItem)->AsObject() == callback->AsObject()) {
-                allPermissionsItem = allPermissionsCallbacks_.erase(allPermissionsItem);
-                APP_LOGI("unregister from all permissions callbacks success!");
-                ret = true;
-                break;
-            } else {
-                allPermissionsItem++;
-            }
-        }
-    }
-    {
-        std::lock_guard<std::mutex> lock(permissionsChangedLock_);
-        for (auto mapIter = permissionsCallbacks_.begin(); mapIter != permissionsCallbacks_.end();) {
-            for (auto it = mapIter->second.begin(); it != mapIter->second.end();) {
-                if ((*it)->AsObject() == callback->AsObject()) {
-                    it = mapIter->second.erase(it);
-                    APP_LOGI("unregister from specific permissions callbacks success!");
-                    APP_LOGD("mapIter->first = %{public}d", (*mapIter).first);
-                    APP_LOGD("*mapIter.second.size() = %{public}zu", (*mapIter).second.size());
-                    ret = true;
-                } else {
-                    it++;
-                }
-            }
-            if (mapIter->second.empty()) {
-                mapIter = permissionsCallbacks_.erase(mapIter);
-            } else {
-                mapIter++;
-            }
-        }
-    }
-    for (const auto &item1 : permissionsCallbacks_) {
-        APP_LOGD("item1->first = %{public}d", item1.first);
-        APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
-    }
-    return ret;
-}
-bool BundleDataMgr::NotifyPermissionsChanged(int32_t uid)
-{
-    if (uid < 0) {
-        APP_LOGE("uid(%{private}d) is invalid", uid);
-        return false;
-    }
-    APP_LOGD("notify permission changed, uid = %{public}d", uid);
-    // for all permissions callback.
-    {
-        std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
-        for (const auto &allPermissionItem : allPermissionsCallbacks_) {
-            if (!allPermissionItem) {
-                APP_LOGE("callback is nullptr");
-                return false;
-            }
-
-            allPermissionItem->OnChanged(uid);
-            APP_LOGD("all permissions changed callback");
-        }
-    }
-    // for uid permissions callback.
-    {
-        std::lock_guard<std::mutex> lock(permissionsChangedLock_);
-        APP_LOGD("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
-        for (const auto &item1 : permissionsCallbacks_) {
-            APP_LOGD("item1->first = %{public}d", item1.first);
-            APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
-        }
-        auto callbackItem = permissionsCallbacks_.find(uid);
-        if (callbackItem != permissionsCallbacks_.end()) {
-            auto callbacks = callbackItem->second;
-            for (const auto &item : callbacks) {
-                if (!item) {
-                    APP_LOGE("callback is nullptr");
-                    return false;
-                }
-                item->OnChanged(uid);
-                APP_LOGD("specified permissions changed callback");
-            }
-        }
-    }
     return true;
 }
 

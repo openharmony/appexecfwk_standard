@@ -1093,61 +1093,6 @@ static void BenchmarkTestGetLaunchWantForBundle(benchmark::State &state)
 }
 
 /**
- * @tc.name: BenchmarkTestCheckPermission
- * @tc.desc: Testcase for testing CheckPermission.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestCheckPermission(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    std::string permission;
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->CheckPermission(bundleName, permission);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestCheckPermissionByUid
- * @tc.desc: Testcase for testing CheckPermissionByUid.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestCheckPermissionByUid(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    std::string permission;
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->CheckPermissionByUid(bundleName, permission, Constants::DEFAULT_USERID);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestGetAllPermissionGroupDefs
- * @tc.desc: Testcase for testing GetAllPermissionGroupDefs.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestGetAllPermissionGroupDefs(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    std::vector<PermissionDef> permissionDefs;
-    PermissionDef info;
-    info.bundleName = "com.ohos.contactsdataability";
-    info.description = "dataability_description";
-    permissionDefs.push_back(info);
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->GetAllPermissionGroupDefs(permissionDefs);
-    }
-}
-
-/**
  * @tc.name: BenchmarkTestGetPermissionDef
  * @tc.desc: Testcase for testing GetPermissionDef.
  * @tc.type: FUNC
@@ -1440,100 +1385,6 @@ static void BenchmarkTestGetBundleUserMgr(benchmark::State &state)
     for (auto _ : state) {
         /* @tc.steps: step1.call ReadFromParcel in loop */
         bundleMgrProxy->GetBundleUserMgr();
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestCanRequestPermission
- * @tc.desc: Testcase for testing CanRequestPermission.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestCanRequestPermission(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    std::string permission;
-    int userId = Constants::DEFAULT_USERID;
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->CanRequestPermission(bundleName, permission, userId);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestRequestPermissionFromUser
- * @tc.desc: Testcase for testing RequestPermissionFromUser.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestRequestPermissionFromUser(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    std::string permission;
-    int userId = Constants::DEFAULT_USERID;
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->RequestPermissionFromUser(bundleName, permission, userId);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestRegisterAllPermissionsChanged
- * @tc.desc: Testcase for testing RegisterAllPermissionsChanged.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestRegisterAllPermissionsChanged(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    Parcel data;
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
-    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->RegisterAllPermissionsChanged(callback);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestRegisterPermissionsChanged
- * @tc.desc: Testcase for testing RegisterPermissionsChanged.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestRegisterPermissionsChanged(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    Parcel data;
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
-    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
-    std::vector<int32_t> uids;
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->RegisterPermissionsChanged(uids, callback);
-    }
-}
-
-/**
- * @tc.name: BenchmarkTestUnregisterPermissionsChanged
- * @tc.desc: Testcase for testing UnregisterPermissionsChanged.
- * @tc.type: FUNC
- * @tc.require: Issue Number
- */
-
-static void BenchmarkTestUnregisterPermissionsChanged(benchmark::State &state)
-{
-    sptr<IBundleMgr> bundleMgrProxy = BundleMgrProxyTest::GetBundleMgrProxy();
-    Parcel data;
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
-    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
-    for (auto _ : state) {
-        /* @tc.steps: step1.call ReadFromParcel in loop */
-        bundleMgrProxy->UnregisterPermissionsChanged(callback);
     }
 }
 
@@ -1994,9 +1845,6 @@ BENCHMARK(BenchmarkTestGetAbilityLabel)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetBundleArchiveInfo)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetBundleArchiveInfoByFlag)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetLaunchWantForBundle)->Iterations(1000);
-BENCHMARK(BenchmarkTestCheckPermission)->Iterations(1000);
-BENCHMARK(BenchmarkTestCheckPermissionByUid)->Iterations(1000);
-BENCHMARK(BenchmarkTestGetAllPermissionGroupDefs)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetPermissionDef)->Iterations(1000);
 BENCHMARK(BenchmarkTestHasSystemCapability)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetSystemAvailableCapabilities)->Iterations(1000);
@@ -2012,11 +1860,6 @@ BENCHMARK(BenchmarkTestIsAbilityEnabled)->Iterations(1000);
 BENCHMARK(BenchmarkTestSetAbilityEnabled)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetBundleInstaller)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetBundleUserMgr)->Iterations(1000);
-BENCHMARK(BenchmarkTestCanRequestPermission)->Iterations(1000);
-BENCHMARK(BenchmarkTestRequestPermissionFromUser)->Iterations(1000);
-BENCHMARK(BenchmarkTestRegisterAllPermissionsChanged)->Iterations(1000);
-BENCHMARK(BenchmarkTestRegisterPermissionsChanged)->Iterations(1000);
-BENCHMARK(BenchmarkTestUnregisterPermissionsChanged)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetAllFormsInfo)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetFormsInfoByApp)->Iterations(1000);
 BENCHMARK(BenchmarkTestGetFormsInfoByModule)->Iterations(1000);
