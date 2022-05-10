@@ -22,7 +22,7 @@ group("bms_target") {
     "interfaces/kits/native/bundle:bundle_ndk",
     "sa_profile:appexecfwk_sa_profile",
     "services/bundlemgr:bms_target",
-    "tools/zip:tools_zip"
+    "tools/zip:tools_zip",
   ]
 }
 
@@ -36,6 +36,6 @@ group("test_target") {
     "test/fuzztest:fuzztest",
     "test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
     "test/systemtest/common/bms:systemtest_bms",
-    "tools/zip/test:unittest"
+    "tools/zip/test:unittest",
   ]
 }
