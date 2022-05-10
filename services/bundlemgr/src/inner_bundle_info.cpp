@@ -66,6 +66,7 @@ const std::string MODULE_ENTRY_ABILITY_KEY = "entryAbilityKey";
 const std::string MODULE_DEPENDENCIES = "dependencies";
 const std::string NEW_BUNDLE_NAME = "newBundleName";
 const std::string MODULE_SRC_PATH = "srcPath";
+const std::string MODULE_HASH_VALUE = "hashValue";
 const std::string SCHEME_SEPARATOR = "://";
 const std::string PORT_SEPARATOR = ":";
 const std::string PATH_SEPARATOR = "/";
@@ -356,6 +357,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_MAIN_ABILITY, info.mainAbility},
         {MODULE_ENTRY_ABILITY_KEY, info.entryAbilityKey},
         {MODULE_SRC_PATH, info.srcPath},
+        {MODULE_HASH_VALUE, info.hashValue},
         {MODULE_PROCESS, info.process},
         {MODULE_SRC_ENTRANCE, info.srcEntrance},
         {MODULE_DEVICE_TYPES, info.deviceTypes},
@@ -571,6 +573,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         jsonObjectEnd,
         MODULE_SRC_PATH,
         info.srcPath,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_HASH_VALUE,
+        info.hashValue,
         JsonType::STRING,
         false,
         ProfileReader::parseResult,
@@ -1724,6 +1734,7 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
         bundleInfo.hapModuleNames.emplace_back(info.second.modulePackage);
         auto hapmoduleinfo = FindHapModuleInfo(info.second.modulePackage, userId);
         if (hapmoduleinfo) {
+            GetModuleWithHashValue(flags, info.second.modulePackage, *hapmoduleinfo);
             bundleInfo.hapModuleInfos.emplace_back(*hapmoduleinfo);
             bundleInfo.moduleNames.emplace_back(info.second.moduleName);
             bundleInfo.moduleDirs.emplace_back(info.second.modulePath);
@@ -1748,6 +1759,22 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
     }
     GetBundleWithAbilities(flags, bundleInfo, userId);
     GetBundeleWithExtension(flags, bundleInfo, userId);
+}
+
+void InnerBundleInfo::GetModuleWithHashValue(
+    int32_t flags, const std::string &modulePackage, HapModuleInfo &hapModuleInfo) const
+{
+    if (!(static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_HASH_VALUE)) {
+        return;
+    }
+
+    auto it = innerModuleInfos_.find(modulePackage);
+    if (it == innerModuleInfos_.end()) {
+        APP_LOGE("can not find module %{public}s", modulePackage.c_str());
+        return;
+    }
+
+    hapModuleInfo.hashValue = it->second.hashValue;
 }
 
 void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const

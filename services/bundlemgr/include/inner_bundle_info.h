@@ -67,6 +67,7 @@ struct InnerModuleInfo {
     std::string mainAbility; // config.json : mainAbility; module.json : mainElement
     std::string entryAbilityKey; // skills contains "action.system.home" and "entity.system.home"
     std::string srcPath;
+    std::string hashValue;
     bool isEntry = false;
     bool installationFree = false;
     // all user's value of isRemovable
@@ -193,6 +194,14 @@ public:
      */
     std::optional<HapModuleInfo> FindHapModuleInfo(
         const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+    /**
+     * @brief Get module hashValue.
+     * @param modulePackage Indicates the module package.
+     * @param hapModuleInfo Indicates the hapModuleInfo.
+     * @return
+     */
+    void GetModuleWithHashValue(
+        int32_t flags, const std::string &modulePackage, HapModuleInfo &hapModuleInfo) const;
     /**
      * @brief Find abilityInfo by bundle name and ability name.
      * @param bundleName Indicates the bundle name.
@@ -1069,6 +1078,13 @@ public:
     {
         if (oldInfo.FindModule(currentPackage_)) {
             innerModuleInfos_.at(currentPackage_).moduleDataDir = oldInfo.GetModuleDataDir(currentPackage_);
+        }
+    }
+
+    void SetModuleHashValue(const std::string &hashValue)
+    {
+        if (innerModuleInfos_.count(currentPackage_) == 1) {
+            innerModuleInfos_.at(currentPackage_).hashValue = hashValue;
         }
     }
     /**

@@ -467,6 +467,11 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     CHECK_RESULT(result, "parse haps file failed %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_PARSED);                          // ---- 20%
 
+    // check hap hash param
+    result = CheckHapHashParams(newInfos, installParam.hashParams);
+    CHECK_RESULT(result, "check hap hash param failed %{public}d");
+    UpdateInstallerState(InstallerState::INSTALL_HAP_HASH_PARAM_CHECKED);          // ---- 25%
+
     // check versioncode and bundleName
     result = CheckAppLabelInfo(newInfos);
     CHECK_RESULT(result, "verisoncode or bundleName is different in all haps %{public}d");
@@ -1599,6 +1604,45 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     }
     APP_LOGD("finish parse hap file");
     return result;
+}
+
+ErrCode BaseBundleInstaller::CheckHapHashParams(
+    std::unordered_map<std::string, InnerBundleInfo> &infos,
+    std::map<std::string, std::string> hashParams)
+{
+    if (hashParams.empty()) {
+        APP_LOGD("hashParams is empty");
+        return ERR_OK;
+    }
+
+    std::vector<std::string> hapModuleNames;
+    for (auto &info : infos) {
+        std::vector<std::string> moduleNames;
+        info.second.GetModuleNames(moduleNames);
+        if (moduleNames.empty()) {
+            APP_LOGE("hap(%{public}s) moduleName is empty", info.first.c_str());
+            return ERR_APPEXECFWK_INSTALL_FAILED_MODULE_NAME_EMPTY;
+        }
+
+        if (std::find(hapModuleNames.begin(), hapModuleNames.end(), moduleNames[0]) != hapModuleNames.end()) {
+            APP_LOGE("hap moduleName(%{public}s) duplicate", moduleNames[0].c_str());
+            return ERR_APPEXECFWK_INSTALL_FAILED_MODULE_NAME_DUPLICATE;
+        }
+
+        hapModuleNames.emplace_back(moduleNames[0]);
+        auto hashParamIter = hashParams.find(moduleNames[0]);
+        if (hashParamIter != hashParams.end()) {
+            info.second.SetModuleHashValue(hashParamIter->second);
+            hashParams.erase(hashParamIter);
+        }
+    }
+
+    if (!hashParams.empty()) {
+        APP_LOGE("Some hashParam moduleName is not exist in hap moduleNames");
+        return ERR_APPEXECFWK_INSTALL_FAILED_CHECK_HAP_HASH_PARAM;
+    }
+
+    return ERR_OK;
 }
 
 ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::string, InnerBundleInfo> &infos)

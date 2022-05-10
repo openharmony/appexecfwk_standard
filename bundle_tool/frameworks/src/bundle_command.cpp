@@ -227,6 +227,18 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install sign info inconsistent.",
         },
         {
+            IStatusReceiver::ERR_INSTALL_FAILED_MODULE_NAME_EMPTY,
+            "error: install failed due to hap moduleName is empty.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_MODULE_NAME_DUPLICATE,
+            "error: install failed due to hap moduleName duplicate.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_CHECK_HAP_HASH_PARAM,
+            "error: install failed due to check hap hash param failed.",
+        },
+        {
             IStatusReceiver::ERR_INSTALL_PARAM_ERROR,
             "error: install param error.",
         },

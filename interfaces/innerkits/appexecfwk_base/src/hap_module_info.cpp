@@ -34,6 +34,7 @@ const std::string HAP_MODULE_INFO_LABEL_ID = "labelId";
 const std::string HAP_MODULE_INFO_BACKGROUND_IMG = "backgroundImg";
 const std::string HAP_MODULE_INFO_MAIN_ABILITY = "mainAbility";
 const std::string HAP_MODULE_INFO_SRC_PATH = "srcPath";
+const std::string HAP_MODULE_INFO_HASH_VALUE = "hashValue";
 const std::string HAP_MODULE_INFO_SUPPORTED_MODES = "supportedModes";
 const std::string HAP_MODULE_INFO_REQ_CAPABILITIES = "reqCapabilities";
 const std::string HAP_MODULE_INFO_DEVICE_TYPES = "deviceTypes";
@@ -129,6 +130,7 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_BACKGROUND_IMG, hapModuleInfo.backgroundImg},
         {HAP_MODULE_INFO_MAIN_ABILITY, hapModuleInfo.mainAbility},
         {HAP_MODULE_INFO_SRC_PATH, hapModuleInfo.srcPath},
+        {HAP_MODULE_INFO_HASH_VALUE, hapModuleInfo.hashValue},
         {HAP_MODULE_INFO_SUPPORTED_MODES, hapModuleInfo.supportedModes},
         {HAP_MODULE_INFO_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
         {HAP_MODULE_INFO_DEVICE_TYPES, hapModuleInfo.deviceTypes},
@@ -235,6 +237,14 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         jsonObjectEnd,
         HAP_MODULE_INFO_SRC_PATH,
         hapModuleInfo.srcPath,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_HASH_VALUE,
+        hapModuleInfo.hashValue,
         JsonType::STRING,
         false,
         parseResult,

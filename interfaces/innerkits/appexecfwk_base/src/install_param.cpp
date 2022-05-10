@@ -35,6 +35,15 @@ bool InstallParam::ReadFromParcel(Parcel &parcel)
 
     userId = parcel.ReadInt32();
     isKeepData = parcel.ReadBool();
+
+    int32_t hashParamSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, hashParamSize);
+    for (int32_t i = 0; i < hashParamSize; ++i) {
+        std::string moduleName = Str16ToStr8(parcel.ReadString16());
+        std::string hashValue = Str16ToStr8(parcel.ReadString16());
+        hashParams.emplace(moduleName, hashValue);
+    }
+
     return true;
 }
 
@@ -55,6 +64,13 @@ bool InstallParam::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(installLocation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, userId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isKeepData);
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(hashParams.size()));
+    for (auto& hashParam : hashParams) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(hashParam.first));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(hashParam.second));
+    }
+
     return true;
 }
 }  // namespace AppExecFwk
