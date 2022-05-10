@@ -15,8 +15,8 @@ import("../../appexecfwk.gni")
 
 config("common_test_config") {
   defines = [
-    "APP_LOG_TAG = \"AppExecFwk\"",
-    "LOG_DOMAIN = 0xD00114E",
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
   ]
 }
 

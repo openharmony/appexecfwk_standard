@@ -31,8 +31,8 @@ ohos_shared_library("libappexecfwk_common") {
   ]
 
   defines = [
-    "APP_LOG_TAG = \"AppExecFwk\"",
-    "LOG_DOMAIN = 0xD001140",
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
   ]
 
   public_configs = [
