@@ -49,6 +49,9 @@ public:
 
     bool Recover(const std::string &bundleName, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver);
+
+    ErrCode StreamInstall(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
