@@ -58,15 +58,7 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard/common:common_target",
-                "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_base:appexecfwk_base",
-                "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_core:appexecfwk_core",
-                "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
-                "//foundation/appexecfwk/standard/services/bundlemgr:bms_target",
-                "//foundation/appexecfwk/standard/interfaces/kits/js:napi_packages",
-                "//foundation/appexecfwk/standard/interfaces/kits/native/bundle:bundle_ndk",
-                "//foundation/appexecfwk/standard/test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
-                "//foundation/appexecfwk/standard/tools/zip:tools_zip"
+                "//foundation/appexecfwk/standard:bms_target"
             ],
             "inner_kits": [
                 {
@@ -96,12 +88,7 @@
                   }
             ],
             "test": [
-                "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
-                "//foundation/appexecfwk/standard/services/test/moduletest/common/bms:moduletest",
-                "//foundation/appexecfwk/standard/test/benchmarktest:benchmarktest",
-                "//foundation/appexecfwk/standard/test/fuzztest:fuzztest",
-                "//foundation/appexecfwk/standard/test/systemtest/common/bms:systemtest_bms",
-                "//foundation/appexecfwk/standard/tools/zip/test:unittest"
+                "//foundation/appexecfwk/standard:test_target"
             ]
         }
     }
