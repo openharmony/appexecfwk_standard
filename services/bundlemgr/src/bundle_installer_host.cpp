@@ -372,8 +372,8 @@ bool BundleInstallerHost::Uninstall(const std::string &bundleName, const std::st
 bool BundleInstallerHost::InstallByBundleName(const std::string &bundleName,
     const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
-        APP_LOGE("statusReceiver invalid");
     if (!CheckBundleInstallerManager(statusReceiver)) {
+        APP_LOGE("statusReceiver invalid");
         return false;
     }
 
