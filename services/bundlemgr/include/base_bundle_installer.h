@@ -44,7 +44,7 @@ protected:
         INSTALL_SYSCAP_CHECKED = 10,
         INSTALL_SIGNATURE_CHECKED = 15,
         INSTALL_PARSED = 20,
-        INSTALL_PERMS_REQ = 25,
+        INSTALL_HAP_HASH_PARAM_CHECKED = 25,
         INSTALL_VERSION_AND_BUNDLENAME_CHECKED = 30,
         INSTALL_CREATDIR = 40,
         INSTALL_REMOVE_SANDBOX_APP = 50,
@@ -342,6 +342,15 @@ private:
     ErrCode ParseHapFiles(const std::vector<std::string> &bundlePaths, const InstallParam &installParam,
         const Constants::AppType appType, std::vector<Security::Verify::HapVerifyResult> &hapVerifyRes,
         std::unordered_map<std::string, InnerBundleInfo> &infos);
+    /**
+     * @brief To check the hap hash param.
+     * @param infos .Indicates all innerBundleInfo for all haps need to be installed.
+     * @param hashParams .Indicates all hashParams in installParam.
+     * @return Returns ERR_OK if haps checking successfully; returns error code otherwise.
+     */
+    ErrCode CheckHapHashParams(
+        std::unordered_map<std::string, InnerBundleInfo> &infos,
+        std::map<std::string, std::string> hashParams);
     /**
      * @brief To check the version code and bundleName in all haps.
      * @param infos .Indicates all innerBundleInfo for all haps need to be installed.

@@ -290,6 +290,7 @@ protected:
                         "moduleName": "launcher",
                         "moduleType": "entry"
                     },
+                    "hashValue": "",
                     "isEntry": true,
                     "metaData": {
                         "customizeData": [],
