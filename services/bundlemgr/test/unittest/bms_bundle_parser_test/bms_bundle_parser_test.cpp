@@ -23,14 +23,14 @@
 #include "bundle_parser.h"
 #include "bundle_profile.h"
 #include "common_profile.h"
+#include "default_permission_profile.h"
 #include "json_constants.h"
 
 using namespace testing::ext;
-using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 using namespace OHOS::AppExecFwk::Constants;
 using namespace OHOS::AppExecFwk::ProfileReader;
-
+namespace OHOS {
 namespace {
 const std::string RESOURCE_ROOT_PATH = "/data/test/resource/bms/parse_bundle/";
 const std::string NEW_APP = "new";
@@ -41,6 +41,8 @@ const std::string NOTHING_CONFIG = "nothing_config";
 const std::string FORMAT_ERROR_PROFILE = "format_error_profile";
 const std::string FORMAT_MISSING_PROFILE = "format_missing_profile";
 const std::string UNKOWN_PATH = "unknown_path";
+const size_t ONE = 1;
+const size_t TWO = 2;
 const nlohmann::json CONFIG_JSON = R"(
     {
         "app": {
@@ -213,6 +215,8 @@ protected:
     void CheckProfilePermission(const nlohmann::json &checkedProfileJson) const;
     void CheckProfileForms(const nlohmann::json &checkedProfileJson) const;
     void CheckProfileShortcut(const nlohmann::json &checkedProfileJson) const;
+    ErrCode CheckProfileDefaultPermission(const nlohmann::json &checkedProfileJson,
+        std::vector<DefaultPermission> &defaultPermissions) const;
 protected:
     std::ostringstream pathStream_;
 };
@@ -416,6 +420,19 @@ void BmsBundleParserTest::CheckProfileShortcut(const nlohmann::json &checkedProf
     BundleExtractor bundleExtractor("");
     ErrCode result = bundleProfile.TransformTo(profileFileBuffer, bundleExtractor, innerBundleInfo);
     EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
+}
+
+ErrCode BmsBundleParserTest::CheckProfileDefaultPermission(const nlohmann::json &checkedProfileJson,
+    std::vector<DefaultPermission> &defaultPermissions) const
+{
+    DefaultPermissionProfile profile;
+    std::ostringstream profileFileBuffer;
+    profileFileBuffer << checkedProfileJson.dump();
+    nlohmann::json jsonObject =  nlohmann::json::parse(profileFileBuffer.str(), nullptr, false);
+    if (jsonObject.is_discarded()) {
+        return ERR_APPEXECFWK_PARSE_BAD_PROFILE;
+    }
+    return profile.TransformTo(jsonObject, defaultPermissions);
 }
 
 /**
@@ -1028,3 +1045,159 @@ HWTEST_F(BmsBundleParserTest, TestExtractByName_0500, Function | SmallTest | Lev
     bool result = bundleExtractor.ExtractByName(fileInBundle, fileBuffer);
     EXPECT_FALSE(result);
 }
+
+/**
+ * @tc.number: TestDefaultPermissionProfile_0100
+ * @tc.name: test default permission profile
+ * @tc.desc: 1. system running normally
+ *           2. test success
+ */
+HWTEST_F(BmsBundleParserTest, TestDefaultPermissionProfile_0100, Function | SmallTest | Level1)
+{
+    std::vector<DefaultPermission> defaultPermissions;
+    nlohmann::json profileJson = R"(
+        [
+            {
+                "bundleName": "com.ohos.test"
+            }
+        ]
+        )"_json;
+    ErrCode result = CheckProfileDefaultPermission(profileJson, defaultPermissions);
+    EXPECT_EQ(result, ERR_OK);
+    EXPECT_EQ(defaultPermissions.size(), ONE);
+}
+
+/**
+ * @tc.number: TestDefaultPermissionProfile_0200
+ * @tc.name: test default permission profile
+ * @tc.desc: 1. system running normally
+ *           2. test success
+ */
+HWTEST_F(BmsBundleParserTest, TestDefaultPermissionProfile_0200, Function | SmallTest | Level1)
+{
+    std::vector<DefaultPermission> defaultPermissions;
+    nlohmann::json profileJson = R"(
+        [
+            {
+                "bundleName": "com.ohos.test1",
+                "permissions":[
+                    {
+                        "name": "ohos.permission.test1",
+                        "userCancellable":true
+                    },
+                    {
+                        "name": "ohos.permission.test2",
+                        "userCancellable":false
+                    }
+                ]
+            }
+        ]
+        )"_json;
+    ErrCode result = CheckProfileDefaultPermission(profileJson, defaultPermissions);
+    EXPECT_EQ(result, ERR_OK);
+    EXPECT_EQ(defaultPermissions.size(), ONE);
+    if (defaultPermissions.size() == ONE) {
+        EXPECT_EQ(defaultPermissions[0].bundleName, "com.ohos.test1");
+        EXPECT_EQ(defaultPermissions[0].grantPermission[0].name, "ohos.permission.test1");
+        EXPECT_TRUE(defaultPermissions[0].grantPermission[0].userCancellable);
+        EXPECT_EQ(defaultPermissions[0].grantPermission[1].name, "ohos.permission.test2");
+        EXPECT_FALSE(defaultPermissions[0].grantPermission[1].userCancellable);
+    }
+}
+
+/**
+ * @tc.number: TestDefaultPermissionProfile_0300
+ * @tc.name: test default permission profile
+ * @tc.desc: 1. system running normally
+ *           2. test success
+ */
+HWTEST_F(BmsBundleParserTest, TestDefaultPermissionProfile_0300, Function | SmallTest | Level1)
+{
+    std::vector<DefaultPermission> defaultPermissions;
+    nlohmann::json profileJson = R"(
+        [
+            {
+                "bundleName": "com.ohos.test1",
+                "permissions":[
+                    {
+                        "name": "ohos.permission.test1",
+                        "userCancellable":true
+                    },
+                    {
+                        "name": "ohos.permission.test2",
+                        "userCancellable":false
+                    }
+                ]
+            },
+            {
+                "bundleName": "com.ohos.test2",
+                "permissions":[
+                    {
+                        "name": "ohos.permission.test1",
+                        "userCancellable":true
+                    },
+                    {
+                        "name": "ohos.permission.test2",
+                        "userCancellable":false
+                    }
+                ]
+            }
+        ]
+        )"_json;
+    ErrCode result = CheckProfileDefaultPermission(profileJson, defaultPermissions);
+    EXPECT_EQ(result, ERR_OK);
+    EXPECT_EQ(defaultPermissions.size(), TWO);
+    if (defaultPermissions.size() == TWO) {
+        EXPECT_EQ(defaultPermissions[0].bundleName, "com.ohos.test1");
+        EXPECT_EQ(defaultPermissions[0].grantPermission[0].name, "ohos.permission.test1");
+        EXPECT_TRUE(defaultPermissions[0].grantPermission[0].userCancellable);
+        EXPECT_EQ(defaultPermissions[0].grantPermission[1].name, "ohos.permission.test2");
+        EXPECT_FALSE(defaultPermissions[0].grantPermission[1].userCancellable);
+        EXPECT_EQ(defaultPermissions[1].bundleName, "com.ohos.test2");
+    }
+}
+
+/**
+ * @tc.number: TestDefaultPermissionProfile_0400
+ * @tc.name: test default permission profile
+ * @tc.desc: 1. system running normally
+ *           2. test failed
+ */
+HWTEST_F(BmsBundleParserTest, TestDefaultPermissionProfile_0400, Function | SmallTest | Level1)
+{
+    std::vector<DefaultPermission> defaultPermissions;
+    nlohmann::json errorProfileJson = R"(
+        [
+            {
+                "bundleName": "com.ohos.test",
+                "permissions": [
+                    {
+                        "name": "ohos.permission.test1"
+                    }
+                ]
+            }
+        ]
+        )"_json;
+    ErrCode result = CheckProfileDefaultPermission(errorProfileJson, defaultPermissions);
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
+}
+
+/**
+ * @tc.number: TestDefaultPermissionProfile_0500
+ * @tc.name: test default permission profile
+ * @tc.desc: 1. system running normally
+ *           2. test failed
+ */
+HWTEST_F(BmsBundleParserTest, TestDefaultPermissionProfile_0500, Function | SmallTest | Level1)
+{
+    std::vector<DefaultPermission> defaultPermissions;
+    nlohmann::json errorProfileJson = R"(
+        [
+            {
+            }
+        ]
+        )"_json;
+    ErrCode result = CheckProfileDefaultPermission(errorProfileJson, defaultPermissions);
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
+}
+} // OHOS
