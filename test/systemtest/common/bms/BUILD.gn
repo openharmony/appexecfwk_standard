@@ -21,8 +21,8 @@ config("bms_system_test_config") {
   ]
 
   configs = [
-    "${innerkits_path}/appexecfwk_core:bundlemgr_sdk_config",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base_sdk_config",
+    "${inner_api_path}/appexecfwk_core:bundlemgr_sdk_config",
+    "${inner_api_path}/appexecfwk_base:appexecfwk_base_sdk_config",
   ]
 }
 
@@ -30,13 +30,13 @@ ohos_source_set("bms_install_sst_source") {
   testonly = true
 
   sources = [
-    "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
-    "${innerkits_path}/appexecfwk_core/src/bundlemgr/bundle_installer_proxy.cpp",
-    "${innerkits_path}/appexecfwk_core/src/bundlemgr/bundle_mgr_proxy.cpp",
-    "${innerkits_path}/appexecfwk_core/src/bundlemgr/status_receiver_proxy.cpp",
+    "${inner_api_path}/appexecfwk_base/src/ability_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/application_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/bundle_info.cpp",
+    "${inner_api_path}/appexecfwk_base/src/bundle_user_info.cpp",
+    "${inner_api_path}/appexecfwk_core/src/bundlemgr/bundle_installer_proxy.cpp",
+    "${inner_api_path}/appexecfwk_core/src/bundlemgr/bundle_mgr_proxy.cpp",
+    "${inner_api_path}/appexecfwk_core/src/bundlemgr/status_receiver_proxy.cpp",
   ]
 
   include_dirs = [ "//third_party/json/include" ]

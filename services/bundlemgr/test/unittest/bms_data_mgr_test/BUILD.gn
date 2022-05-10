@@ -56,7 +56,7 @@ ohos_unittest("BmsDataMgrTest") {
   configs = [
     "${services_path}/bundlemgr/test:bundlemgr_test_config",
     "${libs_path}/libeventhandler:libeventhandler_config",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base_sdk_config",
+    "${inner_api_path}/appexecfwk_base:appexecfwk_base_sdk_config",
   ]
   cflags = []
   if (target_cpu == "arm") {
