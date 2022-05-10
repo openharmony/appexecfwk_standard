@@ -82,5 +82,13 @@ bool MockBundleInstallerHost::Recover(const std::string &bundleName, const Insta
     statusReceiver->OnFinished(OHOS::ERR_OK, MSG_SUCCESS);
     return true;
 }
+
+ErrCode MockBundleInstallerHost::StreamInstall(const std::vector<std::string> &bundleFilePaths,
+    const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    APP_LOGD("enter");
+    statusReceiver->OnFinished(OHOS::ERR_OK, MSG_SUCCESS);
+    return OHOS::ERR_OK;
+}
 } // namespace AppExecFwk
 } // namespace OHOS
