@@ -50,6 +50,7 @@ struct InstallParam : public Parcelable {
     // OTA upgrade skips the killing process
     bool noSkipsKill  = true;
     bool needSendEvent = true;
+    bool streamInstallMode = false;
     std::map<std::string, std::string> hashParams;
 
     // the parcel object function is not const.

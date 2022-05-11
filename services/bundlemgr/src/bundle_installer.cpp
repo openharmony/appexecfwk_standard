@@ -52,6 +52,7 @@ void BundleInstaller::Install(const std::string &bundleFilePath, const InstallPa
             bundleFilePath, installParam, Constants::AppType::THIRD_PARTY_APP);
     }
 
+    SaveHapToInstallPath(installParam.streamInstallMode);
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }
@@ -91,6 +92,7 @@ void BundleInstaller::Install(const std::vector<std::string> &bundleFilePaths, c
         resultCode = InstallBundle(bundleFilePaths, installParam, Constants::AppType::THIRD_PARTY_APP);
     }
 
+    SaveHapToInstallPath(installParam.streamInstallMode);
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }

@@ -42,6 +42,18 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::Security;
+namespace {
+std::string GetHapPath(const InnerBundleInfo &info, const std::string &moduleName)
+{
+    return info.GetAppCodePath() + Constants::PATH_SEPARATOR
+        + moduleName + Constants::INSTALL_FILE_SUFFIX;
+}
+
+std::string GetHapPath(const InnerBundleInfo &info)
+{
+    return GetHapPath(info, info.GetModuleName(info.GetCurrentModulePackage()));
+}
+}
 
 BaseBundleInstaller::BaseBundleInstaller()
 {
@@ -507,6 +519,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
         UninstallLowerVersionFeature(uninstallModuleVec_);
     }
 
+    SaveHapPathToRecords(installParam.isPreInstallApp, newInfos);
     UpdateInstallerState(InstallerState::INSTALL_SUCCESS);                         // ---- 100%
     APP_LOGD("finish ProcessBundleInstall bundlePath install touch off aging");
 #ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
@@ -1333,6 +1346,13 @@ ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::str
         APP_LOGE("fail to extrace module dir, error is %{public}d", result);
         return result;
     }
+
+    if (info.IsPreInstallApp()) {
+        info.SetModuleHapPath(modulePath_);
+    } else {
+        info.SetModuleHapPath(GetHapPath(info));
+    }
+
     auto moduleDir = info.GetAppCodePath() + Constants::PATH_SEPARATOR + info.GetCurrentModulePackage();
     info.AddModuleSrcDir(moduleDir);
     info.AddModuleResPath(moduleDir);
@@ -1386,6 +1406,13 @@ ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(
     auto result = RemoveModuleDir(moduleDir);
     if (result != ERR_OK) {
         APP_LOGE("fail to remove module dir, error is %{public}d", result);
+        return result;
+    }
+
+    // remove hap
+    result = RemoveModuleDir(GetHapPath(info, info.GetModuleName(modulePackage)));
+    if (result != ERR_OK) {
+        APP_LOGE("fail to remove module hap, error is %{public}d", result);
         return result;
     }
 
@@ -1462,6 +1489,7 @@ ErrCode BaseBundleInstaller::ExtractModuleFiles(const InnerBundleInfo &info, con
         APP_LOGE("extract module files failed, error is %{public}d", result);
         return result;
     }
+
     return ERR_OK;
 }
 
@@ -2017,6 +2045,43 @@ ErrCode BaseBundleInstaller::CheckHapModleOrType(const InnerBundleInfo &innerBun
         }
     }
     return ERR_OK;
+}
+
+void BaseBundleInstaller::SaveHapPathToRecords(
+    bool isPreInstallApp, const std::unordered_map<std::string, InnerBundleInfo> &infos)
+{
+    if (isPreInstallApp) {
+        APP_LOGD("PreInstallApp do not need to save hap path to record");
+        return;
+    }
+
+    for (const auto &item : infos) {
+        auto hapPathIter = hapPathRecords_.find(item.first);
+        if (hapPathIter == hapPathRecords_.end()) {
+            hapPathRecords_.emplace(item.first, GetHapPath(item.second));
+        }
+    }
+}
+
+void BaseBundleInstaller::SaveHapToInstallPath(bool moveFileMode)
+{
+    for (const auto &hapPathRecord : hapPathRecords_) {
+        APP_LOGD("Save from(%{public}s) to(%{public}s)",
+            hapPathRecord.first.c_str(), hapPathRecord.second.c_str());
+        if (moveFileMode) {
+            if (!BundleUtil::RenameFile(hapPathRecord.first, hapPathRecord.second)) {
+                APP_LOGE("Move hap to install path failed");
+                return;
+            }
+
+            continue;
+        }
+
+        if (!BundleUtil::CopyFile(hapPathRecord.first, hapPathRecord.second)) {
+            APP_LOGE("Copy hap to install path failed");
+            return;
+        }
+    }
 }
 
 void BaseBundleInstaller::SetEntryInstallationFree(const BundlePackInfo &bundlePackInfo,
