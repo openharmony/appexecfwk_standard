@@ -62,10 +62,11 @@ const struct option LONG_OPTIONS[] = {
     {nullptr, 0, nullptr, 0},
 };
 
-const std::string SHORT_OPTIONS_DUMP = "hn:aisu:d:";
+const std::string SHORT_OPTIONS_DUMP = "hn:m:aisu:d:";
 const struct option LONG_OPTIONS_DUMP[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-name", required_argument, nullptr, 'n'},
+    {"module-name", required_argument, nullptr, 'm'},
     {"all", no_argument, nullptr, 'a'},
     {"bundle-info", no_argument, nullptr, 'i'},
     {"shortcut-info", no_argument, nullptr, 's'},
@@ -888,11 +889,13 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
     int counter = 0;
     std::string dumpResults = "";
     std::string bundleName = "";
+    std::string moduleName = "";
     bool bundleDumpAll = false;
     bool bundleDumpInfos = false;
     bool bundleDumpInfo = false;
     bool bundleDumpShortcut = false;
     bool bundleDumpDistributedBundleInfo = false;
+    bool bundleDumpDependentModule = false;
     std::string deviceId = "";
     int32_t userId = Constants::ALL_USERID;
     while (true) {
@@ -921,6 +924,14 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     // 'bm dump -n' with no argument: bm dump -n
                     // 'bm dump --bundle-name' with no argument: bm dump --bundle-name
                     APP_LOGD("'bm dump -n' with no argument.");
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 'm': {
+                    // 'bm dump -m' with no argument: bm dump -m
+                    // 'bm dump --module-name' with no argument: bm dump --bundle-name
+                    APP_LOGD("'bm dump -m' with no argument.");
                     resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
@@ -984,6 +995,14 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                 bundleDumpInfo = true;
                 break;
             }
+            case 'm': {
+                // 'bm dump -m xxx'
+                // 'bm dump --module-name xxx'
+                APP_LOGD("'bm dump %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                moduleName = optarg;
+                bundleDumpDependentModule = true;
+                break;
+            }
             case 's': {
                 // 'bm dump -n xxx -s'
                 // 'bm dump --bundle-name xxx --shortcut-info'
@@ -1029,6 +1048,12 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
             resultReceiver_.append(HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n");
             result = OHOS::ERR_INVALID_VALUE;
         }
+        if ((resultReceiver_ == "") && bundleDumpDependentModule && (bundleName.size() == 0)) {
+            // 'bm dump -m ...' with no bundle name option
+            APP_LOGD("'bm dump -m' with no bundle name option.");
+            resultReceiver_.append(HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n");
+            result = OHOS::ERR_INVALID_VALUE;
+        }
     }
     if (result != OHOS::ERR_OK) {
         resultReceiver_.append(HELP_MSG_DUMP);
@@ -1042,6 +1067,8 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
             dumpResults = DumpBundleList(userId);
         } else if (bundleDumpInfos) {
             dumpResults = DumpBundleInfos(userId);
+        } else if (bundleDumpDependentModule) {
+            dumpResults = DumpDependentModuleNames(bundleName, moduleName);
         } else if (bundleDumpInfo) {
             dumpResults = DumpBundleInfo(bundleName, userId);
         }
@@ -1872,6 +1899,26 @@ std::string BundleManagerShellCommand::DumpDistributedBundleInfo(
         dumpResults.append("distributed bundleInfo");
         dumpResults.append(":\n");
         dumpResults.append(distributedBundleInfo.ToString());
+        dumpResults.append("\n");
+    }
+    return dumpResults;
+}
+
+std::string BundleManagerShellCommand::DumpDependentModuleNames(
+    const std::string &bundleName,
+    const std::string &moduleName) const
+{
+    std::string dumpResults = "";
+    std::vector<std::string> dependentModuleNames;
+    bool dumpRet = bundleMgrProxy_->GetAllDependentModuleNames(bundleName, moduleName, dependentModuleNames);
+    if (!dumpRet) {
+        APP_LOGE("failed to dump dependent module name.");
+    } else {
+        dumpResults.append("dependent moduleNames:");
+        for (const auto &name : dependentModuleNames) {
+            dumpResults.append("\n");
+            dumpResults.append(name);
+        }
         dumpResults.append("\n");
     }
     return dumpResults;
