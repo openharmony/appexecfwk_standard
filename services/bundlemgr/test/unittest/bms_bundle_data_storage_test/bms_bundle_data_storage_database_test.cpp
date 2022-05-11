@@ -543,6 +543,7 @@ protected:
                     ],
                     "extensionSkillKeys": [
                     ],
+                    "hashValue": "",
                     "installationFree": true,
                     "isEntry": true,
                     "isModuleJson": false,
@@ -648,6 +649,7 @@ protected:
                     ],
                     "extensionSkillKeys": [
                     ],
+                    "hashValue": "",
                     "installationFree": true,
                     "isEntry": false,
                     "isModuleJson": false,
@@ -703,6 +705,7 @@ protected:
                     ],
                     "extensionSkillKeys": [
                     ],
+                    "hashValue": "",
                     "installationFree": true,
                     "isEntry": false,
                     "isModuleJson": false,

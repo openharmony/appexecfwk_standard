@@ -130,7 +130,8 @@ ErrCode BundleSandboxDataMgr::GetSandboxAppBundleInfo(
         BundleFlag::GET_BUNDLE_DEFAULT |
         BundleFlag::GET_BUNDLE_WITH_ABILITIES |
         BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION |
-        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO, info, requestUserId);
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE, info, requestUserId);
     APP_LOGD("GetSandboxAppBundleInfo successfully");
     return ERR_OK;
 }

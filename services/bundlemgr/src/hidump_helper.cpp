@@ -189,7 +189,9 @@ ErrCode HidumpHelper::GetAllAbilityInfo(std::string &result)
 
     std::vector<BundleInfo> bundleInfos;
     if (!shareDataMgr->GetBundleInfos(static_cast<int32_t>(
-        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO),
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE),
         bundleInfos, Constants::ANY_USERID)) {
         APP_LOGE("get bundleInfos failed.");
         return ERR_APPEXECFWK_HIDUMP_ERROR;
@@ -218,7 +220,9 @@ ErrCode HidumpHelper::GetAllAbilityNameList(std::string &result)
 
     std::vector<BundleInfo> bundleInfos;
     if (!shareDataMgr->GetBundleInfos(static_cast<int32_t>(
-        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO),
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE),
         bundleInfos, Constants::ANY_USERID)) {
         APP_LOGE("get bundleInfos failed.");
         return ERR_APPEXECFWK_HIDUMP_ERROR;
@@ -244,7 +248,9 @@ ErrCode HidumpHelper::GetAbilityInfoByName(const std::string &name, std::string 
 
     std::vector<BundleInfo> bundleInfos;
     if (!shareDataMgr->GetBundleInfos(static_cast<int32_t>(
-        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO),
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE),
         bundleInfos, Constants::ANY_USERID)) {
         APP_LOGE("get bundleInfos failed.");
         return ERR_APPEXECFWK_HIDUMP_ERROR;
@@ -275,7 +281,9 @@ ErrCode HidumpHelper::GetAllBundleInfo(std::string &result)
 
     std::vector<BundleInfo> bundleInfos;
     if (!shareDataMgr->GetBundleInfos(static_cast<int32_t>(
-        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO),
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE),
         bundleInfos, Constants::ANY_USERID)) {
         APP_LOGE("get bundleInfos failed.");
         return false;
@@ -324,8 +332,10 @@ ErrCode HidumpHelper::GetBundleInfoByName(const std::string &name, std::string &
 
     BundleInfo bundleInfo;
     if (!shareDataMgr->GetBundleInfo(name,
-        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION |
-        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO, bundleInfo, Constants::ANY_USERID)) {
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES |
+        BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE, bundleInfo, Constants::ANY_USERID)) {
         APP_LOGE("get bundleInfo(%{public}s) failed", name.c_str());
         return ERR_APPEXECFWK_HIDUMP_ERROR;
     }

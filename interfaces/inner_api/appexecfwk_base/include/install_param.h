@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALL_PARAM_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALL_PARAM_H
 
+#include <map>
 #include <string>
 
 #include "bundle_constants.h"
@@ -49,6 +50,7 @@ struct InstallParam : public Parcelable {
     // OTA upgrade skips the killing process
     bool noSkipsKill  = true;
     bool needSendEvent = true;
+    std::map<std::string, std::string> hashParams;
 
     // the parcel object function is not const.
     bool ReadFromParcel(Parcel &parcel);
