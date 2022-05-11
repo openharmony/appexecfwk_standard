@@ -790,7 +790,10 @@ bool BundleMgrHostImpl::DumpAllBundleInfos(int32_t userId, std::string &result)
 {
     APP_LOGD("DumpAllBundleInfos begin");
     std::vector<BundleInfo> bundleInfos;
-    if (!GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO,
+    if (!GetBundleInfos(
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE,
         bundleInfos, userId)) {
         APP_LOGE("get bundleInfos failed.");
         return false;
@@ -844,8 +847,10 @@ bool BundleMgrHostImpl::DumpBundleInfo(
 
     BundleInfo bundleInfo;
     if (!GetBundleInfo(bundleName,
-        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION |
-        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO, bundleInfo, userId)) {
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES |
+        BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO |
+        BundleFlag::GET_BUNDLE_WITH_HASH_VALUE, bundleInfo, userId)) {
         APP_LOGE("get bundleInfo(%{public}s) failed", bundleName.c_str());
         return false;
     }

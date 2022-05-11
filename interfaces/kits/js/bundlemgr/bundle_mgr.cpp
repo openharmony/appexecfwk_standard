@@ -687,6 +687,12 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "label", nLabel));
     APP_LOGI("ConvertHapModuleInfo label=%{public}s.", hapModuleInfo.label.c_str());
 
+    napi_value nHashValue;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, hapModuleInfo.hashValue.c_str(), NAPI_AUTO_LENGTH, &nHashValue));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "hashValue", nHashValue));
+    APP_LOGI("ConvertHapModuleInfo hashValue=%{public}s.", hapModuleInfo.hashValue.c_str());
+
     napi_value nLabelId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, 0, &nLabelId));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "labelId", nLabelId));
@@ -3001,6 +3007,91 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
     }
 }
 
+static bool ParseHashParam(napi_env env, std::string &key, std::string &value, napi_value args)
+{
+    napi_status status;
+    napi_valuetype valueType;
+    NAPI_CALL(env, napi_typeof(env, args, &valueType));
+    if (valueType != napi_object) {
+        APP_LOGE("args type incorrect!");
+        return false;
+    }
+
+    napi_value property = nullptr;
+    bool hasKey = false;
+    napi_has_named_property(env, args, "moduleName", &hasKey);
+    if (!hasKey) {
+        APP_LOGE("parse HashParam failed due to moduleName is not exist!");
+        return false;
+    }
+    status = napi_get_named_property(env, args, "moduleName", &property);
+    if (status != napi_ok) {
+        APP_LOGE("napi get named moduleName property error!");
+        return false;
+    }
+    ParseString(env, key, property);
+    if (key.empty()) {
+        APP_LOGE("param string moduleName is empty.");
+        return false;
+    }
+    APP_LOGD("ParseHashParam moduleName=%{public}s.", key.c_str());
+
+    property = nullptr;
+    hasKey = false;
+    napi_has_named_property(env, args, "hashValue", &hasKey);
+    if (!hasKey) {
+        APP_LOGE("parse HashParam failed due to hashValue is not exist!");
+        return false;
+    }
+    status = napi_get_named_property(env, args, "hashValue", &property);
+    if (status != napi_ok) {
+        APP_LOGE("napi get named hashValue property error!");
+        return false;
+    }
+    ParseString(env, value, property);
+    if (value.empty()) {
+        APP_LOGE("param string hashValue is empty.");
+        return false;
+    }
+    APP_LOGD("ParseHashParam hashValue=%{public}s.", value.c_str());
+    return true;
+}
+
+static bool ParseHashParams(napi_env env, std::map<std::string, std::string> &hashParams, napi_value args)
+{
+    bool isArray = false;
+    uint32_t arrayLength = 0;
+    napi_value valueAry = 0;
+    napi_valuetype valueAryType = napi_undefined;
+    NAPI_CALL(env, napi_is_array(env, args, &isArray));
+    if (!isArray) {
+        APP_LOGE("hashParams is not array!");
+        return false;
+    }
+
+    NAPI_CALL(env, napi_get_array_length(env, args, &arrayLength));
+    APP_LOGD("ParseHashParams property is array, length=%{public}ud", arrayLength);
+    for (uint32_t j = 0; j < arrayLength; j++) {
+        NAPI_CALL(env, napi_get_element(env, args, j, &valueAry));
+        NAPI_CALL(env, napi_typeof(env, valueAry, &valueAryType));
+        std::string key;
+        std::string value;
+        if (!ParseHashParam(env, key, value, valueAry)) {
+            APP_LOGD("parse hash param failed");
+            return false;
+        }
+
+        if (hashParams.find(key) != hashParams.end()) {
+            APP_LOGD("moduleName(%{public}s) is duplicate", key.c_str());
+            return false;
+        }
+
+        hashParams.emplace(key, value);
+    }
+
+    return true;
+}
+
 static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_value args)
 {
     napi_status status;
@@ -3080,6 +3171,23 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
         installParam.isKeepData = isKeepData;
     }
     APP_LOGI("ParseInstallParam isKeepData=%{public}d.", installParam.isKeepData);
+
+    property = nullptr;
+    hasKey = false;
+    napi_has_named_property(env, args, "hashParams", &hasKey);
+    if (hasKey) {
+        status = napi_get_named_property(env, args, "hashParams", &property);
+        if (status != napi_ok) {
+            APP_LOGE("napi get named hashParams property error!");
+            return false;
+        }
+
+        if (!ParseHashParams(env, installParam.hashParams, property)) {
+            APP_LOGE("parse hash params failed!");
+            return false;
+        }
+    }
+    APP_LOGI("ParseInstallParam hashParams size = %{public}zu.", installParam.hashParams.size());
     return true;
 }
 
@@ -3126,6 +3234,9 @@ static void ConvertInstallResult(InstallResult &installResult)
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BAD_BUNDLE_SIGNATURE):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_NO_PROFILE_BLOCK_FAIL):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BUNDLE_SIGNATURE_VERIFICATION_FAILURE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_MODULE_NAME_EMPTY):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_MODULE_NAME_DUPLICATE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_CHECK_HAP_HASH_PARAM):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_VERIFY_SOURCE_INIT_FAIL):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_FAILURE_INVALID);
             installResult.resultMsg = "STATUS_INSTALL_FAILURE_INVALID";
@@ -6008,6 +6119,12 @@ void CreateBundleFlagObject(napi_env env, napi_value value)
                                                  &nGetBundleWithExtensionAbility));
     NAPI_CALL_RETURN_VOID(
         env, napi_set_named_property(env, value, "GET_BUNDLE_WITH_EXTENSION_ABILITY", nGetBundleWithExtensionAbility));
+    napi_value nGetBundleWithHashValue;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(BundleFlag::GET_BUNDLE_WITH_HASH_VALUE),
+                                                 &nGetBundleWithHashValue));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, value, "GET_BUNDLE_WITH_HASH_VALUE", nGetBundleWithHashValue));
     napi_value nGetAbilityInfoWithDisable;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
                                                  static_cast<int32_t>(AbilityInfoFlag::GET_ABILITY_INFO_WITH_DISABLE),

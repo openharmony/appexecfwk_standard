@@ -38,6 +38,8 @@ enum BundleFlag {
     GET_BUNDLE_WITH_REQUESTED_PERMISSION = 0x00000010,
     // get bundle info include extension info
     GET_BUNDLE_WITH_EXTENSION_INFO = 0x00000020,
+    // get bundle info include hash value
+    GET_BUNDLE_WITH_HASH_VALUE = 0x00000030,
 };
 
 struct RequestPermissionUsedScene : public Parcelable {
