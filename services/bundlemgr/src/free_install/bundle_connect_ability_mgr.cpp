@@ -61,17 +61,23 @@ void SendSysEvent(int32_t resultCode, const AAFwk::Want &want, int32_t userId)
 }
 }
 
-BundleConnectAbilityMgr::BundleConnectAbilityMgr()
+void BundleConnectAbilityMgr::Init()
 {
     runner_ = EventRunner::Create(true);
     if (runner_ == nullptr) {
         APP_LOGE("Create runner failed");
-    } else {
-        handler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
-        if (handler_ == nullptr) {
-            APP_LOGE("Create handler failed");
-        }
+        return;
     }
+
+    handler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
+    if (handler_ == nullptr) {
+        APP_LOGE("Create handler failed");
+    }
+}
+
+BundleConnectAbilityMgr::BundleConnectAbilityMgr()
+{
+    Init();
 }
 
 BundleConnectAbilityMgr::~BundleConnectAbilityMgr()
@@ -95,11 +101,11 @@ bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targe
         APP_LOGE("handler is null");
         return false;
     }
-    auto SilentInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
+    auto silentInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::CONNECT_SILENT_INSTALL;
-        this->CheckReusableConnection(flag, targetAbilityInfo, want, userId, callerToken);
+        this->SendRequestToServiceCenter(flag, targetAbilityInfo, want, userId, callerToken);
     };
-    handler_->PostTask(SilentInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
+    handler_->PostTask(silentInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
@@ -114,11 +120,11 @@ bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &target
         APP_LOGE("handler is null");
         return false;
     }
-    auto UpgradeCheckSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
+    auto upgradeCheckSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::CONNECT_UPGRADE_CHECK;
-        this->CheckReusableConnection(flag, targetAbilityInfo, want, userId, callerToken);
+        this->SendRequestToServiceCenter(flag, targetAbilityInfo, want, userId, callerToken);
     };
-    handler_->PostTask(UpgradeCheckSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
+    handler_->PostTask(upgradeCheckSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
@@ -133,19 +139,19 @@ bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targ
         APP_LOGE("handler is null");
         return false;
     }
-    auto UpgradeInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
+    auto upgradeInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::CONNECT_UPGRADE_INSTALL;
-        this->CheckReusableConnection(flag, targetAbilityInfo, want, userId, callerToken);
+        this->SendRequestToServiceCenter(flag, targetAbilityInfo, want, userId, callerToken);
     };
-    handler_->PostTask(UpgradeInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
+    handler_->PostTask(upgradeInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
-bool BundleConnectAbilityMgr::CheckReusableConnection(int32_t flag,
+bool BundleConnectAbilityMgr::SendRequestToServiceCenter(int32_t flag,
     const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     int32_t userId, const sptr<IRemoteObject> &callerToken)
 {
-    APP_LOGI("CheckReusableConnection");
+    APP_LOGI("SendRequestToServiceCenter");
     Want serviceCenterWant;
     serviceCenterWant.SetElementName(serviceCenterBundleName, serviceCenterAbilityName);
     bool isConnectSuccess = ConnectAbility(serviceCenterWant, callerToken);
@@ -165,9 +171,9 @@ void BundleConnectAbilityMgr::DisconnectAbility()
 {
     if (serviceCenterConnection_ != nullptr) {
         APP_LOGI("DisconnectAbility");
-        bool result = abilityMgrProxy_->DisconnectAbility(serviceCenterConnection_);
+        int result = abilityMgrProxy_->DisconnectAbility(serviceCenterConnection_);
         if (result != ERR_OK) {
-            APP_LOGE("BundleConnectAbilityMgr::DisconnectAbility fail");
+            APP_LOGE("BundleConnectAbilityMgr::DisconnectAbility fail, resultCode: %{public}d", result);
         }
     }
 }
@@ -277,7 +283,7 @@ void BundleConnectAbilityMgr::SendCallBack(
     MessageParcel reply;
     MessageOption option;
 
-    if (amsCallBack->SendRequest(FREE_INSTALL_DONE, data, reply, option) != OHOS::NO_ERROR) {
+    if (amsCallBack->SendRequest(FREE_INSTALL_DONE, data, reply, option) != ERR_OK) {
         APP_LOGE("BundleConnectAbilityMgr::SendCallBack SendRequest failed");
     }
 
@@ -471,7 +477,7 @@ void BundleConnectAbilityMgr::CallAbilityManager(
         return;
     }
 
-    if (callBack->SendRequest(FREE_INSTALL_DONE, data, reply, option) != OHOS::NO_ERROR) {
+    if (callBack->SendRequest(FREE_INSTALL_DONE, data, reply, option) != ERR_OK) {
         APP_LOGE("BundleConnectAbilityMgr::CallAbilityManager SendRequest failed");
     }
 }
