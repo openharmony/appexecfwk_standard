@@ -116,13 +116,33 @@ public:
      * @return Returns result.
      */
     static bool IsExistDir(const std::string &path);
+    /**
+     * @brief Rename file from oldPath to newPath.
+     * @param oldPath Indicates oldPath.
+     * @param newPath Indicates newPath.
+     * @return Returns result.
+     */
+    static bool RenameFile(const std::string &oldPath, const std::string &newPath);
+    /**
+     * @brief Copy file from oldPath to newPath.
+     * @param oldPath Indicates oldPath.
+     * @param newPath Indicates newPath.
+     * @return Returns result.
+     */
+    static bool CopyFile(
+        const std::string &oldPath, const std::string &newPath);
+    /**
+     * @brief Delete all dir or file.
+     * @param path Indicates sourceStr.
+     * @return Returns result.
+     */
+    static bool DeleteDir(const std::string &path);
 
     static void MakeHmdfsConfig(const std::string &bundleName, int32_t bundleId);
 
     static void RemoveHmdfsConfig(const std::string &bundleName);
     static void CloseFileDescriptor(std::vector<int32_t> &fdVec);
     static std::string CreateInstallTempDir(uint32_t installerId);
-    static void DeleteInstallTempDir(const std::string &tempDir);
     static int32_t CreateFileDescriptor(const std::string &bundlePath, long long offset);
 };
 }  // namespace AppExecFwk
