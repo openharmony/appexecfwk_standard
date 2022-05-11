@@ -20,6 +20,7 @@
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
 #include "bundle_parser.h"
+#include "bundle_permission_mgr.h"
 #include "bundle_scanner.h"
 #include "bundle_util.h"
 #ifdef CONFIG_POLOCY_ENABLE
@@ -84,6 +85,9 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
 
 void BMSEventHandler::OnBootStartScanning(int32_t userId)
 {
+    if (!BundlePermissionMgr::Init()) {
+        APP_LOGW("BundlePermissionMgr::Init failed");
+    }
     EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_START);
 #ifdef USE_PRE_BUNDLE_PROFILE
     ProcessBootBundleInstallFromPreBundleProFile(userId);
@@ -92,6 +96,7 @@ void BMSEventHandler::OnBootStartScanning(int32_t userId)
 #endif
     PerfProfile::GetInstance().Dump();
     EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_END);
+    BundlePermissionMgr::UnInit();
 }
 
 void BMSEventHandler::ProcessBootBundleInstallFromScan(int32_t userId)
@@ -270,9 +275,13 @@ void BMSEventHandler::SetAllInstallFlag() const
 
 void BMSEventHandler::OnRebootStartScanning(int32_t userId)
 {
+    if (!BundlePermissionMgr::Init()) {
+        APP_LOGW("BundlePermissionMgr::Init failed");
+    }
     EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_START);
     ProcessRebootBundle(userId);
     EventReport::SendScanSysEvent(BMSEventType::BOOT_SCAN_END);
+    BundlePermissionMgr::UnInit();
 }
 
 void BMSEventHandler::ProcessRebootBundle(int32_t userId)

@@ -48,6 +48,12 @@ bool BundlePermissionMgr::Init()
     return true;
 }
 
+void BundlePermissionMgr::UnInit()
+{
+    APP_LOGD("BundlePermissionMgr::UnInit");
+    defaultPermissions_.clear();
+}
+
 void BundlePermissionMgr::ConvertPermissionDef(
     const AccessToken::PermissionDef &permDef, PermissionDef &permissionDef)
 {

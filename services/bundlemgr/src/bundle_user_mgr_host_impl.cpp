@@ -17,6 +17,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
+#include "bundle_permission_mgr.h"
 #include "bundle_promise.h"
 #include "bundle_util.h"
 #include "hitrace_meter.h"
@@ -85,6 +86,9 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
     g_installedHapNum = 0;
     std::shared_ptr<BundlePromise> bundlePromise = std::make_shared<BundlePromise>();
     int32_t totalHapNum = static_cast<int32_t>(preInstallBundleInfos.size());
+    if (!BundlePermissionMgr::Init()) {
+        APP_LOGW("BundlePermissionMgr::Init failed");
+    }
     // Read apps installed by other users that are visible to all users
     for (const auto &info : preInstallBundleInfos) {
         InstallParam installParam;
@@ -103,6 +107,7 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
     if (userId == Constants::START_USERID) {
         DelayedSingleton<BundleMgrService>::GetInstance()->NotifyBundleScanStatus();
     }
+    BundlePermissionMgr::UnInit();
     APP_LOGD("CreateNewUser end userId: (%{public}d)", userId);
 }
 
