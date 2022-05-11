@@ -849,6 +849,20 @@ public:
         return true;
     }
 
+    /**
+     * @brief Obtains the dependent module names.
+     *
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param moduleName Indicates the module name to be queried.
+     * @param dependentModuleNames Indicates the obtained dependent module names.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
+        std::vector<std::string> &dependentModuleNames)
+    {
+        return false;
+    }
+
     virtual std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId)
     {
         std::vector<std::string> vec;
@@ -920,19 +934,6 @@ public:
         return ERR_APPEXECFWK_SANDBOX_INSTALL_INTERNAL_ERROR;
     }
 
-    /**
-     * @brief Obtains the dependent module names.
-     *
-     * @param bundleName Indicates the bundle name to be queried.
-     * @param moduleName Indicates the module name to be queried.
-     * @param dependentModuleNames Indicates the obtained dependent module names.
-     * @return Returns true if this function is successfully called; returns false otherwise.
-     */
-    virtual bool GetAllDependentModuleNames(const std::string &bundleName, const std::string &moduleName,
-        std::vector<std::string> &dependentModuleNames)
-    {
-        return false;
-    }
     /**
      * @brief Obtains the value of upgradeFlag based on a given bundle name and module name.
      * @param bundleName Indicates the bundle name to be queried.
