@@ -52,7 +52,7 @@ void SendSysEvent(int32_t resultCode, const AAFwk::Want &want, int32_t userId)
     EventInfo sysEventInfo;
     ElementName element = want.GetElement();
     sysEventInfo.bundleName = element.GetBundleName();
-    sysEventInfo.moduleName = want.GetStringParam("moduleName");
+    sysEventInfo.moduleName = element.GetModuleName();
     sysEventInfo.abilityName = element.GetAbilityName();
     sysEventInfo.isFreeInstallMode = true;
     sysEventInfo.userId = userId;
@@ -425,6 +425,7 @@ void BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundle
 {
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
+    std::string moduleName = element.GetModuleName();
     std::string abilityName = element.GetAbilityName();
     std::string deviceId = element.GetDeviceID();
     std::vector<std::string> callingBundleNames;
@@ -432,7 +433,7 @@ void BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundle
     targetAbilityInfo->targetExtSetting = want.GetStringParam("targetExtSetting");
     targetInfo->transactId = std::to_string(this->GetTransactId());
     targetInfo->bundleName = bundleName;
-    targetInfo->moduleName = want.GetStringParam("moduleName");
+    targetInfo->moduleName = moduleName;
     targetInfo->abilityName = abilityName;
     // make int from bits.
     targetInfo->flags = BIT_ONE_COMPATIBLE + BIT_TWO_BACK_MODE * BIT_TWO + BIT_THREE_CUSTOM * BIT_THREE +
@@ -479,7 +480,7 @@ void BundleConnectAbilityMgr::CallAbilityManager(
 bool BundleConnectAbilityMgr::CheckIsModuleNeedUpdate(
     InnerBundleInfo &innerBundleInfo, const Want &want, int32_t userId, const sptr<IRemoteObject> &callBack)
 {
-    if (innerBundleInfo.GetModuleUpgradeFlag(want.GetStringParam("moduleName")) != 0) {
+    if (innerBundleInfo.GetModuleUpgradeFlag(want.GetModuleName()) != 0) {
         sptr<TargetAbilityInfo> targetAbilityInfo = new(std::nothrow) TargetAbilityInfo();
         if (targetAbilityInfo == nullptr) {
             APP_LOGE("targetAbilityInfo is nullptr");
