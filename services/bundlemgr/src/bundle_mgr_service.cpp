@@ -173,9 +173,6 @@ bool BundleMgrService::Init()
         }
     }
     APP_LOGD("create userMgrHost success");
-    if (!BundlePermissionMgr::Init()) {
-        APP_LOGW("BundlePermissionMgr::Init failed");
-    }
     if (!(dataMgr_->LoadDataFromPersistentStorage())) {
         APP_LOGW("load data from persistent storage fail");
         dataMgr_->AddUserId(Constants::DEFAULT_USERID);
