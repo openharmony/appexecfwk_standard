@@ -113,6 +113,7 @@ ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName,
 
     // 6. create data dir and generate uid and gid
     userInfo.bundleName = bundleName_ + Constants::FILE_UNDERLINE + std::to_string(newAppIndex);
+    userInfo.gids.clear();
     dataMgr_->GenerateUidAndGid(userInfo);
     userInfo.bundleName = bundleName_;
     info.AddInnerBundleUserInfo(userInfo);
