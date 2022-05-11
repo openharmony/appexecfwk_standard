@@ -31,6 +31,8 @@ public:
      */
     static bool Init();
 
+    static void UnInit();
+
     /**
      * @brief Verify whether a specified bundle has been granted a specific permission.
      * @param bundleName Indicates the name of the bundle to check.
