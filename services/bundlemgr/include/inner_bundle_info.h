@@ -1005,6 +1005,11 @@ public:
         return "";
     }
 
+    std::string GetAppId() const
+    {
+        return baseBundleInfo_.appId;
+    }
+
     void SetAppFeature(const std::string &appFeature)
     {
         appFeature_ = appFeature;
