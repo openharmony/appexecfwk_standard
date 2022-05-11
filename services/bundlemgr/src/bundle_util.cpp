@@ -66,7 +66,7 @@ ErrCode BundleUtil::CheckFilePath(const std::string &bundlePath, std::string &re
 
 ErrCode BundleUtil::CheckFilePath(const std::vector<std::string> &bundlePaths, std::vector<std::string> &realPaths)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     // there are three cases for bundlePaths:
     // 1. one bundle direction in the bundlePaths, some hap files under this bundle direction.
     // 2. one hap direction in the bundlePaths.

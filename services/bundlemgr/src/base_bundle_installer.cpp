@@ -63,7 +63,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
 ErrCode BaseBundleInstaller::InstallBundle(
     const std::vector<std::string> &bundlePaths, const InstallParam &installParam, const Constants::AppType appType)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to process bundle install");
 
     PerfProfile::GetInstance().SetBundleInstallStartTime(GetTickCount());
@@ -279,7 +279,7 @@ void BaseBundleInstaller::CheckEnableRemovable(std::unordered_map<std::string, I
 ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::string, InnerBundleInfo> &newInfos,
     InnerBundleInfo &oldInfo, const InstallParam &installParam, int32_t &uid)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s, userId is %{public}d", bundleName_.c_str(),
         userId_);
     if (installParam.needSavePreInstallInfo) {
@@ -1474,7 +1474,7 @@ ErrCode BaseBundleInstaller::RenameModuleDir(const InnerBundleInfo &info) const
 
 ErrCode BaseBundleInstaller::CheckSysCap(const std::vector<std::string> &bundlePaths)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("check hap syscaps start.");
     if (bundlePaths.empty()) {
         APP_LOGE("check hap syscaps failed due to empty bundlePaths!");
@@ -1508,7 +1508,7 @@ ErrCode BaseBundleInstaller::CheckSysCap(const std::vector<std::string> &bundleP
 ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::string> &bundlePaths,
     const InstallParam &installParam, std::vector<Security::Verify::HapVerifyResult>& hapVerifyRes) const
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("Check multiple haps signInfo");
     if (bundlePaths.empty()) {
         APP_LOGE("check hap sign info failed due to empty bundlePaths!");
@@ -1556,7 +1556,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     std::vector<Security::Verify::HapVerifyResult> &hapVerifyRes,
     std::unordered_map<std::string, InnerBundleInfo> &infos)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("Parse hap file");
     ErrCode result = ERR_OK;
     BundlePackInfo packInfo;
