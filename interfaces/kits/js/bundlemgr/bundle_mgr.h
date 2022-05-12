@@ -65,6 +65,7 @@ struct AsyncAbilityInfosCallbackInfo : public AsyncWorkData {
     std::string bundleName;
     std::string abilityName;
     std::string moduleName = "";
+    bool hasModuleName = false;
     OHOS::AppExecFwk::AbilityInfo abilityInfo;
     bool ret = false;
     int32_t err = 0;
@@ -137,6 +138,7 @@ struct AsyncAbilityLabelCallbackInfo : public AsyncWorkData {
     std::string bundleName;
     std::string className;
     std::string moduleName = "";
+    bool hasModuleName = false;
     std::string abilityLabel;
     int32_t err = 0;
     std::string message;
@@ -270,6 +272,7 @@ struct AsyncAbilityInfo : public AsyncWorkData {
     std::string bundleName;
     std::string abilityName;
     std::string moduleName = "";
+    bool hasModuleName = false;
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
     std::shared_ptr<Media::PixelMap> pixelMap;
 #endif
