@@ -12,7 +12,7 @@
 # limitations under the License.
 
 aafwk_path = "//foundation/aafwk/standard"
-appexecfwk_path = "//foundation/appexecfwk/standard"
+appexecfwk_path = "//foundation/bundlemanager/bundle_framework"
 
 common_path = "${appexecfwk_path}/common"
 kits_path = "${appexecfwk_path}/interfaces/kits"
