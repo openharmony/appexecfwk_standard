@@ -66,6 +66,7 @@ public:
     void OnServiceCenterCall(std::string installResult);
 
 private:
+    void Init();
     /**
      * @brief Notify the service center center to start the installation free process.
      * @param targetAbilityInfo Indicates the information which will be send to service center.
@@ -160,7 +161,7 @@ private:
      * @param callerToken Caller form extension token.
      * @return Returns true if successfully Send request with RemoteObject
      */
-    bool CheckReusableConnection(int32_t flag, const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+    bool SendRequestToServiceCenter(int32_t flag, const TargetAbilityInfo &targetAbilityInfo, const Want &want,
         int32_t userId, const sptr<IRemoteObject> &callerToken);
 
     /**
