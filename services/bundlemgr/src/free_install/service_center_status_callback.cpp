@@ -15,25 +15,24 @@
 
 #include "service_center_status_callback.h"
 
-#include "hilog_wrapper.h"
-
 namespace OHOS {
 namespace AppExecFwk {
 ServiceCenterStatusCallback::ServiceCenterStatusCallback(const std::weak_ptr<BundleConnectAbilityMgr> &server)
     : server_(server)
 {
-    HILOG_INFO("%{public}s", __func__);
+    APP_LOGI("%{public}s", __func__);
 }
 
-void ServiceCenterStatusCallback::OnInstallFinished(std::string installResult)
+int32_t ServiceCenterStatusCallback::OnInstallFinished(std::string installResult)
 {
-    HILOG_INFO("%{public}s", __func__);
+    APP_LOGI("%{public}s", __func__);
     auto server = server_.lock();
     if (!server) {
-        HILOG_ERROR("pointer is nullptr.");
-        return;
+        APP_LOGE("pointer is nullptr.");
+        return ERR_INVALID_VALUE;
     }
     server->OnServiceCenterCall(installResult);
+    return ERR_OK;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
