@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache 2.0",
     "segment": {
-        "destPath": "foundation/appexecfwk/standard"
+        "destPath": "foundation/bundlemanager/bundle_framework"
     },
     "component": {
         "name": "bundle_framework",
@@ -18,7 +18,7 @@
             "bundle_framework_free_install"
         ],
         "hisysevent_config": [
-            "//foundation/appexecfwk/standard/hisysevent.yaml"
+            "//foundation/bundlemanager/bundle_framework/hisysevent.yaml"
         ],
         "adapted_system_type": [
             "standard"
@@ -58,12 +58,12 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard:bms_target"
+                "//foundation/bundlemanager/bundle_framework:bms_target"
             ],
             "inner_kits": [
                 {
                     "header": {
-                      "header_base": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_base/include",
+                      "header_base": "//foundation/bundlemanager/bundle_framework/interfaces/inner_api/appexecfwk_base/include",
                       "header_files": [
                         "ability_info.h",
                         "appexecfwk_errors.h",
@@ -71,11 +71,11 @@
                         "bundle_info.h"
                       ]
                     },
-                    "name": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_base:appexecfwk_base"
+                    "name": "//foundation/bundlemanager/bundle_framework/interfaces/inner_api/appexecfwk_base:appexecfwk_base"
                   },
                   {
                     "header": {
-                      "header_base": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_core/include",
+                      "header_base": "//foundation/bundlemanager/bundle_framework/interfaces/inner_api/appexecfwk_core/include",
                       "header_files": [
                         "bundlemgr/bundle_installer_interface.h",
                         "bundlemgr/bundle_mgr_interface.h",
@@ -84,11 +84,11 @@
                         "bundlemgr/status_receiver_interface.h"
                       ]
                     },
-                    "name": "//foundation/appexecfwk/standard/interfaces/inner_api/appexecfwk_core:appexecfwk_core"
+                    "name": "//foundation/bundlemanager/bundle_framework/interfaces/inner_api/appexecfwk_core:appexecfwk_core"
                   }
             ],
             "test": [
-                "//foundation/appexecfwk/standard:test_target"
+                "//foundation/bundlemanager/bundle_framework:test_target"
             ]
         }
     }

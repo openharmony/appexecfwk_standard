@@ -27,7 +27,7 @@
 ## 目录
 
 ```
-foundation/appexecfwk/standard
+foundation/bundlemanager/bundle_framework
 ├── kits
 │   └── appkit						   # Appkit实现的核心代码
 ├── common
