@@ -15,9 +15,7 @@
 
 #include "service_center_status_callback_stub.h"
 
-#include "hilog_wrapper.h"
-#include "ipc_types.h"
-#include "json_util.h"
+#include "app_log_wrapper.h"
 #include "message_parcel.h"
 #include "string_ex.h"
 
@@ -28,18 +26,12 @@ ServiceCenterStatusCallbackStub::ServiceCenterStatusCallbackStub()
     APP_LOGI("ServiceCenterStatusCallbackStub is created");
 }
 
-int32_t ServiceCenterStatusCallbackStub::OnInstallFinishedInner(MessageParcel &data, MessageParcel &reply)
-{
-    auto result = data.ReadString16();
-    OnInstallFinished(Str16ToStr8(result));
-    return NO_ERROR;
-}
-
 int32_t ServiceCenterStatusCallbackStub::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     data.ReadInterfaceToken();
-    return (this->OnInstallFinishedInner)(data, reply);
+    auto result = data.ReadString16();
+    return OnInstallFinished(Str16ToStr8(result));
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

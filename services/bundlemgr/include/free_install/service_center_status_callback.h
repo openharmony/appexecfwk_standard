@@ -38,7 +38,7 @@ public:
      * @brief Free install is complete.
      * @param installResult Install result
      */
-    void OnInstallFinished(std::string installResult);
+    int32_t OnInstallFinished(std::string installResult);
 
 private:
     std::weak_ptr<BundleConnectAbilityMgr> server_;

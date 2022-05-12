@@ -37,7 +37,6 @@ public:
 
 private:
     DISALLOW_COPY_AND_MOVE(ServiceCenterStatusCallbackStub);
-    int32_t OnInstallFinishedInner(MessageParcel &data, MessageParcel &reply);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
