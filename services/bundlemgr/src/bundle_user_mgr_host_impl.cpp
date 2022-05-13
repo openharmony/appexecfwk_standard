@@ -59,7 +59,7 @@ private:
 
 void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    HITRACE_METER(HITRACE_TAG_APP);
     APP_LOGD("CreateNewUser user(%{public}d) start.", userId);
     std::lock_guard<std::mutex> lock(bundleUserMgrMutex_);
     CheckInitialUser();
@@ -113,7 +113,7 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
 
 void BundleUserMgrHostImpl::RemoveUser(int32_t userId)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    HITRACE_METER(HITRACE_TAG_APP);
     APP_LOGD("RemoveUser user(%{public}d) start.", userId);
     std::lock_guard<std::mutex> lock(bundleUserMgrMutex_);
     auto dataMgr = GetDataMgrFromService();
