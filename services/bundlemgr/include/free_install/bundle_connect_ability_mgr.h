@@ -75,7 +75,7 @@ private:
      * @param userId Designation User ID.
      * @return Returns true if create async task successfully called; returns false otherwise.
      */
-    bool SilentInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+    bool SilentInstall(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
         const sptr<IRemoteObject> &callerToken, int32_t userId);
 
     /**
@@ -86,7 +86,7 @@ private:
      * @param userId Designation User ID.
      * @return Returns true if create async task successfully called; returns false otherwise.
      */
-    bool UpgradeCheckSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+    bool UpgradeCheck(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
         const sptr<IRemoteObject> &callerToken, int32_t userId);
 
     /**
@@ -97,7 +97,7 @@ private:
      * @param userId Designation User ID.
      * @return Returns true if create async task successfully called; returns false otherwise.
      */
-    bool UpgradeInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+    bool UpgradeInstall(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
         const sptr<IRemoteObject> &callerToken, int32_t userId);
 
     /**
@@ -214,8 +214,8 @@ private:
         const sptr<IRemoteObject> &callBack, InnerBundleInfo &innerBundleInfo);
 
     bool GetAbilityMgrProxy();
-    void WaitFormConnecting(std::unique_lock<std::mutex> &lock);
-    void WaitFormConnected(std::unique_lock<std::mutex> &lock);
+    void WaitFromConnecting(std::unique_lock<std::mutex> &lock);
+    void WaitFromConnected(std::unique_lock<std::mutex> &lock);
 
     mutable std::atomic<int> transactId_ = 0;
     std::condition_variable cv_;

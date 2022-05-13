@@ -73,7 +73,7 @@ void ServiceCenterDeathRecipient::SendCallBack(FreeInstallParams &freeInstallPar
     }
     MessageParcel reply;
     MessageOption option;
-    if (freeInstallParams.callback->SendRequest(FREE_INSTALL_DONE, data, reply, option) != OHOS::NO_ERROR) {
+    if (freeInstallParams.callback->SendRequest(FREE_INSTALL_DONE, data, reply, option) != ERR_OK) {
         APP_LOGE("BundleConnectAbilityMgr::SendCallBack SendRequest failed");
     }
     freeInstallParamsMap_.erase(transactId);

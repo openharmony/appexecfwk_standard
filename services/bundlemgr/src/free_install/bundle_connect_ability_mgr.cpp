@@ -17,8 +17,6 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
-#include "event_handler.h"
-#include "event_runner.h"
 #include "free_install_params.h"
 #include "json_util.h"
 #include "parcel.h"
@@ -33,6 +31,7 @@ const std::u16string ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN = u"ohos.aafwk.IAtomic
 const std::string serviceCenterBundleName = "com.ohos.hag.famanager";
 const std::string serviceCenterAbilityName = "com.ohos.hag.famanager.HapInstallServiceAbility";
 constexpr uint32_t FREE_INSTALL_DONE = 0;
+constexpr uint32_t DEFAULT_VERSION = 1;
 constexpr uint32_t CALLING_TYPE_HARMONY = 2;
 constexpr uint32_t BIT_ONE_COMPATIBLE = 0;
 constexpr uint32_t BIT_TWO_BACK_MODE = 1;
@@ -90,10 +89,10 @@ BundleConnectAbilityMgr::~BundleConnectAbilityMgr()
     }
 }
 
-bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+bool BundleConnectAbilityMgr::SilentInstall(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("SilentInstallSafely");
+    APP_LOGI("SilentInstall");
     if (handler_ == nullptr) {
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
@@ -101,18 +100,18 @@ bool BundleConnectAbilityMgr::SilentInstallSafely(const TargetAbilityInfo &targe
         APP_LOGE("handler is null");
         return false;
     }
-    auto silentInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
+    auto silentInstallFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::CONNECT_SILENT_INSTALL;
         this->SendRequestToServiceCenter(flag, targetAbilityInfo, want, userId, callerToken);
     };
-    handler_->PostTask(silentInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
+    handler_->PostTask(silentInstallFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
-bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+bool BundleConnectAbilityMgr::UpgradeCheck(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("UpgradeCheckSafely");
+    APP_LOGI("UpgradeCheck");
     if (handler_ == nullptr) {
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
@@ -120,18 +119,18 @@ bool BundleConnectAbilityMgr::UpgradeCheckSafely(const TargetAbilityInfo &target
         APP_LOGE("handler is null");
         return false;
     }
-    auto upgradeCheckSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
+    auto upgradeCheckFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::CONNECT_UPGRADE_CHECK;
         this->SendRequestToServiceCenter(flag, targetAbilityInfo, want, userId, callerToken);
     };
-    handler_->PostTask(upgradeCheckSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
+    handler_->PostTask(upgradeCheckFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
-bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
+bool BundleConnectAbilityMgr::UpgradeInstall(const TargetAbilityInfo &targetAbilityInfo, const Want &want,
     const sptr<IRemoteObject> &callerToken, int32_t userId)
 {
-    APP_LOGI("UpgradeInstallSafely");
+    APP_LOGI("UpgradeInstall");
     if (handler_ == nullptr) {
         SendCallBack(FreeInstallErrorCode::UNDEFINED_ERROR, want,
             userId, targetAbilityInfo.targetInfo.transactId);
@@ -139,11 +138,11 @@ bool BundleConnectAbilityMgr::UpgradeInstallSafely(const TargetAbilityInfo &targ
         APP_LOGE("handler is null");
         return false;
     }
-    auto upgradeInstallSafelyFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
+    auto upgradeInstallFunc = [this, targetAbilityInfo, want, userId, callerToken]() {
         int32_t flag = ServiceCenterFunction::CONNECT_UPGRADE_INSTALL;
         this->SendRequestToServiceCenter(flag, targetAbilityInfo, want, userId, callerToken);
     };
-    handler_->PostTask(upgradeInstallSafelyFunc, targetAbilityInfo.targetInfo.transactId.c_str());
+    handler_->PostTask(upgradeInstallFunc, targetAbilityInfo.targetInfo.transactId.c_str());
     return true;
 }
 
@@ -178,7 +177,7 @@ void BundleConnectAbilityMgr::DisconnectAbility()
     }
 }
 
-void BundleConnectAbilityMgr::WaitFormConnecting(std::unique_lock<std::mutex> &lock)
+void BundleConnectAbilityMgr::WaitFromConnecting(std::unique_lock<std::mutex> &lock)
 {
     APP_LOGI("ConnectAbility await start CONNECTING");
     while (connectState_ == ServiceCenterConnectState::CONNECTING) {
@@ -187,7 +186,7 @@ void BundleConnectAbilityMgr::WaitFormConnecting(std::unique_lock<std::mutex> &l
     APP_LOGI("ConnectAbility await end CONNECTING");
 }
 
-void BundleConnectAbilityMgr::WaitFormConnected(std::unique_lock<std::mutex> &lock)
+void BundleConnectAbilityMgr::WaitFromConnected(std::unique_lock<std::mutex> &lock)
 {
     APP_LOGI("ConnectAbility await start CONNECTED");
     while (connectState_ != ServiceCenterConnectState::CONNECTED) {
@@ -201,7 +200,7 @@ bool BundleConnectAbilityMgr::ConnectAbility(const Want &want, const sptr<IRemot
     APP_LOGI("ConnectAbility start target bundle = %{public}s", want.GetBundle().c_str());
     std::unique_lock<std::mutex> lock(mutex_);
     if (connectState_ == ServiceCenterConnectState::CONNECTING) {
-        WaitFormConnecting(lock);
+        WaitFromConnecting(lock);
     } else if (connectState_ == ServiceCenterConnectState::DISCONNECTED) {
         connectState_ = ServiceCenterConnectState::CONNECTING;
         if (!GetAbilityMgrProxy()) {
@@ -221,7 +220,7 @@ bool BundleConnectAbilityMgr::ConnectAbility(const Want &want, const sptr<IRemot
         int result = abilityMgrProxy_->ConnectAbility(want, serviceCenterConnection_, callerToken);
         if (result == ERR_OK) {
             if (connectState_ != ServiceCenterConnectState::CONNECTED) {
-                WaitFormConnected(lock);
+                WaitFromConnected(lock);
                 serviceCenterRemoteObject_ = serviceCenterConnection_->GetRemoteObject();
             }
         } else {
@@ -450,7 +449,7 @@ void BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundle
     targetInfo->callingAppType = CALLING_TYPE_HARMONY;
     targetAbilityInfo->targetInfo = *targetInfo;
     this->GetCallingInfo(innerBundleInfo, callingBundleNames, callingAppids);
-    targetAbilityInfo->version = std::to_string(innerBundleInfo.GetVersionCode());
+    targetAbilityInfo->version = DEFAULT_VERSION;
     targetInfo->callingBundleNames = callingBundleNames;
     targetInfo->callingAppIds = callingAppids;
 }
@@ -512,7 +511,7 @@ bool BundleConnectAbilityMgr::CheckIsModuleNeedUpdate(
             APP_LOGE("BundleConnectAbilityMgr::QueryAbilityInfo map emplace error");
             CallAbilityManager(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId, callBack);
         }
-        this->UpgradeInstallSafely(*targetAbilityInfo, want, nullptr, userId);
+        this->UpgradeInstall(*targetAbilityInfo, want, nullptr, userId);
         return true;
     }
     APP_LOGI("Module is not need update");
@@ -579,7 +578,7 @@ bool BundleConnectAbilityMgr::QueryAbilityInfo(const Want &want, int32_t flags,
         CallAbilityManager(FreeInstallErrorCode::UNDEFINED_ERROR, want, userId, callBack);
         return false;
     }
-    this->SilentInstallSafely(*targetAbilityInfo, want, nullptr, userId);
+    this->SilentInstall(*targetAbilityInfo, want, nullptr, userId);
     return false;
 }
 
@@ -616,8 +615,7 @@ void BundleConnectAbilityMgr::UpgradeAtomicService(const Want &want, int32_t use
         APP_LOGE("BundleConnectAbilityMgr::QueryAbilityInfo map emplace error");
         return;
     }
-    targetAbilityInfo->version = std::to_string(innerBundleInfo.GetVersionCode());
-    this->UpgradeCheckSafely(*targetAbilityInfo, want, nullptr, userId);
+    this->UpgradeCheck(*targetAbilityInfo, want, nullptr, userId);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

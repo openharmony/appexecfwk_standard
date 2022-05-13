@@ -36,7 +36,7 @@ public:
      * @brief Will be execute when free install is complete.
      * @param installResult the json of InstallResult
      */
-    virtual void OnInstallFinished(std::string installResult) = 0;
+    virtual int32_t OnInstallFinished(std::string installResult) = 0;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
