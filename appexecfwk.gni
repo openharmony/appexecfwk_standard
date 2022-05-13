@@ -21,6 +21,7 @@ kits_path = "${appexecfwk_path}/interfaces/kits"
 innerkits_path = "${appexecfwk_path}/interfaces/innerkits"
 inner_api_path = "${appexecfwk_path}/interfaces/inner_api"
 tools_path = "${appexecfwk_path}/tools"
+aafwk_innerkits_path = "//foundation/aafwk/standard/interfaces/innerkits"
 use_pre_bundle_profile = false
 declare_args() {
   bundle_framework_graphics = true
