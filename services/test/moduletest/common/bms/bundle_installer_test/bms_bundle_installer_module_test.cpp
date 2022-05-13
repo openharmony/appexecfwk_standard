@@ -160,6 +160,7 @@ protected:
                         }]
                     },
                     "isLauncherAbility": true,
+                    "removeMissionAfterTerminate":false,
                     "isNativeAbility": false,
                     "supportPipMode" : false,
                     "kind": "page",

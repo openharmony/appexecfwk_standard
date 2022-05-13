@@ -174,6 +174,7 @@ struct AbilityInfo : public Parcelable {
     bool enabled = false;
     bool supportPipMode = false;
     bool formEnabled = false;
+    bool removeMissionAfterTerminate = false;
     std::string readPermission;
     std::string writePermission;
     std::vector<std::string> configChanges;
