@@ -365,13 +365,12 @@ ErrCode BundleInstallerProxy::WriteFileToStream(sptr<IBundleStreamInstaller> &st
     int32_t outputFd = streamInstaller->CreateStream(hapName, 0);
     if (outputFd < 0) {
         APP_LOGE("write file to stream failed due to invalid file descriptor");
-        close(outputFd);
         return ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID;
     }
 
     int32_t inputFd = open(path.c_str(), O_RDONLY);
     if (inputFd < 0) {
-        close(inputFd);
+        close(outputFd);
         APP_LOGE("write file to stream failed due to open the hap file");
         return ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID;
     }

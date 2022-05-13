@@ -443,6 +443,10 @@ sptr<IBundleStreamInstaller> BundleInstallerHost::CreateStreamInstaller(const In
     auto uid = IPCSkeleton::GetCallingUid();
     sptr<BundleStreamInstallerHostImpl> streamInstaller(new (std::nothrow) BundleStreamInstallerHostImpl(
         ++streamInstallerIds_, uid));
+    if (streamInstaller == nullptr) {
+        APP_LOGE("streamInstaller is nullptr");
+        return nullptr;
+    }
     bool res = streamInstaller->Init(installParam);
     if (!res) {
         APP_LOGE("stream installer init failed");
