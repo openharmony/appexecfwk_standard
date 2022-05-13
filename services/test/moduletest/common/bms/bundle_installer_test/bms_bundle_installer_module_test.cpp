@@ -290,6 +290,7 @@ protected:
                         "moduleName": "launcher",
                         "moduleType": "entry"
                     },
+                    "hapPath": "/data/app/el1/bundle/public/com.ohos.launcher/com_ohos_launcher.hap",
                     "hashValue": "",
                     "isEntry": true,
                     "metaData": {

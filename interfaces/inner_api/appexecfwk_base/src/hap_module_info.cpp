@@ -58,6 +58,7 @@ const std::string HAP_MODULE_INFO_EXTENSION_INFOS = "extensionInfos";
 const std::string HAP_MODULE_INFO_META_DATA = "metadata";
 const std::string HAP_MODULE_INFO_DEPENDENCIES = "dependencies";
 const std::string HAP_MODULE_INFO_UPGRADE_FLAG = "upgradeFlag";
+const std::string HAP_MODULE_INFO_HAP_PATH = "hapPath";
 }
 
 bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
@@ -131,6 +132,7 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_MAIN_ABILITY, hapModuleInfo.mainAbility},
         {HAP_MODULE_INFO_SRC_PATH, hapModuleInfo.srcPath},
         {HAP_MODULE_INFO_HASH_VALUE, hapModuleInfo.hashValue},
+        {HAP_MODULE_INFO_HAP_PATH, hapModuleInfo.hapPath},
         {HAP_MODULE_INFO_SUPPORTED_MODES, hapModuleInfo.supportedModes},
         {HAP_MODULE_INFO_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
         {HAP_MODULE_INFO_DEVICE_TYPES, hapModuleInfo.deviceTypes},
@@ -245,6 +247,14 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         jsonObjectEnd,
         HAP_MODULE_INFO_HASH_VALUE,
         hapModuleInfo.hashValue,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_HAP_PATH,
+        hapModuleInfo.hapPath,
         JsonType::STRING,
         false,
         parseResult,

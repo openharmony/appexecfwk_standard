@@ -56,6 +56,7 @@ const std::string MODULE_DISTRO = "distro";
 const std::string MODULE_REQ_CAPABILITIES = "reqCapabilities";
 const std::string MODULE_DATA_DIR = "moduleDataDir";
 const std::string MODULE_RES_PATH = "moduleResPath";
+const std::string MODULE_HAP_PATH = "hapPath";
 const std::string MODULE_ABILITY_KEYS = "abilityKeys";
 const std::string MODULE_SKILL_KEYS = "skillKeys";
 const std::string MODULE_FORMS = "formInfos";
@@ -372,7 +373,8 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys},
         {MODULE_IS_MODULE_JSON, info.isModuleJson},
         {MODULE_IS_STAGE_BASED_MODEL, info.isStageBasedModel},
-        {MODULE_DEPENDENCIES, info.dependencies}
+        {MODULE_DEPENDENCIES, info.dependencies},
+        {MODULE_HAP_PATH, info.hapPath}
     };
 }
 
@@ -477,6 +479,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         jsonObjectEnd,
         MODULE_DATA_DIR,
         info.moduleDataDir,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_HAP_PATH,
+        info.hapPath,
         JsonType::STRING,
         false,
         ProfileReader::parseResult,
@@ -1313,6 +1323,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.labelId = it->second.labelId;
     hapInfo.mainAbility = it->second.mainAbility;
     hapInfo.srcPath = it->second.srcPath;
+    hapInfo.hapPath = it->second.hapPath;
     hapInfo.supportedModes = baseApplicationInfo_.supportedModes;
     hapInfo.reqCapabilities = it->second.reqCapabilities;
     hapInfo.colorMode = it->second.colorMode;

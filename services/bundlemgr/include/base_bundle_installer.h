@@ -148,6 +148,12 @@ protected:
         sysEventInfo_.preBundleScene =
             isBootScene ? InstallScene::BOOT : InstallScene::REBOOT;
     }
+    /**
+     * @brief Save hap to install path when install.
+     * @param moveFileMode Indicates the moveFileMode.
+     * @return
+     */
+    void SaveHapToInstallPath(bool moveFileMode);
 
 private:
     /**
@@ -481,6 +487,14 @@ private:
      * @return
      */
     void SaveOldRemovableInfo(InnerModuleInfo &newModuleInfo, InnerBundleInfo &oldInfo, bool existModule);
+    /**
+     * @brief Save hap path to records.
+     * @param isPreInstallApp Indicates isPreInstallApp or not.
+     * @param infos Indicates all innerBundleInfo for all haps need to be installed.
+     * @return
+     */
+    void SaveHapPathToRecords(
+        bool isPreInstallApp, const std::unordered_map<std::string, InnerBundleInfo> &infos);
     void OnSingletonChange();
     ErrCode UninstallAllSandboxApps(const std::string &bundleName, int32_t userId = Constants::INVALID_USERID);
     ErrCode CheckAppLabel(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo) const;
@@ -508,6 +522,7 @@ private:
     int32_t userId_ = Constants::INVALID_USERID;
     bool hasInstalledInUser_ = false;
     SingletonState singletonState_ = SingletonState::DEFAULT;
+    std::map<std::string, std::string> hapPathRecords_;
     // used to record system event infos
     EventInfo sysEventInfo_;
 

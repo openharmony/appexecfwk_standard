@@ -61,6 +61,7 @@ struct InnerModuleInfo {
     std::string moduleDataDir;
     std::string moduleResPath;
     std::string label;
+    std::string hapPath;
     int32_t labelId = 0;
     std::string description;
     int32_t descriptionId = 0;
@@ -830,6 +831,7 @@ public:
             innerModuleInfos_.at(currentPackage_).moduleDataDir = moduleDataDir;
         }
     }
+
     void AddModuleResPath(const std::string &moduleSrcDir)
     {
         if (innerModuleInfos_.count(currentPackage_) == 1) {
@@ -850,6 +852,31 @@ public:
                 extensionInfo.second.resourcePath = moduleResPath;
             }
         }
+    }
+
+    void SetModuleHapPath(const std::string &hapPath)
+    {
+        if (innerModuleInfos_.count(currentPackage_) == 1) {
+            innerModuleInfos_.at(currentPackage_).hapPath = hapPath;
+        }
+    }
+
+    const std::string &GetModuleHapPath(const std::string &modulePackage) const
+    {
+        if (innerModuleInfos_.find(modulePackage) != innerModuleInfos_.end()) {
+            return innerModuleInfos_.at(modulePackage).hapPath;
+        }
+
+        return Constants::EMPTY_STRING;
+    }
+
+    const std::string &GetModuleName(const std::string &modulePackage) const
+    {
+        if (innerModuleInfos_.find(modulePackage) != innerModuleInfos_.end()) {
+            return innerModuleInfos_.at(modulePackage).moduleName;
+        }
+
+        return Constants::EMPTY_STRING;
     }
 
     std::vector<DefinePermission> GetDefPermissions() const

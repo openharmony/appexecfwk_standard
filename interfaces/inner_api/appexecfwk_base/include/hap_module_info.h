@@ -50,6 +50,7 @@ struct HapModuleInfo : public Parcelable {
     std::string mainAbility;
     std::string srcPath;
     std::string hashValue;
+    std::string hapPath;
     int supportedModes = 0;
 
     std::vector<std::string> reqCapabilities;

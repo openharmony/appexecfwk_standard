@@ -543,6 +543,7 @@ protected:
                     ],
                     "extensionSkillKeys": [
                     ],
+                    "hapPath": "/data/app/el1/bundle/public/com.ohos.launcher/com_ohos_launcher.hap",
                     "hashValue": "",
                     "installationFree": true,
                     "isEntry": true,
@@ -649,6 +650,7 @@ protected:
                     ],
                     "extensionSkillKeys": [
                     ],
+                    "hapPath": "/data/app/el1/bundle/public/com.ohos.launcher/com_ohos_launcher_recents.hap",
                     "hashValue": "",
                     "installationFree": true,
                     "isEntry": false,
@@ -705,6 +707,7 @@ protected:
                     ],
                     "extensionSkillKeys": [
                     ],
+                    "hapPath": "/data/app/el1/bundle/public/com.ohos.launcher/com_ohos_launcher_settings.hap",
                     "hashValue": "",
                     "installationFree": true,
                     "isEntry": false,

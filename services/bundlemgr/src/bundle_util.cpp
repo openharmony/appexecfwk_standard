@@ -19,6 +19,7 @@
 #include <cinttypes>
 #include <dirent.h>
 #include <fcntl.h>
+#include <fstream>
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <thread>
@@ -321,11 +322,6 @@ std::string BundleUtil::CreateInstallTempDir(uint32_t installerId)
     return tempDir;
 }
 
-void BundleUtil::DeleteInstallTempDir(const std::string &tempDir)
-{
-    OHOS::ForceRemoveDirectory(tempDir);
-}
-
 void BundleUtil::CloseFileDescriptor(std::vector<int32_t> &fdVec)
 {
     for_each(fdVec.begin(), fdVec.end(), [](const auto &fd) {
@@ -335,7 +331,6 @@ void BundleUtil::CloseFileDescriptor(std::vector<int32_t> &fdVec)
     });
     fdVec.clear();
 }
-
 
 int32_t BundleUtil::CreateFileDescriptor(const std::string &bundlePath, long long offset)
 {
@@ -380,6 +375,61 @@ bool BundleUtil::IsExistDir(const std::string &path)
     }
 
     return S_ISDIR(buf.st_mode);
+}
+
+bool BundleUtil::RenameFile(const std::string &oldPath, const std::string &newPath)
+{
+    if (oldPath.empty() || newPath.empty()) {
+        APP_LOGE("oldPath or newPath is empty");
+        return false;
+    }
+
+    if (!DeleteDir(newPath)) {
+        APP_LOGE("delete newPath failed");
+        return false;
+    }
+
+    return rename(oldPath.c_str(), newPath.c_str()) == 0;
+}
+
+bool BundleUtil::DeleteDir(const std::string &path)
+{
+    if (IsExistFile(path)) {
+        return OHOS::RemoveFile(path);
+    }
+
+    if (IsExistDir(path)) {
+        return OHOS::ForceRemoveDirectory(path);
+    }
+
+    return true;
+}
+
+bool BundleUtil::CopyFile(
+    const std::string &sourceFile, const std::string &destinationFile)
+{
+    if (sourceFile.empty() || destinationFile.empty()) {
+        APP_LOGE("Copy file failed due to sourceFile or destinationFile is empty");
+        return false;
+    }
+
+    std::ifstream in(sourceFile);
+    if (!in.is_open()) {
+        APP_LOGE("Copy file failed due to open sourceFile failed");
+        return false;
+    }
+
+    std::ofstream out(destinationFile);
+    if (!out.is_open()) {
+        APP_LOGE("Copy file failed due to open destinationFile failed");
+        in.close();
+        return false;
+    }
+
+    out << in.rdbuf();
+    in.close();
+    out.close();
+    return true;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
