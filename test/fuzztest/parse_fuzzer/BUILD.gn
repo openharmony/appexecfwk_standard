@@ -34,11 +34,11 @@ ohos_fuzztest("ParseFuzzTest") {
   sources = [ "parse_fuzzer.cpp" ]
 
   deps = [
+    "${aafwk_innerkits_path}/base:base",
+    "${aafwk_innerkits_path}/want:want",
     "${common_path}:libappexecfwk_common",
     "${services_path}/bundlemgr:bundle_parser",
     "${services_path}/bundlemgr:parser_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//third_party/googletest:gtest_main",
   ]
   external_deps = [
