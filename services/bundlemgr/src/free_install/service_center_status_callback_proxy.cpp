@@ -15,7 +15,6 @@
 
 #include "service_center_status_callback_proxy.h"
 
-#include "hilog_wrapper.h"
 #include "ipc_types.h"
 #include "message_parcel.h"
 
@@ -35,18 +34,18 @@ void ServiceCenterStatusCallbackProxy::OnRemoteInstallFinished(std::string insta
     MessageOption option;
 
     if (!data.WriteInterfaceToken(IServiceCenterStatusCallback::GetDescriptor())) {
-        HILOG_ERROR("Write interface token failed.");
+        APP_LOGE("Write interface token failed.");
         return;
     }
 
     if (!data.WriteString(installResult)) {
-        HILOG_ERROR("Write resultCode error.");
+        APP_LOGE("Write resultCode error.");
         return;
     }
 
     int32_t error = Remote()->SendRequest(0, data, reply, option);
     if (error != NO_ERROR) {
-        HILOG_ERROR("OnFinished fail, error: %{public}d", error);
+        APP_LOGE("OnFinished fail, error: %{public}d", error);
     }
 }
 }  // namespace AppExecFwk
