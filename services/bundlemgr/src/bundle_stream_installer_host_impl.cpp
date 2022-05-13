@@ -38,6 +38,7 @@ BundleStreamInstallerHostImpl::~BundleStreamInstallerHostImpl()
 bool BundleStreamInstallerHostImpl::Init(const InstallParam &installParam)
 {
     installParam_ = installParam;
+    installParam_.streamInstallMode = true;
     std::string tempDir = BundleUtil::CreateInstallTempDir(installerId_);
     if (tempDir.empty()) {
         return false;
@@ -51,7 +52,7 @@ void BundleStreamInstallerHostImpl::UnInit()
     APP_LOGD("destory stream installer with installerId %{public}d and temp dir %{public}s", installerId_,
         tempDir_.c_str());
     BundleUtil::CloseFileDescriptor(streamFdVec_);
-    BundleUtil::DeleteInstallTempDir(tempDir_);
+    BundleUtil::DeleteDir(tempDir_);
 }
 
 int BundleStreamInstallerHostImpl::CreateStream(const std::string &hapName, long offset)
