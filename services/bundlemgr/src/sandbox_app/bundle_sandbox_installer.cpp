@@ -49,7 +49,7 @@ BundleSandboxInstaller::~BundleSandboxInstaller()
 ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName, const int32_t &dlpType,
     const int32_t &userId, int32_t &appIndex)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("InstallSandboxApp %{public}s begin", bundleName.c_str());
 
     PerfProfile::GetInstance().SetBundleInstallStartTime(GetTickCount());
@@ -151,7 +151,7 @@ ErrCode BundleSandboxInstaller::InstallSandboxApp(const std::string &bundleName,
 ErrCode BundleSandboxInstaller::UninstallSandboxApp(
     const std::string &bundleName, const int32_t &appIndex, const int32_t &userId)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("UninstallSandboxApp %{public}s _ %{public}d begin", bundleName.c_str(), appIndex);
 
     PerfProfile::GetInstance().SetBundleInstallStartTime(GetTickCount());

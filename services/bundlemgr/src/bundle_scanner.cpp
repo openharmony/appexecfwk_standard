@@ -43,7 +43,7 @@ BundleScanner::~BundleScanner()
 
 const std::list<std::string> &BundleScanner::Scan(const std::string &dirPath)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     PerfProfile::GetInstance().SetBundleScanStartTime(GetTickCount());
 
     APP_LOGD("path:%{private}s", dirPath.c_str());
