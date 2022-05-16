@@ -15,8 +15,6 @@
 
 #include "bundle_mgr_service.h"
 
-#include "ohos/aafwk/content/want.h"
-
 #include "account_helper.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
@@ -25,6 +23,7 @@
 #include "perf_profile.h"
 #include "system_ability_definition.h"
 #include "system_ability_helper.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {

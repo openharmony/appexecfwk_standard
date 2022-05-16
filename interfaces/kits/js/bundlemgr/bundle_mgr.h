@@ -27,7 +27,7 @@
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "pixel_map.h"
 #endif
-#include "ohos/aafwk/content/want.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {

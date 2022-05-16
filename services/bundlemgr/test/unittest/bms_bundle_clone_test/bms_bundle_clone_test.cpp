@@ -25,7 +25,6 @@
 #include "bundle_mgr_service.h"
 #include "ability_manager_interface.h"
 #include "system_ability_helper.h"
-#include "ohos/aafwk/content/want.h"
 #include "system_ability_definition.h"
 #include "bundle_data_mgr.h"
 
@@ -40,6 +39,7 @@
 #include "mock_bundle_status.h"
 #include "install_param.h"
 #include "system_bundle_installer.h"
+#include "want.h"
 
 using namespace testing::ext;
 using namespace std::chrono_literals;
