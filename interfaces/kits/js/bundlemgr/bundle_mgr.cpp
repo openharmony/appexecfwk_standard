@@ -355,6 +355,11 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.removable, &nRemovable));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "removable", nRemovable));
 
+    napi_value nFingerprint;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.fingerprint.c_str(), NAPI_AUTO_LENGTH,
+        &nFingerprint));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "fingerprint", nFingerprint));
+
     APP_LOGI("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
 }
 
@@ -6035,6 +6040,14 @@ void CreateBundleFlagObject(napi_env env, napi_value value)
             &nGetApplicationInfoWithDisable));
     NAPI_CALL_RETURN_VOID(env,
         napi_set_named_property(env, value, "GET_APPLICATION_INFO_WITH_DISABLE", nGetApplicationInfoWithDisable));
+    napi_value nGetApplicationInfoWithFingerprint;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env,
+        static_cast<int32_t>(ApplicationFlag::GET_APPLICATION_INFO_WITH_CERTIFICATE_FINGERPRINT),
+        &nGetApplicationInfoWithFingerprint));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, value, "GET_APPLICATION_INFO_WITH_CERTIFICATE_FINGERPRINT",
+        nGetApplicationInfoWithFingerprint));
 }
 
 void CreateExtensionFlagObject(napi_env env, napi_value value)

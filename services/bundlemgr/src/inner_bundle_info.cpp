@@ -1681,6 +1681,10 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
                 appInfo.metadata[info.second.moduleName] = info.second.metadata;
             }
         }
+        if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_CERTIFICATE_FINGERPRINT) !=
+            GET_APPLICATION_INFO_WITH_CERTIFICATE_FINGERPRINT) {
+            appInfo.fingerprint.clear();
+        }
     }
     if (!appInfo.permissions.empty()) {
         RemoveDuplicateName(appInfo.permissions);
