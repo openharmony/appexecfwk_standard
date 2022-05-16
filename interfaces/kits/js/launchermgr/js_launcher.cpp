@@ -424,11 +424,11 @@ static void ParseShortcutInfo(napi_env env, napi_value result,
 
 static bool InnerJSLauncherServiceOn(napi_env env, OHOS::sptr<BundleStatusCallback> callbackRef)
 {
-    if (!callbackRef) {
+    if (callbackRef == nullptr) {
         APP_LOGE("Input null BundleStatusCallback");
     }
     auto launcher = GetLauncherService();
-    if (!launcher) {
+    if (launcher == nullptr) {
         APP_LOGE("can not get launcher");
         return false;
     }
@@ -547,7 +547,7 @@ static napi_value JSLauncherServiceOn(napi_env env, napi_callback_info info)
 static bool InnerJSLauncherServiceOff()
 {
     auto launcher = GetLauncherService();
-    if (!launcher) {
+    if (launcher == nullptr) {
         APP_LOGE("can not get launcher");
         return false;
     }
@@ -651,7 +651,7 @@ static bool InnerJSGetAllLauncherAbilityInfos(napi_env env, uint32_t userId,
     std::vector<OHOS::AppExecFwk::LauncherAbilityInfo> &launcherAbilityInfos)
 {
     auto launcher = GetLauncherService();
-    if (!launcher) {
+    if (launcher == nullptr) {
         APP_LOGE("can not get launcher");
         return false;
     }
@@ -754,7 +754,7 @@ static bool InnerJSGetLauncherAbilityInfos(napi_env env, std::string& bundleName
     uint32_t userId, std::vector<OHOS::AppExecFwk::LauncherAbilityInfo>& launcherAbilityInfos)
 {
     auto launcher = GetLauncherService();
-    if (!launcher) {
+    if (launcher == nullptr) {
         APP_LOGE("can not get launcher");
         return false;
     }
@@ -862,7 +862,7 @@ static bool InnerJSGetShortcutInfos(napi_env env, const std::string& bundleName,
     std::vector<OHOS::AppExecFwk::ShortcutInfo>& shortcutInfos)
 {
     auto launcher = GetLauncherService();
-    if (!launcher) {
+    if (launcher == nullptr) {
         APP_LOGE("can not get launcher");
         return false;
     }

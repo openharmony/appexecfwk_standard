@@ -31,7 +31,7 @@ bool AbilityManagerHelper::UninstallApplicationProcesses(const std::string &bund
     APP_LOGI("uninstall kill running processes, app name is %{public}s", bundleName.c_str());
     sptr<AAFwk::IAbilityManager> abilityMgrProxy =
         iface_cast<AAFwk::IAbilityManager>(SystemAbilityHelper::GetSystemAbility(ABILITY_MGR_SERVICE_ID));
-    if (!abilityMgrProxy) {
+    if (abilityMgrProxy == nullptr) {
         APP_LOGE("fail to find the app mgr service to kill application");
         return false;
     }

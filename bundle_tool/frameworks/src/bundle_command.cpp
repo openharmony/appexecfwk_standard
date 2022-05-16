@@ -505,16 +505,17 @@ ErrCode BundleManagerShellCommand::init()
 {
     ErrCode result = OHOS::ERR_OK;
 
-    if (!bundleMgrProxy_) {
+    if (bundleMgrProxy_ == nullptr) {
         bundleMgrProxy_ = GetBundleMgrProxy();
         if (bundleMgrProxy_) {
-            if (!bundleInstallerProxy_) {
+            if (bundleInstallerProxy_ == nullptr) {
                 bundleInstallerProxy_ = bundleMgrProxy_->GetBundleInstaller();
             }
         }
     }
 
-    if (!bundleMgrProxy_ || !bundleInstallerProxy_ || !bundleInstallerProxy_->AsObject()) {
+    if ((bundleMgrProxy_ == nullptr) || (bundleInstallerProxy_ == nullptr) ||
+        (bundleInstallerProxy_->AsObject() == nullptr)) {
         result = OHOS::ERR_INVALID_VALUE;
     }
 
@@ -525,13 +526,13 @@ sptr<IBundleMgr> BundleManagerShellCommand::GetBundleMgrProxy() const
 {
     sptr<ISystemAbilityManager> systemAbilityManager =
         SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (!systemAbilityManager) {
+    if (systemAbilityManager == nullptr) {
         APP_LOGE("failed to get system ability mgr.");
         return nullptr;
     }
 
     sptr<IRemoteObject> remoteObject = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
-    if (!remoteObject) {
+    if (remoteObject == nullptr) {
         APP_LOGE("failed to get bundle manager proxy.");
         return nullptr;
     }
@@ -543,13 +544,13 @@ sptr<IBundleMgr> BundleManagerShellCommand::GetBundleMgrProxy() const
 sptr<IBundleInstaller> BundleManagerShellCommand::GetInstallerProxy() const
 {
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-    if (!bundleMgrProxy) {
+    if (bundleMgrProxy == nullptr) {
         APP_LOGE("bundle mgr proxy is nullptr.");
         return nullptr;
     }
 
     sptr<IBundleInstaller> installerProxy = bundleMgrProxy->GetBundleInstaller();
-    if (!installerProxy) {
+    if (installerProxy == nullptr) {
         APP_LOGE("failed to get bundle installer proxy.");
         return nullptr;
     }

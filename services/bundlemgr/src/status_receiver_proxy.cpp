@@ -357,7 +357,7 @@ void StatusReceiverProxy::OnStatusNotify(const int32_t progress)
     }
 
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to call OnStatusNotify, for Remote() is nullptr");
         return;
     }
@@ -393,7 +393,7 @@ void StatusReceiverProxy::OnFinished(const int32_t resultCode, const std::string
     }
 
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to call OnFinished, for Remote() is nullptr");
         return;
     }
@@ -420,7 +420,7 @@ void StatusReceiverProxy::TransformResult(const int32_t resultCode)
 void StatusReceiverProxy::CloseStreamInstaller(uint32_t installerId)
 {
     if (installerId <= 0) {
-        APP_LOGE("invalid installer id: %{public}d", installerId);
+        APP_LOGE("invalid installer id: %{public}u", installerId);
         return;
     }
     sptr<IBundleInstaller> bundleInstaller = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();

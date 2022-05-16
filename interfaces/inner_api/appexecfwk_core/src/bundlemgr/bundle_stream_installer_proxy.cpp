@@ -82,7 +82,7 @@ bool BundleStreamInstallerProxy::Install(const sptr<IStatusReceiver>& receiver)
         APP_LOGE("fail to Install due to write interface token fail");
         return false;
     }
-    if (!receiver) {
+    if (receiver == nullptr) {
         APP_LOGE("fail to install, for receiver is nullptr");
         return false;
     }
@@ -115,7 +115,7 @@ bool BundleStreamInstallerProxy::SendStreamInstallRequest(const uint32_t& code, 
     MessageParcel& reply)
 {
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to send request, for remote is nullptr");
         return false;
     }

@@ -74,14 +74,20 @@ bool RecentlyUnuseBundleAgingHandler::NeedContinue(const AgingRequest &request) 
 bool RecentlyUnuseBundleAgingHandler::UnInstallBundle(const std::string &bundleName) const
 {
     auto bms = DelayedSingleton<BundleMgrService>::GetInstance();
+    if (bms == nullptr) {
+        return false;
+    }
     auto bundleInstaller = bms->GetBundleInstaller();
     auto bundleDataMgr = bms->GetDataMgr();
-    if (!bundleInstaller) {
+    if (bundleInstaller == nullptr) {
         APP_LOGE("bundleInstaller is null.");
         return false;
     }
 
     sptr<AgingUninstallReceiveImpl> userReceiverImpl(new (std::nothrow) AgingUninstallReceiveImpl());
+    if (userReceiverImpl == nullptr) {
+        return false;
+    }
     InstallParam installParam;
     installParam.userId = AccountHelper::GetCurrentActiveUserId();
     installParam.installFlag = InstallFlag::FREE_INSTALL;

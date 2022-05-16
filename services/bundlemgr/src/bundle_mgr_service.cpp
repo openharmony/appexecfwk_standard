@@ -89,7 +89,7 @@ void BundleMgrService::OnStart()
 
 void BundleMgrService::AfterRegisterToService()
 {
-    if (!distributedSub_) {
+    if (distributedSub_ == nullptr) {
         EventFwk::MatchingSkills matchingSkills;
         matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
         EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
@@ -121,44 +121,44 @@ bool BundleMgrService::Init()
 
     if (host_ == nullptr) {
         host_ = new (std::nothrow) BundleMgrHostImpl();
-        if (!host_) {
+        if (host_ == nullptr) {
             APP_LOGE("create host instance fail");
             return false;
         }
     }
 
     APP_LOGI("init begin");
-    if (!runner_) {
+    if (runner_ == nullptr) {
         runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
-        if (!runner_) {
+        if (runner_ == nullptr) {
             APP_LOGE("create runner fail");
             return false;
         }
     }
     APP_LOGD("create runner success");
 
-    if (!handler_) {
+    if (handler_ == nullptr) {
         handler_ = std::make_shared<BMSEventHandler>(runner_);
-        if (!handler_) {
+        if (handler_ == nullptr) {
             APP_LOGE("create bms event handler fail");
             return false;
         }
     }
     APP_LOGD("create handler success");
 
-    if (!installer_) {
+    if (installer_ == nullptr) {
         installer_ = new (std::nothrow) BundleInstallerHost();
-        if (!installer_ || !installer_->Init()) {
+        if (installer_ == nullptr || !installer_->Init()) {
             APP_LOGE("init installer fail");
             return false;
         }
     }
     APP_LOGD("create installer host success");
 
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         APP_LOGI("Create BundledataMgr");
         dataMgr_ = std::make_shared<BundleDataMgr>();
-        if (!dataMgr_) {
+        if (dataMgr_ == nullptr) {
             APP_LOGE("create data manager fail");
             return false;
         }
@@ -167,7 +167,7 @@ bool BundleMgrService::Init()
 
     if (userMgrHost_ == nullptr) {
         userMgrHost_ = new (std::nothrow) BundleUserMgrHostImpl();
-        if (!userMgrHost_) {
+        if (userMgrHost_ == nullptr) {
             APP_LOGE("create userMgrHost instance fail");
             return false;
         }
@@ -183,29 +183,29 @@ bool BundleMgrService::Init()
         handler_->SendEvent(BMSEventHandler::BUNDLE_REBOOT_SCAN_START);
     }
 
-    if (!cloneMgr_) {
+    if (cloneMgr_ == nullptr) {
         APP_LOGI("Create BundleCloneMgr");
         cloneMgr_ = std::make_shared<BundleCloneMgr>();
     }
     APP_LOGI("create BundleCloneMgr success");
 
 #ifdef DEVICE_MANAGER_ENABLE
-    if (!deviceManager_) {
+    if (deviceManager_ == nullptr) {
         APP_LOGI("Create device manager");
         deviceManager_ = std::make_shared<BmsDeviceManager>();
     }
 #endif
 
-    if (!hidumpHelper_) {
+    if (hidumpHelper_ == nullptr) {
         APP_LOGI("Create hidump helper");
         hidumpHelper_ = std::make_shared<HidumpHelper>(dataMgr_);
     }
 
 #ifdef BUNDLE_FRAMEWORK_FREE_INSTALL
-    if (!agingMgr_) {
+    if (agingMgr_ == nullptr) {
         APP_LOGI("Create aging manager");
         agingMgr_ = DelayedSingleton<BundleAgingMgr>::GetInstance();
-        if (!agingMgr_) {
+        if (agingMgr_ == nullptr) {
             APP_LOGE("Create aging manager faild.");
         }
         if (agingMgr_) {
@@ -214,7 +214,7 @@ bool BundleMgrService::Init()
             agingMgr_->InitAgingtTimer();
         }
     }
-    if (!connectAbilityMgr_) {
+    if (connectAbilityMgr_ == nullptr) {
         APP_LOGI("Create BundleConnectAbility");
         connectAbilityMgr_ = std::make_shared<BundleConnectAbilityMgr>();
     }
@@ -274,7 +274,7 @@ sptr<BundleUserMgrHostImpl> BundleMgrService::GetBundleUserMgr() const
 
 void BundleMgrService::CheckAllUser()
 {
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         return;
     }
 

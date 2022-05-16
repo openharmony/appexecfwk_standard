@@ -183,7 +183,7 @@ ErrCode HidumpHelper::ProcessDump(const HidumpParam& hidumpParam, std::string &r
 ErrCode HidumpHelper::GetAllAbilityInfo(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
-    if (!shareDataMgr) {
+    if (shareDataMgr == nullptr) {
         return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
@@ -214,7 +214,7 @@ ErrCode HidumpHelper::GetAllAbilityInfo(std::string &result)
 ErrCode HidumpHelper::GetAllAbilityNameList(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
-    if (!shareDataMgr) {
+    if (shareDataMgr == nullptr) {
         return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
@@ -242,7 +242,7 @@ ErrCode HidumpHelper::GetAllAbilityNameList(std::string &result)
 ErrCode HidumpHelper::GetAbilityInfoByName(const std::string &name, std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
-    if (!shareDataMgr) {
+    if (shareDataMgr == nullptr) {
         return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
@@ -275,7 +275,7 @@ ErrCode HidumpHelper::GetAbilityInfoByName(const std::string &name, std::string 
 ErrCode HidumpHelper::GetAllBundleInfo(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
-    if (!shareDataMgr) {
+    if (shareDataMgr == nullptr) {
         return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
@@ -304,7 +304,7 @@ ErrCode HidumpHelper::GetAllBundleInfo(std::string &result)
 ErrCode HidumpHelper::GetAllBundleNameList(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
-    if (!shareDataMgr) {
+    if (shareDataMgr == nullptr) {
         return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
@@ -326,7 +326,7 @@ ErrCode HidumpHelper::GetBundleInfoByName(const std::string &name, std::string &
 {
     APP_LOGD("hidump bundle info begin");
     auto shareDataMgr = dataMgr_.lock();
-    if (!shareDataMgr) {
+    if (shareDataMgr == nullptr) {
         return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 
@@ -353,7 +353,7 @@ ErrCode HidumpHelper::GetBundleInfoByName(const std::string &name, std::string &
 ErrCode HidumpHelper::GetAllDeviced(std::string &result)
 {
     auto shareDataMgr = dataMgr_.lock();
-    if (!shareDataMgr) {
+    if (shareDataMgr == nullptr) {
         return ERR_APPEXECFWK_HIDUMP_SERVICE_ERROR;
     }
 

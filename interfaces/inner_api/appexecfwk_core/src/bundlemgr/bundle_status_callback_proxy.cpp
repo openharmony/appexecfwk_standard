@@ -251,7 +251,7 @@ void BundleStatusCallbackProxy::OnBundleStateChanged(
     }
 
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to call OnBundleStateChanged, for Remote() is nullptr");
         return;
     }

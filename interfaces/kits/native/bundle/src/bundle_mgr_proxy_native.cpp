@@ -73,7 +73,7 @@ bool BundleMgrProxyNative::SendTransactCmd(IBundleMgr::Message code, MessageParc
     MessageOption option(MessageOption::TF_SYNC);
 
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to send transact cmd %{public}d due to remote object", code);
         return false;
     }

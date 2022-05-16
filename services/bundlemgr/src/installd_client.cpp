@@ -146,17 +146,21 @@ void InstalldClient::ResetInstalldProxy()
 
 bool InstalldClient::GetInstalldProxy()
 {
-    if (!installdProxy_) {
+    if (installdProxy_ == nullptr) {
         APP_LOGD("try to get installd proxy");
         std::lock_guard<std::mutex> lock(mutex_);
-        if (!installdProxy_) {
+        if (installdProxy_ == nullptr) {
             sptr<IInstalld> tempProxy =
                 iface_cast<IInstalld>(SystemAbilityHelper::GetSystemAbility(INSTALLD_SERVICE_ID));
-            if ((!tempProxy) || (!tempProxy->AsObject())) {
+            if ((tempProxy == nullptr) || (tempProxy->AsObject() == nullptr)) {
                 APP_LOGE("the installd proxy or remote object is null");
                 return false;
             }
             recipient_ = new (std::nothrow) InstalldDeathRecipient();
+            if (recipient_ == nullptr) {
+                APP_LOGE("the death recipient is nullptr");
+                return false;
+            }
             tempProxy->AsObject()->AddDeathRecipient(recipient_);
             installdProxy_ = tempProxy;
         }

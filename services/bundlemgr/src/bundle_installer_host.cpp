@@ -109,7 +109,7 @@ void BundleInstallerHost::HandleInstallMessage(Parcel &data)
     APP_LOGD("handle install message");
     std::string bundlePath = Str16ToStr8(data.ReadString16());
     std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
-    if (!installParam) {
+    if (installParam == nullptr) {
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
@@ -129,7 +129,7 @@ void BundleInstallerHost::HandleRecoverMessage(Parcel &data)
     APP_LOGD("handle install message by bundleName");
     std::string bundleName = Str16ToStr8(data.ReadString16());
     std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
-    if (!installParam) {
+    if (installParam == nullptr) {
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
@@ -157,7 +157,7 @@ void BundleInstallerHost::HandleInstallMultipleHapsMessage(Parcel &data)
         return;
     }
     std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
-    if (!installParam) {
+    if (installParam == nullptr) {
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
@@ -177,7 +177,7 @@ void BundleInstallerHost::HandleUninstallMessage(Parcel &data)
     APP_LOGD("handle uninstall message");
     std::string bundleName = Str16ToStr8(data.ReadString16());
     std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
-    if (!installParam) {
+    if (installParam == nullptr) {
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
@@ -198,7 +198,7 @@ void BundleInstallerHost::HandleUninstallModuleMessage(Parcel &data)
     std::string bundleName = Str16ToStr8(data.ReadString16());
     std::string modulePackage = Str16ToStr8(data.ReadString16());
     std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
-    if (!installParam) {
+    if (installParam == nullptr) {
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
@@ -247,13 +247,13 @@ void BundleInstallerHost::HandleCreateStreamInstaller(Parcel &data, Parcel &repl
 {
     APP_LOGD("handle create stream installer message begin");
     std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
-    if (!installParam) {
+    if (installParam == nullptr) {
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
 
     sptr<IBundleStreamInstaller> streamInstaller = CreateStreamInstaller(*installParam);
-    if (!streamInstaller) {
+    if (streamInstaller == nullptr) {
         if (!reply.WriteBool(false)) {
             APP_LOGE("write result failed");
             return;
@@ -471,11 +471,11 @@ bool BundleInstallerHost::DestoryBundleStreamInstaller(uint32_t streamInstallerI
 
 bool BundleInstallerHost::CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const
 {
-    if (!statusReceiver) {
+    if (statusReceiver == nullptr) {
         APP_LOGE("the receiver is nullptr");
         return false;
     }
-    if (!manager_) {
+    if (manager_ == nullptr) {
         APP_LOGE("the bundle installer manager is nullptr");
         statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR, GET_MANAGER_FAIL);
         return false;

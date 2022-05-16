@@ -91,15 +91,14 @@ bool BundleFileUtil::CheckFilePath(const std::vector<std::string> &bundlePaths, 
             return false;
         }
         return true;
-    } else {
-        APP_LOGD("bundlePaths has more than one element");
-        for (const std::string& bundlePath : bundlePaths) {
-            std::string realPath = "";
-            if (!CheckFilePath(bundlePath, realPath)) {
-                return false;
-            }
-            realPaths.emplace_back(realPath);
+    }
+    APP_LOGD("bundlePaths has more than one element");
+    for (const std::string &bundlePath : bundlePaths) {
+        std::string realPath = "";
+        if (!CheckFilePath(bundlePath, realPath)) {
+            return false;
         }
+        realPaths.emplace_back(realPath);
     }
     APP_LOGD("finish check file path");
     return true;
@@ -148,8 +147,8 @@ bool BundleFileUtil::CheckFileSize(const std::string &bundlePath, const int64_t 
     return true;
 }
 
-bool BundleFileUtil::GetHapFilesFromBundlePath(const std::string& currentBundlePath,
-    std::vector<std::string>& hapFileList)
+bool BundleFileUtil::GetHapFilesFromBundlePath(const std::string &currentBundlePath,
+    std::vector<std::string> &hapFileList)
 {
     APP_LOGD("GetHapFilesFromBundlePath with path is %{public}s", currentBundlePath.c_str());
     if (currentBundlePath.empty()) {
@@ -179,8 +178,8 @@ bool BundleFileUtil::GetHapFilesFromBundlePath(const std::string& currentBundleP
         hapFileList.emplace_back(realPath);
         APP_LOGD("find hap path %{public}s", realPath.c_str());
 
-        if (!hapFileList.empty() && (hapFileList.size() > MAX_HAP_NUMBER)) {
-            APP_LOGE("reach the max hap number 128, stop to add more.");
+        if (hapFileList.size() > MAX_HAP_NUMBER) {
+            APP_LOGE("reach the max hap number %{public}hhu, stop to add more.", MAX_HAP_NUMBER);
             closedir(dir);
             return false;
         }

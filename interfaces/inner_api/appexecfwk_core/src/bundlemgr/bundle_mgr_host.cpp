@@ -661,7 +661,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfo(Parcel &data, Parcel &reply)
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -685,7 +685,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfoMutiparam(Parcel &data, Parcel &rep
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -710,7 +710,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfos(Parcel &data, Parcel &reply)
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -734,7 +734,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfosMutiparam(Parcel &data, Parcel &re
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -759,7 +759,7 @@ ErrCode BundleMgrHost::HandleQueryAllAbilityInfos(Parcel &data, Parcel &reply)
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -783,7 +783,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfosForClone(Parcel &data, Parcel &rep
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -996,7 +996,7 @@ ErrCode BundleMgrHost::HandleGetHapModuleInfoWithUserId(Parcel &data, Parcel &re
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
-    if (!abilityInfo) {
+    if (abilityInfo == nullptr) {
         APP_LOGE("ReadParcelable<abilityInfo> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -1275,7 +1275,7 @@ ErrCode BundleMgrHost::HandleSetAbilityEnabled(Parcel &data, Parcel &reply)
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
-    if (!abilityInfo) {
+    if (abilityInfo == nullptr) {
         APP_LOGE("ReadParcelable<abilityInfo> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -1384,7 +1384,7 @@ ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     sptr<IBundleInstaller> installer = GetBundleInstaller();
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("bundle installer is nullptr");
         return ERR_APPEXECFWK_INSTALL_HOST_INSTALLER_FAILED;
     }
@@ -1400,7 +1400,7 @@ ErrCode BundleMgrHost::HandleGetBundleUserMgr(Parcel &data, Parcel &reply)
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     sptr<IBundleUserMgr> bundleUserMgr = GetBundleUserMgr();
-    if (!bundleUserMgr) {
+    if (bundleUserMgr == nullptr) {
         APP_LOGE("bundle installer is nullptr");
         return ERR_APPEXECFWK_INSTALL_HOST_INSTALLER_FAILED;
     }
@@ -1610,7 +1610,7 @@ ErrCode BundleMgrHost::HandleQueryExtAbilityInfosWithoutType(Parcel &data, Parce
 ErrCode BundleMgrHost::HandleQueryExtAbilityInfos(Parcel &data, Parcel &reply)
 {
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -1802,7 +1802,7 @@ ErrCode BundleMgrHost::HandleImplicitQueryInfoByPriority(Parcel &data, Parcel &r
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -1897,7 +1897,7 @@ bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
     }
 
     MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&reply);
-    if (!messageParcel) {
+    if (messageParcel == nullptr) {
         APP_LOGE("Type conversion failed");
         return false;
     }
@@ -1977,7 +1977,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfoWithCallback(Parcel &data, Parcel &
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("ReadParcelable<want> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -2002,7 +2002,7 @@ ErrCode BundleMgrHost::HandleUpgradeAtomicService(Parcel &data, Parcel &reply)
 {
     HITRACE_METER_NAME(HITRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
-    if (!want) {
+    if (want == nullptr) {
         APP_LOGE("read parcelable want failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
