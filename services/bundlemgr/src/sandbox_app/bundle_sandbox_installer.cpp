@@ -27,10 +27,10 @@
 #include "common_event_support.h"
 #include "datetime_ex.h"
 #include "installd_client.h"
-#include "ohos/aafwk/content/want.h"
 #include "perf_profile.h"
 #include "scope_guard.h"
 #include "string_ex.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {

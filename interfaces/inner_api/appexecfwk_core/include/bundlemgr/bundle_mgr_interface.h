@@ -31,12 +31,12 @@
 #include "form_info.h"
 #include "hap_module_info.h"
 #include "module_usage_record.h"
-#include "ohos/aafwk/content/want.h"
 #include "permission_define.h"
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
 #include "pixel_map.h"
 #endif
 #include "shortcut_info.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {

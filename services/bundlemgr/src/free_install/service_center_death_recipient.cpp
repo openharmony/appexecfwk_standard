@@ -17,8 +17,8 @@
 
 #include "app_log_wrapper.h"
 #include "free_install_params.h"
-#include "ohos/aafwk/content/want.h"
 #include "parcel.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {
