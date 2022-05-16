@@ -1473,6 +1473,16 @@ public:
         sandboxPersistentInfo_.clear();
     }
 
+    std::string GetCertificateFingerprint() const
+    {
+        return baseApplicationInfo_.fingerprint;
+    }
+
+    void SetCertificateFingerprint(const std::string &fingerprint)
+    {
+        baseApplicationInfo_.fingerprint = fingerprint;
+    }
+
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
