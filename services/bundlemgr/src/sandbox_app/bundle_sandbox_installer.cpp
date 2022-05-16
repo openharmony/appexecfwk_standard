@@ -356,14 +356,14 @@ bool BundleSandboxInstaller::GetInnerBundleInfo(InnerBundleInfo &info, bool &isA
 
 ErrCode BundleSandboxInstaller::GetSandboxDataMgr()
 {
-    if (!sandboxDataMgr_) {
+    if (sandboxDataMgr_ == nullptr) {
         if (GetDataMgr() != ERR_OK) {
             APP_LOGE("Get dataMgr shared_ptr failed");
             return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
         }
 
         sandboxDataMgr_ = dataMgr_->GetSandboxDataMgr();
-        if (!sandboxDataMgr_) {
+        if (sandboxDataMgr_ == nullptr) {
             APP_LOGE("Get sandbox dataMgr shared_ptr nullptr");
             return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
         }
@@ -373,9 +373,9 @@ ErrCode BundleSandboxInstaller::GetSandboxDataMgr()
 
 ErrCode BundleSandboxInstaller::GetDataMgr()
 {
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-        if (!dataMgr_) {
+        if (dataMgr_ == nullptr) {
             APP_LOGE("Get dataMgr shared_ptr nullptr");
             return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
         }

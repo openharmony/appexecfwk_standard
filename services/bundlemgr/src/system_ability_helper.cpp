@@ -26,7 +26,7 @@ namespace AppExecFwk {
 sptr<IRemoteObject> SystemAbilityHelper::GetSystemAbility(const int32_t systemAbilityId)
 {
     sptr<ISystemAbilityManager> systemAbilityMgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (!systemAbilityMgr) {
+    if (systemAbilityMgr == nullptr) {
         APP_LOGE("fail to get the system ability manager to get %{public}d proxy", systemAbilityId);
         return nullptr;
     }

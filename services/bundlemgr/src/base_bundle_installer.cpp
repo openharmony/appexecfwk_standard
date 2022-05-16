@@ -440,9 +440,9 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     const InstallParam &installParam, const Constants::AppType appType, int32_t &uid)
 {
     APP_LOGD("ProcessBundleInstall bundlePath install");
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-        if (!dataMgr_) {
+        if (dataMgr_ == nullptr) {
             APP_LOGE("Get dataMgr shared_ptr nullptr");
             return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
         }
@@ -649,7 +649,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
 
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
@@ -873,7 +873,7 @@ ErrCode BaseBundleInstaller::InnerProcessInstallByPreInstallInfo(
     const std::string &bundleName, const InstallParam &installParam, int32_t &uid, bool recoverMode)
 {
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr.");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
@@ -1734,9 +1734,9 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
 
 bool BaseBundleInstaller::GetInnerBundleInfo(InnerBundleInfo &info, bool &isAppExist)
 {
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-        if (!dataMgr_) {
+        if (dataMgr_ == nullptr) {
             APP_LOGE("Get dataMgr shared_ptr nullptr");
             return false;
         }

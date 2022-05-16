@@ -1902,7 +1902,7 @@ sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
         return nullptr;
     }
     sptr<IBundleInstaller> installer = iface_cast<IBundleInstaller>(object);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("bundle installer is nullptr");
     }
 
@@ -1929,7 +1929,7 @@ sptr<IBundleUserMgr> BundleMgrProxy::GetBundleUserMgr()
         return nullptr;
     }
     sptr<IBundleUserMgr> bundleUserMgr = iface_cast<IBundleUserMgr>(object);
-    if (!bundleUserMgr) {
+    if (bundleUserMgr == nullptr) {
         APP_LOGE("bundleUserMgr is nullptr");
     }
 
@@ -2415,14 +2415,14 @@ bool BundleMgrProxy::ImplicitQueryInfoByPriority(const Want &want, int32_t flags
     }
 
     std::unique_ptr<AbilityInfo> abilityInfoPtr(reply.ReadParcelable<AbilityInfo>());
-    if (!abilityInfoPtr) {
+    if (abilityInfoPtr == nullptr) {
         APP_LOGE("read AbilityInfo failed");
         return false;
     }
     abilityInfo = *abilityInfoPtr;
 
     std::unique_ptr<ExtensionAbilityInfo> extensionInfoPtr(reply.ReadParcelable<ExtensionAbilityInfo>());
-    if (!extensionInfoPtr) {
+    if (extensionInfoPtr == nullptr) {
         APP_LOGE("read ExtensionAbilityInfo failed");
         return false;
     }
@@ -2513,7 +2513,7 @@ bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &
     }
 
     std::unique_ptr<T> info(reply.ReadParcelable<T>());
-    if (!info) {
+    if (info == nullptr) {
         APP_LOGE("readParcelableInfo failed");
         return false;
     }
@@ -2533,7 +2533,7 @@ ErrCode BundleMgrProxy::GetParcelableInfoWithErrCode(IBundleMgr::Message code, M
     ErrCode res = reply.ReadInt32();
     if (res == ERR_OK) {
         std::unique_ptr<T> info(reply.ReadParcelable<T>());
-        if (!info) {
+        if (info == nullptr) {
             APP_LOGE("readParcelableInfo failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
@@ -2560,7 +2560,7 @@ bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel 
     int32_t infoSize = reply.ReadInt32();
     for (int32_t i = 0; i < infoSize; i++) {
         std::unique_ptr<T> info(reply.ReadParcelable<T>());
-        if (!info) {
+        if (info == nullptr) {
             APP_LOGE("Read Parcelable infos failed");
             return false;
         }
@@ -2647,7 +2647,7 @@ bool BundleMgrProxy::SendTransactCmd(IBundleMgr::Message code, MessageParcel &da
     MessageOption option(MessageOption::TF_SYNC);
 
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to send transact cmd %{public}d due to remote object", code);
         return false;
     }

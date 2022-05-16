@@ -38,7 +38,7 @@ BundleAgingMgr::~BundleAgingMgr()
 void BundleAgingMgr::InitAgingRunner()
 {
     auto agingRunner = EventRunner::Create(AgingConstants::AGING_THREAD);
-    if (!agingRunner) {
+    if (agingRunner == nullptr) {
         APP_LOGE("create aging runner failed");
         return;
     }
@@ -96,7 +96,7 @@ int BundleAgingMgr::AgingQueryFormStatistics(std::vector<DeviceUsageStats::Bundl
 
 bool BundleAgingMgr::ReInitAgingRequest(const std::shared_ptr<BundleDataMgr> &dataMgr)
 {
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("ReInitAgingRequest: dataMgr is null");
         return false;
     }
@@ -167,7 +167,7 @@ void BundleAgingMgr::Start(AgingTriggertype type)
     }
 
     auto dataMgr = OHOS::DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("dataMgr is null");
         return;
     }

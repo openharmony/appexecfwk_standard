@@ -155,7 +155,7 @@ static bool InnerHasInstalled(std::string bundleName)
         return false;
     }
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }

@@ -307,7 +307,7 @@ std::string BundleUtil::CreateInstallTempDir(uint32_t installerId)
     std::string tempDir = Constants::HAP_COPY_PATH + Constants::PATH_SEPARATOR + std::to_string(curTime) +
         std::to_string(installerId) + Constants::PATH_SEPARATOR;
     if (!OHOS::ForceCreateDirectory(tempDir)) {
-        APP_LOGE("mkdir %{public}s failed", tempDir.c_str());
+        APP_LOGE("mkdir %{private}s failed", tempDir.c_str());
         return "";
     }
     if (chown(tempDir.c_str(), Constants::BMS_UID, Constants::BMS_GID) != 0) {
@@ -316,7 +316,7 @@ std::string BundleUtil::CreateInstallTempDir(uint32_t installerId)
     }
     mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     if (!OHOS::ChangeModeFile(tempDir, mode)) {
-        APP_LOGE("change mode failed, temp install dir : %{public}s", tempDir.c_str());
+        APP_LOGE("change mode failed, temp install dir : %{private}s", tempDir.c_str());
         return "";
     }
     return tempDir;

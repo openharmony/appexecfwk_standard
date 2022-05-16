@@ -61,7 +61,7 @@ void BundleInstallerManager::CreateInstallTask(
     const std::string &bundleFilePath, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
     auto installer = CreateInstaller(statusReceiver);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("create installer failed");
         return;
     }
@@ -77,7 +77,7 @@ void BundleInstallerManager::CreateRecoverTask(
     const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
     auto installer = CreateInstaller(statusReceiver);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("create installer failed");
         return;
     }
@@ -93,7 +93,7 @@ void BundleInstallerManager::CreateInstallTask(const std::vector<std::string> &b
     const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
     auto installer = CreateInstaller(statusReceiver);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("create installer failed");
         return;
     }
@@ -109,7 +109,7 @@ void BundleInstallerManager::CreateInstallByBundleNameTask(const std::string &bu
     const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
     auto installer = CreateInstaller(statusReceiver);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("create installer failed");
         return;
     }
@@ -126,7 +126,7 @@ void BundleInstallerManager::CreateUninstallTask(
     const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
     auto installer = CreateInstaller(statusReceiver);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("create installer failed");
         return;
     }
@@ -142,7 +142,7 @@ void BundleInstallerManager::CreateUninstallTask(const std::string &bundleName, 
     const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
     auto installer = CreateInstaller(statusReceiver);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("create installer failed");
         return;
     }
@@ -158,7 +158,7 @@ std::shared_ptr<BundleInstaller> BundleInstallerManager::CreateInstaller(const s
 {
     int64_t installerId = GetMicroTickCount();
     auto installer = std::make_shared<BundleInstaller>(installerId, shared_from_this(), statusReceiver);
-    if (!installer) {
+    if (installer == nullptr) {
         APP_LOGE("create bundle installer failed");
         return nullptr;
     }

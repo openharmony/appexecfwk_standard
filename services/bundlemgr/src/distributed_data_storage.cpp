@@ -81,7 +81,7 @@ bool DistributedDataStorage::SaveStorageDistributeInfo(const std::string &bundle
         return false;
     }
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
