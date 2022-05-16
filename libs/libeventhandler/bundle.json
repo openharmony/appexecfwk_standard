@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache 2.0",
     "segment": {
-        "destPath": "foundation/appexecfwk/standard/libs/libeventhandler"
+        "destPath": "foundation/bundlemanager/bundle_framework/libs/libeventhandler"
     },
     "component": {
         "name": "eventhandler",
@@ -28,13 +28,13 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-                "//foundation/appexecfwk/standard/interfaces/innerkits/napi:napi_packages"
+                "//foundation/bundlemanager/bundle_framework/interfaces/innerkits:innerkits_target",
+                "//foundation/bundlemanager/bundle_framework/interfaces/innerkits/napi:napi_packages"
             ],
             "inner_kits": [
                 {
                     "header": {
-                        "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+                        "header_base": "//foundation/bundlemanager/bundle_framework/interfaces/innerkits/libeventhandler/include",
                         "header_files": [
                             "event_handler_errors.h",
                             "event_handler.h",
@@ -45,22 +45,22 @@
                             "native_implement_eventhandler.h"
                         ]
                     },
-                    "name": "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler"
+                    "name": "//foundation/bundlemanager/bundle_framework/interfaces/innerkits/libeventhandler:libeventhandler"
                 },
                 {
                     "header": {
-                        "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/eventhandler_native/eventhandler",
+                        "header_base": "//foundation/bundlemanager/bundle_framework/interfaces/innerkits/eventhandler_native/eventhandler",
                         "header_files": [
                             "native_interface_eventhandler.h"
                         ]
                     },
-                    "name": "//foundation/appexecfwk/standard/interfaces/innerkits/eventhandler_native:eventhandler_native"
+                    "name": "//foundation/bundlemanager/bundle_framework/interfaces/innerkits/eventhandler_native:eventhandler_native"
                 }
             ],
             "test": [
-                "//foundation/appexecfwk/standard/libs/libeventhandler/test:unittest",
-                "//foundation/appexecfwk/standard/libs/test:moduletest",
-                "//foundation/appexecfwk/standard/test/systemtest/common/ems:systemtest_ems"
+                "//foundation/bundlemanager/bundle_framework/libs/libeventhandler/test:unittest",
+                "//foundation/bundlemanager/bundle_framework/libs/test:moduletest",
+                "//foundation/bundlemanager/bundle_framework/test/systemtest/common/ems:systemtest_ems"
             ]
         }
     }

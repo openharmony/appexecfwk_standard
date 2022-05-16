@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache 2.0",
     "segment": {
-        "destPath": "foundation/appexecfwk/standard/distributed_bundle_framework"
+        "destPath": "foundation/bundlemanager/bundle_framework/distributed_bundle_framework"
     },
     "component": {
         "name": "distributed_bundle_framework",
@@ -38,8 +38,8 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard/distributed_bundle_framework:jsapi_target",
-                "//foundation/appexecfwk/standard/distributed_bundle_framework:dbms_target"
+                "//foundation/bundlemanager/bundle_framework/distributed_bundle_framework:jsapi_target",
+                "//foundation/bundlemanager/bundle_framework/distributed_bundle_framework:dbms_target"
             ],
             "test": []
         }
