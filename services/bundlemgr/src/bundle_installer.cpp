@@ -192,7 +192,7 @@ std::set<int32_t> BundleInstaller::GetExistsCommonUserIs()
 {
     std::set<int32_t> userIds;
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return userIds;
     }

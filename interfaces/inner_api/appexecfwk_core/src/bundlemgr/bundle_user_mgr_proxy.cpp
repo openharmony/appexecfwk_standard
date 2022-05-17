@@ -70,7 +70,7 @@ bool BundleUserMgrProxy::SendRequest(const int32_t& code, MessageParcel& data, M
     MessageOption& option)
 {
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to uninstall, for Remote() is nullptr");
         return false;
     }

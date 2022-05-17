@@ -50,7 +50,7 @@ void CleanCacheCallbackProxy::OnCleanCacheFinished(bool succeeded)
     }
 
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to call OnCleanCacheFinished​, for Remote() is nullptr");
         return;
     }

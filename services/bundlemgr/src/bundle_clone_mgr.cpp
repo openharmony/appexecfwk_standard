@@ -276,7 +276,7 @@ bool BundleCloneMgr::RemoveClonedBundle(const std::string &oldName, const std::s
         return false;
     }
     std::shared_ptr<BundleDataMgr> dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr_) {
+    if (dataMgr_ == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }

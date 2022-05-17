@@ -170,7 +170,7 @@ static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
 static bool CheckIsSystemApp()
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -1177,7 +1177,7 @@ static bool InnerGetApplicationInfos(napi_env env, int32_t flags, const int user
     std::vector<OHOS::AppExecFwk::ApplicationInfo> &appInfos)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -1362,7 +1362,7 @@ static bool InnerQueryAbilityInfos(napi_env env, const Want &want,
     int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -1916,7 +1916,7 @@ static bool InnerGetBundleInfos(
     napi_env env, int32_t flags, int32_t userId, std::vector<OHOS::AppExecFwk::BundleInfo> &bundleInfos)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -2045,7 +2045,7 @@ static bool InnerGetBundleInfo(
     napi_env env, const std::string &bundleName, int32_t flags, BundleOptions bundleOptions, BundleInfo &bundleInfo)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -2059,7 +2059,7 @@ static bool InnerGetBundleInfo(
 static bool InnerGetBundlePackInfo(const std::string &bundleName, int32_t flags, BundlePackInfo &bundlePackInfo)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -2521,7 +2521,7 @@ static bool InnerGetArchiveInfo(
     napi_env env, const std::string &hapFilePath, const int32_t flags, BundleInfo &bundleInfo)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     };
@@ -2627,7 +2627,7 @@ static bool InnerGetLaunchWantForBundle(
     napi_env env, const std::string &bundleName, Want &want)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -2745,7 +2745,7 @@ static void ConvertPermissionDef(napi_env env, napi_value result, const Permissi
 static bool InnerGetPermissionDef(napi_env env, const std::string &permissionName, PermissionDef &permissionDef)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     };
@@ -2850,7 +2850,7 @@ static void InnerInstall(napi_env env, const std::vector<std::string> &bundleFil
         return;
     }
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return;
     }
@@ -2865,7 +2865,7 @@ static void InnerInstall(napi_env env, const std::vector<std::string> &bundleFil
     }
 
     OHOS::sptr<InstallerCallback> callback = new (std::nothrow) InstallerCallback();
-    if (!callback) {
+    if (callback == nullptr) {
         APP_LOGE("callback nullptr");
         return;
     }
@@ -2902,18 +2902,18 @@ static void InnerRecover(napi_env env, const std::string &bundleName, InstallPar
         return;
     }
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return;
     }
     auto iBundleInstaller = iBundleMgr->GetBundleInstaller();
-    if (!iBundleInstaller) {
+    if (iBundleInstaller == nullptr) {
         APP_LOGE("can not get iBundleInstaller");
         return;
     }
 
     OHOS::sptr<InstallerCallback> callback = new (std::nothrow) InstallerCallback();
-    if (!callback) {
+    if (callback == nullptr) {
         APP_LOGE("callback nullptr");
         return;
     }
@@ -3626,7 +3626,7 @@ static void InnerUninstall(
     napi_env env, const std::string &bundleName, InstallParam &installParam, InstallResult &installResult)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return;
     }
@@ -3637,7 +3637,7 @@ static void InnerUninstall(
     }
     installParam.installFlag = InstallFlag::NORMAL;
     OHOS::sptr<InstallerCallback> callback = new (std::nothrow) InstallerCallback();
-    if (!callback) {
+    if (callback == nullptr) {
         APP_LOGE("callback nullptr");
         return;
     }
@@ -3791,7 +3791,7 @@ napi_value BundleInstallerConstructor(napi_env env, napi_callback_info info)
 static bool InnerGetAllFormsInfo(napi_env env, std::vector<OHOS::AppExecFwk::FormInfo> &formInfos)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -3911,7 +3911,7 @@ static bool InnerGetFormInfosByModule(napi_env env, const std::string &bundleNam
     std::vector<OHOS::AppExecFwk::FormInfo> &formInfos)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -4021,7 +4021,7 @@ static bool InnerGetFormInfosByApp(
     napi_env env, const std::string &bundleName, std::vector<OHOS::AppExecFwk::FormInfo> &formInfos)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -4344,7 +4344,7 @@ napi_value GetBundleGids(napi_env env, napi_callback_info info)
 static bool InnerSetApplicationEnabled(napi_env env, const std::string &bundleName, bool isEnable)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -4358,7 +4358,7 @@ static bool InnerSetApplicationEnabled(napi_env env, const std::string &bundleNa
 static bool InnerSetAbilityEnabled(napi_env env, const OHOS::AppExecFwk::AbilityInfo &abilityInfo, bool isEnable)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -4373,11 +4373,11 @@ static bool InnerCleanBundleCacheCallback(
     const std::string& bundleName, const OHOS::sptr<CleanCacheCallback>& cleanCacheCallback)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
-    if (!cleanCacheCallback) {
+    if (cleanCacheCallback == nullptr) {
         APP_LOGE("callback nullptr");
         return false;
     }
@@ -5612,7 +5612,7 @@ static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
         return nullptr;
     }
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return nullptr;
     }
@@ -5718,7 +5718,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
 static bool InnerGetNameForUid(int32_t uid, std::string &bundleName)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -6315,7 +6315,7 @@ void CreateInstallErrorCodeObject(napi_env env, napi_value value)
 static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo &info)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
