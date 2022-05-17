@@ -229,8 +229,7 @@ struct AsyncGetBundleGidsCallbackInfo : public AsyncWorkData {
 struct AsyncExtensionInfoCallbackInfo : public AsyncWorkData {
     explicit AsyncExtensionInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     OHOS::AAFwk::Want want;
-    std::string extensionAbilityName;
-    int32_t extensionAbilityType = -1;
+    int32_t extensionAbilityType = static_cast<int32_t>(ExtensionAbilityType::UNSPECIFIED);
     int32_t flags = 0;
     int32_t userId = Constants::UNSPECIFIED_USERID;
     std::vector<OHOS::AppExecFwk::ExtensionAbilityInfo> extensionInfos;
