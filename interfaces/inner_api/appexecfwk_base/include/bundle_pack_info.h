@@ -73,10 +73,16 @@ struct ApiVersion {
     uint32_t target = 0;
 };
 
+struct ExtensionAbilities {
+    std::string name;
+    std::vector<AbilityFormInfo> forms;
+};
+
 struct PackageModule {
     std::string mainAbility;
     std::vector<std::string> deviceType;
     std::vector<ModuleAbilityInfo> abilities;
+    std::vector<ExtensionAbilities> extensionAbilities;
     ModuleDistro distro;
     ApiVersion apiVersion;
 };

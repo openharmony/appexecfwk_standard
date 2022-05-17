@@ -2219,6 +2219,26 @@ static void ConvertAbilities(napi_env env, napi_value &modulesObject, const OHOS
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, modulesObject, "abilities", abilities));
 }
 
+static void ConvertExtensionAbilities(
+    napi_env env, napi_value &modulesObject, const OHOS::AppExecFwk::PackageModule &module)
+{
+    napi_value extensionAbilities;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &extensionAbilities));
+    size_t index = 0;
+    for (const auto &extensionAbility : module.extensionAbilities) {
+        napi_value abilityObject;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &abilityObject));
+        napi_value name;
+        NAPI_CALL_RETURN_VOID(
+            env, napi_create_string_utf8(env, extensionAbility.name.c_str(), NAPI_AUTO_LENGTH, &name));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, abilityObject, "name", name));
+        ConvertFormsInfo(env, abilityObject, extensionAbility.forms);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, extensionAbilities, index, abilityObject));
+        index++;
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, modulesObject, "extensionAbilities", extensionAbilities));
+}
+
 static void ConvertSummaryModules(
     napi_env env, napi_value &modulesArray, const OHOS::AppExecFwk::BundlePackInfo &bundleInPackfos)
 {
@@ -2234,6 +2254,7 @@ static void ConvertSummaryModules(
         ConvertDeviceType(env, modulesObject, module.deviceType);
         ConvertDistro(env, modulesObject, module);
         ConvertAbilities(env, modulesObject, module);
+        ConvertExtensionAbilities(env, modulesObject, module);
         NAPI_CALL_RETURN_VOID(env, napi_set_element(env, modulesArray, index, modulesObject));
         index++;
     }

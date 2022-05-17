@@ -91,6 +91,8 @@ void to_json(nlohmann::json &jsonObject, const PackageApp &app);
 void from_json(const nlohmann::json &jsonObject, PackageApp &app);
 void to_json(nlohmann::json &jsonObject, const ModuleAbilityInfo &abilityinfo);
 void from_json(const nlohmann::json &jsonObject, ModuleAbilityInfo &abilityinfo);
+void to_json(nlohmann::json &jsonObject, const ExtensionAbilities &extensionAbilities);
+void from_json(const nlohmann::json &jsonObject, ExtensionAbilities &extensionAbilities);
 void to_json(nlohmann::json &jsonObject, const AbilityFormInfo &abilityinfo);
 void from_json(const nlohmann::json &jsonObject, AbilityFormInfo &abilityinfo);
 void to_json(nlohmann::json &jsonObject, const ModuleDistro &distro);

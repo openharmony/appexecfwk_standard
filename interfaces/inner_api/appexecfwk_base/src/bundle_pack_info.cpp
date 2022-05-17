@@ -37,6 +37,10 @@ const std::string PACK_SUMMARY_MODULE_ABILITY_LABEL = "label";
 const std::string PACK_SUMMARY_MODULE_ABILITY_VISIBLE = "visible";
 const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS = "forms";
 
+// module extensionAbilities
+const std::string PACK_SUMMARY_MODULE_EXTENSION_ABILITIES_NAME = "name";
+const std::string PACK_SUMMARY_MODULE_EXTENSION_ABILITIES_FORMS = "forms";
+
 // module ablities forms
 const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_NAME = "name";
 const std::string PACK_SUMMARY_MODULE_ABILITY_FORMS_TYPE = "type";
@@ -63,6 +67,7 @@ const std::string PACK_SUMMARY_MODULE_DEVICE_TYPE = "deviceType";
 const std::string PACK_SUMMARY_MODULE_ABILITIES = "abilities";
 const std::string PACK_SUMMARY_MODULE_DISTRO = "distro";
 const std::string PACK_SUMMARY_MODULE_API_VERSION = "apiVersion";
+const std::string PACK_SUMMARY_MODULE_EXTENSION_ABILITIES = "extensionAbilities";
 
 // summary
 const std::string PACK_SUMMARY_APP = "app";
@@ -153,6 +158,39 @@ void from_json(const nlohmann::json &jsonObject, PackageApp &app)
         ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
         APP_LOGE("read package app from jsonObject error, error code : %{public}d", parseResult);
+    }
+}
+
+void to_json(nlohmann::json &jsonObject, const ExtensionAbilities &extensionAbilities)
+{
+    jsonObject = nlohmann::json {
+        {PACK_SUMMARY_MODULE_EXTENSION_ABILITIES_NAME, extensionAbilities.name},
+        {PACK_SUMMARY_MODULE_EXTENSION_ABILITIES_FORMS, extensionAbilities.forms}
+    };
+}
+
+void from_json(const nlohmann::json &jsonObject, ExtensionAbilities &extensionAbilities)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PACK_SUMMARY_MODULE_EXTENSION_ABILITIES_NAME,
+        extensionAbilities.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<AbilityFormInfo>>(jsonObject,
+        jsonObjectEnd,
+        PACK_SUMMARY_MODULE_EXTENSION_ABILITIES_FORMS,
+        extensionAbilities.forms,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module abilityinfo from jsonObject error, error code : %{public}d", parseResult);
     }
 }
 
@@ -342,6 +380,7 @@ void to_json(nlohmann::json &jsonObject, const PackageModule &packageModule)
         {PACK_SUMMARY_MODULE_MAIN_ABILITY, packageModule.mainAbility},
         {PACK_SUMMARY_MODULE_DEVICE_TYPE, packageModule.deviceType},
         {PACK_SUMMARY_MODULE_ABILITIES, packageModule.abilities},
+        {PACK_SUMMARY_MODULE_EXTENSION_ABILITIES, packageModule.extensionAbilities},
         {PACK_SUMMARY_MODULE_DISTRO, packageModule.distro},
         {PACK_SUMMARY_MODULE_API_VERSION, packageModule.apiVersion}
     };
@@ -371,6 +410,14 @@ void from_json(const nlohmann::json &jsonObject, PackageModule &packageModule)
         jsonObjectEnd,
         PACK_SUMMARY_MODULE_ABILITIES,
         packageModule.abilities,
+        JsonType::ARRAY,
+        true,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<ExtensionAbilities>>(jsonObject,
+        jsonObjectEnd,
+        PACK_SUMMARY_MODULE_EXTENSION_ABILITIES,
+        packageModule.extensionAbilities,
         JsonType::ARRAY,
         true,
         parseResult,
