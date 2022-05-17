@@ -55,7 +55,7 @@ namespace OHOS {
             return false;
         }
 
-        return bundleMgr->CheckIsSystemAppByUid(reinterpret_cast<int>(data));
+        return bundleMgr->CheckIsSystemAppByUid(reinterpret_cast<uintptr_t>(data));
     }
 }
 
