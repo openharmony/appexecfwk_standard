@@ -24,7 +24,7 @@
 #include <shared_mutex>
 #include <string>
 
-#include "ohos/aafwk/content/want.h"
+#include "want.h"
 
 #include "ability_info.h"
 #include "application_info.h"

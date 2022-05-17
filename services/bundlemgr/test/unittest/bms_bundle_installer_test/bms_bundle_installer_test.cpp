@@ -33,8 +33,8 @@
 #include "installd/installd_service.h"
 #include "installd_client.h"
 #include "mock_status_receiver.h"
-#include "ohos/aafwk/content/want.h"
 #include "system_bundle_installer.h"
+#include "want.h"
 
 using namespace testing::ext;
 using namespace std::chrono_literals;

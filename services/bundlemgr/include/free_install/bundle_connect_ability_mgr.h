@@ -30,10 +30,10 @@
 #include "install_result.h"
 #include "ipc_skeleton.h"
 #include "iremote_broker.h"
-#include "ohos/aafwk/content/want.h"
 #include "service_center_connection.h"
 #include "system_ability_definition.h"
 #include "system_ability_helper.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {
