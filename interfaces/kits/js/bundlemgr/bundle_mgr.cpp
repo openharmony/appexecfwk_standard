@@ -6526,5 +6526,102 @@ void CreateExtensionAbilityTypeObject(napi_env env, napi_value value)
         napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::UNSPECIFIED), &nUnspecified));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "UNSPECIFIED", nUnspecified));
 }
+
+static void ConvertDispatcherVersion(napi_env env, napi_value &value, std::string version, std::string dispatchAPI)
+{
+    NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &value));
+    napi_value napiVersion;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, version.c_str(), NAPI_AUTO_LENGTH, &napiVersion));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "verison", napiVersion));
+    napi_value napiDispatchAPI;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, dispatchAPI.c_str(), NAPI_AUTO_LENGTH, &napiDispatchAPI));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "dispatchAPI", napiDispatchAPI));
+}
+
+napi_value GetDispatcherVersion(napi_env env, napi_callback_info info)
+{
+    APP_LOGD("NAPI GetDispatcherVersion called");
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv[ARGS_SIZE_ONE] = { nullptr };
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
+    APP_LOGD("argc = [%{public}zu]", argc);
+    AsyncDispatcherVersionCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncDispatcherVersionCallbackInfo(env);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("asyncCallbackInfo is nullptr");
+        return nullptr;
+    }
+    if (argc != PARAM0 && argc != PARAM1) {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->message = "type mismatch";
+    }
+    if (argc == PARAM1) {
+        napi_valuetype valueType = napi_undefined;
+        NAPI_CALL(env, napi_typeof(env, argv[PARAM0], &valueType));
+        if (valueType == napi_function) {
+            NAPI_CALL(env, napi_create_reference(env, argv[PARAM0], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+        }
+    }
+    napi_value promise = nullptr;
+    if (asyncCallbackInfo->callback == nullptr) {
+        NAPI_CALL(env, napi_create_promise(env, &asyncCallbackInfo->deferred, &promise));
+    } else {
+        NAPI_CALL(env, napi_get_undefined(env, &promise));
+    }
+    return GetDispatcherVersionWrap(env, promise, asyncCallbackInfo);
+}
+
+napi_value GetDispatcherVersionWrap(
+    napi_env env, napi_value promise, AsyncDispatcherVersionCallbackInfo *asyncCallbackInfo)
+{
+    napi_value resource = nullptr;
+    NAPI_CALL(env, napi_create_string_utf8(env, "GetDispatcherVersionWrap", NAPI_AUTO_LENGTH, &resource));
+    std::unique_ptr<AsyncDispatcherVersionCallbackInfo> callbackPtr { asyncCallbackInfo };
+    NAPI_CALL(env,
+        napi_create_async_work(
+            env, nullptr, resource,
+            [](napi_env env, void *data) {
+                AsyncDispatcherVersionCallbackInfo *asyncCallbackInfo = (AsyncDispatcherVersionCallbackInfo *)data;
+                asyncCallbackInfo->version = "1";
+                asyncCallbackInfo->dispatchAPI = "1.0";
+                asyncCallbackInfo->ret = 1;
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncDispatcherVersionCallbackInfo *asyncCallbackInfo = (AsyncDispatcherVersionCallbackInfo *)data;
+                std::unique_ptr<AsyncDispatcherVersionCallbackInfo> callbackPtr { asyncCallbackInfo };
+                napi_value result[2] = { 0 };
+                if (asyncCallbackInfo->err) {
+                    NAPI_CALL_RETURN_VOID(
+                        env, napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]));
+                    NAPI_CALL_RETURN_VOID(env,
+                        napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]));
+                } else {
+                    if (asyncCallbackInfo->ret) {
+                        NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, 0, &result[0]));
+                        ConvertDispatcherVersion(
+                            env, result[1], asyncCallbackInfo->version, asyncCallbackInfo->dispatchAPI);
+                    } else {
+                        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, 1, &result[0]));
+                        NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &result[1]));
+                    }
+                }
+                if (asyncCallbackInfo->deferred) {
+                    if (asyncCallbackInfo->ret) {
+                        NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]));
+                    } else {
+                        NAPI_CALL_RETURN_VOID(env, napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]));
+                    }
+                } else {
+                    napi_value callback = nullptr;
+                    napi_value placeHolder = nullptr;
+                    NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callback, &callback));
+                    NAPI_CALL_RETURN_VOID(env, napi_call_function(env, nullptr, callback,
+                                                   sizeof(result) / sizeof(result[0]), result, &placeHolder));
+                }
+            },
+            (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    callbackPtr.release();
+    return promise;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

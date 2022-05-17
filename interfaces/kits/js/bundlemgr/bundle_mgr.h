@@ -123,6 +123,15 @@ struct AsyncBundlePackInfoCallbackInfo : public AsyncWorkData {
     std::string message;
 };
 
+struct AsyncDispatcherVersionCallbackInfo : public AsyncWorkData {
+    explicit AsyncDispatcherVersionCallbackInfo(napi_env env) : AsyncWorkData(env) {}
+    bool ret = false;
+    int32_t err = 0;
+    std::string message;
+    std::string version;
+    std::string dispatchAPI;
+};
+
 struct AsyncApplicationInfosCallbackInfo : public AsyncWorkData {
     explicit AsyncApplicationInfosCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t flags = 0;
@@ -293,6 +302,7 @@ napi_value GetBundlePackInfo(napi_env env, napi_callback_info info);
 napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info);
 napi_value GetLaunchWantForBundle(napi_env env, napi_callback_info info);
 napi_value GetPermissionDef(napi_env env, napi_callback_info info);
+napi_value GetDispatcherVersion(napi_env env, napi_callback_info info);
 napi_value GetBundleInstaller(napi_env env, napi_callback_info info);
 napi_value Install(napi_env env, napi_callback_info info);
 napi_value Recover(napi_env env, napi_callback_info info);
@@ -316,6 +326,8 @@ napi_value IsApplicationEnabled(napi_env env, napi_callback_info info);
 napi_value IsModuleRemovable(napi_env env, napi_callback_info info);
 napi_value SetModuleUpgradeFlag(napi_env env, napi_callback_info info);
 napi_value GetBundlePackInfoWrap(napi_env env, napi_value promise, AsyncBundlePackInfoCallbackInfo *asyncCallbackInfo);
+napi_value GetDispatcherVersionWrap(
+    napi_env env, napi_value promise, AsyncDispatcherVersionCallbackInfo *asyncCallbackInfo);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
