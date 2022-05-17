@@ -33,7 +33,7 @@
 #include "launcher_service.h"
 #include "mock_clean_cache.h"
 #include "mock_bundle_status.h"
-#include "ohos/aafwk/content/want.h"
+#include "want.h"
 
 using namespace testing::ext;
 using namespace OHOS;

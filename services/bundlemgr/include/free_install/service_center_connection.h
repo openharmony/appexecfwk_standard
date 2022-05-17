@@ -22,9 +22,9 @@
 
 #include "ability_connect_callback_stub.h"
 #include "free_install_params.h"
-#include "ohos/aafwk/content/want.h"
 #include "service_center_death_recipient.h"
 #include "target_ability_info.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {
