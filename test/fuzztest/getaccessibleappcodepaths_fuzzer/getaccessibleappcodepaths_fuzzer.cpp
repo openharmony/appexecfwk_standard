@@ -55,7 +55,7 @@ namespace OHOS {
             return false;
         }
 
-        auto appCodePaths = bundleMgr->GetAccessibleAppCodePaths(reinterpret_cast<int>(data));
+        auto appCodePaths = bundleMgr->GetAccessibleAppCodePaths(reinterpret_cast<uintptr_t>(data));
         for (auto appCodePath : appCodePaths) {
             std::cout << "appCodePath" << appCodePath;
         }
