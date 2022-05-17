@@ -56,7 +56,8 @@ namespace OHOS {
         }
 
         std::vector<ApplicationInfo> bundleInfos;
-        return bundleMgr->GetApplicationInfos(reinterpret_cast<int>(data), reinterpret_cast<int>(data), bundleInfos);
+        return bundleMgr->GetApplicationInfos(
+            reinterpret_cast<uintptr_t>(data), reinterpret_cast<uintptr_t>(data), bundleInfos);
     }
 }
 
