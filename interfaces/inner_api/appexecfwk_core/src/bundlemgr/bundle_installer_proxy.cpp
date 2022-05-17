@@ -56,7 +56,7 @@ bool BundleInstallerProxy::Install(
     PARCEL_WRITE(data, String16, Str8ToStr16(bundlePath));
     PARCEL_WRITE(data, Parcelable, &installParam);
 
-    if (!statusReceiver) {
+    if (statusReceiver == nullptr) {
         APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
@@ -84,7 +84,7 @@ bool BundleInstallerProxy::Install(const std::vector<std::string> &bundleFilePat
     }
     PARCEL_WRITE(data, Parcelable, &installParam);
 
-    if (!statusReceiver) {
+    if (statusReceiver == nullptr) {
         APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
@@ -108,7 +108,7 @@ bool BundleInstallerProxy::Recover(const std::string &bundleName,
     PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
     PARCEL_WRITE(data, Parcelable, &installParam);
 
-    if (!statusReceiver) {
+    if (statusReceiver == nullptr) {
         APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
@@ -132,7 +132,7 @@ bool BundleInstallerProxy::Uninstall(
     PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
     PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
     PARCEL_WRITE(data, Parcelable, &installParam);
-    if (!statusReceiver) {
+    if (statusReceiver == nullptr) {
         APP_LOGE("fail to uninstall, for statusReceiver is nullptr");
         return false;
     }
@@ -156,7 +156,7 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
     PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
     PARCEL_WRITE(data, String16, Str8ToStr16(modulePackage));
     PARCEL_WRITE(data, Parcelable, &installParam);
-    if (!statusReceiver) {
+    if (statusReceiver == nullptr) {
         APP_LOGE("fail to uninstall, for statusReceiver is nullptr");
         return false;
     }
@@ -269,12 +269,12 @@ sptr<IBundleStreamInstaller> BundleInstallerProxy::CreateStreamInstaller(const I
     }
     uint32_t streamInstallerId = reply.ReadUint32();
     sptr<IRemoteObject> object = reply.ReadRemoteObject();
-    if (!object) {
+    if (object == nullptr) {
         APP_LOGE("CreateStreamInstaller create nullptr remote object");
         return nullptr;
     }
     sptr<IBundleStreamInstaller> streamInstaller = iface_cast<IBundleStreamInstaller>(object);
-    if (!streamInstaller) {
+    if (streamInstaller == nullptr) {
         APP_LOGE("CreateStreamInstaller failed");
         return streamInstaller;
     }
@@ -395,7 +395,7 @@ bool BundleInstallerProxy::SendInstallRequest(const uint32_t& code, MessageParce
     MessageOption& option)
 {
     sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
+    if (remote == nullptr) {
         APP_LOGE("fail to uninstall, for Remote() is nullptr");
         return false;
     }

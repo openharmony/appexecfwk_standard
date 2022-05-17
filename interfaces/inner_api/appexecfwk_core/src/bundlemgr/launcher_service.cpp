@@ -76,7 +76,7 @@ bool LauncherService::RegisterCallback(const sptr<IBundleStatusCallback> &callba
 
     // check permission
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -97,7 +97,7 @@ bool LauncherService::UnRegisterCallback()
 
     // check permission
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -113,7 +113,7 @@ bool LauncherService::GetAbilityList(
 {
     APP_LOGI("GetAbilityList called");
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr || bundleName.empty()) {
+    if ((iBundleMgr == nullptr) || (bundleName.empty())) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -163,7 +163,7 @@ bool LauncherService::GetAbilityList(
 bool LauncherService::GetAllLauncherAbilityInfos(int32_t userId, std::vector<LauncherAbilityInfo> &launcherAbilityInfos)
 {
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -209,7 +209,7 @@ bool LauncherService::GetAbilityInfo(const Want &want, const int userId, Launche
 {
     APP_LOGI("GetAbilityInfo called");
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -269,7 +269,7 @@ bool LauncherService::GetApplicationInfo(
 {
     APP_LOGI("GetApplicationInfo called");
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -290,7 +290,7 @@ bool LauncherService::IsBundleEnabled(const std::string &bundleName)
 {
     APP_LOGI("IsBundleEnabled called");
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -306,7 +306,7 @@ bool LauncherService::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 {
     APP_LOGI("IsAbilityEnabled called");
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -323,7 +323,7 @@ bool LauncherService::GetShortcutInfos(
         return false;
     }
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }

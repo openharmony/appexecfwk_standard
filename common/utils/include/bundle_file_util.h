@@ -28,7 +28,7 @@ public:
     static bool CheckFileType(const std::string &fileName, const std::string &extensionName);
     static bool CheckFileName(const std::string &fileName);
     static bool CheckFileSize(const std::string &bundlePath, const int64_t fileSize);
-    static bool GetHapFilesFromBundlePath(const std::string& currentBundlePath, std::vector<std::string>& hapFileList);
+    static bool GetHapFilesFromBundlePath(const std::string &currentBundlePath, std::vector<std::string> &hapFileList);
 };
 } // AppExecFwk
 } // OHOS

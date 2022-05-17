@@ -56,7 +56,7 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(
     const std::vector<std::string> &filePaths, Constants::AppType appType)
 {
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
@@ -88,7 +88,7 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(
 bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName)
 {
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
@@ -114,7 +114,7 @@ bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName)
 bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName, const std::string &modulePackage)
 {
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }

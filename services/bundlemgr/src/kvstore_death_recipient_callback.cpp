@@ -43,13 +43,13 @@ void KvStoreDeathRecipientCallback::OnRemoteDied()
 {
     APP_LOGI("OnRemoteDied, register data change listener begin");
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
-    if (!dataMgr) {
+    if (dataMgr == nullptr) {
         APP_LOGE("dataMgr is nullptr");
         return;
     }
 
     auto dataStorage = dataMgr->GetDataStorage();
-    if (!dataStorage) {
+    if (dataStorage == nullptr) {
         APP_LOGE("dataStorage is nullptr");
         return;
     }

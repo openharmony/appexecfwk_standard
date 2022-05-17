@@ -37,7 +37,7 @@ void BundleStatusCallbackDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> 
     APP_LOGI("bundle status service died, remove the proxy object");
     sptr<IBundleStatusCallback> callback = iface_cast<IBundleStatusCallback>(remote.promote());
     APP_LOGI("bundle status service died");
-    if (!callback) {
+    if (callback == nullptr) {
         APP_LOGE("callback is nullptr");
         return;
     }

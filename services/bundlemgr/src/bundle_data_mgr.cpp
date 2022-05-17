@@ -2305,7 +2305,7 @@ bool BundleDataMgr::SavePreInstallBundleInfo(
     const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo)
 {
     std::lock_guard<std::mutex> lock(preInstallInfoMutex_);
-    if (!preInstallDataStorage_) {
+    if (preInstallDataStorage_ == nullptr) {
         return false;
     }
 
@@ -2328,7 +2328,7 @@ bool BundleDataMgr::DeletePreInstallBundleInfo(
     const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo)
 {
     std::lock_guard<std::mutex> lock(preInstallInfoMutex_);
-    if (!preInstallDataStorage_) {
+    if (preInstallDataStorage_ == nullptr) {
         return false;
     }
 
@@ -2368,7 +2368,7 @@ bool BundleDataMgr::GetPreInstallBundleInfo(
 
 bool BundleDataMgr::LoadAllPreInstallBundleInfos(std::vector<PreInstallBundleInfo> &preInstallBundleInfos)
 {
-    if (!preInstallDataStorage_) {
+    if (preInstallDataStorage_ == nullptr) {
         return false;
     }
 

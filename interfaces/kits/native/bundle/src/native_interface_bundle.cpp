@@ -81,7 +81,7 @@ char* OH_NativeBundle_GetAppIdByBundleName(const char* bundleName)
         return nullptr;
     }
     auto iBundleMgr = OHOS::AppExecFwk::BundleNative::GetBundleMgr();
-    if (!iBundleMgr) {
+    if (iBundleMgr == nullptr) {
         APP_LOGE("can not get iBundleMgr");
         return nullptr;
     }
