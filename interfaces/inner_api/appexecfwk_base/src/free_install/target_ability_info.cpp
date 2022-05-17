@@ -141,14 +141,15 @@ bool TargetInfo::ReadFromParcel(Parcel &parcel)
     flags = parcel.ReadInt32();
     callingUid = parcel.ReadInt32();
     callingAppType = parcel.ReadInt32();
-    if (!parcel.ReadStringVector(&callingBundleNames)) {
-        APP_LOGE("read callingBundleNames from parcel failed");
-        return false;
+    int32_t callingBundleNamesSize = 0;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, callingBundleNamesSize);
+    for (int32_t i = 0; i < callingBundleNamesSize; i++) {
+        callingBundleNames.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
-
-    if (!parcel.ReadStringVector(&callingAppIds)) {
-        APP_LOGE("read callingAppIds from parcel failed");
-        return false;
+    int32_t callingAppIdsSize = 0;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, callingAppIdsSize);
+    for (int32_t i = 0; i < callingAppIdsSize; i++) {
+        callingAppIds.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
     return true;
 }
@@ -162,9 +163,11 @@ bool TargetInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, flags);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, callingUid);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, callingAppType);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, callingBundleNames.size());
     for (auto &callingBundleName : callingBundleNames) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(callingBundleName));
     }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, callingAppIds.size());
     for (auto &callingAppId : callingAppIds) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(callingAppId));
     }
