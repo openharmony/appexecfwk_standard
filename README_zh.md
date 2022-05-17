@@ -28,17 +28,17 @@
 
 ```
 foundation/bundlemanager/bundle_framework
-├── kits
-│   └── appkit						   # Appkit实现的核心代码
+├── bundle_tool                        # bm工具存放目录
+├── distributed_bundle_framework       # 分布式包管理服务框架代码					   
 ├── common
 │   └── log							   # 日志组件目录
 ├── interfaces
-│   └── innerkits					   # 内部接口存放目录
-├── services
-│   └── bundlemgr	                   # 包管理服务框架代码
-│   └── dbms	                       # 分布式包管理服务框架代码
-├── test						       # 测试目录
-└── tools                              # bm命令存放目录
+│   ├── inner_api                      # 内部接口存放目录
+│   └── kits                           # 应用接口
+│       ├── js                         # JS接口
+│       └── native                     # C/C++接口   					   
+├── services                           # 包管理服务框架代码
+└── test						       # 测试目录
 ```
 
 ### bm工具命令
