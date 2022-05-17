@@ -50,6 +50,7 @@ constexpr size_t ARGS_SIZE_ONE = 1;
 constexpr size_t ARGS_SIZE_TWO = 2;
 constexpr size_t ARGS_SIZE_THREE = 3;
 constexpr size_t ARGS_SIZE_FOUR = 4;
+constexpr size_t ARGS_SIZE_FIVE = 5;
 constexpr int32_t DEFAULT_INT32 = 0;
 constexpr int32_t PARAM0 = 0;
 constexpr int32_t PARAM1 = 1;
@@ -6311,58 +6312,6 @@ void CreateInstallErrorCodeObject(napi_env env, napi_value value)
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_FAILED_NO_SPACE_LEFT", nNoSpaceLeft));
 }
 
-static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo &info, napi_value args)
-{
-    napi_valuetype valueType;
-    NAPI_CALL(env, napi_typeof(env, args, &valueType));
-    if (valueType != napi_object) {
-        APP_LOGE("args not object type");
-        return false;
-    }
-
-    napi_value prop = nullptr;
-    bool ret = false;
-    napi_has_named_property(env, args, "extensionAbilityName", &ret);
-    if (!ret) {
-        APP_LOGW("cannot find the property of extensionAbilityName");
-    } else {
-        napi_get_named_property(env, args, "extensionAbilityName", &prop);
-        napi_typeof(env, prop, &valueType);
-        if (valueType != napi_string) {
-            APP_LOGE("extensionAbilityName is not type of string");
-            return false;
-        }
-        info.extensionAbilityName = GetStringFromNAPI(env, prop);
-        APP_LOGD("extensionAbilityInfo name is %{public}s", info.extensionAbilityName.c_str());
-    }
-
-    prop = nullptr;
-    ret = false;
-    napi_has_named_property(env, args, "extensionAbilityType", &ret);
-    if (!ret) {
-        APP_LOGW("cannot find the property of extensionAbilityType");
-    } else {
-        napi_get_named_property(env, args, "extensionAbilityType", &prop);
-        napi_typeof(env, prop, &valueType);
-        if (valueType != napi_number) {
-            APP_LOGE("extensionAbilityType is not type of number");
-            return false;
-        }
-        napi_get_value_int32(env, prop, &(info.extensionAbilityType));
-        APP_LOGD("extensionAbilityInfo type is %{public}d", info.extensionAbilityType);
-    }
-
-    if (!ParseWant(env, info.want, args)) {
-        APP_LOGE("parse want failed");
-        return false;
-    }
-    ElementName element = info.want.GetElement();
-    ElementName newElement(element.GetDeviceID(), element.GetBundleName(), info.extensionAbilityName,
-        element.GetModuleName());
-    info.want.SetElement(newElement);
-    return true;
-}
-
 static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo &info)
 {
     auto iBundleMgr = GetBundleMgr();
@@ -6373,7 +6322,7 @@ static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo
     APP_LOGD("action:%{public}s, uri:%{private}s, type:%{public}s, flags:%{public}d",
         info.want.GetAction().c_str(), info.want.GetUriString().c_str(), info.want.GetType().c_str(), info.flags);
 
-    if (info.extensionAbilityType < 0) {
+    if (info.extensionAbilityType == static_cast<int32_t>(ExtensionAbilityType::UNSPECIFIED)) {
         APP_LOGD("query extensionAbilityInfo without type");
         return iBundleMgr->QueryExtensionAbilityInfos(info.want, info.flags, info.userId, info.extensionInfos);
     } else {
@@ -6389,8 +6338,8 @@ static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo
 napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
 {
     APP_LOGD("QueryExtensionInfoByWant start in NAPI");
-    size_t argc = ARGS_SIZE_FOUR;
-    napi_value argv[ARGS_SIZE_FOUR] = { nullptr };
+    size_t argc = ARGS_SIZE_FIVE;
+    napi_value argv[ARGS_SIZE_FIVE] = { nullptr };
 
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
     APP_LOGD("the count of input arguments is [%{public}zu]", argc);
@@ -6401,7 +6350,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
         return nullptr;
     }
 
-    if (argc < ARGS_SIZE_TWO || argc > ARGS_SIZE_FOUR) {
+    if (argc < ARGS_SIZE_TWO || argc > ARGS_SIZE_FIVE) {
         APP_LOGE("the number of input arguments is invalid");
         delete callBackInfo;
         callBackInfo = nullptr;
@@ -6412,12 +6361,19 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
         napi_valuetype valueType = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[i], &valueType));
         if ((i == 0) && (valueType == napi_object)) {
-            if (!ParseWant(env, *callBackInfo, argv[i])) {
+            if (!ParseWant(env, callBackInfo->want, argv[i])) {
                 callBackInfo->err = PARAM_TYPE_ERROR;
             }
         } else if ((i == ARGS_SIZE_ONE) && (valueType == napi_number)) {
+            ParseInt(env, callBackInfo->extensionAbilityType, argv[i]);
+            if ((callBackInfo->extensionAbilityType < 0) ||
+                (callBackInfo->extensionAbilityType > static_cast<int32_t>(ExtensionAbilityType::UNSPECIFIED))) {
+                APP_LOGE("invalid extensionType %{public}d", callBackInfo->extensionAbilityType);
+                callBackInfo->err = PARAM_TYPE_ERROR;
+            }
+        } else if ((i == ARGS_SIZE_TWO) && (valueType == napi_number)) {
             ParseInt(env, callBackInfo->flags, argv[i]);
-        } else if (i == ARGS_SIZE_TWO) {
+        } else if (i == ARGS_SIZE_THREE) {
             if (valueType == napi_number) {
                 ParseInt(env, callBackInfo->userId, argv[i]);
             } else if (valueType == napi_function) {
@@ -6426,7 +6382,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
             } else {
                 callBackInfo->err = PARAM_TYPE_ERROR;
             }
-        } else if ((i == ARGS_SIZE_THREE) && (valueType == napi_function)) {
+        } else if ((i == ARGS_SIZE_FOUR) && (valueType == napi_function)) {
             NAPI_CALL(env, napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &callBackInfo->callback));
         } else {
             callBackInfo->err = PARAM_TYPE_ERROR;
