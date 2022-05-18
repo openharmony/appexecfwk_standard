@@ -35,6 +35,10 @@ void AgingRequest::InitAgingPolicySystemParameters()
     char szDatasizeThreshold[AgingConstants::THRESHOLD_VAL_LEN] = {0};
     int32_t ret = GetParameter(AgingConstants::SYSTEM_PARAM_DATA_SIZE_THRESHOLD.c_str(), "", szDatasizeThreshold,
         AgingConstants::THRESHOLD_VAL_LEN);
+    if (ret <= 0) {
+        APP_LOGE("GetParameter failed");
+        return;
+    }
     if (strcmp(szDatasizeThreshold, "") != 0) {
         totalDataBytesThreshold = atoi(szDatasizeThreshold);
     }
@@ -42,6 +46,10 @@ void AgingRequest::InitAgingPolicySystemParameters()
     char szOneDayTimeMs[AgingConstants::THRESHOLD_VAL_LEN] = {0};
     ret = GetParameter(AgingConstants::SYSTEM_PARAM_RECENILY_USED_THRESHOLD.c_str(), "", szOneDayTimeMs,
         AgingConstants::THRESHOLD_VAL_LEN);
+    if (ret <= 0) {
+        APP_LOGE("GetParameter failed");
+        return;
+    }
     if (strcmp(szOneDayTimeMs, "") != 0)
         oneDayTimeMs = atoi(szOneDayTimeMs);
 }
