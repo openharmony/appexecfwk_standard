@@ -56,7 +56,7 @@ namespace OHOS {
         }
 
         std::vector<BundleInfo> bundleInfos;
-        bundleMgr->GetBundleInfos(reinterpret_cast<int>(data), bundleInfos);
+        bundleMgr->GetBundleInfos(reinterpret_cast<uintptr_t>(data), bundleInfos);
         return true;
     }
 }
