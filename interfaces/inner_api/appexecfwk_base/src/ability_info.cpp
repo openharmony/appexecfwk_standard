@@ -52,6 +52,7 @@ const std::string JSON_KEY_DEVICE_CAPABILITIES = "deviceCapabilities";
 const std::string JSON_KEY_URI = "uri";
 const std::string JSON_KEY_MODULE_NAME = "moduleName";
 const std::string JSON_KEY_IS_LAUNCHER_ABILITY = "isLauncherAbility";
+const std::string JSON_KEY_REMOVE_MISSION_AFTER_TERMINATE = "removeMissionAfterTerminate";
 const std::string JSON_KEY_IS_NATIVE_ABILITY = "isNativeAbility";
 const std::string JSON_KEY_ENABLED = "enabled";
 const std::string JSON_KEY_SUPPORT_PIP_MODE = "supportPipMode";
@@ -258,7 +259,8 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_START_WINDOW_ICON, abilityInfo.startWindowIcon},
         {JSON_KEY_START_WINDOW_ICON_ID, abilityInfo.startWindowIconId},
         {JSON_KEY_START_WINDOW_BACKGROUND, abilityInfo.startWindowBackground},
-        {JSON_KEY_START_WINDOW_BACKGROUND_ID, abilityInfo.startWindowBackgroundId}
+        {JSON_KEY_START_WINDOW_BACKGROUND_ID, abilityInfo.startWindowBackgroundId},
+        {JSON_KEY_REMOVE_MISSION_AFTER_TERMINATE, abilityInfo.removeMissionAfterTerminate}
     };
 }
 
@@ -773,6 +775,14 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         JSON_KEY_START_WINDOW_BACKGROUND_ID,
         abilityInfo.startWindowBackgroundId,
         JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_REMOVE_MISSION_AFTER_TERMINATE,
+        abilityInfo.removeMissionAfterTerminate,
+        JsonType::BOOLEAN,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
