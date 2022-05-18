@@ -30,8 +30,8 @@ namespace {
 const std::u16string ATOMIC_SERVICE_STATUS_CALLBACK_TOKEN = u"ohos.aafwk.IAtomicServiceStatusCallback";
 const std::string serviceCenterBundleName = "com.ohos.hag.famanager";
 const std::string serviceCenterAbilityName = "com.ohos.hag.famanager.HapInstallServiceAbility";
+const std::string DEFAULT_VERSION = "1";
 constexpr uint32_t FREE_INSTALL_DONE = 0;
-constexpr uint32_t DEFAULT_VERSION = 1;
 constexpr uint32_t CALLING_TYPE_HARMONY = 2;
 constexpr uint32_t BIT_ONE_COMPATIBLE = 0;
 constexpr uint32_t BIT_TWO_BACK_MODE = 1;
@@ -447,11 +447,11 @@ void BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundle
                         BIT_ONE_SEVEN_SAME_BUNDLE * BIT_SEVEN;
     targetInfo->callingUid = IPCSkeleton::GetCallingUid();
     targetInfo->callingAppType = CALLING_TYPE_HARMONY;
-    targetAbilityInfo->targetInfo = *targetInfo;
     this->GetCallingInfo(innerBundleInfo, callingBundleNames, callingAppids);
-    targetAbilityInfo->version = DEFAULT_VERSION;
     targetInfo->callingBundleNames = callingBundleNames;
     targetInfo->callingAppIds = callingAppids;
+    targetAbilityInfo->targetInfo = *targetInfo;
+    targetAbilityInfo->version = DEFAULT_VERSION;
 }
 
 void BundleConnectAbilityMgr::CallAbilityManager(
