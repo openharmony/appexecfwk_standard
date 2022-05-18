@@ -190,6 +190,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_ICON = "startWindowIcon
 const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_ICON_ID = "startWindowIconId";
 const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_BACKGROUND = "startWindowBackground";
 const std::string BUNDLE_MODULE_PROFILE_KEY_START_WINDOW_BACKGROUND_ID = "startWindowBackgroundId";
+const std::string BUNDLE_MODULE_PROFILE_KEY_REMOVE_MISSION_AFTER_TERMINATE = "removeMissionAfterTerminate";
 // sub BUNDLE_MODULE_PROFILE_KEY_FORM
 const std::string BUNDLE_MODULE_PROFILE_KEY_MODE = "mode";
 // sub BUNDLE_MODULE_PROFILE_KEY_FORM
@@ -396,6 +397,7 @@ const std::string ABILITY_START_WINDOW_ICON = "startWindowIcon";
 const std::string ABILITY_START_WINDOW_ICON_ID = "startWindowIconId";
 const std::string ABILITY_START_WINDOW_BACKGROUND = "startWindowBackground";
 const std::string ABILITY_START_WINDOW_BACKGROUND_ID = "startWindowBackgroundId";
+const std::string ABILITY_REMOVE_MISSION_AFTER_TERMINATE = "removeMissionAfterTerminate";
 // extension ability
 const std::string EXTENSION_ABILITY_NAME = "name";
 const std::string EXTENSION_ABILITY_TYPE = "type";

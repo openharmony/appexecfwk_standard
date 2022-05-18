@@ -269,6 +269,7 @@ struct Ability {
     int32_t startWindowIconId = 0;
     std::string startWindowBackground;
     int32_t startWindowBackgroundId = 0;
+    bool removeMissionAfterTerminate = false;
 };
 
 struct Js {
@@ -1446,6 +1447,14 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_REMOVE_MISSION_AFTER_TERMINATE,
+        ability.removeMissionAfterTerminate,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, Js &js)
@@ -2228,6 +2237,7 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson, const ProfileRea
     abilityInfo.startWindowIconId = ability.startWindowIconId;
     abilityInfo.startWindowBackground = ability.startWindowBackground;
     abilityInfo.startWindowBackgroundId = ability.startWindowBackgroundId;
+    abilityInfo.removeMissionAfterTerminate = ability.removeMissionAfterTerminate;
     return true;
 }
 
