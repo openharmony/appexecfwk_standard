@@ -310,6 +310,7 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
         APP_LOGE("Can not find node in %{public}s function", __func__);
         return;
     }
+    handler_->RemoveTask(installResult.result.transactId);
     freeInstallParams = node->second;
     if (installResult.result.retCode == ServiceCenterResultCode::FREE_INSTALL_DOWNLOADING) {
         APP_LOGI("ServiceCenter is downloading, downloadSize = %{public}d, totalSize = %{public}d",
@@ -317,6 +318,11 @@ void BundleConnectAbilityMgr::OnServiceCenterCall(std::string installResultStr)
         return;
     }
     APP_LOGI("serviceCenterFunction = %{public}d", freeInstallParams.serviceCenterFunction);
+    if (freeInstallParams.serviceCenterFunction == ServiceCenterFunction::CONNECT_UPGRADE_INSTALL
+        && installResult.result.retCode == ServiceCenterResultCode::FREE_INSTALL_OK) {
+        freeInstallParams.want.SetParam("freeInstallUpgraded", true);
+        APP_LOGD("Set want is upgraded.");
+    }
     SendCallBack(installResult.result.retCode, freeInstallParams.want, freeInstallParams.userId,
         installResult.result.transactId);
     APP_LOGI("OnServiceCenterCall end");
@@ -341,7 +347,7 @@ void BundleConnectAbilityMgr::OutTimeMonitor(std::string transactId)
             freeInstallParams.want, freeInstallParams.userId, transactId);
         APP_LOGI("RegisterEventListenerFunc");
     };
-    handler_->PostTask(RegisterEventListenerFunc, OUT_TIME, AppExecFwk::EventQueue::Priority::LOW);
+    handler_->PostTask(RegisterEventListenerFunc, transactId, OUT_TIME, AppExecFwk::EventQueue::Priority::LOW);
 }
 
 void BundleConnectAbilityMgr::SendRequest(
