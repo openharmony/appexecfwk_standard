@@ -2395,13 +2395,13 @@ void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList, 
 
 std::vector<std::string> InnerBundleInfo::GetDependentModuleNames(const std::string &moduleName) const
 {
-    std::vector<std::string> dependentModuleNames;
-    auto it = innerModuleInfos_.find(moduleName);
-    if (it == innerModuleInfos_.end()) {
-        APP_LOGE("GetDependentModuleNames can not find module %{public}s", moduleName.c_str());
-        return dependentModuleNames;
+    for (auto iter = innerModuleInfos_.begin(); iter != innerModuleInfos_.end(); ++iter) {
+        if (iter->second.moduleName == moduleName) {
+            return iter->second.dependencies;
+        }
     }
-    dependentModuleNames = it->second.dependencies;
+    APP_LOGE("GetDependentModuleNames can not find module %{public}s", moduleName.c_str());
+    std::vector<std::string> dependentModuleNames;
     return dependentModuleNames;
 }
 
@@ -2409,7 +2409,7 @@ std::vector<std::string> InnerBundleInfo::GetAllDependentModuleNames(const std::
 {
     std::deque<std::string> moduleDeque;
     std::vector<std::string> dependentModuleNames = GetDependentModuleNames(moduleName);
-    for (auto &st : dependentModuleNames) {
+    for (const auto &st : dependentModuleNames) {
         moduleDeque.push_back(st);
     }
     std::vector<std::string> res;
@@ -2419,7 +2419,7 @@ std::vector<std::string> InnerBundleInfo::GetAllDependentModuleNames(const std::
         if (std::find(res.begin(), res.end(), name) == res.end()) {
             res.push_back(name);
             dependentModuleNames = GetDependentModuleNames(name);
-            for (auto &st : dependentModuleNames) {
+            for (const auto &st : dependentModuleNames) {
                 moduleDeque.push_back(st);
             }
         }
