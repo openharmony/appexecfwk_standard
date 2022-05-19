@@ -1402,14 +1402,7 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
         APP_LOGE("args not object type");
         return false;
     }
-    std::string wantBundleName;
-    std::string wantModuleName;
-    std::string wantAbilityName;
-    std::string wantDeviceId;
-    std::string wantType;
     int32_t wantFlags = 0;
-    std::string wantAction;
-    std::string wantUri;
     std::vector<std::string> wantEntities;
     std::string elementUri;
     std::string elementDeviceId;
@@ -1419,30 +1412,23 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
 
     napi_value prop = nullptr;
     napi_get_named_property(env, args, "bundleName", &prop);
-    wantBundleName = GetStringFromNAPI(env, prop);
+    std::string wantBundleName = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
     napi_get_named_property(env, args, "moduleName", &prop);
-    napi_typeof(env, prop, &valueType);
-    if (valueType == napi_string) {
-        wantModuleName = GetStringFromNAPI(env, prop);
-        if (wantModuleName.empty()) {
-            APP_LOGE("error moduleName is empty!");
-            return false;
-        }
-    }
+    std::string wantModuleName = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
     napi_get_named_property(env, args, "abilityName", &prop);
-    wantAbilityName = GetStringFromNAPI(env, prop);
+    std::string wantAbilityName = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
     napi_get_named_property(env, args, "deviceId", &prop);
-    wantDeviceId = GetStringFromNAPI(env, prop);
+    std::string wantDeviceId = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
     napi_get_named_property(env, args, "type", &prop);
-    wantType = GetStringFromNAPI(env, prop);
+    std::string wantType = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
     napi_get_named_property(env, args, "flags", &prop);
@@ -1453,11 +1439,11 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
 
     prop = nullptr;
     napi_get_named_property(env, args, "action", &prop);
-    wantAction = GetStringFromNAPI(env, prop);
+    std::string wantAction = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
     napi_get_named_property(env, args, "uri", &prop);
-    wantUri = GetStringFromNAPI(env, prop);
+    std::string wantUri = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
     napi_get_named_property(env, args, "entities", &prop);
@@ -1472,7 +1458,6 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     napi_typeof(env, elementProp, &valueType);
     if (valueType == napi_object) {
         APP_LOGD("begin to parse want elementName");
-
         prop = nullptr;
         napi_get_named_property(env, elementProp, "deviceId", &prop);
         elementDeviceId = GetStringFromNAPI(env, prop);
@@ -1483,33 +1468,34 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
 
         prop = nullptr;
         napi_status status = napi_get_named_property(env, elementProp, "bundleName", &prop);
-        if (status != napi_ok) {
-            APP_LOGE("elementName bundleName incorrect!");
-            return false;
-        }
         napi_typeof(env, prop, &valueType);
-        if (valueType != napi_string) {
-            APP_LOGE("elementName bundleName type mismatch!");
+        if ((status != napi_ok) || (valueType != napi_string)) {
+            APP_LOGE("elementName bundleName incorrect!");
             return false;
         }
         elementBundleName = GetStringFromNAPI(env, prop);
 
         prop = nullptr;
-        napi_get_named_property(env, elementProp, "moduleName", &prop);
-        elementModuleName = GetStringFromNAPI(env, prop);
-
-        prop = nullptr;
         status = napi_get_named_property(env, elementProp, "abilityName", &prop);
-        if (status != napi_ok) {
+        napi_typeof(env, prop, &valueType);
+        if ((status != napi_ok) || (valueType != napi_string)) {
             APP_LOGE("elementName abilityName incorrect!");
             return false;
         }
-        napi_typeof(env, prop, &valueType);
-        if (valueType != napi_string) {
-            APP_LOGE("elementName abilityName type mismatch!");
-            return false;
-        }
         elementAbilityName = GetStringFromNAPI(env, prop);
+
+        prop = nullptr;
+        bool hasKey = false;
+        napi_has_named_property(env, elementProp, "moduleName", &hasKey);
+        if (hasKey) {
+            status = napi_get_named_property(env, elementProp, "moduleName", &prop);
+            napi_typeof(env, prop, &valueType);
+            if ((status != napi_ok) || (valueType != napi_string)) {
+                APP_LOGE("elementName moduleName incorrect!");
+                return false;
+            }
+            elementModuleName = GetStringFromNAPI(env, prop);
+        }
     }
     if (elementBundleName.empty()) {
         elementBundleName = wantBundleName;
@@ -1526,8 +1512,8 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     if (elementUri.empty()) {
         elementUri = wantUri;
     }
-    APP_LOGD("bundleName:%{public}s, abilityName:%{public}s",
-             elementBundleName.c_str(), elementAbilityName.c_str());
+    APP_LOGD("bundleName:%{public}s, moduleName: %{public}s, abilityName:%{public}s",
+             elementBundleName.c_str(), elementModuleName.c_str(), elementAbilityName.c_str());
     APP_LOGD("action:%{public}s, uri:%{private}s, type:%{public}s, flags:%{public}d",
         wantAction.c_str(), elementUri.c_str(), wantType.c_str(), wantFlags);
     want.SetAction(wantAction);
