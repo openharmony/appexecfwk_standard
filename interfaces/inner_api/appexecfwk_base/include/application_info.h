@@ -33,6 +33,7 @@ enum ApplicationFlag {
     GET_APPLICATION_INFO_WITH_PERMISSION = 0x00000008,
     GET_APPLICATION_INFO_WITH_METADATA = 0x00000040,
     GET_APPLICATION_INFO_WITH_DISABLE = 0x00000200,
+    GET_APPLICATION_INFO_WITH_CERTIFICATE_FINGERPRINT = 0x00000400,
     GET_ALL_APPLICATION_INFO = 0xFFFF0000,
 };
 
@@ -159,6 +160,7 @@ struct ApplicationInfo : public Parcelable {
     std::vector<std::string> targetBundleList;
 
     bool isCloned = false;
+    std::string fingerprint;
 
     // unused
     std::string icon;
