@@ -75,6 +75,8 @@ void to_json(nlohmann::json& jsonObject, const DistributedModuleInfo& distribute
 void from_json(const nlohmann::json& jsonObject, DistributedModuleInfo& distributedModuleInfo);
 void to_json(nlohmann::json &jsonObject, const TargetInfo &targetInfo);
 void from_json(const nlohmann::json &jsonObject, TargetInfo &targetInfo);
+void to_json(nlohmann::json &jsonObject, const TargetExtSetting &targetExtSetting);
+void from_json(const nlohmann::json &jsonObject, TargetExtSetting &targetExtSetting);
 void to_json(nlohmann::json &jsonObject, const Result &result);
 void from_json(const nlohmann::json &jsonObject, Result &result);
 void to_json(nlohmann::json &jsonObject, const Progress &progress);
