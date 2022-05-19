@@ -44,7 +44,7 @@ ohos_shared_library("eventhandler_native") {
 
   external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "eventhandler"
 }
 

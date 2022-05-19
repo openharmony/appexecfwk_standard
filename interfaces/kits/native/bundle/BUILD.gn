@@ -55,6 +55,6 @@ ohos_shared_library("bundle_ndk") {
   version_script =
       get_label_info(":libbundle_ndk", "target_gen_dir") + "/" +
       get_label_info(":libbundle_ndk", "name") + version_script_suffix
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "bundle_framework"
 }

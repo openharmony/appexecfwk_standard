@@ -253,7 +253,7 @@ ohos_shared_library("libbms") {
     defines += [ "USE_PRE_BUNDLE_PROFILE" ]
   }
 
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "bundle_framework"
 }
 
@@ -292,13 +292,13 @@ ohos_executable("installs") {
   }
 
   install_enable = true
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "bundle_framework"
 }
 
 ohos_prebuilt_etc("installs.cfg") {
   source = "installs.cfg"
   relative_install_dir = "init"
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "bundle_framework"
 }
