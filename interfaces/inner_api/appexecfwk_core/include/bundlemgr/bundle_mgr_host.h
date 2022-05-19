@@ -29,7 +29,7 @@ namespace OHOS {
 namespace AppExecFwk {
 class BundleMgrHost : public IRemoteStub<IBundleMgr> {
 public:
-    BundleMgrHost() = default;
+    BundleMgrHost();
     virtual ~BundleMgrHost() = default;
 
     int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
@@ -574,6 +574,10 @@ private:
      * @return Returns ashmem num.
      */
     int32_t AllocatAshmemNum();
+    void init();
+
+    using BundleMgrHostFunc = ErrCode (BundleMgrHost::*)(Parcel &, Parcel &);
+    std::unordered_map<uint32_t, BundleMgrHostFunc> funcMap_;
 
     std::mutex bundleAshmemMutex_;
     int32_t ashmemNum_ = 0;
