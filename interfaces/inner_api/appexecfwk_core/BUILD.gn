@@ -85,6 +85,6 @@ ohos_shared_library("appexecfwk_core") {
     external_deps += [ "resource_management:global_resmgr" ]
   }
 
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "bundle_framework"
 }

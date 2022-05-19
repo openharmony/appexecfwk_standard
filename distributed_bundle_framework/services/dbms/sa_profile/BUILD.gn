@@ -30,6 +30,6 @@ ohos_sa_profile("distributedbms_sa_profile") {
 ohos_prebuilt_etc("distributedbms.cfg") {
   source = "distributedbms.cfg"
   relative_install_dir = "init"
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "distributed_bundle_framework"
 }

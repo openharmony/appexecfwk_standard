@@ -32,6 +32,6 @@ ohos_shared_library("libeventhandler") {
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "eventhandler"
 }

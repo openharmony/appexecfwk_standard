@@ -8,7 +8,7 @@
     },
     "component": {
         "name": "distributed_bundle_framework",
-        "subsystem": "appexecfwk",
+        "subsystem": "bundlemanager",
         "syscap": [
             "SystemCapability.BundleManager.DistributedBundleFramework"
         ],

@@ -8,7 +8,7 @@
     },
     "component": {
         "name": "bundle_tool",
-        "subsystem": "appexecfwk",
+        "subsystem": "bundlemanager",
         "syscap": [
             "SystemCapability.BundleManager.BundleTool"
         ],
