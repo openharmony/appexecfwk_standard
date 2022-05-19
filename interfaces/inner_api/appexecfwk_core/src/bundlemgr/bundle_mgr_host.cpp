@@ -53,6 +53,129 @@ inline void ClearAshmem(sptr<Ashmem> &optMem)
 }
 }  // namespace
 
+BundleMgrHost::BundleMgrHost()
+{
+    APP_LOGD("create bundle manager host ");
+    init();
+}
+
+void BundleMgrHost::init()
+{
+    funcMap_.emplace(IBundleMgr::Message::GET_APPLICATION_INFO, &BundleMgrHost::HandleGetApplicationInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_APPLICATION_INFO_WITH_INT_FLAGS,
+        &BundleMgrHost::HandleGetApplicationInfoWithIntFlags);
+    funcMap_.emplace(IBundleMgr::Message::GET_APPLICATION_INFOS, &BundleMgrHost::HandleGetApplicationInfos);
+    funcMap_.emplace(IBundleMgr::Message::GET_APPLICATION_INFOS_WITH_INT_FLAGS,
+        &BundleMgrHost::HandleGetApplicationInfosWithIntFlags);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_INFO, &BundleMgrHost::HandleGetBundleInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS,
+        &BundleMgrHost::HandleGetBundleInfoWithIntFlags);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_PACK_INFO, &BundleMgrHost::HandleGetBundlePackInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_PACK_INFO_WITH_INT_FLAGS,
+        &BundleMgrHost::HandleGetBundlePackInfoWithIntFlags);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_INFOS, &BundleMgrHost::HandleGetBundleInfos);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS,
+        &BundleMgrHost::HandleGetBundleInfosWithIntFlags);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_NAME_FOR_UID, &BundleMgrHost::HandleGetBundleNameForUid);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLES_FOR_UID, &BundleMgrHost::HandleGetBundlesForUid);
+    funcMap_.emplace(IBundleMgr::Message::GET_NAME_FOR_UID, &BundleMgrHost::HandleGetNameForUid);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_GIDS, &BundleMgrHost::HandleGetBundleGids);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_GIDS_BY_UID, &BundleMgrHost::HandleGetBundleGidsByUid);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_INFOS_BY_METADATA,
+        &BundleMgrHost::HandleGetBundleInfosByMetaData);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFO, &BundleMgrHost::HandleQueryAbilityInfo);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFO_MUTI_PARAM,
+        &BundleMgrHost::HandleQueryAbilityInfoMutiparam);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFOS, &BundleMgrHost::HandleQueryAbilityInfos);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFOS_MUTI_PARAM,
+        &BundleMgrHost::HandleQueryAbilityInfosMutiparam);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE,
+        &BundleMgrHost::HandleQueryAbilityInfosForClone);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ALL_ABILITY_INFOS, &BundleMgrHost::HandleQueryAllAbilityInfos);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI, &BundleMgrHost::HandleQueryAbilityInfoByUri);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFOS_BY_URI, &BundleMgrHost::HandleQueryAbilityInfosByUri);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI_FOR_USERID,
+        &BundleMgrHost::HandleQueryAbilityInfoByUriForUserId);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_KEEPALIVE_BUNDLE_INFOS,
+        &BundleMgrHost::HandleQueryKeepAliveBundleInfos);
+    funcMap_.emplace(IBundleMgr::Message::GET_ABILITY_LABEL, &BundleMgrHost::HandleGetAbilityLabel);
+    funcMap_.emplace(IBundleMgr::Message::GET_ABILITY_LABEL_WITH_MODULE_NAME,
+        &BundleMgrHost::HandleGetAbilityLabelWithModuleName);
+    funcMap_.emplace(IBundleMgr::Message::CHECK_IS_SYSTEM_APP_BY_UID, &BundleMgrHost::HandleCheckIsSystemAppByUid);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO, &BundleMgrHost::HandleGetBundleArchiveInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS,
+        &BundleMgrHost::HandleGetBundleArchiveInfoWithIntFlags);
+    funcMap_.emplace(IBundleMgr::Message::GET_HAP_MODULE_INFO, &BundleMgrHost::HandleGetHapModuleInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_LAUNCH_WANT_FOR_BUNDLE, &BundleMgrHost::HandleGetLaunchWantForBundle);
+    funcMap_.emplace(IBundleMgr::Message::CHECK_PUBLICKEYS, &BundleMgrHost::HandleCheckPublicKeys);
+    funcMap_.emplace(IBundleMgr::Message::GET_PERMISSION_DEF, &BundleMgrHost::HandleGetAbilityLabel);
+    funcMap_.emplace(IBundleMgr::Message::HAS_SYSTEM_CAPABILITY, &BundleMgrHost::HandleHasSystemCapability);
+    funcMap_.emplace(IBundleMgr::Message::GET_SYSTEM_AVAILABLE_CAPABILITIES,
+        &BundleMgrHost::HandleGetSystemAvailableCapabilities);
+    funcMap_.emplace(IBundleMgr::Message::IS_SAFE_MODE, &BundleMgrHost::HandleIsSafeMode);
+    funcMap_.emplace(IBundleMgr::Message::CLEAN_BUNDLE_CACHE_FILES, &BundleMgrHost::HandleCleanBundleCacheFiles);
+    funcMap_.emplace(IBundleMgr::Message::CLEAN_BUNDLE_DATA_FILES, &BundleMgrHost::HandleCleanBundleDataFiles);
+    funcMap_.emplace(IBundleMgr::Message::REGISTER_BUNDLE_STATUS_CALLBACK,
+        &BundleMgrHost::HandleRegisterBundleStatusCallback);
+    funcMap_.emplace(IBundleMgr::Message::CLEAR_BUNDLE_STATUS_CALLBACK,
+        &BundleMgrHost::HandleClearBundleStatusCallback);
+    funcMap_.emplace(IBundleMgr::Message::UNREGISTER_BUNDLE_STATUS_CALLBACK,
+        &BundleMgrHost::HandleUnregisterBundleStatusCallback);
+    funcMap_.emplace(IBundleMgr::Message::IS_APPLICATION_ENABLED, &BundleMgrHost::HandleIsApplicationEnabled);
+    funcMap_.emplace(IBundleMgr::Message::SET_APPLICATION_ENABLED, &BundleMgrHost::HandleSetApplicationEnabled);
+    funcMap_.emplace(IBundleMgr::Message::IS_ABILITY_ENABLED, &BundleMgrHost::HandleIsAbilityEnabled);
+    funcMap_.emplace(IBundleMgr::Message::SET_ABILITY_ENABLED, &BundleMgrHost::HandleSetAbilityEnabled);
+    funcMap_.emplace(IBundleMgr::Message::GET_ABILITY_INFO, &BundleMgrHost::HandleGetAbilityInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_ABILITY_INFO_WITH_MODULE_NAME,
+        &BundleMgrHost::HandleGetAbilityInfoWithModuleName);
+#ifdef BUNDLE_FRAMEWORK_GRAPHICS
+    funcMap_.emplace(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON, &BundleMgrHost::HandleGetAbilityPixelMapIcon);
+    funcMap_.emplace(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON_WITH_MODULE_NAME,
+        &BundleMgrHost::HandleGetAbilityPixelMapIconWithModuleName);
+#endif
+    funcMap_.emplace(IBundleMgr::Message::DUMP_INFOS, &BundleMgrHost::HandleDumpInfos);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_INSTALLER, &BundleMgrHost::HandleGetBundleInstaller);
+    funcMap_.emplace(IBundleMgr::Message::GET_ALL_FORMS_INFO, &BundleMgrHost::HandleGetAllFormsInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_FORMS_INFO_BY_APP, &BundleMgrHost::HandleGetFormsInfoByApp);
+    funcMap_.emplace(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE, &BundleMgrHost::HandleGetFormsInfoByModule);
+    funcMap_.emplace(IBundleMgr::Message::GET_SHORTCUT_INFO, &BundleMgrHost::HandleGetShortcutInfos);
+    funcMap_.emplace(IBundleMgr::Message::GET_ALL_COMMON_EVENT_INFO, &BundleMgrHost::HandleGetAllCommonEventInfo);
+    funcMap_.emplace(IBundleMgr::Message::CHECK_BUNDLE_NAME_IN_ALLOWLIST,
+        &BundleMgrHost::HandleCheckBundleNameInAllowList);
+    funcMap_.emplace(IBundleMgr::Message::BUNDLE_CLONE, &BundleMgrHost::HandleBundleClone);
+    funcMap_.emplace(IBundleMgr::Message::REMOVE_CLONED_BUNDLE, &BundleMgrHost::HandleRemoveClonedBundle);
+    funcMap_.emplace(IBundleMgr::Message::GET_BUNDLE_USER_MGR, &BundleMgrHost::HandleGetBundleUserMgr);
+    funcMap_.emplace(IBundleMgr::Message::GET_DISTRIBUTE_BUNDLE_INFO, &BundleMgrHost::HandleGetDistributedBundleInfo);
+    funcMap_.emplace(IBundleMgr::Message::GET_APPLICATION_PRIVILEGE_LEVEL, &BundleMgrHost::HandleGetAppPrivilegeLevel);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_EXTENSION_INFO_WITHOUT_TYPE,
+        &BundleMgrHost::HandleQueryExtAbilityInfosWithoutType);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_EXTENSION_INFO, &BundleMgrHost::HandleQueryExtAbilityInfos);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_EXTENSION_INFO_BY_TYPE,
+        &BundleMgrHost::HandleQueryExtAbilityInfosByType);
+    funcMap_.emplace(IBundleMgr::Message::VERIFY_CALLING_PERMISSION, &BundleMgrHost::HandleVerifyCallingPermission);
+    funcMap_.emplace(IBundleMgr::Message::GET_ACCESSIBLE_APP_CODE_PATH,
+        &BundleMgrHost::HandleGetAccessibleAppCodePaths);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_EXTENSION_ABILITY_INFO_BY_URI,
+        &BundleMgrHost::HandleQueryExtensionAbilityInfoByUri);
+    funcMap_.emplace(IBundleMgr::Message::GET_APPID_BY_BUNDLE_NAME, &BundleMgrHost::HandleGetAppIdByBundleName);
+    funcMap_.emplace(IBundleMgr::Message::GET_APP_TYPE, &BundleMgrHost::HandleGetAppType);
+    funcMap_.emplace(IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME, &BundleMgrHost::HandleGetUidByBundleName);
+    funcMap_.emplace(IBundleMgr::Message::IS_MODULE_REMOVABLE, &BundleMgrHost::HandleIsModuleRemovable);
+    funcMap_.emplace(IBundleMgr::Message::SET_MODULE_REMOVABLE, &BundleMgrHost::HandleSetModuleRemovable);
+    funcMap_.emplace(IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK,
+        &BundleMgrHost::HandleQueryAbilityInfoWithCallback);
+    funcMap_.emplace(IBundleMgr::Message::UPGRADE_ATOMIC_SERVICE, &BundleMgrHost::HandleUpgradeAtomicService);
+    funcMap_.emplace(IBundleMgr::Message::IS_MODULE_NEED_UPDATE, &BundleMgrHost::HandleGetModuleUpgradeFlag);
+    funcMap_.emplace(IBundleMgr::Message::SET_MODULE_NEED_UPDATE, &BundleMgrHost::HandleSetModuleUpgradeFlag);
+    funcMap_.emplace(IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID,
+        &BundleMgrHost::HandleGetHapModuleInfoWithUserId);
+    funcMap_.emplace(IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY,
+        &BundleMgrHost::HandleImplicitQueryInfoByPriority);
+    funcMap_.emplace(IBundleMgr::Message::GET_ALL_DEPENDENT_MODULE_NAMES,
+        &BundleMgrHost::HandleGetAllDependentModuleNames);
+    funcMap_.emplace(IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO, &BundleMgrHost::HandleGetSandboxBundleInfo);
+}
+
 int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_LOGD("bundle mgr host onReceived message, the message code is %{public}u", code);
@@ -64,262 +187,13 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
     }
 
     ErrCode errCode = ERR_OK;
-    switch (code) {
-        case IBundleMgr::Message::GET_APPLICATION_INFO:
-            errCode = HandleGetApplicationInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_APPLICATION_INFO_WITH_INT_FLAGS:
-            errCode = HandleGetApplicationInfoWithIntFlags(data, reply);
-            break;
-        case IBundleMgr::Message::GET_APPLICATION_INFOS:
-            errCode = HandleGetApplicationInfos(data, reply);
-            break;
-        case IBundleMgr::Message::GET_APPLICATION_INFOS_WITH_INT_FLAGS:
-            errCode = HandleGetApplicationInfosWithIntFlags(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_INFO:
-            errCode = HandleGetBundleInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS:
-            errCode = HandleGetBundleInfoWithIntFlags(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_PACK_INFO:
-            errCode = HandleGetBundlePackInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_PACK_INFO_WITH_INT_FLAGS:
-            errCode = HandleGetBundlePackInfoWithIntFlags(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_INFOS:
-            errCode = HandleGetBundleInfos(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS:
-            errCode = HandleGetBundleInfosWithIntFlags(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_NAME_FOR_UID:
-            errCode = HandleGetBundleNameForUid(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLES_FOR_UID:
-            errCode = HandleGetBundlesForUid(data, reply);
-            break;
-        case IBundleMgr::Message::GET_NAME_FOR_UID:
-            errCode = HandleGetNameForUid(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_GIDS:
-            errCode = HandleGetBundleGids(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_GIDS_BY_UID:
-            errCode = HandleGetBundleGidsByUid(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_INFOS_BY_METADATA:
-            errCode = HandleGetBundleInfosByMetaData(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFO:
-            errCode = HandleQueryAbilityInfo(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFO_MUTI_PARAM:
-            errCode = HandleQueryAbilityInfoMutiparam(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFOS:
-            errCode = HandleQueryAbilityInfos(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFOS_MUTI_PARAM:
-            errCode = HandleQueryAbilityInfosMutiparam(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE:
-            errCode = HandleQueryAbilityInfosForClone(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ALL_ABILITY_INFOS:
-            errCode = HandleQueryAllAbilityInfos(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI:
-            errCode = HandleQueryAbilityInfoByUri(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFOS_BY_URI:
-            errCode = HandleQueryAbilityInfosByUri(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI_FOR_USERID:
-            errCode = HandleQueryAbilityInfoByUriForUserId(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_KEEPALIVE_BUNDLE_INFOS:
-            errCode = HandleQueryKeepAliveBundleInfos(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ABILITY_LABEL:
-            errCode = HandleGetAbilityLabel(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ABILITY_LABEL_WITH_MODULE_NAME:
-            errCode = HandleGetAbilityLabelWithModuleName(data, reply);
-            break;
-        case IBundleMgr::Message::CHECK_IS_SYSTEM_APP_BY_UID:
-            errCode = HandleCheckIsSystemAppByUid(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO:
-            errCode = HandleGetBundleArchiveInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS:
-            errCode = HandleGetBundleArchiveInfoWithIntFlags(data, reply);
-            break;
-        case IBundleMgr::Message::GET_HAP_MODULE_INFO:
-            errCode = HandleGetHapModuleInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_LAUNCH_WANT_FOR_BUNDLE:
-            errCode = HandleGetLaunchWantForBundle(data, reply);
-            break;
-        case IBundleMgr::Message::CHECK_PUBLICKEYS:
-            errCode = HandleCheckPublicKeys(data, reply);
-            break;
-        case IBundleMgr::Message::GET_PERMISSION_DEF:
-            errCode = HandleGetPermissionDef(data, reply);
-            break;
-        case IBundleMgr::Message::HAS_SYSTEM_CAPABILITY:
-            errCode = HandleHasSystemCapability(data, reply);
-            break;
-        case IBundleMgr::Message::GET_SYSTEM_AVAILABLE_CAPABILITIES:
-            errCode = HandleGetSystemAvailableCapabilities(data, reply);
-            break;
-        case IBundleMgr::Message::IS_SAFE_MODE:
-            errCode = HandleIsSafeMode(data, reply);
-            break;
-        case IBundleMgr::Message::CLEAN_BUNDLE_CACHE_FILES:
-            errCode = HandleCleanBundleCacheFiles(data, reply);
-            break;
-        case IBundleMgr::Message::CLEAN_BUNDLE_DATA_FILES:
-            errCode = HandleCleanBundleDataFiles(data, reply);
-            break;
-        case IBundleMgr::Message::REGISTER_BUNDLE_STATUS_CALLBACK:
-            errCode = HandleRegisterBundleStatusCallback(data, reply);
-            break;
-        case IBundleMgr::Message::CLEAR_BUNDLE_STATUS_CALLBACK:
-            errCode = HandleClearBundleStatusCallback(data, reply);
-            break;
-        case IBundleMgr::Message::UNREGISTER_BUNDLE_STATUS_CALLBACK:
-            errCode = HandleUnregisterBundleStatusCallback(data, reply);
-            break;
-        case IBundleMgr::Message::IS_APPLICATION_ENABLED:
-            errCode = HandleIsApplicationEnabled(data, reply);
-            break;
-        case IBundleMgr::Message::SET_APPLICATION_ENABLED:
-            errCode = HandleSetApplicationEnabled(data, reply);
-            break;
-        case IBundleMgr::Message::IS_ABILITY_ENABLED:
-            errCode = HandleIsAbilityEnabled(data, reply);
-            break;
-        case IBundleMgr::Message::SET_ABILITY_ENABLED:
-            errCode = HandleSetAbilityEnabled(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ABILITY_INFO:
-            errCode = HandleGetAbilityInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ABILITY_INFO_WITH_MODULE_NAME:
-            errCode = HandleGetAbilityInfoWithModuleName(data, reply);
-            break;
-#ifdef BUNDLE_FRAMEWORK_GRAPHICS
-        case IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON:
-            errCode = HandleGetAbilityPixelMapIcon(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON_WITH_MODULE_NAME:
-            errCode = HandleGetAbilityPixelMapIconWithModuleName(data, reply);
-            break;
-#endif
-        case IBundleMgr::Message::DUMP_INFOS:
-            errCode = HandleDumpInfos(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_INSTALLER:
-            errCode = HandleGetBundleInstaller(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ALL_FORMS_INFO:
-            errCode = HandleGetAllFormsInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_FORMS_INFO_BY_APP:
-            errCode = HandleGetFormsInfoByApp(data, reply);
-            break;
-        case IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE:
-            errCode = HandleGetFormsInfoByModule(data, reply);
-            break;
-        case IBundleMgr::Message::GET_SHORTCUT_INFO:
-            errCode = HandleGetShortcutInfos(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ALL_COMMON_EVENT_INFO:
-            errCode = HandleGetAllCommonEventInfo(data, reply);
-            break;
-        case IBundleMgr::Message::CHECK_BUNDLE_NAME_IN_ALLOWLIST:
-            errCode = HandleCheckBundleNameInAllowList(data, reply);
-            break;
-        case IBundleMgr::Message::BUNDLE_CLONE:
-            errCode = HandleBundleClone(data, reply);
-            break;
-        case IBundleMgr::Message::REMOVE_CLONED_BUNDLE:
-            errCode = HandleRemoveClonedBundle(data, reply);
-            break;
-        case IBundleMgr::Message::GET_BUNDLE_USER_MGR:
-            errCode = HandleGetBundleUserMgr(data, reply);
-            break;
-        case IBundleMgr::Message::GET_DISTRIBUTE_BUNDLE_INFO:
-            errCode = HandleGetDistributedBundleInfo(data, reply);
-            break;
-        case IBundleMgr::Message::GET_APPLICATION_PRIVILEGE_LEVEL:
-            errCode = HandleGetAppPrivilegeLevel(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_EXTENSION_INFO_WITHOUT_TYPE:
-            errCode = HandleQueryExtAbilityInfosWithoutType(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_EXTENSION_INFO:
-            errCode = HandleQueryExtAbilityInfos(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_EXTENSION_INFO_BY_TYPE:
-            errCode = HandleQueryExtAbilityInfosByType(data, reply);
-            break;
-        case IBundleMgr::Message::VERIFY_CALLING_PERMISSION:
-            errCode = HandleVerifyCallingPermission(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ACCESSIBLE_APP_CODE_PATH:
-            errCode = HandleGetAccessibleAppCodePaths(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_EXTENSION_ABILITY_INFO_BY_URI:
-            errCode = HandleQueryExtensionAbilityInfoByUri(data, reply);
-            break;
-        case IBundleMgr::Message::GET_APPID_BY_BUNDLE_NAME:
-            errCode = HandleGetAppIdByBundleName(data, reply);
-            break;
-        case IBundleMgr::Message::GET_APP_TYPE:
-            errCode = HandleGetAppType(data, reply);
-            break;
-        case IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME:
-            errCode = HandleGetUidByBundleName(data, reply);
-            break;
-        case IBundleMgr::Message::IS_MODULE_REMOVABLE:
-            errCode = HandleIsModuleRemovable(data, reply);
-            break;
-        case IBundleMgr::Message::SET_MODULE_REMOVABLE:
-            errCode = HandleSetModuleRemovable(data, reply);
-            break;
-        case IBundleMgr::Message::QUERY_ABILITY_INFO_WITH_CALLBACK:
-            errCode = HandleQueryAbilityInfoWithCallback(data, reply);
-            break;
-        case IBundleMgr::Message::UPGRADE_ATOMIC_SERVICE:
-            errCode = HandleUpgradeAtomicService(data, reply);
-            break;
-        case IBundleMgr::Message::IS_MODULE_NEED_UPDATE:
-            errCode = HandleGetModuleUpgradeFlag(data, reply);
-            break;
-        case IBundleMgr::Message::SET_MODULE_NEED_UPDATE:
-            errCode = HandleSetModuleUpgradeFlag(data, reply);
-            break;
-        case IBundleMgr::Message::GET_HAP_MODULE_INFO_WITH_USERID:
-            errCode = HandleGetHapModuleInfoWithUserId(data, reply);
-            break;
-        case IBundleMgr::Message::IMPLICIT_QUERY_INFO_BY_PRIORITY:
-            errCode = HandleImplicitQueryInfoByPriority(data, reply);
-            break;
-        case IBundleMgr::Message::GET_ALL_DEPENDENT_MODULE_NAMES:
-            errCode = HandleGetAllDependentModuleNames(data, reply);
-            break;
-        case IBundleMgr::Message::GET_SANDBOX_APP_BUNDLE_INFO:
-            errCode = HandleGetSandboxBundleInfo(data, reply);
-            break;
-        default:
-            return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+    if (funcMap_.find(code) != funcMap_.end() && funcMap_[code] != nullptr) {
+        errCode = (this->*funcMap_[code])(data, reply);
+    } else {
+        APP_LOGW("bundlemgr host receives unknown code, code = %{public}u", code);
+        return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    // if ERR_OK return ipc NO_ERROR, else return ipc UNKNOW_ERROR
+    APP_LOGD("bundlemgr host finish to process message");
     return (errCode == ERR_OK) ? NO_ERROR : UNKNOWN_ERROR;
 }
 

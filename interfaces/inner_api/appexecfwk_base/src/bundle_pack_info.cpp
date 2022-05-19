@@ -395,7 +395,7 @@ void from_json(const nlohmann::json &jsonObject, PackageModule &packageModule)
         PACK_SUMMARY_MODULE_MAIN_ABILITY,
         packageModule.mainAbility,
         JsonType::STRING,
-        true,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
@@ -403,7 +403,7 @@ void from_json(const nlohmann::json &jsonObject, PackageModule &packageModule)
         PACK_SUMMARY_MODULE_DEVICE_TYPE,
         packageModule.deviceType,
         JsonType::ARRAY,
-        true,
+        false,
         parseResult,
         ArrayType::STRING);
     GetValueIfFindKey<std::vector<ModuleAbilityInfo>>(jsonObject,
@@ -411,7 +411,7 @@ void from_json(const nlohmann::json &jsonObject, PackageModule &packageModule)
         PACK_SUMMARY_MODULE_ABILITIES,
         packageModule.abilities,
         JsonType::ARRAY,
-        true,
+        false,
         parseResult,
         ArrayType::OBJECT);
     GetValueIfFindKey<std::vector<ExtensionAbilities>>(jsonObject,
@@ -419,7 +419,7 @@ void from_json(const nlohmann::json &jsonObject, PackageModule &packageModule)
         PACK_SUMMARY_MODULE_EXTENSION_ABILITIES,
         packageModule.extensionAbilities,
         JsonType::ARRAY,
-        true,
+        false,
         parseResult,
         ArrayType::OBJECT);
     GetValueIfFindKey<ModuleDistro>(jsonObject,
@@ -427,7 +427,7 @@ void from_json(const nlohmann::json &jsonObject, PackageModule &packageModule)
         PACK_SUMMARY_MODULE_DISTRO,
         packageModule.distro,
         JsonType::OBJECT,
-        true,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<ApiVersion>(jsonObject,
@@ -460,7 +460,7 @@ void from_json(const nlohmann::json &jsonObject, Summary &summary)
         PACK_SUMMARY_APP,
         summary.app,
         JsonType::OBJECT,
-        true,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<PackageModule>>(jsonObject,
@@ -468,7 +468,7 @@ void from_json(const nlohmann::json &jsonObject, Summary &summary)
         PACK_SUMMARY_MODULE,
         summary.modules,
         JsonType::ARRAY,
-        true,
+        false,
         parseResult,
         ArrayType::OBJECT);
     if (parseResult != ERR_OK) {
