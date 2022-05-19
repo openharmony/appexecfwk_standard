@@ -1372,7 +1372,6 @@ static bool InnerQueryAbilityInfos(napi_env env, const Want &want,
 static bool ParseBundleOptions(napi_env env, BundleOptions &bundleOptions, napi_value args)
 {
     APP_LOGD("begin to parse bundleOptions");
-    napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
@@ -1381,7 +1380,7 @@ static bool ParseBundleOptions(napi_env env, BundleOptions &bundleOptions, napi_
     }
 
     napi_value prop = nullptr;
-    status = napi_get_named_property(env, args, "userId", &prop);
+    napi_get_named_property(env, args, "userId", &prop);
     napi_typeof(env, prop, &valueType);
     if (valueType == napi_number) {
         napi_get_value_int32(env, prop, &bundleOptions.userId);
@@ -1392,7 +1391,6 @@ static bool ParseBundleOptions(napi_env env, BundleOptions &bundleOptions, napi_
 static bool ParseWant(napi_env env, Want &want, napi_value args)
 {
     APP_LOGD("begin to parse want");
-    napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
@@ -1415,11 +1413,11 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     std::string elementAbilityName;
 
     napi_value prop = nullptr;
-    status = napi_get_named_property(env, args, "bundleName", &prop);
+    napi_get_named_property(env, args, "bundleName", &prop);
     wantBundleName = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "moduleName", &prop);
+    napi_get_named_property(env, args, "moduleName", &prop);
     napi_typeof(env, prop, &valueType);
     if (valueType == napi_string) {
         wantModuleName = GetStringFromNAPI(env, prop);
@@ -1430,34 +1428,34 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     }
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "abilityName", &prop);
+    napi_get_named_property(env, args, "abilityName", &prop);
     wantAbilityName = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "deviceId", &prop);
+    napi_get_named_property(env, args, "deviceId", &prop);
     wantDeviceId = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "type", &prop);
+    napi_get_named_property(env, args, "type", &prop);
     wantType = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "flags", &prop);
+    napi_get_named_property(env, args, "flags", &prop);
     napi_typeof(env, prop, &valueType);
     if (valueType == napi_number) {
         napi_get_value_int32(env, prop, &wantFlags);
     }
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "action", &prop);
+    napi_get_named_property(env, args, "action", &prop);
     wantAction = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "uri", &prop);
+    napi_get_named_property(env, args, "uri", &prop);
     wantUri = GetStringFromNAPI(env, prop);
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "entities", &prop);
+    napi_get_named_property(env, args, "entities", &prop);
     ParseStringArray(env, wantEntities, prop);
     for (size_t idx = 0; idx < wantEntities.size(); idx++) {
         APP_LOGD("entity:%{public}s", wantEntities[idx].c_str());
@@ -1465,21 +1463,21 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     }
 
     napi_value elementProp = nullptr;
-    status = napi_get_named_property(env, args, "elementName", &elementProp);
+    napi_get_named_property(env, args, "elementName", &elementProp);
     napi_typeof(env, elementProp, &valueType);
     if (valueType == napi_object) {
         APP_LOGD("begin to parse want elementName");
 
         prop = nullptr;
-        status = napi_get_named_property(env, elementProp, "deviceId", &prop);
+        napi_get_named_property(env, elementProp, "deviceId", &prop);
         elementDeviceId = GetStringFromNAPI(env, prop);
 
         prop = nullptr;
-        status = napi_get_named_property(env, elementProp, "uri", &prop);
+        napi_get_named_property(env, elementProp, "uri", &prop);
         elementUri = GetStringFromNAPI(env, prop);
 
         prop = nullptr;
-        status = napi_get_named_property(env, elementProp, "bundleName", &prop);
+        napi_status status = napi_get_named_property(env, elementProp, "bundleName", &prop);
         if (status != napi_ok) {
             APP_LOGE("elementName bundleName incorrect!");
             return false;
@@ -1492,7 +1490,7 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
         elementBundleName = GetStringFromNAPI(env, prop);
 
         prop = nullptr;
-        status = napi_get_named_property(env, elementProp, "moduleName", &prop);
+        napi_get_named_property(env, elementProp, "moduleName", &prop);
         elementModuleName = GetStringFromNAPI(env, prop);
 
         prop = nullptr;
@@ -3032,14 +3030,12 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
 
 static bool ParseHashParam(napi_env env, std::string &key, std::string &value, napi_value args)
 {
-    napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
         APP_LOGE("args type incorrect!");
         return false;
     }
-
     napi_value property = nullptr;
     bool hasKey = false;
     napi_has_named_property(env, args, "moduleName", &hasKey);
@@ -3047,7 +3043,7 @@ static bool ParseHashParam(napi_env env, std::string &key, std::string &value, n
         APP_LOGE("parse HashParam failed due to moduleName is not exist!");
         return false;
     }
-    status = napi_get_named_property(env, args, "moduleName", &property);
+    napi_status status = napi_get_named_property(env, args, "moduleName", &property);
     if (status != napi_ok) {
         APP_LOGE("napi get named moduleName property error!");
         return false;
@@ -3117,14 +3113,14 @@ static bool ParseHashParams(napi_env env, std::map<std::string, std::string> &ha
 
 static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_value args)
 {
-    napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
         APP_LOGE("args type incorrect!");
         return false;
     }
-
+    
+    napi_status status;
     napi_value property = nullptr;
     bool hasKey = false;
     napi_has_named_property(env, args, "userId", &hasKey);
@@ -5582,7 +5578,6 @@ napi_value GetAbilityLabel(napi_env env, napi_callback_info info)
 
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo)
 {
-    napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, param, &valueType));
     if (valueType != napi_object) {
@@ -5592,7 +5587,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
 
     napi_value prop = nullptr;
     // parse bundleName
-    status = napi_get_named_property(env, param, "bundleName", &prop);
+    napi_get_named_property(env, param, "bundleName", &prop);
     napi_typeof(env, prop, &valueType);
     if (valueType == napi_undefined) {
         return false;
@@ -5601,7 +5596,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     abilityInfo.bundleName = bundleName;
 
     // parse moduleName
-    status = napi_get_named_property(env, param, "moduleName", &prop);
+    napi_get_named_property(env, param, "moduleName", &prop);
     napi_typeof(env, prop, &valueType);
     if (valueType == napi_string) {
         std::string moduleName = GetStringFromNAPI(env, prop);
@@ -5613,7 +5608,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     }
 
     // parse abilityName
-    status = napi_get_named_property(env, param, "name", &prop);
+    napi_get_named_property(env, param, "name", &prop);
     napi_typeof(env, prop, &valueType);
     if (valueType == napi_undefined) {
         return false;
