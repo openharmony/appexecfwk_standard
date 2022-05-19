@@ -432,7 +432,7 @@ bool ExistBundleNameInCallingBundles(std::string &bundleName, std::vector<std::s
 }
 
 void BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundleInfo &innerBundleInfo,
-    sptr<TargetAbilityInfo> &targetAbilityInfo, sptr<TargetInfo> &targetInfo)
+    sptr<TargetAbilityInfo> &targetAbilityInfo, sptr<TargetInfo> &targetInfo, sptr<TargetExtSetting> &targetExtSetting)
 {
     ElementName element = want.GetElement();
     std::string bundleName = element.GetBundleName();
@@ -441,7 +441,16 @@ void BundleConnectAbilityMgr::GetTargetAbilityInfo(const Want &want, InnerBundle
     std::string deviceId = element.GetDeviceID();
     std::vector<std::string> callingBundleNames;
     std::vector<std::string> callingAppids;
-    targetAbilityInfo->targetExtSetting = want.GetStringParam("targetExtSetting");
+    auto wantParams = want.GetParams();
+    std::map<std::string, std::string> extValues;
+    for (auto it : wantParams.GetParams()) {
+        int typeId = WantParams::GetDataType(it.second);
+        auto info = wantParams.GetParam(it.first);
+        std::string value = wantParams.GetStringByType(info, typeId);
+        extValues.emplace(it.first, value);
+    }
+    targetExtSetting->extValues = extValues;
+    targetAbilityInfo->targetExtSetting = *targetExtSetting;
     targetInfo->transactId = std::to_string(this->GetTransactId());
     targetInfo->bundleName = bundleName;
     targetInfo->moduleName = moduleName;
@@ -502,7 +511,12 @@ bool BundleConnectAbilityMgr::CheckIsModuleNeedUpdate(
             APP_LOGE("targetInfo is nullptr");
             return false;
         }
-        GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
+        sptr<TargetExtSetting> targetExtSetting = new(std::nothrow) TargetExtSetting();
+        if (targetExtSetting == nullptr) {
+            APP_LOGE("targetExtSetting is nullptr");
+            return false;
+        }
+        GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo, targetExtSetting);
         sptr<FreeInstallParams> freeInstallParams = new(std::nothrow) FreeInstallParams();
         if (freeInstallParams == nullptr) {
             APP_LOGE("freeInstallParams is nullptr");
@@ -576,7 +590,12 @@ bool BundleConnectAbilityMgr::QueryAbilityInfo(const Want &want, int32_t flags,
         APP_LOGD("targetInfo is nullptr");
         return false;
     }
-    GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
+    sptr<TargetExtSetting> targetExtSetting = new(std::nothrow) TargetExtSetting();
+    if (targetExtSetting == nullptr) {
+        APP_LOGE("targetExtSetting is nullptr");
+        return false;
+    }
+    GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo, targetExtSetting);
     freeInstallParams->serviceCenterFunction = ServiceCenterFunction::CONNECT_SILENT_INSTALL;
     auto ret = freeInstallParamsMap_.emplace(targetInfo->transactId, *freeInstallParams);
     if (!ret.second) {
@@ -612,7 +631,12 @@ void BundleConnectAbilityMgr::UpgradeAtomicService(const Want &want, int32_t use
         return;
     }
     bundleDataMgr_->GetInnerBundleInfoWithFlags(bundleName, want.GetFlags(), innerBundleInfo, userId);
-    GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo);
+    sptr<TargetExtSetting> targetExtSetting = new(std::nothrow) TargetExtSetting();
+    if (targetExtSetting == nullptr) {
+        APP_LOGE("targetExtSetting is nullptr");
+        return;
+    }
+    GetTargetAbilityInfo(want, innerBundleInfo, targetAbilityInfo, targetInfo, targetExtSetting);
     freeInstallParams->want = want;
     freeInstallParams->userId = userId;
     freeInstallParams->serviceCenterFunction = ServiceCenterFunction::CONNECT_UPGRADE_CHECK;

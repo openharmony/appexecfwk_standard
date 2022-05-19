@@ -116,9 +116,11 @@ private:
      * @param innerBundleInfo Indicates the innerBundleInfo of the bundle which will be using.
      * @param targetAbilityInfo Indicates the targetAbilityInfo of the bundle which will be returned.
      * @param targetInfo Indicates the targetInfo of the bundle which will be returned.
+     * @param targetExtSetting Indicates the targetExtSetting of the bundle which will be returned.
      */
     void GetTargetAbilityInfo(const Want &want, InnerBundleInfo &innerBundleInfo,
-        sptr<TargetAbilityInfo> &targetAbilityInfo, sptr<TargetInfo> &targetInfo);
+        sptr<TargetAbilityInfo> &targetAbilityInfo, sptr<TargetInfo> &targetInfo,
+        sptr<TargetExtSetting> &targetExtSetting);
 
     /**
      * @brief Check is need update module.

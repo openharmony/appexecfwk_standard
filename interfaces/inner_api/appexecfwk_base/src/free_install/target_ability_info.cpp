@@ -39,6 +39,63 @@ const std::string JSON_KEY_CALLINGBUNDLENAMES = "callingBundleNames";
 const std::string JSON_KEY_CALLINGAPPIDS = "callingAppIds";
 }  // namespace
 
+void to_json(nlohmann::json &jsonObject, const TargetExtSetting &targetExtSetting)
+{
+    jsonObject = nlohmann::json {
+        {JSON_KEY_EXTINFO, targetExtSetting.extValues},
+    };
+}
+
+void from_json(const nlohmann::json &jsonObject, TargetExtSetting &targetExtSetting)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::map<std::string, std::string>>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_EXTINFO,
+        targetExtSetting.extValues,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module targetExtSetting from jsonObject error, error code : %{public}d", parseResult);
+    }
+}
+
+bool TargetExtSetting::ReadFromParcel(Parcel &parcel)
+{
+    int32_t extValueSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extValueSize);
+    for (int32_t i = 0; i < extValueSize; ++i) {
+        std::string key = Str16ToStr8(parcel.ReadString16());
+        std::string value = Str16ToStr8(parcel.ReadString16());
+        extValues.emplace(key, value);
+    }
+    return true;
+}
+
+bool TargetExtSetting::Marshalling(Parcel &parcel) const
+{
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(extValues.size()));
+    for (auto& extValue : extValues) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(extValue.first));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(extValue.second));
+    }
+    return true;
+}
+
+TargetExtSetting *TargetExtSetting::Unmarshalling(Parcel &parcel)
+{
+    TargetExtSetting *targetExtSettingInfo = new (std::nothrow) TargetExtSetting();
+    if (targetExtSettingInfo && !targetExtSettingInfo->ReadFromParcel(parcel)) {
+        APP_LOGE("read from parcel failed");
+        delete targetExtSettingInfo;
+        targetExtSettingInfo = nullptr;
+    }
+    return targetExtSettingInfo;
+}
+
 void to_json(nlohmann::json &jsonObject, const TargetInfo &targetInfo)
 {
     jsonObject = nlohmann::json {
@@ -130,6 +187,9 @@ void from_json(const nlohmann::json &jsonObject, TargetInfo &targetInfo)
         false,
         parseResult,
         ArrayType::STRING);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module targetInfo from jsonObject error, error code : %{public}d", parseResult);
+    }
 }
 
 bool TargetInfo::ReadFromParcel(Parcel &parcel)
@@ -214,14 +274,17 @@ void from_json(const nlohmann::json &jsonObject, TargetAbilityInfo &targetAbilit
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
+    GetValueIfFindKey<TargetExtSetting>(jsonObject,
         jsonObjectEnd,
         JSON_KEY_TARGETEXTSETTING,
         targetAbilityInfo.targetExtSetting,
-        JsonType::STRING,
+        JsonType::OBJECT,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module targetAbilityInfo from jsonObject error, error code : %{public}d", parseResult);
+    }
 }
 
 bool TargetAbilityInfo::ReadFromParcel(Parcel &parcel)
@@ -235,7 +298,14 @@ bool TargetAbilityInfo::ReadFromParcel(Parcel &parcel)
     } else {
         return false;
     }
-    targetExtSetting = Str16ToStr8(parcel.ReadString16());
+    auto extSetting = parcel.ReadParcelable<TargetExtSetting>();
+    if (extSetting != nullptr) {
+        targetExtSetting = *extSetting;
+        delete extSetting;
+        extSetting = nullptr;
+    } else {
+        return false;
+    }
     return true;
 }
 
@@ -243,7 +313,7 @@ bool TargetAbilityInfo::Marshalling(Parcel &parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(version));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &targetInfo);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(targetExtSetting));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &targetExtSetting);
     return true;
 }
 
