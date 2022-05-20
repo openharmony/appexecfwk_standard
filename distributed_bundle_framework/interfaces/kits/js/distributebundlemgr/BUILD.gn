@@ -43,7 +43,7 @@ ohos_shared_library("distributedbundle") {
   ]
 
   relative_install_dir = "module"
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "distributed_bundle_framework"
 }
 

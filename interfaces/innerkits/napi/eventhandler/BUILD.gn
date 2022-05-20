@@ -45,6 +45,6 @@ ohos_shared_library("emitter") {
   ]
 
   relative_install_dir = "module/events"
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
   part_name = "eventhandler"
 }
