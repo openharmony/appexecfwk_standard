@@ -62,5 +62,5 @@ ohos_shared_library("libdbms") {
   ]
 
   part_name = "distributed_bundle_framework"
-  subsystem_name = "appexecfwk"
+  subsystem_name = "bundlemanager"
 }
