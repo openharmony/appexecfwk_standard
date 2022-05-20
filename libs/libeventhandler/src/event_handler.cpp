@@ -249,12 +249,12 @@ void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEve
         std::string eventName = GetEventName(event);
         int64_t threadId = gettid();
         std::string threadIdCharacter = std::to_string(threadId);
-        std::chrono::duration<double> deliveryTime = nowStart - event->GetSendTime();
+        std::chrono::duration<double, std::milli> deliveryTime = nowStart - event->GetSendTime();
         std::string deliveryTimeCharacter = std::to_string((deliveryTime).count());
         std::string deliveryTimeoutCharacter = std::to_string(deliveryTimeout);
         std::string handOutTag = "threadId: " + threadIdCharacter + "," + "threadName: " + threadName + "," +
-            "eventName: " + eventName + "," + "deliveryTime: " + deliveryTimeCharacter + "," +
-            "deliveryTimeout: " + deliveryTimeoutCharacter;
+            "eventName: " + eventName + "," + "deliveryTime:(ms) " + deliveryTimeCharacter + "," +
+            "deliveryTimeout:(ms) " + deliveryTimeoutCharacter;
         if ((nowStart - std::chrono::milliseconds(deliveryTimeout)) > event->GetHandleTime()) {
             HiChecker::NotifySlowEvent(handOutTag);
             if (deliveryTimeoutCallback_) {
@@ -276,13 +276,13 @@ void EventHandler::DistributeTimeAction(const InnerEvent::Pointer &event, InnerE
         int64_t threadId = gettid();
         std::string threadIdCharacter = std::to_string(threadId);
         InnerEvent::TimePoint nowEnd = InnerEvent::Clock::now();
-        std::chrono::duration<double> distributeTime = nowEnd - nowStart;
+        std::chrono::duration<double, std::milli> distributeTime = nowEnd - nowStart;
         std::string distributeTimeCharacter = std::to_string((distributeTime).count());
         std::string distributeTimeoutCharacter = std::to_string(distributeTimeout);
         std::string executeTag = "threadId: " + threadIdCharacter + "," + "threadName: " + threadName + "," +
-            "eventName: " + eventName + "," + "distributeTime: " + distributeTimeCharacter + "," +
-            "distributeTimeout: " + distributeTimeoutCharacter;
-        if ((nowEnd - std::chrono::milliseconds(distributeTimeout)) > nowStart) {
+            "eventName: " + eventName + "," + "distributeTime:(ms) " + distributeTimeCharacter + "," +
+            "distributeTimeout:(ms) " + distributeTimeoutCharacter;
+        if (distributeTime > std::chrono::milliseconds(distributeTimeout)) {
             HiChecker::NotifySlowEvent(executeTag);
             if (distributeTimeoutCallback_) {
                 distributeTimeoutCallback_();
