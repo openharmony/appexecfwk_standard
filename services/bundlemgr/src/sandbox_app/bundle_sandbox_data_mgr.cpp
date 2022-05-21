@@ -29,8 +29,6 @@ BundleSandboxDataMgr::BundleSandboxDataMgr()
 BundleSandboxDataMgr::~BundleSandboxDataMgr()
 {
     APP_LOGI("BundleSandboxDataMgr instance is destroyed");
-    sandboxAppInfos_.clear();
-    sandboxAppIndexMap_.clear();
 }
 
 void BundleSandboxDataMgr::SaveSandboxAppInfo(const InnerBundleInfo &info, const int32_t &appIndex)
@@ -43,11 +41,6 @@ void BundleSandboxDataMgr::SaveSandboxAppInfo(const InnerBundleInfo &info, const
     }
     std::string key = bundleName + Constants::FILE_UNDERLINE + std::to_string(appIndex);
     std::unique_lock<std::shared_mutex> lock(sandboxAppMutex_);
-    if (sandboxAppInfos_.find(key) == sandboxAppInfos_.end()) {
-        sandboxAppInfos_.emplace(key, info);
-        APP_LOGD("save sandbox app %{public}s info successfully", key.c_str());
-        return;
-    }
     sandboxAppInfos_[key] = info;
     APP_LOGD("save sandbox app %{public}s info successfully", key.c_str());
 }
@@ -61,12 +54,11 @@ void BundleSandboxDataMgr::DeleteSandboxAppInfo(const std::string &bundleName, c
     }
     auto key = bundleName + Constants::FILE_UNDERLINE + std::to_string(appIndex);
     std::unique_lock<std::shared_mutex> lock(sandboxAppMutex_);
-    auto it = sandboxAppInfos_.find(key);
-    if (it == sandboxAppInfos_.end()) {
+    auto ret = sandboxAppInfos_.erase(key);
+    if (ret == 0) {
         APP_LOGE("delete sandbox app info failed due to no sandbox app in the dataMgr");
         return;
     }
-    sandboxAppInfos_.erase(it);
     APP_LOGD("delete sandbox app %{public}s info successfully", key.c_str());
 }
 
@@ -144,23 +136,24 @@ int32_t BundleSandboxDataMgr::GenerateSandboxAppIndex(const std::string &bundleN
         return Constants::INITIAL_APP_INDEX;
     }
     std::unique_lock<std::mutex> lock(sandboxAppIndexMapMutex_);
-    auto it = sandboxAppIndexMap_.find(bundleName);
-    if (it == sandboxAppIndexMap_.end()) {
+    auto firstIterator = sandboxAppIndexMap_.find(bundleName);
+    if (firstIterator == sandboxAppIndexMap_.end()) {
         std::set<int32_t> innerSet { Constants::INITIAL_APP_INDEX + 1 };
         sandboxAppIndexMap_.emplace(bundleName, innerSet);
         APP_LOGD("GenerateSandboxAppIndex successfully");
         return Constants::INITIAL_APP_INDEX + 1;
     }
 
-    if (it->second.empty()) {
-        it->second.insert(Constants::INITIAL_APP_INDEX + 1);
+    if (firstIterator->second.empty()) {
+        firstIterator->second.insert(Constants::INITIAL_APP_INDEX + 1);
         APP_LOGD("GenerateSandboxAppIndex successfully");
         return Constants::INITIAL_APP_INDEX + 1;
     }
 
     int32_t pre = Constants::INITIAL_APP_INDEX;
-    for (auto index = it->second.begin(); index != it->second.end(); ++index) {
-        if (*index == pre + 1) {
+    for (auto secondIterator = firstIterator->second.begin(); secondIterator != firstIterator->second.end();
+        ++secondIterator) {
+        if (*secondIterator == pre + 1) {
             pre++;
             continue;
         }
@@ -172,7 +165,7 @@ int32_t BundleSandboxDataMgr::GenerateSandboxAppIndex(const std::string &bundleN
         APP_LOGE("GenerateSandboxAppIndex failed due to exceed limitation of maximum appIndex");
         return Constants::INITIAL_APP_INDEX;
     }
-    it->second.insert(newAppIndex);
+    firstIterator->second.insert(newAppIndex);
     APP_LOGD("GenerateSandboxAppIndex successfully with appIndex %{public}d", newAppIndex);
     return newAppIndex;
 }
@@ -190,13 +183,13 @@ bool BundleSandboxDataMgr::DeleteSandboxAppIndex(const std::string &bundleName, 
         APP_LOGE("no sandbox app can be found %{public}s", bundleName.c_str());
         return false;
     }
-    auto itt = it->second.find(appIndex);
-    if (itt == it->second.end()) {
+
+    auto ret = it->second.erase(appIndex);
+    if (ret == 0) {
         APP_LOGE("no sandbox app index can be found %{public}d", appIndex);
         return false;
     }
 
-    it->second.erase(itt);
     if (it->second.empty()) {
         sandboxAppIndexMap_.erase(bundleName);
     }

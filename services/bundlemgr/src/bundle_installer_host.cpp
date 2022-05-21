@@ -256,8 +256,8 @@ void BundleInstallerHost::HandleCreateStreamInstaller(Parcel &data, Parcel &repl
     if (streamInstaller == nullptr) {
         if (!reply.WriteBool(false)) {
             APP_LOGE("write result failed");
-            return;
         }
+        return;
     }
     if (!reply.WriteBool(true)) {
         APP_LOGE("write result failed");

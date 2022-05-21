@@ -196,19 +196,19 @@ constexpr int64_t MAX_HAP_SIZE = ONE_GB * 4;  // 4GB
 const std::string UID = "uid";
 const std::string USER_ID = "userId";
 const std::string BUNDLE_NAME = "bundleName";
-const int32_t MAX_LIMIT_SIZE = 4;
+constexpr int32_t MAX_LIMIT_SIZE = 4;
 
 const std::string DATA_ABILITY_URI_PREFIX = "dataability://";
 const char DATA_ABILITY_URI_SEPARATOR = '/';
 
 const std::string PARAM_URI_SEPARATOR = ":///";
-const uint32_t PARAM_URI_SEPARATOR_LEN = 4;
+constexpr uint32_t PARAM_URI_SEPARATOR_LEN = 4;
 const std::string URI_SEPARATOR = "://";
-const uint32_t URI_SEPARATOR_LEN = 3;
+constexpr uint32_t URI_SEPARATOR_LEN = 3;
 const std::string SEPARATOR = "/";
 
-const int MAX_DIMENSION_SIZE = 10;
-const int MAX_DEVICETYPE_SIZE = 50;
+constexpr int MAX_DIMENSION_SIZE = 10;
+constexpr int MAX_DEVICETYPE_SIZE = 50;
 
 // appFeature
 const std::string HOS_NORMAL_APP = "hos_normal_app";
@@ -216,10 +216,10 @@ const std::string HOS_SYSTEM_APP = "hos_system_app";
 const std::string OHOS_SYSTEM_APP = "ohos_system_app";
 
 // ipc
-const int32_t MAX_CAPACITY_BUNDLES = 5 * 1024 * 1000; // 5M
+constexpr int32_t MAX_CAPACITY_BUNDLES = 5 * 1024 * 1000; // 5M
 
 // file size
-const int32_t INVALID_FILE_SIZE = -1;
+constexpr int32_t INVALID_FILE_SIZE = -1;
 
 // permission
 const std::string LISTEN_BUNDLE_CHANGE = "ohos.permission.LISTEN_BUNDLE_CHANGE";
@@ -238,8 +238,8 @@ const std::string PREINSTALL_ABILITY_CONFIG = "/preinstall_ability_config.json";
 
 // sandbox application
 const std::string SANDBOX_APP_INDEX = "sandbox_app_index";
-const int32_t INITIAL_APP_INDEX = 0;
-const int32_t MAX_APP_INDEX = 100;
+constexpr int32_t INITIAL_APP_INDEX = 0;
+constexpr int32_t MAX_APP_INDEX = 100;
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS
