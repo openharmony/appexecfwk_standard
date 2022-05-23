@@ -31,6 +31,7 @@ const std::string HELP_MSG = "usage: bm <command> <options>\n"
                              "  install      install a bundle with options\n"
                              "  uninstall    uninstall a bundle with options\n"
                              "  dump         dump the bundle info\n"
+                             "  dump-dependencies dump the dependent moduleNames by given bundle name and module name\n"
                              "  clean        clean the bundle data\n"
                              "  enable       enable the bundle\n"
                              "  disable      disable the bundle\n"
@@ -66,7 +67,6 @@ const std::string HELP_MSG_DUMP =
     "  -a, --all                            list all bundles in system\n"
     "  -i, --bundle-info                    list all bundles info in system\n"
     "  -n, --bundle-name <bundle-name>      list the bundle info by a bundle name\n"
-    "  -m, --module-name <module-name>      list the dependent modulenames by a module name\n"
     "  -s, --shortcut-info                  list the shortcut info\n"
     "  -d, --device-id <device-id>          specify a device id\n"
     "  -u, --user-id <user-id>              specify a user id\n";
@@ -117,6 +117,14 @@ const std::string HELP_MSG_GET_REMOVABLE =
     "  -h, --help                             list available commands\n"
     "  -n, --bundle-name  <bundle-name>       get isRemovable by moduleNmae and bundleName\n"
     "  -m, --module-name <module-name>        get isRemovable by moduleNmae and bundleName\n";
+
+const std::string HELP_MSG_DUMP_DEPENDENCIES =
+    "usage: bm dump-dependencies <options>\n"
+    "eg:bm dump-dependencies -n <bundle-name> -m <module-name> \n"
+    "options list:\n"
+    "  -h, --help                             list available commands\n"
+    "  -n, --bundle-name  <bundle-name>       dump dependent moduleNames by bundleName and moduleName\n"
+    "  -m, --module-name  <module-name>       dump dependent moduleNames by bundleName and moduleName\n";
 
 const std::string STRING_INCORRECT_OPTION = "error: incorrect option";
 const std::string HELP_MSG_NO_BUNDLE_PATH_OPTION =
@@ -180,6 +188,7 @@ private:
     ErrCode RunAsInstallCommand();
     ErrCode RunAsUninstallCommand();
     ErrCode RunAsDumpCommand();
+    ErrCode RunAsDumpDependenciesCommand();
     ErrCode RunAsCleanCommand();
     ErrCode RunAsEnableCommand();
     ErrCode RunAsDisableCommand();
@@ -211,6 +220,7 @@ private:
         const std::string &bundleName, const std::string &moduleName, std::string &result) const;
     int32_t GetCurrentUserId(int32_t userId) const;
 
+    ErrCode ParseDependenciesCommand(int32_t option, std::string &bundleName, std::string &moduleName);
     sptr<IBundleMgr> bundleMgrProxy_;
     sptr<IBundleInstaller> bundleInstallerProxy_;
 };

@@ -62,11 +62,10 @@ const struct option LONG_OPTIONS[] = {
     {nullptr, 0, nullptr, 0},
 };
 
-const std::string SHORT_OPTIONS_DUMP = "hn:m:aisu:d:";
+const std::string SHORT_OPTIONS_DUMP = "hn:aisu:d:";
 const struct option LONG_OPTIONS_DUMP[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-name", required_argument, nullptr, 'n'},
-    {"module-name", required_argument, nullptr, 'm'},
     {"all", no_argument, nullptr, 'a'},
     {"bundle-info", no_argument, nullptr, 'i'},
     {"shortcut-info", no_argument, nullptr, 's'},
@@ -79,6 +78,13 @@ const std::string SHORT_OPTIONS_GET = "hu";
 const struct option LONG_OPTIONS_GET[] = {
     {"help", no_argument, nullptr, 'h'},
     {"udid", no_argument, nullptr, 'u'},
+    {nullptr, 0, nullptr, 0},
+};
+const std::string SHORT_OPTIONS_DUMP_DEPENDENCIES = "hn:m:";
+const struct option LONG_OPTIONS_DUMP_DEPENDENCIES[] = {
+    {"help", no_argument, nullptr, 'h'},
+    {"bundle-name", required_argument, nullptr, 'n'},
+    {"module-name", required_argument, nullptr, 'm'},
     {nullptr, 0, nullptr, 0},
 };
 }  // namespace
@@ -128,6 +134,7 @@ ErrCode BundleManagerShellCommand::CreateCommandMap()
         {"install", std::bind(&BundleManagerShellCommand::RunAsInstallCommand, this)},
         {"uninstall", std::bind(&BundleManagerShellCommand::RunAsUninstallCommand, this)},
         {"dump", std::bind(&BundleManagerShellCommand::RunAsDumpCommand, this)},
+        {"dump-dependencies", std::bind(&BundleManagerShellCommand::RunAsDumpDependenciesCommand, this)},
         {"clean", std::bind(&BundleManagerShellCommand::RunAsCleanCommand, this)},
         {"enable", std::bind(&BundleManagerShellCommand::RunAsEnableCommand, this)},
         {"disable", std::bind(&BundleManagerShellCommand::RunAsDisableCommand, this)},
@@ -890,13 +897,11 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
     int counter = 0;
     std::string dumpResults = "";
     std::string bundleName = "";
-    std::string moduleName = "";
     bool bundleDumpAll = false;
     bool bundleDumpInfos = false;
     bool bundleDumpInfo = false;
     bool bundleDumpShortcut = false;
     bool bundleDumpDistributedBundleInfo = false;
-    bool bundleDumpDependentModule = false;
     std::string deviceId = "";
     int32_t userId = Constants::ALL_USERID;
     while (true) {
@@ -925,14 +930,6 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     // 'bm dump -n' with no argument: bm dump -n
                     // 'bm dump --bundle-name' with no argument: bm dump --bundle-name
                     APP_LOGD("'bm dump -n' with no argument.");
-                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
-                    result = OHOS::ERR_INVALID_VALUE;
-                    break;
-                }
-                case 'm': {
-                    // 'bm dump -m' with no argument: bm dump -m
-                    // 'bm dump --module-name' with no argument: bm dump --bundle-name
-                    APP_LOGD("'bm dump -m' with no argument.");
                     resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
@@ -996,14 +993,6 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                 bundleDumpInfo = true;
                 break;
             }
-            case 'm': {
-                // 'bm dump -m xxx'
-                // 'bm dump --module-name xxx'
-                APP_LOGD("'bm dump %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                moduleName = optarg;
-                bundleDumpDependentModule = true;
-                break;
-            }
             case 's': {
                 // 'bm dump -n xxx -s'
                 // 'bm dump --bundle-name xxx --shortcut-info'
@@ -1049,12 +1038,6 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
             resultReceiver_.append(HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n");
             result = OHOS::ERR_INVALID_VALUE;
         }
-        if ((resultReceiver_ == "") && bundleDumpDependentModule && (bundleName.size() == 0)) {
-            // 'bm dump -m ...' with no bundle name option
-            APP_LOGD("'bm dump -m' with no bundle name option.");
-            resultReceiver_.append(HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n");
-            result = OHOS::ERR_INVALID_VALUE;
-        }
     }
     if (result != OHOS::ERR_OK) {
         resultReceiver_.append(HELP_MSG_DUMP);
@@ -1068,8 +1051,6 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
             dumpResults = DumpBundleList(userId);
         } else if (bundleDumpInfos) {
             dumpResults = DumpBundleInfos(userId);
-        } else if (bundleDumpDependentModule) {
-            dumpResults = DumpDependentModuleNames(bundleName, moduleName);
         } else if (bundleDumpInfo) {
             dumpResults = DumpBundleInfo(bundleName, userId);
         }
@@ -1079,6 +1060,116 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
         resultReceiver_.append(dumpResults);
     }
 
+    return result;
+}
+
+ErrCode BundleManagerShellCommand::RunAsDumpDependenciesCommand()
+{
+    int32_t result = OHOS::ERR_OK;
+    int32_t option = -1;
+    int32_t counter = 0;
+    std::string dumpResults;
+    std::string bundleName;
+    std::string moduleName;
+    while (true) {
+        counter++;
+        option = getopt_long(argc_, argv_, SHORT_OPTIONS_DUMP_DEPENDENCIES.c_str(),
+            LONG_OPTIONS_DUMP_DEPENDENCIES, nullptr);
+        if (optind < 0 || optind > argc_) {
+            return OHOS::ERR_INVALID_VALUE;
+        }
+        if (option == -1) {
+            if (counter == 1) {
+                // When scanning the first argument
+                if (strcmp(argv_[optind], cmd_.c_str()) == 0) {
+                    // 'bm dump-dependencies' with no option: bm dump-dependencies
+                    // 'bm dump-dependencies' with a wrong argument: bm dump-dependencies xxx
+                    resultReceiver_.append(HELP_MSG_NO_OPTION + "\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                }
+            }
+            break;
+        }
+        result = ParseDependenciesCommand(option, bundleName, moduleName);
+        if (option == '?') {
+            break;
+        }
+    }
+    if (result == OHOS::ERR_OK) {
+        if ((resultReceiver_ == "") && (bundleName.size() == 0 || moduleName.size() == 0)) {
+            // 'bm dump-dependencies -n -m ...' with no bundle name option
+            resultReceiver_.append(HELP_MSG_NO_REMOVABLE_OPTION);
+            result = OHOS::ERR_INVALID_VALUE;
+        }
+    }
+    if (result != OHOS::ERR_OK) {
+        resultReceiver_.append(HELP_MSG_DUMP_DEPENDENCIES);
+    } else {
+        dumpResults = DumpDependentModuleNames(bundleName, moduleName);
+        if (dumpResults.empty() || (dumpResults == "")) {
+            dumpResults = HELP_MSG_DUMP_FAILED + "\n";
+        }
+        resultReceiver_.append(dumpResults);
+    }
+    return result;
+}
+
+ErrCode BundleManagerShellCommand::ParseDependenciesCommand(int32_t option, std::string &bundleName,
+    std::string &moduleName)
+{
+    int32_t result = OHOS::ERR_OK;
+    if (option == '?') {
+        switch (optopt) {
+            case 'n': {
+                // 'bm dump-dependencies -n' with no argument: bm dump-dependencies -n
+                // 'bm dump-dependencies --bundle-name' with no argument: bm dump-dependencies --bundle-name
+                resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+            case 'm': {
+                // 'bm dump-dependencies -m' with no argument: bm dump-dependencies -m
+                // 'bm dump-dependencies --module-name' with no argument: bm dump-dependencies --module-name
+                resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+            default: {
+                // 'bm dump-dependencies' with an unknown option: bm dump-dependencies -x
+                // 'bm dump-dependencies' with an unknown option: bm dump-dependencies -xxx
+                std::string unknownOption = "";
+                std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
+                resultReceiver_.append(unknownOptionMsg);
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+        }
+    } else {
+        switch (option) {
+            case 'h': {
+                // 'bm dump-dependencies -h'
+                // 'bm dump-dependencies --help'
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+            case 'n': {
+                // 'bm dump-dependencies -n xxx'
+                // 'bm dump-dependencies --bundle-name xxx'
+                bundleName = optarg;
+                break;
+            }
+            case 'm': {
+                // 'bm dump-dependencies -m xxx'
+                // 'bm dump-dependencies --module-name xxx'
+                moduleName = optarg;
+                break;
+            }
+            default: {
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+        }
+    }
     return result;
 }
 
@@ -1909,6 +2000,8 @@ std::string BundleManagerShellCommand::DumpDependentModuleNames(
     const std::string &bundleName,
     const std::string &moduleName) const
 {
+    APP_LOGD("DumpDependentModuleNames bundleName: %{public}s, moduleName: %{public}s",
+        bundleName.c_str(), moduleName.c_str());
     std::string dumpResults = "";
     std::vector<std::string> dependentModuleNames;
     bool dumpRet = bundleMgrProxy_->GetAllDependentModuleNames(bundleName, moduleName, dependentModuleNames);
