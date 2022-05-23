@@ -2397,38 +2397,43 @@ void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList, 
     GetUriPrefixList(uriPrefixList, excludeModule);
 }
 
-std::vector<std::string> InnerBundleInfo::GetDependentModuleNames(const std::string &moduleName) const
+bool InnerBundleInfo::GetDependentModuleNames(const std::string &moduleName,
+    std::vector<std::string> &dependentModuleNames) const
 {
     for (auto iter = innerModuleInfos_.begin(); iter != innerModuleInfos_.end(); ++iter) {
         if (iter->second.moduleName == moduleName) {
-            return iter->second.dependencies;
+            dependentModuleNames = iter->second.dependencies;
+            return true;
         }
     }
     APP_LOGE("GetDependentModuleNames can not find module %{public}s", moduleName.c_str());
-    std::vector<std::string> dependentModuleNames;
-    return dependentModuleNames;
+    return false;
 }
 
-std::vector<std::string> InnerBundleInfo::GetAllDependentModuleNames(const std::string &moduleName) const
+bool InnerBundleInfo::GetAllDependentModuleNames(const std::string &moduleName,
+    std::vector<std::string> &dependentModuleNames) const
 {
-    std::deque<std::string> moduleDeque;
-    std::vector<std::string> dependentModuleNames = GetDependentModuleNames(moduleName);
-    for (const auto &st : dependentModuleNames) {
-        moduleDeque.push_back(st);
+    if (!GetDependentModuleNames(moduleName, dependentModuleNames)) {
+        return false;
     }
-    std::vector<std::string> res;
+    std::deque<std::string> moduleDeque;
+    for (const auto &moduleName : dependentModuleNames) {
+        moduleDeque.push_back(moduleName);
+    }
     while (!moduleDeque.empty()) {
         std::string name = moduleDeque.front();
         moduleDeque.pop_front();
-        if (std::find(res.begin(), res.end(), name) == res.end()) {
-            res.push_back(name);
-            dependentModuleNames = GetDependentModuleNames(name);
-            for (const auto &st : dependentModuleNames) {
-                moduleDeque.push_back(st);
+        if (std::find(dependentModuleNames.begin(), dependentModuleNames.end(), name) == dependentModuleNames.end()) {
+            dependentModuleNames.push_back(name);
+            std::vector<std::string> tempModuleNames;
+            if (GetDependentModuleNames(name, tempModuleNames)) {
+                for (const auto &moduleName : tempModuleNames) {
+                    moduleDeque.push_back(moduleName);
+                }
             }
         }
     }
-    return res;
+    return true;
 }
 
 std::string InnerBundleInfo::GetMainAbility() const

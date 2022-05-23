@@ -1382,9 +1382,10 @@ public:
         return baseApplicationInfo_.accessible;
     }
 
-    std::vector<std::string> GetDependentModuleNames(const std::string &moduleName) const;
+    bool GetDependentModuleNames(const std::string &moduleName, std::vector<std::string> &dependentModuleNames) const;
 
-    std::vector<std::string> GetAllDependentModuleNames(const std::string &moduleName) const;
+    bool GetAllDependentModuleNames(const std::string &moduleName,
+        std::vector<std::string> &dependentModuleNames) const;
 
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, const std::string &excludeModule = "") const;
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,

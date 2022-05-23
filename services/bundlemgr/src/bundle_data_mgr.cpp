@@ -2939,8 +2939,7 @@ bool BundleDataMgr::GetAllDependentModuleNames(const std::string &bundleName, co
         return false;
     }
     const InnerBundleInfo &innerBundleInfo = item->second;
-    dependentModuleNames = innerBundleInfo.GetAllDependentModuleNames(moduleName);
-    return true;
+    return innerBundleInfo.GetAllDependentModuleNames(moduleName, dependentModuleNames);
 }
 
 #ifdef BUNDLE_FRAMEWORK_GRAPHICS
