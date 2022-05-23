@@ -71,6 +71,9 @@ void from_json(const nlohmann::json &jsonObject, Result &result)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module result from jsonObject error, error code : %{public}d", parseResult);
+    }
 }
 
 void to_json(nlohmann::json &jsonObject, const Progress &progress)
@@ -101,6 +104,9 @@ void from_json(const nlohmann::json &jsonObject, Progress &progress)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module progress from jsonObject error, error code : %{public}d", parseResult);
+    }
 }
 
 void to_json(nlohmann::json &jsonObject, const InstallResult &installResult)
@@ -140,6 +146,9 @@ void from_json(const nlohmann::json &jsonObject, InstallResult &installResult)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module installResult from jsonObject error, error code : %{public}d", parseResult);
+    }
 }
 
 bool Result::ReadFromParcel(Parcel &parcel)
