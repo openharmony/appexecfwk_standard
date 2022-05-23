@@ -35,6 +35,8 @@ DEFINE_HILOG_LABEL("EventRunner");
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+constexpr uint32_t CUSTOM_STACK_SIZE = 512 * 1024;
+
 // Invoke system call to set name of current thread.
 inline void SystemCallSetThreadName(const std::string &name)
 {
@@ -284,6 +286,24 @@ public:
 
             // Call system call to modify thread name.
             SystemCallSetThreadName(inner->threadName_);
+
+            size_t stacksize = 0;
+            pthread_attr_t thread_attr;
+            int ret = pthread_attr_init(&thread_attr);
+            if (ret != 0) {
+                HILOGE("ThreadMain: pthread_attr_init failed.");
+            }
+            ret =  pthread_attr_getstacksize(&thread_attr, &stacksize);
+            if (ret != 0) {
+                HILOGE("ThreadMain: pthread_attr_getstacksize failed.");
+            }
+            HILOGE("ThreadMain: stacksize is %{public}zu.", stacksize);
+
+            stacksize = CUSTOM_STACK_SIZE;
+            ret = pthread_attr_setstacksize(&thread_attr, stacksize);
+            if (ret != 0) {
+                HILOGE("ThreadMain: pthread_attr_setstacksize failed.");
+            }
 
             // Enter event loop.
             inner->Run();
