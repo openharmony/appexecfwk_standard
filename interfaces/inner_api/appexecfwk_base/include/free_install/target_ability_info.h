@@ -38,10 +38,18 @@ struct TargetInfo : public Parcelable {
     static TargetInfo *Unmarshalling(Parcel &parcel);
 };
 
+struct TargetExtSetting : public Parcelable {
+    std::map<std::string, std::string> extValues;
+
+    bool ReadFromParcel(Parcel &parcel);
+    virtual bool Marshalling(Parcel &parcel) const override;
+    static TargetExtSetting *Unmarshalling(Parcel &parcel);
+};
+
 struct TargetAbilityInfo : public Parcelable {
     std::string version;
     TargetInfo targetInfo;
-    std::string targetExtSetting;
+    TargetExtSetting targetExtSetting;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

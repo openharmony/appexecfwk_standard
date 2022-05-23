@@ -46,6 +46,9 @@ void from_json(const nlohmann::json &jsonObject, DispatcherInfo &dispatcherInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read module dispatcherInfo from jsonObject error, error code : %{public}d", parseResult);
+    }
 }
 
 bool DispatcherInfo::ReadFromParcel(Parcel &parcel)
