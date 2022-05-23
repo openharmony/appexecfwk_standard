@@ -4327,8 +4327,10 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_001, Function | Sma
     InnerBundleInfo innerBundleInfo;
     std::vector<std::string> dependencies;
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
-    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
-    EXPECT_TRUE(res.empty());
+    std::vector<std::string> dependentModuleName;
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST, dependentModuleName);
+    EXPECT_TRUE(res);
+    EXPECT_TRUE(dependentModuleName.empty());
 }
 
 /**
@@ -4346,10 +4348,12 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_002, Function | Sma
     dependencies.clear();
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_1, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
 
-    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
-    EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_ONE);
-    if (!res.empty()) {
-        EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
+    std::vector<std::string> dependentModuleName;
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST, dependentModuleName);
+    EXPECT_TRUE(res);
+    EXPECT_EQ(dependentModuleName.size(), MODULE_NAMES_SIZE_ONE);
+    if (!dependentModuleName.empty()) {
+        EXPECT_EQ(dependentModuleName[0], MODULE_NAME_TEST_1);
     }
 }
 
@@ -4370,11 +4374,13 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_003, Function | Sma
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_1, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_2, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
 
-    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
-    EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_TWO);
-    if (res.size() == MODULE_NAMES_SIZE_TWO) {
-        EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
-        EXPECT_EQ(res[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
+    std::vector<std::string> dependentModuleName;
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST, dependentModuleName);
+    EXPECT_TRUE(res);
+    EXPECT_EQ(dependentModuleName.size(), MODULE_NAMES_SIZE_TWO);
+    if (dependentModuleName.size() == MODULE_NAMES_SIZE_TWO) {
+        EXPECT_EQ(dependentModuleName[0], MODULE_NAME_TEST_1);
+        EXPECT_EQ(dependentModuleName[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
     }
 }
 
@@ -4399,12 +4405,14 @@ HWTEST_F(BmsBundleKitServiceTest, GetAlldependentModuleNames_004, Function | Sma
     dependencies.clear();
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST_3, ABILITY_NAME_TEST, dependencies, innerBundleInfo);
 
-    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST);
-    EXPECT_EQ(res.size(), MODULE_NAMES_SIZE_THREE);
-    if (res.size() == MODULE_NAMES_SIZE_THREE) {
-        EXPECT_EQ(res[0], MODULE_NAME_TEST_1);
-        EXPECT_EQ(res[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
-        EXPECT_EQ(res[MODULE_NAMES_SIZE_TWO], MODULE_NAME_TEST_3);
+    std::vector<std::string> dependentModuleName;
+    auto res = innerBundleInfo.GetAllDependentModuleNames(MODULE_NAME_TEST, dependentModuleName);
+    EXPECT_TRUE(res);
+    EXPECT_EQ(dependentModuleName.size(), MODULE_NAMES_SIZE_THREE);
+    if (dependentModuleName.size() == MODULE_NAMES_SIZE_THREE) {
+        EXPECT_EQ(dependentModuleName[0], MODULE_NAME_TEST_1);
+        EXPECT_EQ(dependentModuleName[MODULE_NAMES_SIZE_ONE], MODULE_NAME_TEST_2);
+        EXPECT_EQ(dependentModuleName[MODULE_NAMES_SIZE_TWO], MODULE_NAME_TEST_3);
     }
 }
 }
