@@ -16,7 +16,7 @@ import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
 import("../../../appexecfwk.gni")
-module_output_path = "appexecfwk_standard/bundle_framework"
+module_output_path = "bundle_framework/fuzz"
 
 ##############################fuzztest##########################################
 ohos_fuzztest("InstallParamUnmarshallingFuzzTest") {
