@@ -2420,6 +2420,7 @@ bool InnerBundleInfo::GetAllDependentModuleNames(const std::string &moduleName,
     for (const auto &moduleName : dependentModuleNames) {
         moduleDeque.push_back(moduleName);
     }
+    dependentModuleNames.clear();
     while (!moduleDeque.empty()) {
         std::string name = moduleDeque.front();
         moduleDeque.pop_front();
