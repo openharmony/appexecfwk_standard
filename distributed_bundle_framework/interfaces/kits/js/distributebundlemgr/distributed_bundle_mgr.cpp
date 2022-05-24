@@ -183,6 +183,26 @@ static void ConvertRemoteAbilityInfos(
     }
 }
 
+static bool ParseModuleName(napi_env env, std::string &moduleName, napi_value args)
+{
+    napi_status status;
+    napi_valuetype valueType;
+    napi_value prop = nullptr;
+    bool hasKey = false;
+    napi_has_named_property(env, args, "moduleName", &hasKey);
+    if (hasKey) {
+        status = napi_get_named_property(env, args, "moduleName", &prop);
+        napi_typeof(env, prop, &valueType);
+        if ((status == napi_ok) && (valueType == napi_string)) {
+            moduleName = GetStringFromNAPI(env, prop);
+        } else {
+            APP_LOGE("begin to parse ElementName moduleName failed");
+            return false;
+        }
+    }
+    return true;
+}
+
 static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elementName, napi_value args)
 {
     APP_LOGD("begin to parse ElementName");
@@ -212,17 +232,6 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
         return false;
     }
     prop = nullptr;
-    status = napi_get_named_property(env, args, "moduleName", &prop);
-    napi_typeof(env, prop, &valueType);
-    if (status == napi_ok && valueType == napi_string) {
-        std::string moduleName = GetStringFromNAPI(env, prop);
-        if (moduleName.empty()) {
-            APP_LOGE("err ElementName moduleName is empty");
-            return false;
-        }
-        elementName.SetModuleName(moduleName);
-    }
-    prop = nullptr;
     status = napi_get_named_property(env, args, "abilityName", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
@@ -231,6 +240,11 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
         APP_LOGE("begin to parse ElementName abilityName failed");
         return false;
     }
+    std::string moduleName;
+    if (!ParseModuleName(env, moduleName, args)) {
+        return false;
+    }
+    elementName.SetModuleName(moduleName);
     APP_LOGD("parse ElementName end");
     return true;
 }
