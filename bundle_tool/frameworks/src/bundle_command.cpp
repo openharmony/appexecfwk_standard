@@ -1729,7 +1729,11 @@ ErrCode BundleManagerShellCommand::RunAsSetRmCommand()
             case 'i': {
                 // 'bm setrm -i <1/0>'
                 // 'bm setrm --is-removable <1/0>'
-                isRemovable = std::stoi(optarg);
+                if (!OHOS::StrToInt(optarg, isRemovable)) {
+                    APP_LOGE("bm setrm with error isRemovable %{private}s", optarg);
+                    resultReceiver_.append(STRING_REQUIRE_CORRECT_VALUE);
+                    return OHOS::ERR_INVALID_VALUE;
+                }
                 APP_LOGD("'bm setrm -i isRemovable:%{public}d, %{public}s'", isRemovable, argv_[optind - 1]);
                 if (isRemovable == 1) {
                     enable = true;
